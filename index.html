@@ -3,31 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculator</title>
+    <title>Client Information Form</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="calculator">
-        <input type="text" id="display" disabled />
-        <div class="buttons">
-            <button class="btn" data-value="7">7</button>
-            <button class="btn" data-value="8">8</button>
-            <button class="btn" data-value="9">9</button>
-            <button class="btn" data-value="/">÷</button>
-            <button class="btn" data-value="4">4</button>
-            <button class="btn" data-value="5">5</button>
-            <button class="btn" data-value="6">6</button>
-            <button class="btn" data-value="*">×</button>
-            <button class="btn" data-value="1">1</button>
-            <button class="btn" data-value="2">2</button>
-            <button class="btn" data-value="3">3</button>
-            <button class="btn" data-value="-">-</button>
-            <button class="btn" data-value="0">0</button>
-            <button class="btn" data-value=".">.</button>
-            <button class="btn" data-value="=">=</button>
-            <button class="btn" data-value="+">+</button>
-            <button class="btn" data-value="C">C</button>
-        </div>
+    <div class="form-container">
+        <h2>Client Information Form</h2>
+        <form id="clientForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required />
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required />
+            </div>
+            <div class="form-group">
+                <label for="retirementAge">Desired Retirement Age:</label>
+                <input type="number" id="retirementAge" name="retirementAge" required />
+            </div>
+            <div class="form-group">
+                <label for="mortalityAge">Planned Mortality Age:</label>
+                <input type="number" id="mortalityAge" name="mortalityAge" required />
+            </div>
+            <div class="form-group">
+                <label for="inflationRate">Inflation Rate (%):</label>
+                <input type="number" step="0.01" id="inflationRate" name="inflationRate" required />
+            </div>
+            <button type="submit">Submit</button>
+        </form>
     </div>
     <script src="script.js"></script>
 </body>
