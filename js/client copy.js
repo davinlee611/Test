@@ -70,9 +70,6 @@ const prioritiesNextButton =
 const wealthPreferenceCards =
     document.querySelectorAll(".wealth-preference-card");
 
-const assetCategoryCards =
-    document.querySelectorAll(".asset-category-card");
-
 /* ========================================
    IN-MEMORY PLAN DATA
 ======================================== */
@@ -91,27 +88,11 @@ const clientPlan = {
     },
 
     priorities: {
-    selectedWealthTypes: [],
-
-    goals: [],
-
-    assets: {
-        cash: [],
-        investments: [],
-        income: [],
-
-        cpf: {
-            oa: 0,
-            sa: 0,
-            ma: 0,
-            ra: 0
-        },
-
-        properties: []
+        selectedWealthTypes: [],
+        goals: [],
+        assets: [],
+        liabilities: []
     },
-
-    liabilities: []
-},
 
     costOfWants: {},
     protection: {},
@@ -361,24 +342,6 @@ wealthPreferenceCards.forEach(function (card) {
             "Selected wealth types:",
             clientPlan.priorities.selectedWealthTypes
         );
-    });
-});
-
-/* ========================================
-   ASSET CATEGORY SELECTION
-======================================== */
-
-assetCategoryCards.forEach(function (card) {
-    card.addEventListener("click", function () {
-        const assetType = card.dataset.assetType;
-
-        assetCategoryCards.forEach(function (assetCard) {
-            assetCard.classList.remove("active");
-        });
-
-        card.classList.add("active");
-
-        console.log("Selected asset category:", assetType);
     });
 });
 
