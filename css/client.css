@@ -294,9 +294,16 @@ body {
 
 .form-actions {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     margin-top: 30px;
+}
+
+.form-actions--right {
+    justify-content: flex-end;
+}
+
+.form-actions--between {
+    justify-content: space-between;
 }
 
 .next-button {
@@ -634,6 +641,17 @@ body {
     .form-actions {
     flex-direction: column;
     gap: 12px;
+}
+
+.form-actions--right,
+.form-actions--between {
+    justify-content: stretch;
+}
+
+.next-button,
+.header-button {
+    width: 100%;
+} 12px;
     }
 
 .next-button {
