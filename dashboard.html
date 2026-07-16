@@ -9,86 +9,91 @@
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/dashboard.css">
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 </head>
+
 <body>
 
     <main id="dashboardContent" class="dashboard" hidden>
 
-        <!-- Header -->
+        <!-- Dashboard Header -->
         <header class="dashboard-header">
+
             <div>
-                <p class="dashboard-label">Financial Planning Platform</p>
+                <p class="dashboard-label">
+                    Financial Planning Platform
+                </p>
 
                 <h1>
-                    Welcome, <span id="userName">User</span>
+                    Welcome,
+                    <span id="userName">User</span>
                 </h1>
 
                 <p class="dashboard-subtitle">
-                    Select an option below to begin.
+                    Begin a new financial planning session.
                 </p>
             </div>
 
-            <button id="logoutButton" class="logout-button" type="button">
+            <button
+                id="logoutButton"
+                class="logout-button"
+                type="button"
+            >
                 <i class="fa-solid fa-right-from-bracket"></i>
                 Logout
             </button>
+
         </header>
 
-        <!-- Main Actions -->
-        <section class="dashboard-actions" aria-labelledby="actionHeading">
+        <!-- Main Dashboard Action -->
+        <section
+            class="dashboard-actions"
+            aria-labelledby="actionHeading"
+        >
 
             <div class="section-heading">
-                <h2 id="actionHeading">Client Management</h2>
-                <p>Add a new client or continue working with an existing client.</p>
+                <h2 id="actionHeading">
+                    Financial Planning
+                </h2>
+
+                <p>
+                    Create a new financial plan without storing the
+                    client's information online.
+                </p>
             </div>
 
-            <div class="action-grid">
+            <div class="action-grid action-grid--single">
 
-                <!-- Add Client -->
-                <a href="add-client.html" class="action-card">
+                <a href="client.html" class="action-card">
+
                     <div class="action-icon">
-                        <i class="fa-solid fa-user-plus"></i>
+                        <i class="fa-solid fa-file-circle-plus"></i>
                     </div>
 
                     <div class="action-card-content">
-                        <h3>Add Client</h3>
+
+                        <h3>Create Financial Plan</h3>
 
                         <p>
-                            Create a new client profile and begin their financial
-                            planning journey.
+                            Enter the client's profile, goals, assets,
+                            liabilities and protection requirements.
                         </p>
 
                         <span class="action-link">
-                            Add a new client
+                            Start planning
                             <i class="fa-solid fa-arrow-right"></i>
                         </span>
-                    </div>
-                </a>
 
-                <!-- View Clients -->
-                <a href="clients.html" class="action-card">
-                    <div class="action-icon">
-                        <i class="fa-solid fa-users"></i>
                     </div>
 
-                    <div class="action-card-content">
-                        <h3>View Existing Clients</h3>
-
-                        <p>
-                            Search, select and continue working on an existing
-                            client's financial plan.
-                        </p>
-
-                        <span class="action-link">
-                            View client list
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </span>
-                    </div>
                 </a>
 
             </div>

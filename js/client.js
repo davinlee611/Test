@@ -1,67 +1,48 @@
 "use strict";
-console.log("Updated client.js loaded");
 
 /* ========================================
    PAGE ELEMENTS
 ======================================== */
 
-const clientWorkspace = document.getElementById("clientWorkspace");
-const loadingMessage = document.getElementById("loadingMessage");
-const logoutButton = document.getElementById("logoutButton");
+const clientWorkspace =
+    document.getElementById("clientWorkspace");
 
-const clientName = document.getElementById("clientName");
+const loadingMessage =
+    document.getElementById("loadingMessage");
 
-/* Profile display elements */
-const detailsGrid = document.querySelector(".details-grid");
+const logoutButton =
+    document.getElementById("logoutButton");
 
-const detailFullName = document.getElementById("detailFullName");
-const detailDateOfBirth = document.getElementById("detailDateOfBirth");
-const detailGender = document.getElementById("detailGender");
-const detailMaritalStatus =
-    document.getElementById("detailMaritalStatus");
-const detailPhone = document.getElementById("detailPhone");
-const detailEmail = document.getElementById("detailEmail");
-const detailOccupation = document.getElementById("detailOccupation");
-const detailCreatedAt = document.getElementById("detailCreatedAt");
+const clearPlanButton =
+    document.getElementById("clearPlanButton");
 
-/* Profile editing elements */
-const editProfileButton =
-    document.getElementById("editProfileButton");
+const clientName =
+    document.getElementById("clientName");
 
-const profileEditForm =
-    document.getElementById("profileEditForm");
+const profileForm =
+    document.getElementById("profileForm");
 
-const cancelProfileButton =
-    document.getElementById("cancelProfileButton");
+const clientInitials =
+    document.getElementById("clientInitials");
 
-const saveProfileButton =
-    document.getElementById("saveProfileButton");
+const birthYear =
+    document.getElementById("birthYear");
 
-const profileFormMessage =
-    document.getElementById("profileFormMessage");
+const birthdayPassed =
+    document.getElementById("birthdayPassed");
 
-const editFullName =
-    document.getElementById("editFullName");
+const gender =
+    document.getElementById("gender");
 
-const editDateOfBirth =
-    document.getElementById("editDateOfBirth");
+const maritalStatus =
+    document.getElementById("maritalStatus");
 
-const editGender =
-    document.getElementById("editGender");
+const displayedInitials =
+    document.getElementById("displayedInitials");
 
-const editMaritalStatus =
-    document.getElementById("editMaritalStatus");
+const calculatedAge =
+    document.getElementById("calculatedAge");
 
-const editPhone =
-    document.getElementById("editPhone");
-
-const editEmail =
-    document.getElementById("editEmail");
-
-const editOccupation =
-    document.getElementById("editOccupation");
-
-/* Sidebar elements */
 const sidebarItems =
     document.querySelectorAll(".sidebar-item");
 
@@ -69,286 +50,133 @@ const workspaceSections =
     document.querySelectorAll(".workspace-section");
 
 /* ========================================
-   PAGE STATE
+   PLAN DATA
 ======================================== */
 
-let currentClient = null;
+const clientPlan = {
+    profile: {
+        initials: "",
+        birthYear: null,
+        birthdayPassed: false,
+        gender: "",
+        maritalStatus: ""
+    },
+
+    priorities: {
+        goals: [],
+        assets: [],
+        liabilities: []
+    },
+
+    costOfWants: {},
+
+    protection: {},
+
+    summary: {}
+};
 
 /* ========================================
    INITIALIZATION
 ======================================== */
 
-initializeClientPage();
+initializePage();
 
-async function initializeClientPage() {
+async function initializePage() {
     try {
         const {
             data: { user },
-            error: userError
+            error
         } = await supabaseClient.auth.getUser();
 
-        if (userError || !user) {
+        if (error || !user) {
             redirectToLogin();
             return;
         }
 
-        const clientId = getClientId();
-
-        if (!clientId) {
-            window.location.replace("clients.html");
-            return;
-        }
-
-        const { data: client, error: clientError } =
-            await supabaseClient
-                .from("clients")
-                .select(`
-                    id,
-                    full_name,
-                    date_of_birth,
-                    gender,
-                    marital_status,
-                    phone,
-                    email,
-                    occupation,
-                    created_at
-                `)
-                .eq("id", clientId)
-                .single();
-
-        if (clientError || !client) {
-            console.error("Client load error:", clientError);
-
-            loadingMessage.textContent =
-                "Client could not be loaded.";
-
-            return;
-        }
-
-        currentClient = client;
-        displayClient(currentClient);
-
         loadingMessage.hidden = true;
         clientWorkspace.hidden = false;
 
-    } catch (error) {
-        console.error("Client page error:", error);
-
-        loadingMessage.textContent =
-            "Something went wrong while loading the client.";
-    }
-}
-
-/* ========================================
-   DISPLAY CLIENT
-======================================== */
-
-function displayClient(client) {
-    clientName.textContent = client.full_name;
-
-    document.title =
-        `${client.full_name} | Client Workspace`;
-
-    detailFullName.textContent =
-        client.full_name;
-
-    detailDateOfBirth.textContent =
-        formatDate(client.date_of_birth);
-
-    detailGender.textContent =
-        formatTextValue(client.gender);
-
-    detailMaritalStatus.textContent =
-        formatTextValue(client.marital_status);
-
-    detailPhone.textContent =
-        client.phone || "Not provided";
-
-    detailEmail.textContent =
-        client.email || "Not provided";
-
-    detailOccupation.textContent =
-        client.occupation || "Not provided";
-
-    detailCreatedAt.textContent =
-        formatDate(client.created_at);
-}
-
-/* ========================================
-   PROFILE EDITING
-======================================== */
-
-if (editProfileButton) {
-    editProfileButton.addEventListener(
-        "click",
-        openProfileEditor
-    );
-}
-
-if (cancelProfileButton) {
-    cancelProfileButton.addEventListener(
-        "click",
-        closeProfileEditor
-    );
-}
-
-if (profileEditForm) {
-    profileEditForm.addEventListener(
-        "submit",
-        handleProfileUpdate
-    );
-}
-
-function openProfileEditor() {
-    console.log("Edit Profile clicked");
-
-    if (!currentClient || !profileEditForm || !detailsGrid) {
-        return;
-    }
-
-    editFullName.value =
-        currentClient.full_name || "";
-
-    editDateOfBirth.value =
-        currentClient.date_of_birth || "";
-
-    editGender.value =
-        currentClient.gender || "";
-
-    editMaritalStatus.value =
-        currentClient.marital_status || "";
-
-    editPhone.value =
-        currentClient.phone || "";
-
-    editEmail.value =
-        currentClient.email || "";
-
-    editOccupation.value =
-        currentClient.occupation || "";
-
-    clearProfileMessage();
-
-    detailsGrid.hidden = true;
-    profileEditForm.hidden = false;
-    editProfileButton.hidden = true;
-}
-
-function closeProfileEditor() {
-    if (!profileEditForm || !detailsGrid) {
-        return;
-    }
-
-    profileEditForm.hidden = true;
-    detailsGrid.hidden = false;
-
-    if (editProfileButton) {
-        editProfileButton.hidden = false;
-    }
-
-    clearProfileMessage();
-}
-
-async function handleProfileUpdate(event) {
-    event.preventDefault();
-
-    if (!currentClient) {
-        return;
-    }
-
-    const updatedProfile = {
-        full_name: editFullName.value.trim(),
-
-        date_of_birth:
-            editDateOfBirth.value || null,
-
-        gender:
-            editGender.value || null,
-
-        marital_status:
-            editMaritalStatus.value || null,
-
-        phone:
-            editPhone.value.trim() || null,
-
-        email:
-            editEmail.value.trim() || null,
-
-        occupation:
-            editOccupation.value.trim() || null,
-
-        updated_at:
-            new Date().toISOString()
-    };
-
-    if (!updatedProfile.full_name) {
-        showProfileMessage(
-            "Please enter the client's full name.",
-            "error"
-        );
-
-        return;
-    }
-
-    clearProfileMessage();
-    setProfileSavingState(true);
-
-    try {
-        const { data, error } = await supabaseClient
-            .from("clients")
-            .update(updatedProfile)
-            .eq("id", currentClient.id)
-            .select(`
-                id,
-                full_name,
-                date_of_birth,
-                gender,
-                marital_status,
-                phone,
-                email,
-                occupation,
-                created_at
-            `)
-            .single();
-
-        if (error) {
-            console.error("Profile update error:", error);
-
-            showProfileMessage(
-                "The client profile could not be updated.",
-                "error"
-            );
-
-            return;
-        }
-
-        currentClient = data;
-
-        displayClient(currentClient);
-
-        showProfileMessage(
-            "Client profile updated successfully.",
-            "success"
-        );
-
-        setTimeout(function () {
-            closeProfileEditor();
-        }, 700);
+        updateProfilePreview();
 
     } catch (error) {
         console.error(
-            "Unexpected profile update error:",
+            "Financial plan page error:",
             error
         );
 
-        showProfileMessage(
-            "Something went wrong while updating the profile.",
-            "error"
-        );
-
-    } finally {
-        setProfileSavingState(false);
+        loadingMessage.textContent =
+            "Something went wrong while opening the planner.";
     }
+}
+
+/* ========================================
+   PROFILE INPUT
+======================================== */
+
+profileForm.addEventListener("input", handleProfileInput);
+profileForm.addEventListener("change", handleProfileInput);
+
+function handleProfileInput() {
+    clientPlan.profile.initials =
+        clientInitials.value.trim().toUpperCase();
+
+    clientPlan.profile.birthYear =
+        birthYear.value
+            ? Number(birthYear.value)
+            : null;
+
+    clientPlan.profile.birthdayPassed =
+        birthdayPassed.checked;
+
+    clientPlan.profile.gender =
+        gender.value;
+
+    clientPlan.profile.maritalStatus =
+        maritalStatus.value;
+
+    updateProfilePreview();
+}
+
+function updateProfilePreview() {
+    const initials =
+        clientPlan.profile.initials || "New Client";
+
+    displayedInitials.textContent = initials;
+
+    clientName.textContent =
+        clientPlan.profile.initials
+            ? `${clientPlan.profile.initials} Financial Plan`
+            : "New Financial Plan";
+
+    calculatedAge.textContent =
+        calculateAge(
+            clientPlan.profile.birthYear,
+            clientPlan.profile.birthdayPassed
+        );
+}
+
+/* ========================================
+   AGE CALCULATION
+======================================== */
+
+function calculateAge(year, hasBirthdayPassed) {
+    if (!year) {
+        return "Not available";
+    }
+
+    const currentYear =
+        new Date().getFullYear();
+
+    if (year > currentYear || year < 1900) {
+        return "Invalid birth year";
+    }
+
+    const age =
+        currentYear -
+        year -
+        (hasBirthdayPassed ? 0 : 1);
+
+    return `${age} years old`;
 }
 
 /* ========================================
@@ -370,9 +198,10 @@ sidebarItems.forEach(function (item) {
 
         item.classList.add("active");
 
-        const targetSection = document.querySelector(
-            `[data-content="${selectedSection}"]`
-        );
+        const targetSection =
+            document.querySelector(
+                `[data-content="${selectedSection}"]`
+            );
 
         if (targetSection) {
             targetSection.classList.add("active");
@@ -381,15 +210,52 @@ sidebarItems.forEach(function (item) {
 });
 
 /* ========================================
+   CLEAR PLAN
+======================================== */
+
+clearPlanButton.addEventListener(
+    "click",
+    clearFinancialPlan
+);
+
+function clearFinancialPlan() {
+    const shouldClear = window.confirm(
+        "Clear all information entered in this financial plan?"
+    );
+
+    if (!shouldClear) {
+        return;
+    }
+
+    profileForm.reset();
+
+    clientPlan.profile.initials = "";
+    clientPlan.profile.birthYear = null;
+    clientPlan.profile.birthdayPassed = false;
+    clientPlan.profile.gender = "";
+    clientPlan.profile.maritalStatus = "";
+
+    clientPlan.priorities.goals = [];
+    clientPlan.priorities.assets = [];
+    clientPlan.priorities.liabilities = [];
+
+    clientPlan.costOfWants = {};
+    clientPlan.protection = {};
+    clientPlan.summary = {};
+
+    updateProfilePreview();
+
+    openSection("profile");
+}
+
+/* ========================================
    LOGOUT
 ======================================== */
 
-if (logoutButton) {
-    logoutButton.addEventListener(
-        "click",
-        handleLogout
-    );
-}
+logoutButton.addEventListener(
+    "click",
+    handleLogout
+);
 
 async function handleLogout() {
     logoutButton.disabled = true;
@@ -419,90 +285,23 @@ async function handleLogout() {
 }
 
 /* ========================================
-   PROFILE HELPERS
+   HELPERS
 ======================================== */
 
-function setProfileSavingState(isSaving) {
-    if (!saveProfileButton) {
-        return;
-    }
+function openSection(sectionName) {
+    sidebarItems.forEach(function (item) {
+        item.classList.toggle(
+            "active",
+            item.dataset.section === sectionName
+        );
+    });
 
-    saveProfileButton.disabled = isSaving;
-
-    if (isSaving) {
-        saveProfileButton.innerHTML = `
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            Saving...
-        `;
-    } else {
-        saveProfileButton.innerHTML = `
-            <i class="fa-solid fa-floppy-disk"></i>
-            Save Changes
-        `;
-    }
-}
-
-function showProfileMessage(message, type) {
-    if (!profileFormMessage) {
-        return;
-    }
-
-    profileFormMessage.textContent = message;
-
-    profileFormMessage.className =
-        `profile-form-message ${type}`;
-}
-
-function clearProfileMessage() {
-    if (!profileFormMessage) {
-        return;
-    }
-
-    profileFormMessage.textContent = "";
-
-    profileFormMessage.className =
-        "profile-form-message";
-}
-
-/* ========================================
-   GENERAL HELPERS
-======================================== */
-
-function getClientId() {
-    const params =
-        new URLSearchParams(window.location.search);
-
-    return params.get("id");
-}
-
-function formatDate(value) {
-    if (!value) {
-        return "Not provided";
-    }
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-        return "Not provided";
-    }
-
-    return new Intl.DateTimeFormat("en-SG", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-    }).format(date);
-}
-
-function formatTextValue(value) {
-    if (!value) {
-        return "Not provided";
-    }
-
-    return value
-        .replaceAll("_", " ")
-        .replace(/\b\w/g, function (character) {
-            return character.toUpperCase();
-        });
+    workspaceSections.forEach(function (section) {
+        section.classList.toggle(
+            "active",
+            section.dataset.content === sectionName
+        );
+    });
 }
 
 function redirectToLogin() {
