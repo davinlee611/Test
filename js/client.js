@@ -88,7 +88,7 @@ const clientPlan = {
     },
 
     priorities: {
-        wealthTypes: [],
+        selectedWealthTypes: [],
         goals: [],
         assets: [],
         liabilities: []
@@ -304,8 +304,11 @@ function updateClientHeading() {
 
 wealthPreferenceCards.forEach(function (card) {
     card.addEventListener("click", function () {
-        const wealthType =
-            card.dataset.wealthType;
+        const wealthType = card.dataset.wealthType;
+
+        if (!wealthType) {
+            return;
+        }
 
         const isSelected =
             card.classList.toggle("selected");
@@ -316,18 +319,19 @@ wealthPreferenceCards.forEach(function (card) {
         );
 
         if (isSelected) {
-            if (
-                !clientPlan.priorities.wealthTypes.includes(
+            const isAlreadySelected =
+                clientPlan.priorities.selectedWealthTypes.includes(
                     wealthType
-                )
-            ) {
-                clientPlan.priorities.wealthTypes.push(
+                );
+
+            if (!isAlreadySelected) {
+                clientPlan.priorities.selectedWealthTypes.push(
                     wealthType
                 );
             }
         } else {
-            clientPlan.priorities.wealthTypes =
-                clientPlan.priorities.wealthTypes.filter(
+            clientPlan.priorities.selectedWealthTypes =
+                clientPlan.priorities.selectedWealthTypes.filter(
                     function (selectedType) {
                         return selectedType !== wealthType;
                     }
@@ -336,7 +340,7 @@ wealthPreferenceCards.forEach(function (card) {
 
         console.log(
             "Selected wealth types:",
-            clientPlan.priorities.wealthTypes
+            clientPlan.priorities.selectedWealthTypes
         );
     });
 });
@@ -421,12 +425,12 @@ function clearFinancialPlan() {
     clientPlan.profile.phone = "";
     clientPlan.profile.email = "";
 
-    clientPlan.priorities.wealthTypes = [];
+    clientPlan.priorities.selectedWealthTypes = [];
 
-wealthPreferenceCards.forEach(function (card) {
-    card.classList.remove("selected");
-    card.setAttribute("aria-pressed", "false");
-});
+    wealthPreferenceCards.forEach(function (card) {
+        card.classList.remove("selected");
+        card.setAttribute("aria-pressed", "false");
+    });
 
     clientPlan.priorities.goals = [];
     clientPlan.priorities.assets = [];
