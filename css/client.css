@@ -193,6 +193,51 @@ body {
 }
 
 /* ========================================
+   PRIORITIES OVERVIEW
+======================================== */
+
+.priorities-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.planning-overview-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: 180px;
+    padding: 22px;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+}
+
+.planning-overview-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    color: var(--primary-color);
+    background: rgba(91, 78, 245, 0.1);
+    border-radius: 12px;
+    font-size: 18px;
+}
+
+.planning-overview-card h3 {
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-size: 17px;
+}
+
+.planning-overview-card p {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+/* ========================================
    WORKSPACE CONTENT
 ======================================== */
 
@@ -380,6 +425,9 @@ body {
         width: auto;
         flex-shrink: 0;
     }
+    .priorities-overview-grid {
+    grid-template-columns: 1fr;
+}
 }
 
 /* ========================================

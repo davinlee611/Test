@@ -101,67 +101,52 @@
 
                 <nav class="journey-navigation">
 
-                    <button
-                        class="sidebar-item active"
-                        type="button"
-                        data-section="profile"
-                    >
-                        <i class="fa-solid fa-user"></i>
+    <button
+        class="sidebar-item active"
+        type="button"
+        data-section="profile"
+    >
+        <i class="fa-solid fa-user"></i>
+        <span>Client Profile</span>
+    </button>
 
-                        <span>Client Profile</span>
-                    </button>
+    <button
+        class="sidebar-item"
+        type="button"
+        data-section="priorities"
+    >
+        <i class="fa-solid fa-bullseye"></i>
+        <span>Priorities & Situation</span>
+    </button>
 
-                    <button
-                        class="sidebar-item"
-                        type="button"
-                        data-section="priorities"
-                    >
-                        <i class="fa-solid fa-bullseye"></i>
+    <button
+        class="sidebar-item"
+        type="button"
+        data-section="cost"
+    >
+        <i class="fa-solid fa-coins"></i>
+        <span>Cost of Wants</span>
+    </button>
 
-                        <span>Priorities & Situation</span>
-                    </button>
+    <button
+        class="sidebar-item"
+        type="button"
+        data-section="protection"
+    >
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Protection Analysis</span>
+    </button>
 
-                    <button
-                        class="sidebar-item"
-                        type="button"
-                        data-section="assets"
-                    >
-                        <i class="fa-solid fa-scale-balanced"></i>
+    <button
+        class="sidebar-item"
+        type="button"
+        data-section="summary"
+    >
+        <i class="fa-solid fa-file-lines"></i>
+        <span>Summary Report</span>
+    </button>
 
-                        <span>Assets & Liabilities</span>
-                    </button>
-
-                    <button
-                        class="sidebar-item"
-                        type="button"
-                        data-section="cost"
-                    >
-                        <i class="fa-solid fa-coins"></i>
-
-                        <span>Cost of Wants</span>
-                    </button>
-
-                    <button
-                        class="sidebar-item"
-                        type="button"
-                        data-section="protection"
-                    >
-                        <i class="fa-solid fa-shield-halved"></i>
-
-                        <span>Protection</span>
-                    </button>
-
-                    <button
-                        class="sidebar-item"
-                        type="button"
-                        data-section="summary"
-                    >
-                        <i class="fa-solid fa-file-lines"></i>
-
-                        <span>Summary Report</span>
-                    </button>
-
-                </nav>
+</nav>
 
             </aside>
 
@@ -387,75 +372,80 @@
 
                 </section>
 
-                <!-- Priorities -->
-                <section
-                    class="workspace-section"
-                    data-content="priorities"
-                >
+                <!-- Priorities & Situation -->
+<section
+    class="workspace-section"
+    data-content="priorities"
+>
 
-                    <div class="section-header">
-                        <div>
-                            <p class="section-label">
-                                Planning Section
-                            </p>
+    <div class="section-header">
+        <div>
+            <p class="section-label">
+                Financial Fact Find
+            </p>
 
-                            <h2>Priorities & Situation</h2>
+            <h2>Priorities & Situation</h2>
 
-                            <p>
-                                Record the client's goals, priorities, income,
-                                expenses and current financial situation.
-                            </p>
-                        </div>
-                    </div>
+            <p>
+                Record the client's goals, assets, liabilities and
+                current financial situation.
+            </p>
+        </div>
+    </div>
 
-                    <div class="empty-section-card">
-                        <div class="empty-section-icon">
-                            <i class="fa-solid fa-bullseye"></i>
-                        </div>
+    <div class="priorities-overview-grid">
 
-                        <h3>Priorities & Situation</h3>
+        <!-- Goals -->
+        <article class="planning-overview-card">
+            <div class="planning-overview-icon">
+                <i class="fa-solid fa-bullseye"></i>
+            </div>
 
-                        <p>
-                            We will build the goals and financial-situation form
-                            here next.
-                        </p>
-                    </div>
+            <div>
+                <h3>Goals</h3>
 
-                </section>
+                <p>
+                    Record what the client wants to achieve and
+                    the priorities that matter most to them.
+                </p>
+            </div>
+        </article>
 
-                <!-- Assets -->
-                <section
-                    class="workspace-section"
-                    data-content="assets"
-                >
+        <!-- Assets -->
+        <article class="planning-overview-card">
+            <div class="planning-overview-icon">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
 
-                    <div class="section-header">
-                        <div>
-                            <p class="section-label">
-                                Financial Position
-                            </p>
+            <div>
+                <h3>Assets</h3>
 
-                            <h2>Assets & Liabilities</h2>
+                <p>
+                    Record the client's cash, savings, CPF,
+                    investments, properties and other assets.
+                </p>
+            </div>
+        </article>
 
-                            <p>
-                                Record what the client owns and what they owe.
-                            </p>
-                        </div>
-                    </div>
+        <!-- Liabilities -->
+        <article class="planning-overview-card">
+            <div class="planning-overview-icon">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
 
-                    <div class="empty-section-card">
-                        <div class="empty-section-icon">
-                            <i class="fa-solid fa-scale-balanced"></i>
-                        </div>
+            <div>
+                <h3>Liabilities</h3>
 
-                        <h3>Assets & Liabilities</h3>
+                <p>
+                    Record mortgages, personal loans, vehicle loans,
+                    credit cards and other outstanding liabilities.
+                </p>
+            </div>
+        </article>
 
-                        <p>
-                            Asset and liability records will appear here.
-                        </p>
-                    </div>
+    </div>
 
-                </section>
+</section>
 
                 <!-- Cost of Wants -->
                 <section

@@ -126,7 +126,6 @@ async function initializeClientPage() {
         }
 
         currentClient = client;
-
         displayClient(currentClient);
 
         loadingMessage.hidden = true;
