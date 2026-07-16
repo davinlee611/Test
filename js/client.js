@@ -49,7 +49,6 @@ const phoneInput =
 const emailInput =
     document.getElementById("email");
 
-/* Sidebar */
 const sidebarItems =
     document.querySelectorAll(".sidebar-item");
 
@@ -57,7 +56,7 @@ const workspaceSections =
     document.querySelectorAll(".workspace-section");
 
 /* ========================================
-   PLAN DATA
+   IN-MEMORY PLAN DATA
 ======================================== */
 
 const clientPlan = {
@@ -105,10 +104,13 @@ async function initializePage() {
         loadingMessage.hidden = true;
         clientWorkspace.hidden = false;
 
-        updateProfilePreview();
+        updateClientHeading();
 
     } catch (error) {
-        console.error("Planner page error:", error);
+        console.error(
+            "Financial planner error:",
+            error
+        );
 
         loadingMessage.textContent =
             "Something went wrong while opening the planner.";
@@ -120,8 +122,15 @@ async function initializePage() {
 ======================================== */
 
 if (profileForm) {
-    profileForm.addEventListener("input", handleProfileInput);
-    profileForm.addEventListener("change", handleProfileInput);
+    profileForm.addEventListener(
+        "input",
+        handleProfileInput
+    );
+
+    profileForm.addEventListener(
+        "change",
+        handleProfileInput
+    );
 }
 
 function handleProfileInput() {
@@ -154,56 +163,19 @@ function handleProfileInput() {
     clientPlan.profile.email =
         emailInput.value.trim();
 
-    updateProfilePreview();
+    updateClientHeading();
 }
 
-function updateProfilePreview() {
-    const profile = clientPlan.profile;
-
+function updateClientHeading() {
     clientHeading.textContent =
-        profile.fullName
-            ? `${profile.fullName}'s Financial Plan`
+        clientPlan.profile.fullName
+            ? `${clientPlan.profile.fullName}'s Financial Plan`
             : "New Financial Plan";
-}
 
-/* ========================================
-   AGE CALCULATION
-======================================== */
-
-function calculateAge(dateOfBirth) {
-    if (!dateOfBirth) {
-        return "Not available";
-    }
-
-    const birthDate =
-        new Date(`${dateOfBirth}T00:00:00`);
-
-    if (Number.isNaN(birthDate.getTime())) {
-        return "Invalid date";
-    }
-
-    const today = new Date();
-
-    let age =
-        today.getFullYear() -
-        birthDate.getFullYear();
-
-    const birthdayHasNotPassed =
-        today.getMonth() < birthDate.getMonth() ||
-        (
-            today.getMonth() === birthDate.getMonth() &&
-            today.getDate() < birthDate.getDate()
-        );
-
-    if (birthdayHasNotPassed) {
-        age -= 1;
-    }
-
-    if (age < 0) {
-        return "Invalid date";
-    }
-
-    return `${age} years old`;
+    document.title =
+        clientPlan.profile.fullName
+            ? `${clientPlan.profile.fullName} | Financial Plan`
+            : "New Financial Plan";
 }
 
 /* ========================================
@@ -272,7 +244,7 @@ function clearFinancialPlan() {
     clientPlan.protection = {};
     clientPlan.summary = {};
 
-    updateProfilePreview();
+    updateClientHeading();
     openSection("profile");
 }
 
@@ -317,18 +289,6 @@ async function handleLogout() {
 /* ========================================
    HELPERS
 ======================================== */
-
-function formatTextValue(value) {
-    if (!value) {
-        return "Not provided";
-    }
-
-    return value
-        .replaceAll("_", " ")
-        .replace(/\b\w/g, function (character) {
-            return character.toUpperCase();
-        });
-}
 
 function redirectToLogin() {
     window.location.replace("index.html");

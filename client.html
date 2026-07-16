@@ -8,7 +8,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Client Workspace</title>
+    <title>New Financial Plan</title>
 
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/client.css">
@@ -32,31 +32,27 @@
         hidden
     >
 
-        <!-- Client Header -->
+        <!-- Header -->
         <header class="client-header">
 
-            <div class="client-header-left">
+            <div class="client-title-row">
 
-                <div class="client-title-row">
+                <div class="client-avatar">
+                    <i class="fa-solid fa-file-signature"></i>
+                </div>
 
-                    <div class="client-avatar">
-                        <i class="fa-solid fa-user"></i>
-                    </div>
+                <div>
+                    <p class="client-label">
+                        Financial Planning Workspace
+                    </p>
 
-                    <div>
-                        <p class="client-label">
-                            Client Workspace
-                        </p>
+                    <h1 id="clientName">
+                        New Financial Plan
+                    </h1>
 
-                        <h1 id="clientName">
-    New Financial Plan
-</h1>
-
-                        <p id="clientSubtitle">
-                            Financial Planning Journey
-                        </p>
-                    </div>
-
+                    <p>
+                        Information entered here is not saved online.
+                    </p>
                 </div>
 
             </div>
@@ -72,13 +68,13 @@
                 </a>
 
                 <button
-    id="clearPlanButton"
-    class="header-button header-button-secondary"
-    type="button"
->
-    <i class="fa-solid fa-rotate-left"></i>
-    Clear Plan
-</button>
+                    id="clearPlanButton"
+                    class="header-button header-button-secondary"
+                    type="button"
+                >
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Clear Plan
+                </button>
 
                 <button
                     id="logoutButton"
@@ -93,64 +89,64 @@
 
         </header>
 
-        <!-- Workspace -->
+        <!-- Main Workspace -->
         <div class="workspace-layout">
 
             <!-- Sidebar -->
             <aside class="client-sidebar">
 
                 <div class="sidebar-heading">
-                    <p>Your Journey</p>
+                    <p>Financial Plan</p>
                 </div>
 
                 <nav class="journey-navigation">
 
-    <button
-        class="sidebar-item active"
-        type="button"
-        data-section="profile"
-    >
-        <i class="fa-solid fa-user"></i>
-        <span>Client Profile</span>
-    </button>
+                    <button
+                        class="sidebar-item active"
+                        type="button"
+                        data-section="profile"
+                    >
+                        <i class="fa-solid fa-user"></i>
+                        <span>Client Profile</span>
+                    </button>
 
-    <button
-        class="sidebar-item"
-        type="button"
-        data-section="priorities"
-    >
-        <i class="fa-solid fa-bullseye"></i>
-        <span>Priorities & Situation</span>
-    </button>
+                    <button
+                        class="sidebar-item"
+                        type="button"
+                        data-section="priorities"
+                    >
+                        <i class="fa-solid fa-bullseye"></i>
+                        <span>Priorities & Situation</span>
+                    </button>
 
-    <button
-        class="sidebar-item"
-        type="button"
-        data-section="cost"
-    >
-        <i class="fa-solid fa-coins"></i>
-        <span>Cost of Wants</span>
-    </button>
+                    <button
+                        class="sidebar-item"
+                        type="button"
+                        data-section="cost"
+                    >
+                        <i class="fa-solid fa-coins"></i>
+                        <span>Cost of Wants</span>
+                    </button>
 
-    <button
-        class="sidebar-item"
-        type="button"
-        data-section="protection"
-    >
-        <i class="fa-solid fa-shield-halved"></i>
-        <span>Protection Analysis</span>
-    </button>
+                    <button
+                        class="sidebar-item"
+                        type="button"
+                        data-section="protection"
+                    >
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Protection Analysis</span>
+                    </button>
 
-    <button
-        class="sidebar-item"
-        type="button"
-        data-section="summary"
-    >
-        <i class="fa-solid fa-file-lines"></i>
-        <span>Summary Report</span>
-    </button>
+                    <button
+                        class="sidebar-item"
+                        type="button"
+                        data-section="summary"
+                    >
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span>Summary Report</span>
+                    </button>
 
-</nav>
+                </nav>
 
             </aside>
 
@@ -158,340 +154,322 @@
             <section class="workspace-content">
 
                 <!-- Client Profile -->
-<section
-    class="workspace-section active"
-    data-content="profile"
->
-    <div class="section-header">
-        <div>
-            <p class="section-label">
-                Basic Information
-            </p>
+                <section
+                    class="workspace-section active"
+                    data-content="profile"
+                >
 
-            <h2>Client Profile</h2>
+                    <div class="section-header">
+                        <div>
+                            <p class="section-label">
+                                Basic Information
+                            </p>
 
-            <p>
-                Enter the client's personal information for this
-                financial planning session.
-            </p>
-        </div>
-    </div>
+                            <h2>Client Profile</h2>
 
-    <form id="profileForm" class="planning-form">
+                            <p>
+                                Enter the client's personal and contact
+                                information for this planning session.
+                            </p>
+                        </div>
+                    </div>
 
-        <!-- Personal Information -->
-        <section class="profile-form-section">
-
-            <div class="profile-form-heading">
-                <div class="profile-form-icon">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-
-                <div>
-                    <h3>Personal Information</h3>
-
-                    <p>
-                        Enter the client's basic personal details.
-                    </p>
-                </div>
-            </div>
-
-            <div class="form-grid">
-
-                <div class="form-group form-group--full">
-                    <label for="clientNameInput">
-                        Full Name
-                    </label>
-
-                    <input
-                        id="clientNameInput"
-                        name="clientName"
-                        class="form-control"
-                        type="text"
-                        placeholder="Enter client's full name"
-                        autocomplete="off"
+                    <form
+                        id="profileForm"
+                        class="planning-form"
                     >
-                </div>
 
-                <div class="form-group">
-                    <label for="dateOfBirth">
-                        Date of Birth
-                    </label>
+                        <div class="profile-form-heading">
 
-                    <input
-                        id="dateOfBirth"
-                        name="dateOfBirth"
-                        class="form-control"
-                        type="date"
-                    >
-                </div>
+                            <div class="profile-form-icon">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
 
-                <div class="form-group">
-                    <label for="gender">
-                        Gender
-                    </label>
+                            <div>
+                                <h3>Client Information</h3>
 
-                    <select
-                        id="gender"
-                        name="gender"
-                        class="form-control"
-                    >
-                        <option value="">
-                            Select gender
-                        </option>
+                                <p>
+                                    These details remain only in the current
+                                    browser session.
+                                </p>
+                            </div>
 
-                        <option value="male">
-                            Male
-                        </option>
+                        </div>
 
-                        <option value="female">
-                            Female
-                        </option>
+                        <div class="form-grid">
 
-                        <option value="other">
-                            Other
-                        </option>
+                            <div class="form-group form-group--full">
+                                <label for="clientNameInput">
+                                    Full Name
+                                </label>
 
-                        <option value="prefer_not_to_say">
-                            Prefer not to say
-                        </option>
-                    </select>
-                </div>
+                                <input
+                                    id="clientNameInput"
+                                    name="clientName"
+                                    class="form-control"
+                                    type="text"
+                                    placeholder="Enter client's full name"
+                                    autocomplete="off"
+                                >
+                            </div>
 
-                <div class="form-group">
-                    <label for="maritalStatus">
-                        Marital Status
-                    </label>
+                            <div class="form-group">
+                                <label for="dateOfBirth">
+                                    Date of Birth
+                                </label>
 
-                    <select
-                        id="maritalStatus"
-                        name="maritalStatus"
-                        class="form-control"
-                    >
-                        <option value="">
-                            Select status
-                        </option>
+                                <input
+                                    id="dateOfBirth"
+                                    name="dateOfBirth"
+                                    class="form-control"
+                                    type="date"
+                                >
+                            </div>
 
-                        <option value="single">
-                            Single
-                        </option>
+                            <div class="form-group">
+                                <label for="gender">
+                                    Gender
+                                </label>
 
-                        <option value="married">
-                            Married
-                        </option>
+                                <select
+                                    id="gender"
+                                    name="gender"
+                                    class="form-control"
+                                >
+                                    <option value="">
+                                        Select gender
+                                    </option>
 
-                        <option value="divorced">
-                            Divorced
-                        </option>
+                                    <option value="male">
+                                        Male
+                                    </option>
 
-                        <option value="widowed">
-                            Widowed
-                        </option>
-                    </select>
-                </div>
+                                    <option value="female">
+                                        Female
+                                    </option>
 
-                <div class="form-group">
-                    <label for="occupation">
-                        Occupation
-                    </label>
+                                    <option value="other">
+                                        Other
+                                    </option>
 
-                    <input
-                        id="occupation"
-                        name="occupation"
-                        class="form-control"
-                        type="text"
-                        placeholder="Enter occupation"
-                        autocomplete="off"
-                    >
-                </div>
+                                    <option value="prefer_not_to_say">
+                                        Prefer not to say
+                                    </option>
+                                </select>
+                            </div>
 
-                <div class="form-group">
-                    <label for="employmentStatus">
-                        Employment Status
-                    </label>
+                            <div class="form-group">
+                                <label for="maritalStatus">
+                                    Marital Status
+                                </label>
 
-                    <select
-                        id="employmentStatus"
-                        name="employmentStatus"
-                        class="form-control"
-                    >
-                        <option value="">
-                            Select employment status
-                        </option>
+                                <select
+                                    id="maritalStatus"
+                                    name="maritalStatus"
+                                    class="form-control"
+                                >
+                                    <option value="">
+                                        Select status
+                                    </option>
 
-                        <option value="employed">
-                            Employed
-                        </option>
+                                    <option value="single">
+                                        Single
+                                    </option>
 
-                        <option value="self_employed">
-                            Self-employed
-                        </option>
+                                    <option value="married">
+                                        Married
+                                    </option>
 
-                        <option value="unemployed">
-                            Unemployed
-                        </option>
+                                    <option value="divorced">
+                                        Divorced
+                                    </option>
 
-                        <option value="retired">
-                            Retired
-                        </option>
+                                    <option value="widowed">
+                                        Widowed
+                                    </option>
+                                </select>
+                            </div>
 
-                        <option value="student">
-                            Student
-                        </option>
-                    </select>
-                </div>
+                            <div class="form-group">
+                                <label for="occupation">
+                                    Occupation
+                                </label>
 
-                <div class="form-group">
-                    <label for="dependants">
-                        Number of Dependants
-                    </label>
+                                <input
+                                    id="occupation"
+                                    name="occupation"
+                                    class="form-control"
+                                    type="text"
+                                    placeholder="Enter occupation"
+                                    autocomplete="off"
+                                >
+                            </div>
 
-                    <input
-                        id="dependants"
-                        name="dependants"
-                        class="form-control"
-                        type="number"
-                        min="0"
-                        step="1"
-                        placeholder="0"
-                    >
-                </div>
+                            <div class="form-group">
+                                <label for="employmentStatus">
+                                    Employment Status
+                                </label>
 
-            </div>
+                                <select
+                                    id="employmentStatus"
+                                    name="employmentStatus"
+                                    class="form-control"
+                                >
+                                    <option value="">
+                                        Select employment status
+                                    </option>
 
-        </section>
+                                    <option value="employed">
+                                        Employed
+                                    </option>
 
-        <!-- Contact Information -->
-        <section class="profile-form-section">
+                                    <option value="self_employed">
+                                        Self-employed
+                                    </option>
 
-            <div class="profile-form-heading">
-                <div class="profile-form-icon">
-                    <i class="fa-solid fa-address-card"></i>
-                </div>
+                                    <option value="unemployed">
+                                        Unemployed
+                                    </option>
 
-                <div>
-                    <h3>Contact Information</h3>
+                                    <option value="retired">
+                                        Retired
+                                    </option>
 
-                    <p>
-                        These fields are optional and are not stored online.
-                    </p>
-                </div>
-            </div>
+                                    <option value="student">
+                                        Student
+                                    </option>
+                                </select>
+                            </div>
 
-            <div class="form-grid">
+                            <div class="form-group">
+                                <label for="dependants">
+                                    Number of Dependants
+                                </label>
 
-                <div class="form-group">
-                    <label for="phone">
-                        Phone Number
-                    </label>
+                                <input
+                                    id="dependants"
+                                    name="dependants"
+                                    class="form-control"
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    placeholder="0"
+                                >
+                            </div>
 
-                    <input
-                        id="phone"
-                        name="phone"
-                        class="form-control"
-                        type="tel"
-                        placeholder="Enter phone number"
-                        autocomplete="off"
-                    >
-                </div>
+                            <div class="form-group">
+                                <label for="phone">
+                                    Phone Number
+                                </label>
 
-                <div class="form-group">
-                    <label for="email">
-                        Email Address
-                    </label>
+                                <input
+                                    id="phone"
+                                    name="phone"
+                                    class="form-control"
+                                    type="tel"
+                                    placeholder="Enter phone number"
+                                    autocomplete="off"
+                                >
+                            </div>
 
-                    <input
-                        id="email"
-                        name="email"
-                        class="form-control"
-                        type="email"
-                        placeholder="Enter email address"
-                        autocomplete="off"
-                    >
-                </div>
+                            <div class="form-group">
+                                <label for="email">
+                                    Email Address
+                                </label>
 
-            </div>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    class="form-control"
+                                    type="email"
+                                    placeholder="Enter email address"
+                                    autocomplete="off"
+                                >
+                            </div>
 
-        </section>
+                        </div>
 
-    </form>
+                    </form>
 
-</section>
+                </section>
 
                 <!-- Priorities & Situation -->
-<section
-    class="workspace-section"
-    data-content="priorities"
->
+                <section
+                    class="workspace-section"
+                    data-content="priorities"
+                >
 
-    <div class="section-header">
-        <div>
-            <p class="section-label">
-                Financial Fact Find
-            </p>
+                    <div class="section-header">
+                        <div>
+                            <p class="section-label">
+                                Financial Fact Find
+                            </p>
 
-            <h2>Priorities & Situation</h2>
+                            <h2>Priorities & Situation</h2>
 
-            <p>
-                Record the client's goals, assets, liabilities and
-                current financial situation.
-            </p>
-        </div>
-    </div>
+                            <p>
+                                Record the client's goals, assets,
+                                liabilities and current situation.
+                            </p>
+                        </div>
+                    </div>
 
-    <div class="priorities-overview-grid">
+                    <div class="priorities-overview-grid">
 
-        <!-- Goals -->
-        <article class="planning-overview-card">
-            <div class="planning-overview-icon">
-                <i class="fa-solid fa-bullseye"></i>
-            </div>
+                        <article class="planning-overview-card">
 
-            <div>
-                <h3>Goals</h3>
+                            <div class="planning-overview-icon">
+                                <i class="fa-solid fa-bullseye"></i>
+                            </div>
 
-                <p>
-                    Record what the client wants to achieve and
-                    the priorities that matter most to them.
-                </p>
-            </div>
-        </article>
+                            <div>
+                                <h3>Goals</h3>
 
-        <!-- Assets -->
-        <article class="planning-overview-card">
-            <div class="planning-overview-icon">
-                <i class="fa-solid fa-wallet"></i>
-            </div>
+                                <p>
+                                    Record what the client wants to
+                                    achieve and which priorities matter.
+                                </p>
+                            </div>
 
-            <div>
-                <h3>Assets</h3>
+                        </article>
 
-                <p>
-                    Record the client's cash, savings, CPF,
-                    investments, properties and other assets.
-                </p>
-            </div>
-        </article>
+                        <article class="planning-overview-card">
 
-        <!-- Liabilities -->
-        <article class="planning-overview-card">
-            <div class="planning-overview-icon">
-                <i class="fa-solid fa-file-invoice-dollar"></i>
-            </div>
+                            <div class="planning-overview-icon">
+                                <i class="fa-solid fa-wallet"></i>
+                            </div>
 
-            <div>
-                <h3>Liabilities</h3>
+                            <div>
+                                <h3>Assets</h3>
 
-                <p>
-                    Record mortgages, personal loans, vehicle loans,
-                    credit cards and other outstanding liabilities.
-                </p>
-            </div>
-        </article>
+                                <p>
+                                    Record cash, savings, CPF,
+                                    investments, properties and other assets.
+                                </p>
+                            </div>
 
-    </div>
+                        </article>
 
-</section>
+                        <article class="planning-overview-card">
+
+                            <div class="planning-overview-icon">
+                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                            </div>
+
+                            <div>
+                                <h3>Liabilities</h3>
+
+                                <p>
+                                    Record mortgages, loans, credit cards
+                                    and other outstanding liabilities.
+                                </p>
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>
 
                 <!-- Cost of Wants -->
                 <section
@@ -508,13 +486,14 @@
                             <h2>Cost of Wants</h2>
 
                             <p>
-                                Calculate how much the client needs to achieve
-                                each financial goal.
+                                Calculate how much is needed to achieve
+                                the client's financial goals.
                             </p>
                         </div>
                     </div>
 
                     <div class="empty-section-card">
+
                         <div class="empty-section-icon">
                             <i class="fa-solid fa-coins"></i>
                         </div>
@@ -522,9 +501,10 @@
                         <h3>Cost of Wants</h3>
 
                         <p>
-                            Future-cost and funding calculations will be added
-                            here.
+                            Goal funding and future-cost calculations
+                            will be added here.
                         </p>
+
                     </div>
 
                 </section>
@@ -541,16 +521,17 @@
                                 Protection Analysis
                             </p>
 
-                            <h2>Protection</h2>
+                            <h2>Protection Analysis</h2>
 
                             <p>
-                                Calculate the client's required coverage and
-                                identify any protection gap.
+                                Calculate required coverage and identify
+                                any protection gap.
                             </p>
                         </div>
                     </div>
 
                     <div class="empty-section-card">
+
                         <div class="empty-section-icon">
                             <i class="fa-solid fa-shield-halved"></i>
                         </div>
@@ -558,9 +539,10 @@
                         <h3>Protection Analysis</h3>
 
                         <p>
-                            Required coverage, existing coverage and protection
-                            gaps will be shown here.
+                            Existing coverage, required coverage and
+                            protection gaps will appear here.
                         </p>
+
                     </div>
 
                 </section>
@@ -574,19 +556,20 @@
                     <div class="section-header">
                         <div>
                             <p class="section-label">
-                                Client Report
+                                Financial Plan
                             </p>
 
                             <h2>Summary Report</h2>
 
                             <p>
-                                Review the client's full financial plan and
-                                recommendations.
+                                Review all information and calculations
+                                before producing the final report.
                             </p>
                         </div>
                     </div>
 
                     <div class="empty-section-card">
+
                         <div class="empty-section-icon">
                             <i class="fa-solid fa-file-lines"></i>
                         </div>
@@ -594,9 +577,9 @@
                         <h3>Summary Report</h3>
 
                         <p>
-                            The completed planning summary and PDF report will
-                            be generated here.
+                            The completed planning summary will appear here.
                         </p>
+
                     </div>
 
                 </section>
@@ -608,9 +591,9 @@
     </main>
 
     <div id="loadingMessage" class="loading-message">
-    <i class="fa-solid fa-spinner fa-spin"></i>
-    Checking login...
-</div>
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Checking login...
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
