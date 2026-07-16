@@ -116,7 +116,7 @@
                         data-section="priorities"
                     >
                         <i class="fa-solid fa-bullseye"></i>
-                        <span>Priorities & Situation</span>
+                        <span>Priorities &amp; Situation</span>
                     </button>
 
                     <button
@@ -177,6 +177,7 @@
                     <form
                         id="profileForm"
                         class="planning-form"
+                        novalidate
                     >
 
                         <div class="profile-form-heading">
@@ -210,6 +211,7 @@
                                     type="text"
                                     placeholder="Enter client's full name"
                                     autocomplete="off"
+                                    required
                                 >
                             </div>
 
@@ -223,6 +225,7 @@
                                     name="dateOfBirth"
                                     class="form-control"
                                     type="date"
+                                    required
                                 >
                             </div>
 
@@ -389,6 +392,25 @@
 
                         </div>
 
+                        <p
+                            id="profileFormMessage"
+                            class="form-message"
+                            aria-live="polite"
+                        ></p>
+
+                        <div class="form-actions">
+
+                            <button
+                                id="profileNextButton"
+                                class="next-button"
+                                type="submit"
+                            >
+                                Next
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+
+                        </div>
+
                     </form>
 
                 </section>
@@ -405,7 +427,7 @@
                                 Financial Fact Find
                             </p>
 
-                            <h2>Priorities & Situation</h2>
+                            <h2>Priorities &amp; Situation</h2>
 
                             <p>
                                 Record the client's goals, assets,

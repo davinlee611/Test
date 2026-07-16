@@ -55,6 +55,12 @@ const sidebarItems =
 const workspaceSections =
     document.querySelectorAll(".workspace-section");
 
+const profileFormMessage =
+    document.getElementById("profileFormMessage");
+
+const profileNextButton =
+    document.getElementById("profileNextButton");
+
 /* ========================================
    IN-MEMORY PLAN DATA
 ======================================== */
@@ -131,6 +137,11 @@ if (profileForm) {
         "change",
         handleProfileInput
     );
+
+    profileForm.addEventListener(
+        "submit",
+        handleProfileSubmit
+    );
 }
 
 function handleProfileInput() {
@@ -164,6 +175,49 @@ function handleProfileInput() {
         emailInput.value.trim();
 
     updateClientHeading();
+}
+
+function handleProfileSubmit(event) {
+    event.preventDefault();
+
+    clearProfileMessage();
+
+    handleProfileInput();
+
+    const emailValue =
+        clientPlan.profile.email;
+
+    if (
+        emailValue &&
+        !isValidEmail(emailValue)
+    ) {
+        showProfileMessage(
+            "Please enter a valid email address."
+        );
+
+        emailInput.focus();
+        return;
+    }
+
+    if (!clientPlan.profile.fullName) {
+        showProfileMessage(
+            "Please enter the client's full name."
+        );
+
+        clientNameInput.focus();
+        return;
+    }
+
+    if (!clientPlan.profile.dateOfBirth) {
+        showProfileMessage(
+            "Please enter the client's date of birth."
+        );
+
+        dateOfBirthInput.focus();
+        return;
+    }
+
+    openSection("priorities");
 }
 
 function updateClientHeading() {
@@ -292,4 +346,16 @@ async function handleLogout() {
 
 function redirectToLogin() {
     window.location.replace("index.html");
+}
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function showProfileMessage(message) {
+    profileFormMessage.textContent = message;
+}
+
+function clearProfileMessage() {
+    profileFormMessage.textContent = "";
 }

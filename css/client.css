@@ -282,6 +282,33 @@ body {
 }
 
 /* ========================================
+   FORM MESSAGE AND ACTIONS
+======================================== */
+
+.form-message {
+    min-height: 22px;
+    margin-top: 18px;
+    color: #dc2626;
+    font-size: 13px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+}
+
+.next-button {
+    width: auto;
+    min-width: 130px;
+    padding: 0 20px;
+}
+
+.next-button i {
+    margin-left: 8px;
+}
+
+/* ========================================
    PRIORITIES
 ======================================== */
 
@@ -483,4 +510,14 @@ body {
     .form-group--full {
         grid-column: auto;
     }
+
+    .form-actions {
+    flex-direction: column;
 }
+
+.next-button {
+    width: 100%;
+}
+
+}
+
