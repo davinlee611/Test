@@ -1,6 +1,7 @@
 "use strict";
 
 const dashboardContent = document.getElementById("dashboardContent");
+const loadingMessage = document.getElementById("loadingMessage");
 const userName = document.getElementById("userName");
 const logoutButton = document.getElementById("logoutButton");
 
@@ -8,26 +9,18 @@ protectDashboard();
 
 async function protectDashboard() {
     try {
-        /*
-        getUser() validates the current access token
-        with the Supabase Auth server.
-        */
         const {
             data: { user },
             error: userError
         } = await supabaseClient.auth.getUser();
 
+        console.log("Authenticated user:", user);
+
         if (userError || !user) {
-            redirectToLogin();
+            window.location.replace("index.html");
             return;
         }
 
-        /*
-        Retrieve the logged-in user's profile.
-
-        Your RLS policy should only allow the user
-        to retrieve their own profile row.
-        */
         const { data: profile, error: profileError } =
             await supabaseClient
                 .from("profiles")
@@ -35,47 +28,37 @@ async function protectDashboard() {
                 .eq("id", user.id)
                 .single();
 
+        console.log("Profile result:", profile);
+        console.log("Profile error:", profileError);
+
         if (profileError) {
-            console.error("Profile error:", profileError);
-            await supabaseClient.auth.signOut();
-            redirectToLogin();
+            loadingMessage.textContent =
+                "Your account is logged in, but the profile could not be loaded.";
+
+            console.error(profileError);
             return;
         }
 
-        /*
-        Prevent inactive accounts from entering.
-        */
         if (!profile.is_active) {
             await supabaseClient.auth.signOut();
-            redirectToLogin();
+            window.location.replace("index.html");
             return;
         }
 
         userName.textContent = profile.full_name;
+
+        loadingMessage.hidden = true;
         dashboardContent.hidden = false;
 
     } catch (error) {
-        console.error("Authentication check failed:", error);
-        redirectToLogin();
+        console.error("Dashboard error:", error);
+
+        loadingMessage.textContent =
+            "Something went wrong while loading the dashboard.";
     }
 }
 
 logoutButton.addEventListener("click", async function () {
-    logoutButton.disabled = true;
-    logoutButton.textContent = "Logging out...";
-
-    const { error } = await supabaseClient.auth.signOut();
-
-    if (error) {
-        console.error("Logout error:", error);
-        logoutButton.disabled = false;
-        logoutButton.textContent = "Logout";
-        return;
-    }
-
-    redirectToLogin();
-});
-
-function redirectToLogin() {
+    await supabaseClient.auth.signOut();
     window.location.replace("index.html");
-}
+});
