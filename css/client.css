@@ -294,8 +294,9 @@ body {
 
 .form-actions {
     display: flex;
-    justify-content: flex-end;
-    margin-top: 18px;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
 }
 
 .next-button {
@@ -513,7 +514,8 @@ body {
 
     .form-actions {
     flex-direction: column;
-}
+    gap: 12px;
+    }
 
 .next-button {
     width: 100%;

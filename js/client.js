@@ -61,6 +61,12 @@ const profileFormMessage =
 const profileNextButton =
     document.getElementById("profileNextButton");
 
+const prioritiesBackButton =
+    document.getElementById("prioritiesBackButton");
+
+const prioritiesNextButton =
+    document.getElementById("prioritiesNextButton");
+
 /* ========================================
    IN-MEMORY PLAN DATA
 ======================================== */
@@ -312,6 +318,28 @@ function openSection(sectionName) {
             section.dataset.content === sectionName
         );
     });
+}
+
+/* ========================================
+   PRIORITIES NAVIGATION
+======================================== */
+
+if (prioritiesBackButton) {
+    prioritiesBackButton.addEventListener(
+        "click",
+        function () {
+            openSection("profile");
+        }
+    );
+}
+
+if (prioritiesNextButton) {
+    prioritiesNextButton.addEventListener(
+        "click",
+        function () {
+            openSection("cost");
+        }
+    );
 }
 
 /* ========================================
