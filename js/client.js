@@ -16,33 +16,59 @@ const logoutButton =
 const clearPlanButton =
     document.getElementById("clearPlanButton");
 
-const clientName =
+const clientHeading =
     document.getElementById("clientName");
 
 const profileForm =
     document.getElementById("profileForm");
 
-const clientInitials =
-    document.getElementById("clientInitials");
+const clientNameInput =
+    document.getElementById("clientNameInput");
 
-const birthYear =
-    document.getElementById("birthYear");
+const dateOfBirthInput =
+    document.getElementById("dateOfBirth");
 
-const birthdayPassed =
-    document.getElementById("birthdayPassed");
-
-const gender =
+const genderInput =
     document.getElementById("gender");
 
-const maritalStatus =
+const maritalStatusInput =
     document.getElementById("maritalStatus");
 
-const displayedInitials =
-    document.getElementById("displayedInitials");
+const occupationInput =
+    document.getElementById("occupation");
 
-const calculatedAge =
-    document.getElementById("calculatedAge");
+const employmentStatusInput =
+    document.getElementById("employmentStatus");
 
+const smokingStatusInput =
+    document.getElementById("smokingStatus");
+
+const dependantsInput =
+    document.getElementById("dependants");
+
+const phoneInput =
+    document.getElementById("phone");
+
+const emailInput =
+    document.getElementById("email");
+
+/* Profile preview */
+const profilePreviewName =
+    document.getElementById("profilePreviewName");
+
+const profilePreviewAge =
+    document.getElementById("profilePreviewAge");
+
+const profilePreviewOccupation =
+    document.getElementById("profilePreviewOccupation");
+
+const profilePreviewMaritalStatus =
+    document.getElementById("profilePreviewMaritalStatus");
+
+const profilePreviewDependants =
+    document.getElementById("profilePreviewDependants");
+
+/* Sidebar */
 const sidebarItems =
     document.querySelectorAll(".sidebar-item");
 
@@ -55,11 +81,16 @@ const workspaceSections =
 
 const clientPlan = {
     profile: {
-        initials: "",
-        birthYear: null,
-        birthdayPassed: false,
+        fullName: "",
+        dateOfBirth: "",
         gender: "",
-        maritalStatus: ""
+        maritalStatus: "",
+        occupation: "",
+        employmentStatus: "",
+        smokingStatus: "",
+        dependants: 0,
+        phone: "",
+        email: ""
     },
 
     priorities: {
@@ -110,71 +141,118 @@ async function initializePage() {
 }
 
 /* ========================================
-   PROFILE INPUT
+   PROFILE FORM
 ======================================== */
 
-profileForm.addEventListener("input", handleProfileInput);
-profileForm.addEventListener("change", handleProfileInput);
+profileForm.addEventListener(
+    "input",
+    handleProfileInput
+);
+
+profileForm.addEventListener(
+    "change",
+    handleProfileInput
+);
 
 function handleProfileInput() {
-    clientPlan.profile.initials =
-        clientInitials.value.trim().toUpperCase();
+    clientPlan.profile.fullName =
+        clientNameInput.value.trim();
 
-    clientPlan.profile.birthYear =
-        birthYear.value
-            ? Number(birthYear.value)
-            : null;
-
-    clientPlan.profile.birthdayPassed =
-        birthdayPassed.checked;
+    clientPlan.profile.dateOfBirth =
+        dateOfBirthInput.value;
 
     clientPlan.profile.gender =
-        gender.value;
+        genderInput.value;
 
     clientPlan.profile.maritalStatus =
-        maritalStatus.value;
+        maritalStatusInput.value;
+
+    clientPlan.profile.occupation =
+        occupationInput.value.trim();
+
+    clientPlan.profile.employmentStatus =
+        employmentStatusInput.value;
+
+    clientPlan.profile.smokingStatus =
+        smokingStatusInput.value;
+
+    clientPlan.profile.dependants =
+        dependantsInput.value
+            ? Number(dependantsInput.value)
+            : 0;
+
+    clientPlan.profile.phone =
+        phoneInput.value.trim();
+
+    clientPlan.profile.email =
+        emailInput.value.trim();
 
     updateProfilePreview();
 }
 
 function updateProfilePreview() {
-    const initials =
-        clientPlan.profile.initials || "New Client";
+    const profile = clientPlan.profile;
 
-    displayedInitials.textContent = initials;
+    const displayedName =
+        profile.fullName || "New Client";
 
-    clientName.textContent =
-        clientPlan.profile.initials
-            ? `${clientPlan.profile.initials} Financial Plan`
+    profilePreviewName.textContent =
+        displayedName;
+
+    clientHeading.textContent =
+        profile.fullName
+            ? `${profile.fullName}'s Financial Plan`
             : "New Financial Plan";
 
-    calculatedAge.textContent =
-        calculateAge(
-            clientPlan.profile.birthYear,
-            clientPlan.profile.birthdayPassed
-        );
+    profilePreviewAge.textContent =
+        calculateAge(profile.dateOfBirth);
+
+    profilePreviewOccupation.textContent =
+        profile.occupation || "Not provided";
+
+    profilePreviewMaritalStatus.textContent =
+        formatTextValue(profile.maritalStatus);
+
+    profilePreviewDependants.textContent =
+        String(profile.dependants);
 }
 
 /* ========================================
    AGE CALCULATION
 ======================================== */
 
-function calculateAge(year, hasBirthdayPassed) {
-    if (!year) {
+function calculateAge(dateOfBirth) {
+    if (!dateOfBirth) {
         return "Not available";
     }
 
-    const currentYear =
-        new Date().getFullYear();
+    const birthDate =
+        new Date(`${dateOfBirth}T00:00:00`);
 
-    if (year > currentYear || year < 1900) {
-        return "Invalid birth year";
+    if (Number.isNaN(birthDate.getTime())) {
+        return "Invalid date";
     }
 
-    const age =
-        currentYear -
-        year -
-        (hasBirthdayPassed ? 0 : 1);
+    const today = new Date();
+
+    let age =
+        today.getFullYear() -
+        birthDate.getFullYear();
+
+    const birthdayHasNotPassed =
+        today.getMonth() < birthDate.getMonth() ||
+        (
+            today.getMonth() === birthDate.getMonth() &&
+            today.getDate() < birthDate.getDate()
+        );
+
+    if (birthdayHasNotPassed) {
+        age -= 1;
+    }
+
+    if (age < 0) {
+        return "Invalid date";
+    }
 
     return `${age} years old`;
 }
@@ -185,29 +263,25 @@ function calculateAge(year, hasBirthdayPassed) {
 
 sidebarItems.forEach(function (item) {
     item.addEventListener("click", function () {
-        const selectedSection =
-            item.dataset.section;
-
-        sidebarItems.forEach(function (sidebarItem) {
-            sidebarItem.classList.remove("active");
-        });
-
-        workspaceSections.forEach(function (section) {
-            section.classList.remove("active");
-        });
-
-        item.classList.add("active");
-
-        const targetSection =
-            document.querySelector(
-                `[data-content="${selectedSection}"]`
-            );
-
-        if (targetSection) {
-            targetSection.classList.add("active");
-        }
+        openSection(item.dataset.section);
     });
 });
+
+function openSection(sectionName) {
+    sidebarItems.forEach(function (item) {
+        item.classList.toggle(
+            "active",
+            item.dataset.section === sectionName
+        );
+    });
+
+    workspaceSections.forEach(function (section) {
+        section.classList.toggle(
+            "active",
+            section.dataset.content === sectionName
+        );
+    });
+}
 
 /* ========================================
    CLEAR PLAN
@@ -229,11 +303,16 @@ function clearFinancialPlan() {
 
     profileForm.reset();
 
-    clientPlan.profile.initials = "";
-    clientPlan.profile.birthYear = null;
-    clientPlan.profile.birthdayPassed = false;
+    clientPlan.profile.fullName = "";
+    clientPlan.profile.dateOfBirth = "";
     clientPlan.profile.gender = "";
     clientPlan.profile.maritalStatus = "";
+    clientPlan.profile.occupation = "";
+    clientPlan.profile.employmentStatus = "";
+    clientPlan.profile.smokingStatus = "";
+    clientPlan.profile.dependants = 0;
+    clientPlan.profile.phone = "";
+    clientPlan.profile.email = "";
 
     clientPlan.priorities.goals = [];
     clientPlan.priorities.assets = [];
@@ -244,7 +323,6 @@ function clearFinancialPlan() {
     clientPlan.summary = {};
 
     updateProfilePreview();
-
     openSection("profile");
 }
 
@@ -288,20 +366,16 @@ async function handleLogout() {
    HELPERS
 ======================================== */
 
-function openSection(sectionName) {
-    sidebarItems.forEach(function (item) {
-        item.classList.toggle(
-            "active",
-            item.dataset.section === sectionName
-        );
-    });
+function formatTextValue(value) {
+    if (!value) {
+        return "Not provided";
+    }
 
-    workspaceSections.forEach(function (section) {
-        section.classList.toggle(
-            "active",
-            section.dataset.content === sectionName
-        );
-    });
+    return value
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, function (character) {
+            return character.toUpperCase();
+        });
 }
 
 function redirectToLogin() {

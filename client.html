@@ -154,223 +154,336 @@
             <section class="workspace-content">
 
                 <!-- Client Profile -->
-                <section
-                    id="profileSection"
-                    class="workspace-section active"
-                    data-content="profile"
-                >
+<section
+    class="workspace-section active"
+    data-content="profile"
+>
+    <div class="section-header">
+        <div>
+            <p class="section-label">
+                Basic Information
+            </p>
 
-                    <div class="section-header">
-                        <div>
-                            <p class="section-label">
-                                Basic Information
-                            </p>
+            <h2>Client Profile</h2>
 
-                            <h2>Client Profile</h2>
-
-                            <p>
-                                Review the client's personal and contact details.
-                            </p>
-                        </div>
-
-                        <button
-                            id="editProfileButton"
-                            class="secondary-button"
-                            type="button"
-                            >           
-                            <i class="fa-solid fa-pen"></i>
-                                Edit Profile
-                        </button>
-                    </div>
-
-                    <div class="details-grid">
-
-                        <article class="detail-card">
-                            <span class="detail-label">
-                                Full Name
-                            </span>
-
-                            <strong id="detailFullName">
-                                —
-                            </strong>
-                        </article>
-
-                        <article class="detail-card">
-                            <span class="detail-label">
-                                Date of Birth
-                            </span>
-
-                            <strong id="detailDateOfBirth">
-                                —
-                            </strong>
-                        </article>
-
-                        <article class="detail-card">
-                            <span class="detail-label">
-                                Gender
-                            </span>
-
-                            <strong id="detailGender">
-                                —
-                            </strong>
-                        </article>
-
-                        <article class="detail-card">
-                            <span class="detail-label">
-                                Marital Status
-                            </span>
-
-                            <strong id="detailMaritalStatus">
-                                —
-                            </strong>
-                        </article>
-
-                        <article class="detail-card">
-                            <span class="detail-label">
-                                Phone Number
-                            </span>
-
-                            <strong id="detailPhone">
-                                —
-                            </strong>
-                        </article>
-
-                        <article class="detail-card">
-                            <span class="detail-label">
-                                Email Address
-                            </span>
-
-                            <strong id="detailEmail">
-                                —
-                            </strong>
-                        </article>
-
-                        <article class="detail-card">
-                            <span class="detail-label">
-                                Occupation
-                            </span>
-
-                            <strong id="detailOccupation">
-                                —
-                            </strong>
-                        </article>
-
-                        <article class="detail-card">
-                            <span class="detail-label">
-                                Client Created
-                            </span>
-
-                            <strong id="detailCreatedAt">
-                                —
-                            </strong>
-                        </article>
-
-                    </div>
-
-                    <form id="profileEditForm" class="profile-edit-form" hidden>
-
-    <div class="edit-form-grid">
-
-        <div class="form-group edit-form-group--full">
-            <label for="editFullName">Full Name</label>
-            <input
-                id="editFullName"
-                class="form-control"
-                type="text"
-                required
-            >
+            <p>
+                Enter the client's personal information for this
+                financial planning session.
+            </p>
         </div>
-
-        <div class="form-group">
-            <label for="editDateOfBirth">Date of Birth</label>
-            <input
-                id="editDateOfBirth"
-                class="form-control"
-                type="date"
-            >
-        </div>
-
-        <div class="form-group">
-            <label for="editGender">Gender</label>
-            <select id="editGender" class="form-control">
-                <option value="">Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-                <option value="prefer_not_to_say">Prefer not to say</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="editMaritalStatus">Marital Status</label>
-            <select id="editMaritalStatus" class="form-control">
-                <option value="">Select status</option>
-                <option value="single">Single</option>
-                <option value="married">Married</option>
-                <option value="divorced">Divorced</option>
-                <option value="widowed">Widowed</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="editOccupation">Occupation</label>
-            <input
-                id="editOccupation"
-                class="form-control"
-                type="text"
-            >
-        </div>
-
-        <div class="form-group">
-            <label for="editPhone">Phone Number</label>
-            <input
-                id="editPhone"
-                class="form-control"
-                type="tel"
-            >
-        </div>
-
-        <div class="form-group">
-            <label for="editEmail">Email Address</label>
-            <input
-                id="editEmail"
-                class="form-control"
-                type="email"
-            >
-        </div>
-
     </div>
 
-    <p
-        id="profileFormMessage"
-        class="profile-form-message"
-        aria-live="polite"
-    ></p>
+    <form id="profileForm" class="planning-form">
 
-    <div class="profile-form-actions">
+        <!-- Personal Information -->
+        <section class="profile-form-section">
 
-        <button
-            id="cancelProfileButton"
-            class="secondary-button"
-            type="button"
-        >
-            Cancel
-        </button>
+            <div class="profile-form-heading">
+                <div class="profile-form-icon">
+                    <i class="fa-solid fa-user"></i>
+                </div>
 
-        <button
-            id="saveProfileButton"
-            class="save-profile-button"
-            type="submit"
-        >
-            <i class="fa-solid fa-floppy-disk"></i>
-            Save Changes
-        </button>
+                <div>
+                    <h3>Personal Information</h3>
 
-    </div>
+                    <p>
+                        Enter the client's basic personal details.
+                    </p>
+                </div>
+            </div>
 
-</form>
+            <div class="form-grid">
 
-                </section>
+                <div class="form-group form-group--full">
+                    <label for="clientNameInput">
+                        Full Name
+                    </label>
+
+                    <input
+                        id="clientNameInput"
+                        name="clientName"
+                        class="form-control"
+                        type="text"
+                        placeholder="Enter client's full name"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="dateOfBirth">
+                        Date of Birth
+                    </label>
+
+                    <input
+                        id="dateOfBirth"
+                        name="dateOfBirth"
+                        class="form-control"
+                        type="date"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">
+                        Gender
+                    </label>
+
+                    <select
+                        id="gender"
+                        name="gender"
+                        class="form-control"
+                    >
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="male">
+                            Male
+                        </option>
+
+                        <option value="female">
+                            Female
+                        </option>
+
+                        <option value="other">
+                            Other
+                        </option>
+
+                        <option value="prefer_not_to_say">
+                            Prefer not to say
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="maritalStatus">
+                        Marital Status
+                    </label>
+
+                    <select
+                        id="maritalStatus"
+                        name="maritalStatus"
+                        class="form-control"
+                    >
+                        <option value="">
+                            Select status
+                        </option>
+
+                        <option value="single">
+                            Single
+                        </option>
+
+                        <option value="married">
+                            Married
+                        </option>
+
+                        <option value="divorced">
+                            Divorced
+                        </option>
+
+                        <option value="widowed">
+                            Widowed
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="occupation">
+                        Occupation
+                    </label>
+
+                    <input
+                        id="occupation"
+                        name="occupation"
+                        class="form-control"
+                        type="text"
+                        placeholder="Enter occupation"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="employmentStatus">
+                        Employment Status
+                    </label>
+
+                    <select
+                        id="employmentStatus"
+                        name="employmentStatus"
+                        class="form-control"
+                    >
+                        <option value="">
+                            Select employment status
+                        </option>
+
+                        <option value="employed">
+                            Employed
+                        </option>
+
+                        <option value="self_employed">
+                            Self-employed
+                        </option>
+
+                        <option value="unemployed">
+                            Unemployed
+                        </option>
+
+                        <option value="retired">
+                            Retired
+                        </option>
+
+                        <option value="student">
+                            Student
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="smokingStatus">
+                        Smoking Status
+                    </label>
+
+                    <select
+                        id="smokingStatus"
+                        name="smokingStatus"
+                        class="form-control"
+                    >
+                        <option value="">
+                            Select smoking status
+                        </option>
+
+                        <option value="non_smoker">
+                            Non-smoker
+                        </option>
+
+                        <option value="smoker">
+                            Smoker
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dependants">
+                        Number of Dependants
+                    </label>
+
+                    <input
+                        id="dependants"
+                        name="dependants"
+                        class="form-control"
+                        type="number"
+                        min="0"
+                        step="1"
+                        placeholder="0"
+                    >
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Contact Information -->
+        <section class="profile-form-section">
+
+            <div class="profile-form-heading">
+                <div class="profile-form-icon">
+                    <i class="fa-solid fa-address-card"></i>
+                </div>
+
+                <div>
+                    <h3>Contact Information</h3>
+
+                    <p>
+                        These fields are optional and are not stored online.
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="phone">
+                        Phone Number
+                    </label>
+
+                    <input
+                        id="phone"
+                        name="phone"
+                        class="form-control"
+                        type="tel"
+                        placeholder="Enter phone number"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        id="email"
+                        name="email"
+                        class="form-control"
+                        type="email"
+                        placeholder="Enter email address"
+                        autocomplete="off"
+                    >
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Profile Summary -->
+        <section class="profile-preview">
+
+            <div class="profile-preview-heading">
+                <p class="section-label">
+                    Profile Summary
+                </p>
+
+                <h3 id="profilePreviewName">
+                    New Client
+                </h3>
+            </div>
+
+            <div class="profile-preview-grid">
+
+                <div>
+                    <span>Age</span>
+                    <strong id="profilePreviewAge">
+                        Not available
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Occupation</span>
+                    <strong id="profilePreviewOccupation">
+                        Not provided
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Marital Status</span>
+                    <strong id="profilePreviewMaritalStatus">
+                        Not provided
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Dependants</span>
+                    <strong id="profilePreviewDependants">
+                        0
+                    </strong>
+                </div>
+
+            </div>
+
+        </section>
+
+    </form>
+
+</section>
 
                 <!-- Priorities & Situation -->
 <section

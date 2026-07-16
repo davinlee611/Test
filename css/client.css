@@ -425,6 +425,11 @@ body {
 ======================================== */
 
 @media (max-width: 900px) {
+
+    .profile-preview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
     body {
         padding: 18px;
     }
@@ -475,6 +480,16 @@ body {
 ======================================== */
 
 @media (max-width: 600px) {
+
+    .profile-form-section,
+.profile-preview {
+    padding: 20px;
+}
+
+.profile-preview-grid {
+    grid-template-columns: 1fr;
+}
+
     body {
         padding: 12px;
     }
@@ -512,4 +527,95 @@ body {
     .form-group--full {
         grid-column: auto;
     }
+}
+
+/* ========================================
+   CLIENT PROFILE FORM
+======================================== */
+
+.profile-form-section {
+    padding: 26px;
+    margin-bottom: 22px;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+}
+
+.profile-form-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.profile-form-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    color: var(--primary-color);
+    background: rgba(91, 78, 245, 0.1);
+    border-radius: 12px;
+}
+
+.profile-form-heading h3 {
+    color: var(--text-primary);
+    font-size: 18px;
+}
+
+.profile-form-heading p {
+    margin-top: 4px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+/* ========================================
+   PROFILE PREVIEW
+======================================== */
+
+.profile-preview {
+    padding: 26px;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+}
+
+.profile-preview-heading {
+    margin-bottom: 20px;
+}
+
+.profile-preview-heading h3 {
+    color: var(--text-primary);
+    font-size: 22px;
+}
+
+.profile-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.profile-preview-grid div {
+    padding: 17px;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.profile-preview-grid span {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.profile-preview-grid strong {
+    color: var(--text-primary);
+    font-size: 15px;
+    overflow-wrap: anywhere;
 }
