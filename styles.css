@@ -1,16 +1,100 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Inter',sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
 }
 
-body{
-    background:#f5f7fb;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
+body {
+    background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-/* Continue with the rest of the CSS... */
+/* Main Container */
+.container {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+}
+
+/* Card */
+.login-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+}
+
+.login-card h1 {
+    text-align: center;
+    font-size: 36px;
+    color: #24324B;
+    margin-bottom: 10px;
+}
+
+.login-card p {
+    text-align: center;
+    color: #8A94A6;
+    font-size: 14px;
+    margin-bottom: 35px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.input-box {
+    position: relative;
+}
+
+.input-box i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #B0B6C3;
+}
+
+.input-box input {
+    width: 100%;
+    height: 46px;
+    border: 1px solid #E3E7EF;
+    border-radius: 8px;
+    padding-left: 42px;
+    font-size: 14px;
+    outline: none;
+    transition: .25s;
+}
+
+.input-box input:focus {
+    border-color: #5B4EF5;
+    box-shadow: 0 0 0 3px rgba(91,78,245,.15);
+}
+
+button {
+    width: 100%;
+    height: 48px;
+    border: none;
+    border-radius: 8px;
+    background: #5B4EF5;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+button:hover {
+    background: #4A3DE8;
+    transform: translateY(-2px);
+}
