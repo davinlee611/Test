@@ -1,0 +1,28 @@
+/* Main Container */
+.container {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+}
+
+/* Card */
+.login-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+}
+
+.login-card h1 {
+    text-align: center;
+    font-size: 36px;
+    color: #24324B;
+    margin-bottom: 10px;
+}
+
+.login-card p {
+    text-align: center;
+    color: #8A94A6;
+    font-size: 14px;
+    margin-bottom: 35px;
+}
