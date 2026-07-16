@@ -52,7 +52,7 @@ const phoneInput =
 const emailInput =
     document.getElementById("email");
 
-/* Profile preview */
+/* Profile summary */
 const profilePreviewName =
     document.getElementById("profilePreviewName");
 
@@ -100,9 +100,7 @@ const clientPlan = {
     },
 
     costOfWants: {},
-
     protection: {},
-
     summary: {}
 };
 
@@ -130,10 +128,7 @@ async function initializePage() {
         updateProfilePreview();
 
     } catch (error) {
-        console.error(
-            "Financial plan page error:",
-            error
-        );
+        console.error("Planner page error:", error);
 
         loadingMessage.textContent =
             "Something went wrong while opening the planner.";
@@ -144,15 +139,10 @@ async function initializePage() {
    PROFILE FORM
 ======================================== */
 
-profileForm.addEventListener(
-    "input",
-    handleProfileInput
-);
-
-profileForm.addEventListener(
-    "change",
-    handleProfileInput
-);
+if (profileForm) {
+    profileForm.addEventListener("input", handleProfileInput);
+    profileForm.addEventListener("change", handleProfileInput);
+}
 
 function handleProfileInput() {
     clientPlan.profile.fullName =
@@ -196,8 +186,7 @@ function updateProfilePreview() {
     const displayedName =
         profile.fullName || "New Client";
 
-    profilePreviewName.textContent =
-        displayedName;
+    profilePreviewName.textContent = displayedName;
 
     clientHeading.textContent =
         profile.fullName
@@ -287,10 +276,12 @@ function openSection(sectionName) {
    CLEAR PLAN
 ======================================== */
 
-clearPlanButton.addEventListener(
-    "click",
-    clearFinancialPlan
-);
+if (clearPlanButton) {
+    clearPlanButton.addEventListener(
+        "click",
+        clearFinancialPlan
+    );
+}
 
 function clearFinancialPlan() {
     const shouldClear = window.confirm(
@@ -330,10 +321,12 @@ function clearFinancialPlan() {
    LOGOUT
 ======================================== */
 
-logoutButton.addEventListener(
-    "click",
-    handleLogout
-);
+if (logoutButton) {
+    logoutButton.addEventListener(
+        "click",
+        handleLogout
+    );
+}
 
 async function handleLogout() {
     logoutButton.disabled = true;
