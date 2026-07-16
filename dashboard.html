@@ -7,24 +7,27 @@
     <title>Dashboard</title>
 
     <link rel="stylesheet" href="css/global.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet">
 </head>
 <body>
 
     <main id="dashboardContent" hidden>
-    <h1>Dashboard</h1>
+        <h1>Dashboard</h1>
 
-    <p>
-        Welcome,
-        <span id="userName">User</span>
-    </p>
+        <p>
+            Welcome,
+            <span id="userName">User</span>
+        </p>
 
-    <button id="logoutButton" type="button">
-        Logout
-    </button>
-</main>
+        <button id="logoutButton" type="button">
+            Logout
+        </button>
+    </main>
+
+    <p id="loadingMessage">Checking login...</p>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/dashboard.js"></script>
 
 </body>
 </html>
