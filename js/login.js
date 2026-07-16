@@ -16,7 +16,7 @@ const loginError = document.getElementById("loginError");
    CHECK IF USER IS ALREADY LOGGED IN
 ======================================== */
 
-//redirectLoggedInUser();
+redirectLoggedInUser();
 
 /*
 ========================================
@@ -108,11 +108,21 @@ function clearError() {
 }
 
 async function redirectLoggedInUser() {
-    const {
-        data: { user }
-    } = await supabaseClient.auth.getUser();
+    try {
+        const {
+            data: { user },
+            error
+        } = await supabaseClient.auth.getUser();
 
-    if (user) {
-        window.location.replace("dashboard.html");
+        if (error) {
+            console.error("Session check error:", error);
+            return;
+        }
+
+        if (user) {
+            window.location.replace("dashboard.html");
+        }
+    } catch (error) {
+        console.error("Unable to check session:", error);
     }
 }
