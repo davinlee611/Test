@@ -457,7 +457,9 @@ if (liquidAssetsForm) {
 function handleLiquidAssetsSubmit(event) {
     event.preventDefault();
 
-    const balance = Number(liquidAssetsBalance.value);
+    const balance = Math.round(
+    Number(liquidAssetsBalance.value)
+);
 
     if (
         !Number.isFinite(balance) ||
