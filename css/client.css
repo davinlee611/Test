@@ -310,6 +310,121 @@ body {
 }
 
 /* ========================================
+   WEALTH PREFERENCES
+======================================== */
+
+.wealth-preferences-section {
+    margin-bottom: 30px;
+    padding: 26px;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+}
+
+.subsection-heading {
+    margin-bottom: 22px;
+}
+
+.subsection-heading h3 {
+    color: var(--text-primary);
+    font-size: 19px;
+}
+
+.subsection-heading p {
+    max-width: 680px;
+    margin-top: 6px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.wealth-preference-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.wealth-preference-card {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+    height: auto;
+    min-height: 155px;
+    padding: 22px 52px 22px 22px;
+    color: inherit;
+    text-align: left;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.wealth-preference-card:hover {
+    background: #fdfdff;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.wealth-preference-card.selected {
+    background: rgba(91, 78, 245, 0.07);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(91, 78, 245, 0.1);
+}
+
+.wealth-preference-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    color: var(--primary-color);
+    background: rgba(91, 78, 245, 0.1);
+    border-radius: 13px;
+    font-size: 19px;
+}
+
+.wealth-preference-card h4 {
+    margin-bottom: 7px;
+    color: var(--text-primary);
+    font-size: 17px;
+}
+
+.wealth-preference-card p {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.selection-indicator {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    color: transparent;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    font-size: 11px;
+}
+
+.wealth-preference-card.selected .selection-indicator {
+    color: #ffffff;
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* ========================================
    PRIORITIES
 ======================================== */
 
@@ -464,6 +579,10 @@ body {
     .priorities-overview-grid {
         grid-template-columns: 1fr;
     }
+
+    .wealth-preference-grid {
+    grid-template-columns: 1fr;
+}
 }
 
 /* ========================================
@@ -519,6 +638,14 @@ body {
 
 .next-button {
     width: 100%;
+}
+
+.wealth-preferences-section {
+    padding: 20px;
+}
+
+.wealth-preference-card {
+    padding: 20px 48px 20px 18px;
 }
 
 }

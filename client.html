@@ -419,104 +419,215 @@
                 </section>
 
                 <!-- Priorities & Situation -->
-                <section
-                    class="workspace-section"
-                    data-content="priorities"
-                >
+                <!-- Priorities & Situation -->
+<section
+    class="workspace-section"
+    data-content="priorities"
+>
+    <div class="section-header">
+        <div>
+            <p class="section-label">
+                Financial Fact Find
+            </p>
 
-                    <div class="section-header">
-                        <div>
-                            <p class="section-label">
-                                Financial Fact Find
-                            </p>
+            <h2>Priorities &amp; Situation</h2>
 
-                            <h2>Priorities &amp; Situation</h2>
+            <p>
+                Identify the client's wealth preferences, goals,
+                assets and liabilities.
+            </p>
+        </div>
+    </div>
 
-                            <p>
-                                Record the client's goals, assets,
-                                liabilities and current situation.
-                            </p>
-                        </div>
-                    </div>
+    <!-- Wealth Preferences -->
+    <section class="wealth-preferences-section">
 
-                    <div class="priorities-overview-grid">
+        <div class="subsection-heading">
+            <div>
+                <h3>Wealth Preferences</h3>
 
-                        <article class="planning-overview-card">
+                <p>
+                    Select the areas that are most important to the client.
+                    More than one option can be selected.
+                </p>
+            </div>
+        </div>
 
-                            <div class="planning-overview-icon">
-                                <i class="fa-solid fa-bullseye"></i>
-                            </div>
+        <div class="wealth-preference-grid">
 
-                            <div>
-                                <h3>Goals</h3>
+            <button
+                class="wealth-preference-card"
+                type="button"
+                data-wealth-type="accumulation"
+                aria-pressed="false"
+            >
+                <div class="wealth-preference-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
 
-                                <p>
-                                    Record what the client wants to
-                                    achieve and which priorities matter.
-                                </p>
-                            </div>
+                <div>
+                    <h4>Accumulation</h4>
 
-                        </article>
+                    <p>
+                        Growing wealth through savings, investments and
+                        long-term financial planning.
+                    </p>
+                </div>
 
-                        <article class="planning-overview-card">
+                <span class="selection-indicator">
+                    <i class="fa-solid fa-check"></i>
+                </span>
+            </button>
 
-                            <div class="planning-overview-icon">
-                                <i class="fa-solid fa-wallet"></i>
-                            </div>
+            <button
+                class="wealth-preference-card"
+                type="button"
+                data-wealth-type="distribution"
+                aria-pressed="false"
+            >
+                <div class="wealth-preference-icon">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                </div>
 
-                            <div>
-                                <h3>Assets</h3>
+                <div>
+                    <h4>Distribution</h4>
 
-                                <p>
-                                    Record cash, savings, CPF,
-                                    investments, properties and other assets.
-                                </p>
-                            </div>
+                    <p>
+                        Creating income and using wealth to support the
+                        client's lifestyle and financial goals.
+                    </p>
+                </div>
 
-                        </article>
+                <span class="selection-indicator">
+                    <i class="fa-solid fa-check"></i>
+                </span>
+            </button>
 
-                        <article class="planning-overview-card">
+            <button
+                class="wealth-preference-card"
+                type="button"
+                data-wealth-type="protection"
+                aria-pressed="false"
+            >
+                <div class="wealth-preference-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
 
-                            <div class="planning-overview-icon">
-                                <i class="fa-solid fa-file-invoice-dollar"></i>
-                            </div>
+                <div>
+                    <h4>Protection</h4>
 
-                            <div>
-                                <h3>Liabilities</h3>
+                    <p>
+                        Protecting income, family responsibilities and
+                        financial commitments from unexpected events.
+                    </p>
+                </div>
 
-                                <p>
-                                    Record mortgages, loans, credit cards
-                                    and other outstanding liabilities.
-                                </p>
-                            </div>
+                <span class="selection-indicator">
+                    <i class="fa-solid fa-check"></i>
+                </span>
+            </button>
 
-                        </article>
+            <button
+                class="wealth-preference-card"
+                type="button"
+                data-wealth-type="preservation"
+                aria-pressed="false"
+            >
+                <div class="wealth-preference-icon">
+                    <i class="fa-solid fa-vault"></i>
+                </div>
 
-                    </div>
+                <div>
+                    <h4>Preservation</h4>
 
-                    <div class="form-actions">
+                    <p>
+                        Preserving wealth for future generations, legacy
+                        planning and long-term financial security.
+                    </p>
+                </div>
 
-    <button
-        id="prioritiesBackButton"
-        class="header-button header-button-secondary"
-        type="button"
-    >
-        <i class="fa-solid fa-arrow-left"></i>
-        Back
-    </button>
+                <span class="selection-indicator">
+                    <i class="fa-solid fa-check"></i>
+                </span>
+            </button>
 
-    <button
-        id="prioritiesNextButton"
-        class="next-button"
-        type="button"
-    >
-        Next
-        <i class="fa-solid fa-arrow-right"></i>
-    </button>
+        </div>
 
-</div>
+    </section>
 
-                </section>
+    <!-- Planning Categories -->
+    <div class="priorities-overview-grid">
+
+        <article class="planning-overview-card">
+            <div class="planning-overview-icon">
+                <i class="fa-solid fa-bullseye"></i>
+            </div>
+
+            <div>
+                <h3>Goals</h3>
+
+                <p>
+                    Record what the client wants to achieve and which
+                    priorities matter most.
+                </p>
+            </div>
+        </article>
+
+        <article class="planning-overview-card">
+            <div class="planning-overview-icon">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+
+            <div>
+                <h3>Assets</h3>
+
+                <p>
+                    Record cash, savings, CPF, investments, properties
+                    and other assets.
+                </p>
+            </div>
+        </article>
+
+        <article class="planning-overview-card">
+            <div class="planning-overview-icon">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+
+            <div>
+                <h3>Liabilities</h3>
+
+                <p>
+                    Record mortgages, loans, credit cards and other
+                    outstanding liabilities.
+                </p>
+            </div>
+        </article>
+
+    </div>
+
+    <div class="form-actions">
+
+        <button
+            id="prioritiesBackButton"
+            class="header-button header-button-secondary"
+            type="button"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+            Back
+        </button>
+
+        <button
+            id="prioritiesNextButton"
+            class="next-button"
+            type="button"
+        >
+            Next
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+    </div>
+
+</section>
 
                 <!-- Cost of Wants -->
                 <section

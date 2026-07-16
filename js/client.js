@@ -67,6 +67,9 @@ const prioritiesBackButton =
 const prioritiesNextButton =
     document.getElementById("prioritiesNextButton");
 
+    const wealthPreferenceCards =
+    document.querySelectorAll(".wealth-preference-card");
+
 /* ========================================
    IN-MEMORY PLAN DATA
 ======================================== */
@@ -85,6 +88,7 @@ const clientPlan = {
     },
 
     priorities: {
+        wealthPreferences: [],
         goals: [],
         assets: [],
         liabilities: []
@@ -295,6 +299,44 @@ function updateClientHeading() {
 }
 
 /* ========================================
+   WEALTH PREFERENCES
+======================================== */
+
+wealthPreferenceCards.forEach(function (card) {
+    card.addEventListener("click", function () {
+        const wealthType =
+            card.dataset.wealthType;
+
+        const isSelected =
+            card.classList.toggle("selected");
+
+        card.setAttribute(
+            "aria-pressed",
+            String(isSelected)
+        );
+
+        if (isSelected) {
+            if (
+                !clientPlan.priorities.wealthPreferences.includes(
+                    wealthType
+                )
+            ) {
+                clientPlan.priorities.wealthPreferences.push(
+                    wealthType
+                );
+            }
+        } else {
+            clientPlan.priorities.wealthPreferences =
+                clientPlan.priorities.wealthPreferences.filter(
+                    function (item) {
+                        return item !== wealthType;
+                    }
+                );
+        }
+    });
+});
+
+/* ========================================
    SIDEBAR NAVIGATION
 ======================================== */
 
@@ -373,6 +415,13 @@ function clearFinancialPlan() {
     clientPlan.profile.dependants = 0;
     clientPlan.profile.phone = "";
     clientPlan.profile.email = "";
+
+    clientPlan.priorities.wealthPreferences = [];
+
+wealthPreferenceCards.forEach(function (card) {
+    card.classList.remove("selected");
+    card.setAttribute("aria-pressed", "false");
+});
 
     clientPlan.priorities.goals = [];
     clientPlan.priorities.assets = [];
