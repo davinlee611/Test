@@ -528,7 +528,10 @@ body {
    HIDDEN ELEMENTS
 ======================================== */
 
+.client-workspace[hidden],
 .loading-message[hidden],
-.client-workspace[hidden] {
+.profile-edit-form[hidden],
+.details-grid[hidden],
+.secondary-button[hidden] {
     display: none !important;
 }
