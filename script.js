@@ -1,16 +1,11 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Inter',sans-serif;
-}
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-body{
-    background:#f5f7fb;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-}
+    const userid = document.getElementById("userid").value;
+    const password = document.getElementById("password").value;
 
-/* Continue with the rest of the CSS... */
+    console.log("User:", userid);
+    console.log("Password:", password);
+
+    // Later we'll connect this to Supabase
+});
