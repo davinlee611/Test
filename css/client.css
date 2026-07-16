@@ -676,6 +676,100 @@ body {
 }
 
 /* ========================================
+   MODAL
+======================================== */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.55);
+}
+
+.modal-overlay[hidden] {
+    display: none !important;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 520px;
+    padding: 28px;
+    background: var(--card-background);
+    border-radius: 18px;
+    box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.modal-header h2 {
+    color: var(--text-primary);
+    font-size: 24px;
+}
+
+.modal-header p:not(.section-label) {
+    margin-top: 6px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.modal-close-button {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.modal-close-button:hover {
+    color: var(--text-primary);
+    background: #f1f5f9;
+    transform: none;
+}
+
+.currency-input {
+    position: relative;
+}
+
+.currency-input span {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    z-index: 1;
+    color: var(--text-secondary);
+    transform: translateY(-50%);
+}
+
+.currency-input .form-control {
+    padding-left: 34px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.modal-actions .header-button,
+.modal-actions .next-button {
+    width: auto;
+    min-width: 110px;
+    padding: 0 18px;
+}
+
+/* ========================================
    TABLET
 ======================================== */
 
@@ -821,6 +915,19 @@ body {
 
 .asset-category-card {
     padding: 18px 42px 18px 18px;
+}
+
+.modal-card {
+    padding: 22px;
+}
+
+.modal-actions {
+    flex-direction: column-reverse;
+}
+
+.modal-actions .header-button,
+.modal-actions .next-button {
+    width: 100%;
 }
 
 }

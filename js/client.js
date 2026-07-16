@@ -73,6 +73,24 @@ const wealthPreferenceCards =
 const assetCategoryCards =
     document.querySelectorAll(".asset-category-card");
 
+const liquidAssetsModal =
+    document.getElementById("liquidAssetsModal");
+
+const liquidAssetsForm =
+    document.getElementById("liquidAssetsForm");
+
+const liquidAssetsBalance =
+    document.getElementById("liquidAssetsBalance");
+
+const liquidAssetsFormMessage =
+    document.getElementById("liquidAssetsFormMessage");
+
+const closeLiquidAssetsModalButton =
+    document.getElementById("closeLiquidAssetsModalButton");
+
+const cancelLiquidAssetsButton =
+    document.getElementById("cancelLiquidAssetsButton");
+
 /* ========================================
    IN-MEMORY PLAN DATA
 ======================================== */
@@ -96,19 +114,27 @@ const clientPlan = {
     goals: [],
 
     assets: {
-        cash: [],
-        investments: [],
-        income: [],
-
-        cpf: {
-            oa: 0,
-            sa: 0,
-            ma: 0,
-            ra: 0
-        },
-
-        properties: []
+    liquidAssets: {
+        balance: 0
     },
+
+    investments: {
+        value: 0
+    },
+
+    income: {
+        monthly: 0
+    },
+
+    cpf: {
+        oa: 0,
+        sa: 0,
+        ma: 0,
+        ra: 0
+    },
+
+    properties: []
+},
 
     liabilities: []
 },
@@ -372,15 +398,88 @@ assetCategoryCards.forEach(function (card) {
     card.addEventListener("click", function () {
         const assetType = card.dataset.assetType;
 
-        assetCategoryCards.forEach(function (assetCard) {
-            assetCard.classList.remove("active");
-        });
-
-        card.classList.add("active");
-
-        console.log("Selected asset category:", assetType);
+        if (assetType === "liquidAssets") {
+            openLiquidAssetsModal();
+        }
     });
 });
+
+/* ========================================
+   LIQUID ASSETS
+======================================== */
+
+function openLiquidAssetsModal() {
+    liquidAssetsBalance.value =
+        clientPlan.priorities.assets.liquidAssets.balance || "";
+
+    liquidAssetsFormMessage.textContent = "";
+    liquidAssetsModal.hidden = false;
+
+    setTimeout(function () {
+        liquidAssetsBalance.focus();
+    }, 0);
+}
+
+function closeLiquidAssetsModal() {
+    liquidAssetsModal.hidden = true;
+    liquidAssetsFormMessage.textContent = "";
+}
+
+if (closeLiquidAssetsModalButton) {
+    closeLiquidAssetsModalButton.addEventListener(
+        "click",
+        closeLiquidAssetsModal
+    );
+}
+
+if (cancelLiquidAssetsButton) {
+    cancelLiquidAssetsButton.addEventListener(
+        "click",
+        closeLiquidAssetsModal
+    );
+}
+
+if (liquidAssetsModal) {
+    liquidAssetsModal.addEventListener("click", function (event) {
+        if (event.target === liquidAssetsModal) {
+            closeLiquidAssetsModal();
+        }
+    });
+}
+
+if (liquidAssetsForm) {
+    liquidAssetsForm.addEventListener(
+        "submit",
+        handleLiquidAssetsSubmit
+    );
+}
+
+function handleLiquidAssetsSubmit(event) {
+    event.preventDefault();
+
+    const balance = Number(liquidAssetsBalance.value);
+
+    if (
+        !Number.isFinite(balance) ||
+        balance < 0
+    ) {
+        liquidAssetsFormMessage.textContent =
+            "Please enter a valid amount.";
+
+        liquidAssetsBalance.focus();
+        return;
+    }
+
+    clientPlan.priorities.assets.liquidAssets.balance =
+        balance;
+
+    console.log(
+        "Liquid assets saved:",
+        clientPlan.priorities.assets.liquidAssets
+    );
+
+    closeLiquidAssetsModal();
+}
 
 /* ========================================
    SIDEBAR NAVIGATION
@@ -470,7 +569,7 @@ function clearFinancialPlan() {
     });
 
     clientPlan.priorities.goals = [];
-    clientPlan.priorities.assets = [];
+    clientPlan.priorities.assets.liquidAssets.balance = 0;
     clientPlan.priorities.liabilities = [];
 
     clientPlan.costOfWants = {};
