@@ -60,3 +60,15 @@ body {
         font-size: 30px;
     }
 }
+
+/* ========================================
+   LOGIN MESSAGE
+======================================== */
+
+.login-error {
+    min-height: 20px;
+    margin-bottom: 12px;
+    color: #dc2626;
+    font-size: 13px;
+    text-align: center;
+}
