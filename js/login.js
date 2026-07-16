@@ -16,7 +16,7 @@ const loginError = document.getElementById("loginError");
    CHECK IF USER IS ALREADY LOGGED IN
 ======================================== */
 
-redirectLoggedInUser();
+//redirectLoggedInUser();
 
 /*
 ========================================
