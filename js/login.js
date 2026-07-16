@@ -2,29 +2,6 @@
 
 /*
 ========================================
-SUPABASE CONFIGURATION
-========================================
-Replace these two values with the details
-from your Supabase project.
-*/
-
-const SUPABASE_URL = "https://aciuxuvdasrhfrcauoxt.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_MQDB7tXXNjz0QfNdYy3Xbg_pcGohXlW";
-
-/*
-Create the Supabase browser client.
-
-The first "supabase" refers to the global library
-loaded from the CDN in index.html.
-*/
-
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-);
-
-/*
-========================================
 PAGE ELEMENTS
 ========================================
 */
@@ -34,6 +11,12 @@ const userIdInput = document.getElementById("userid");
 const passwordInput = document.getElementById("password");
 const loginButton = document.getElementById("loginButton");
 const loginError = document.getElementById("loginError");
+
+/* ========================================
+   CHECK IF USER IS ALREADY LOGGED IN
+======================================== */
+
+redirectLoggedInUser();
 
 /*
 ========================================
@@ -80,7 +63,7 @@ async function handleLogin(event) {
         }
 
         // Login succeeded.
-        window.location.href = "dashboard.html";
+        window.location.replace("dashboard.html");
 
     } catch (error) {
         console.error("Login error:", error);
@@ -122,4 +105,14 @@ function showError(message) {
 
 function clearError() {
     loginError.textContent = "";
+}
+
+async function redirectLoggedInUser() {
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if (user) {
+        window.location.replace("dashboard.html");
+    }
 }
