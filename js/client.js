@@ -67,7 +67,7 @@ const prioritiesBackButton =
 const prioritiesNextButton =
     document.getElementById("prioritiesNextButton");
 
-    const wealthPreferenceCards =
+const wealthPreferenceCards =
     document.querySelectorAll(".wealth-preference-card");
 
 /* ========================================
@@ -88,7 +88,7 @@ const clientPlan = {
     },
 
     priorities: {
-        wealthPreferences: [],
+        wealthTypes: [],
         goals: [],
         assets: [],
         liabilities: []
@@ -299,7 +299,7 @@ function updateClientHeading() {
 }
 
 /* ========================================
-   WEALTH PREFERENCES
+   FOUR TYPES OF WEALTH
 ======================================== */
 
 wealthPreferenceCards.forEach(function (card) {
@@ -317,22 +317,27 @@ wealthPreferenceCards.forEach(function (card) {
 
         if (isSelected) {
             if (
-                !clientPlan.priorities.wealthPreferences.includes(
+                !clientPlan.priorities.wealthTypes.includes(
                     wealthType
                 )
             ) {
-                clientPlan.priorities.wealthPreferences.push(
+                clientPlan.priorities.wealthTypes.push(
                     wealthType
                 );
             }
         } else {
-            clientPlan.priorities.wealthPreferences =
-                clientPlan.priorities.wealthPreferences.filter(
-                    function (item) {
-                        return item !== wealthType;
+            clientPlan.priorities.wealthTypes =
+                clientPlan.priorities.wealthTypes.filter(
+                    function (selectedType) {
+                        return selectedType !== wealthType;
                     }
                 );
         }
+
+        console.log(
+            "Selected wealth types:",
+            clientPlan.priorities.wealthTypes
+        );
     });
 });
 
@@ -416,7 +421,7 @@ function clearFinancialPlan() {
     clientPlan.profile.phone = "";
     clientPlan.profile.email = "";
 
-    clientPlan.priorities.wealthPreferences = [];
+    clientPlan.priorities.wealthTypes = [];
 
 wealthPreferenceCards.forEach(function (card) {
     card.classList.remove("selected");
