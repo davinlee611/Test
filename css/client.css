@@ -429,3 +429,12 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ========================================
+   HIDDEN ELEMENTS
+======================================== */
+
+.loading-message[hidden],
+.client-workspace[hidden] {
+    display: none !important;
+}
