@@ -217,6 +217,42 @@ function handleProfileSubmit(event) {
         return;
     }
 
+    if (!clientPlan.profile.gender) {
+    showProfileMessage(
+        "Please select the client's gender."
+    );
+
+    genderInput.focus();
+    return;
+}
+
+if (!clientPlan.profile.maritalStatus) {
+    showProfileMessage(
+        "Please select the client's marital status."
+    );
+
+    maritalStatusInput.focus();
+    return;
+}
+
+if (!clientPlan.profile.occupation) {
+    showProfileMessage(
+        "Please enter the client's occupation."
+    );
+
+    occupationInput.focus();
+    return;
+}
+
+if (!clientPlan.profile.employmentStatus) {
+    showProfileMessage(
+        "Please select the client's employment status."
+    );
+
+    employmentStatusInput.focus();
+    return;
+}
+
     openSection("priorities");
 }
 
