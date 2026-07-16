@@ -91,20 +91,16 @@ async function handleAddClient(event) {
 
         if (error) {
             console.error("Client insert error:", error);
+
             showMessage(
                 "The client could not be saved. Please try again.",
                 "error"
             );
+
             return;
         }
 
-        showMessage("Client saved successfully.", "success");
-
-        addClientForm.reset();
-
-        setTimeout(function () {
-            window.location.href = `client.html?id=${data.id}`;
-        }, 800);
+        window.location.replace(`client.html?id=${data.id}`);
 
     } catch (error) {
         console.error("Unexpected client error:", error);

@@ -3,14 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Planning</title>
+
+    <title>Client Workspace</title>
+
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/client.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
 </head>
 <body>
 
-    <h1>Client Planning Page</h1>
-    <p>The client was created successfully.</p>
+    <main id="clientWorkspace" class="client-workspace" hidden>
 
-    <a href="dashboard.html">Back to Dashboard</a>
+        <header class="client-header">
+            <div>
+                <a href="clients.html" class="back-link">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Clients
+                </a>
+
+                <h1 id="clientName">Loading client...</h1>
+                <p>Financial Planning Workspace</p>
+            </div>
+
+            <a href="dashboard.html" class="dashboard-link">
+                Dashboard
+            </a>
+        </header>
+
+        <div class="workspace-layout">
+
+            <aside class="client-sidebar">
+                <button class="sidebar-item active" type="button">
+                    <i class="fa-solid fa-user"></i>
+                    Basic Details
+                </button>
+
+                <button class="sidebar-item" type="button">
+                    <i class="fa-solid fa-bullseye"></i>
+                    Priorities & Situation
+                </button>
+
+                <button class="sidebar-item" type="button">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    Assets & Liabilities
+                </button>
+
+                <button class="sidebar-item" type="button">
+                    <i class="fa-solid fa-coins"></i>
+                    Cost of Wants
+                </button>
+
+                <button class="sidebar-item" type="button">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Protection
+                </button>
+
+                <button class="sidebar-item" type="button">
+                    <i class="fa-solid fa-file-lines"></i>
+                    Summary
+                </button>
+            </aside>
+
+            <section class="workspace-content">
+                <h2>Basic Details</h2>
+
+                <div class="details-card">
+                    <p>
+                        <strong>Full Name:</strong>
+                        <span id="detailFullName">—</span>
+                    </p>
+
+                    <p>
+                        <strong>Date of Birth:</strong>
+                        <span id="detailDateOfBirth">—</span>
+                    </p>
+
+                    <p>
+                        <strong>Phone:</strong>
+                        <span id="detailPhone">—</span>
+                    </p>
+
+                    <p>
+                        <strong>Email:</strong>
+                        <span id="detailEmail">—</span>
+                    </p>
+
+                    <p>
+                        <strong>Occupation:</strong>
+                        <span id="detailOccupation">—</span>
+                    </p>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <p id="loadingMessage" class="loading-message">
+        Loading client...
+    </p>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/client.js"></script>
 
 </body>
 </html>
