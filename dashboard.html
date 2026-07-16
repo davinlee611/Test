@@ -7,23 +7,99 @@
     <title>Dashboard</title>
 
     <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
 </head>
 <body>
 
-    <main id="dashboardContent" hidden>
-        <h1>Dashboard</h1>
+    <main id="dashboardContent" class="dashboard" hidden>
 
-        <p>
-            Welcome,
-            <span id="userName">User</span>
-        </p>
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div>
+                <p class="dashboard-label">Financial Planning Platform</p>
 
-        <button id="logoutButton" type="button">
-            Logout
-        </button>
+                <h1>
+                    Welcome, <span id="userName">User</span>
+                </h1>
+
+                <p class="dashboard-subtitle">
+                    Select an option below to begin.
+                </p>
+            </div>
+
+            <button id="logoutButton" class="logout-button" type="button">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </button>
+        </header>
+
+        <!-- Main Actions -->
+        <section class="dashboard-actions" aria-labelledby="actionHeading">
+
+            <div class="section-heading">
+                <h2 id="actionHeading">Client Management</h2>
+                <p>Add a new client or continue working with an existing client.</p>
+            </div>
+
+            <div class="action-grid">
+
+                <!-- Add Client -->
+                <a href="add-client.html" class="action-card">
+                    <div class="action-icon">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+
+                    <div class="action-card-content">
+                        <h3>Add Client</h3>
+
+                        <p>
+                            Create a new client profile and begin their financial
+                            planning journey.
+                        </p>
+
+                        <span class="action-link">
+                            Add a new client
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+
+                <!-- View Clients -->
+                <a href="clients.html" class="action-card">
+                    <div class="action-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <div class="action-card-content">
+                        <h3>View Existing Clients</h3>
+
+                        <p>
+                            Search, select and continue working on an existing
+                            client's financial plan.
+                        </p>
+
+                        <span class="action-link">
+                            View client list
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+
+            </div>
+
+        </section>
+
     </main>
 
-    <p id="loadingMessage">Checking login...</p>
+    <p id="loadingMessage" class="loading-message">
+        Checking login...
+    </p>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
