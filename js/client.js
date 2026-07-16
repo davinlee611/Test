@@ -40,9 +40,6 @@ const occupationInput =
 const employmentStatusInput =
     document.getElementById("employmentStatus");
 
-const smokingStatusInput =
-    document.getElementById("smokingStatus");
-
 const dependantsInput =
     document.getElementById("dependants");
 
@@ -51,22 +48,6 @@ const phoneInput =
 
 const emailInput =
     document.getElementById("email");
-
-/* Profile summary */
-const profilePreviewName =
-    document.getElementById("profilePreviewName");
-
-const profilePreviewAge =
-    document.getElementById("profilePreviewAge");
-
-const profilePreviewOccupation =
-    document.getElementById("profilePreviewOccupation");
-
-const profilePreviewMaritalStatus =
-    document.getElementById("profilePreviewMaritalStatus");
-
-const profilePreviewDependants =
-    document.getElementById("profilePreviewDependants");
 
 /* Sidebar */
 const sidebarItems =
@@ -87,7 +68,6 @@ const clientPlan = {
         maritalStatus: "",
         occupation: "",
         employmentStatus: "",
-        smokingStatus: "",
         dependants: 0,
         phone: "",
         email: ""
@@ -163,9 +143,6 @@ function handleProfileInput() {
     clientPlan.profile.employmentStatus =
         employmentStatusInput.value;
 
-    clientPlan.profile.smokingStatus =
-        smokingStatusInput.value;
-
     clientPlan.profile.dependants =
         dependantsInput.value
             ? Number(dependantsInput.value)
@@ -183,27 +160,10 @@ function handleProfileInput() {
 function updateProfilePreview() {
     const profile = clientPlan.profile;
 
-    const displayedName =
-        profile.fullName || "New Client";
-
-    profilePreviewName.textContent = displayedName;
-
     clientHeading.textContent =
         profile.fullName
             ? `${profile.fullName}'s Financial Plan`
             : "New Financial Plan";
-
-    profilePreviewAge.textContent =
-        calculateAge(profile.dateOfBirth);
-
-    profilePreviewOccupation.textContent =
-        profile.occupation || "Not provided";
-
-    profilePreviewMaritalStatus.textContent =
-        formatTextValue(profile.maritalStatus);
-
-    profilePreviewDependants.textContent =
-        String(profile.dependants);
 }
 
 /* ========================================
@@ -300,7 +260,6 @@ function clearFinancialPlan() {
     clientPlan.profile.maritalStatus = "";
     clientPlan.profile.occupation = "";
     clientPlan.profile.employmentStatus = "";
-    clientPlan.profile.smokingStatus = "";
     clientPlan.profile.dependants = 0;
     clientPlan.profile.phone = "";
     clientPlan.profile.email = "";
