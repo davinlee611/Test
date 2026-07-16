@@ -107,6 +107,9 @@ async function initializePage() {
             return;
         }
 
+        // Prevent future birth dates
+        dateOfBirthInput.max = getTodayDate();
+
         loadingMessage.hidden = true;
         clientWorkspace.hidden = false;
 
@@ -216,6 +219,23 @@ function handleProfileSubmit(event) {
         dateOfBirthInput.focus();
         return;
     }
+
+    const selectedDate =
+    new Date(clientPlan.profile.dateOfBirth);
+
+const today = new Date();
+
+selectedDate.setHours(0, 0, 0, 0);
+today.setHours(0, 0, 0, 0);
+
+if (selectedDate > today) {
+    showProfileMessage(
+        "Date of birth cannot be in the future."
+    );
+
+    dateOfBirthInput.focus();
+    return;
+}
 
     if (!clientPlan.profile.gender) {
     showProfileMessage(
@@ -394,4 +414,10 @@ function showProfileMessage(message) {
 
 function clearProfileMessage() {
     profileFormMessage.textContent = "";
+}
+
+function getTodayDate() {
+    const today = new Date();
+
+    return today.toISOString().split("T")[0];
 }
