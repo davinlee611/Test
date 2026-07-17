@@ -188,7 +188,7 @@ if (profileForm) {
 function handleProfileInput() {
 
     clearProfileMessage();
-    
+
     clientPlan.profile.fullName =
         clientNameInput.value.trim();
 
@@ -838,20 +838,33 @@ function getClientAge() {
 }
 
 function updateCpfFields() {
-    if (!cpfSaGroup || !cpfRaGroup) {
+    if (
+        !cpfSaGroup ||
+        !cpfRaGroup ||
+        !cpfSaInput ||
+        !cpfRaInput
+    ) {
         return;
     }
 
     const age = getClientAge();
+    const cpf = clientPlan.priorities.assets.cpf;
 
     if (age === null || age < 55) {
         cpfSaGroup.hidden = false;
         cpfRaGroup.hidden = true;
-        return;
+
+        cpfRaInput.value = "";
+        cpf.ra = 0;
+    } else {
+        cpfSaGroup.hidden = true;
+        cpfRaGroup.hidden = false;
+
+        cpfSaInput.value = "";
+        cpf.sa = 0;
     }
 
-    cpfSaGroup.hidden = true;
-    cpfRaGroup.hidden = false;
+    updateAssetsAndIncomeTotals();
 }
 
 function redirectToLogin() {
