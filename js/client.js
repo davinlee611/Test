@@ -618,7 +618,30 @@ function updateCpfFields() {
 
 sidebarItems.forEach(function (item) {
     item.addEventListener("click", function () {
-        openSection(item.dataset.section);
+
+        const section =
+            item.dataset.section;
+
+        // Client Profile is always accessible
+        if (section === "profile") {
+            openSection(section);
+            return;
+        }
+
+        // Other sections require a completed profile
+        if (!isProfileComplete()) {
+
+            showProfileMessage(
+                "Complete the Client Profile before continuing."
+            );
+
+            openSection("profile");
+
+            return;
+        }
+
+        openSection(section);
+
     });
 });
 
@@ -783,6 +806,19 @@ async function handleLogout() {
 /* ========================================
    HELPERS
 ======================================== */
+
+function isProfileComplete() {
+    const profile = clientPlan.profile;
+
+    return Boolean(
+        profile.fullName &&
+        profile.dateOfBirth &&
+        profile.gender &&
+        profile.maritalStatus &&
+        profile.occupation &&
+        profile.employmentStatus
+    );
+}
 
 function redirectToLogin() {
     window.location.replace("index.html");
