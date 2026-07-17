@@ -66,6 +66,9 @@ const wealthPreferenceCards = document.querySelectorAll(
   ".wealth-preference-card",
 );
 
+const CPF_ORDINARY_WAGE_CEILING = 8000;
+const CPF_ANNUAL_WAGE_CEILING = 102000;
+
 /* ========================================
    IN-MEMORY PLAN DATA
 ======================================== */
