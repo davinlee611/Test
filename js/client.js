@@ -5,6 +5,17 @@ import {
     resetClientPlan,
 } from "./state/client-state.js";
 
+import {
+    createUniqueId,
+    formatCurrency,
+    formatDeduction,
+    formatPercentage,
+    getInputWholeNumber,
+    getTodayDate,
+    getWholeNumber,
+    isValidEmail,
+} from "./utils/client-utils.js";
+
 const supabaseClient =
     window.supabaseClient;
 
@@ -1280,39 +1291,6 @@ function getCpfNotApplicableMessage(
     );
 }
 
-
-/* ========================================
-   INCOME FORMATTERS
-======================================== */
-
-function formatDeduction(value) {
-    const amount = Math.round(
-        Number(value) || 0,
-    );
-
-    if (amount === 0) {
-        return "$0";
-    }
-
-    return "-" + formatCurrency(amount);
-}
-
-
-function formatPercentage(decimalRate) {
-    const percentage =
-        decimalRate * 100;
-
-    return (
-        Number(percentage).toLocaleString(
-            "en-SG",
-            {
-                maximumFractionDigits: 1,
-            },
-        ) +
-        "%"
-    );
-}
-
 /* ========================================
    SIDEBAR NAVIGATION
 ======================================== */
@@ -1565,10 +1543,6 @@ function redirectToLogin() {
   window.location.replace("index.html");
 }
 
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
 function showProfileMessage(message) {
   if (!profileValidationModal || !profileValidationMessage) {
     window.alert(message);
@@ -1589,45 +1563,4 @@ function clearProfileMessage() {
   if (profileFormMessage) {
     profileFormMessage.textContent = "";
   }
-}
-
-function getTodayDate() {
-  const today = new Date();
-
-  return today.toISOString().split("T")[0];
-}
-
-function getWholeNumber(value) {
-  const number = Number(value);
-
-  if (!Number.isFinite(number) || number < 0) {
-    return 0;
-  }
-
-  return Math.trunc(number);
-}
-
-function getInputWholeNumber(inputElement) {
-  if (!inputElement) {
-    return 0;
-  }
-
-  return getWholeNumber(inputElement.value);
-}
-
-function formatCurrency(value) {
-  return (
-    "$" +
-    getWholeNumber(value).toLocaleString("en-SG", {
-      maximumFractionDigits: 0,
-    })
-  );
-}
-
-function createUniqueId() {
-  if (window.crypto && typeof window.crypto.randomUUID === "function") {
-    return window.crypto.randomUUID();
-  }
-
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
