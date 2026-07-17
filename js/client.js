@@ -73,29 +73,6 @@ const wealthPreferenceCards =
 const assetCategoryCards =
     document.querySelectorAll(".asset-category-card");
 
-const liquidAssetsModal =
-    document.getElementById("liquidAssetsModal");
-
-const liquidAssetsForm =
-    document.getElementById("liquidAssetsForm");
-
-const liquidAssetsBalance =
-    document.getElementById("liquidAssetsBalance");
-
-const liquidAssetsFormMessage =
-    document.getElementById("liquidAssetsFormMessage");
-
-const closeLiquidAssetsModalButton =
-    document.getElementById("closeLiquidAssetsModalButton");
-
-const cancelLiquidAssetsButton =
-    document.getElementById("cancelLiquidAssetsButton");
-
-const liquidAssetsSummary =
-    document.getElementById(
-        "liquidAssetsSummary"
-    );
-
 /* ========================================
    IN-MEMORY PLAN DATA
 ======================================== */
@@ -120,15 +97,17 @@ const clientPlan = {
 
     assets: {
     liquidAssets: {
-        balance: 0
-    },
-
-    investments: {
-        value: 0
+        cashInBank: 0,
+        fixedDeposits: 0,
+        tBills: 0,
+        investments: 0,
+        others: 0
     },
 
     income: {
-        monthly: 0
+        monthlyEmployment: 0,
+        annualBonus: 0,
+        otherMonthly: 0
     },
 
     cpf: {
@@ -396,123 +375,183 @@ wealthPreferenceCards.forEach(function (card) {
 });
 
 /* ========================================
-   ASSET CATEGORY SELECTION
+   ASSETS AND INCOME ELEMENTS
 ======================================== */
 
-assetCategoryCards.forEach(function (card) {
-    card.addEventListener("click", function () {
-        const assetType = card.dataset.assetType;
+const cashInBankInput =
+    document.getElementById("cashInBank");
 
-        if (assetType === "liquidAssets") {
-            openLiquidAssetsModal();
-        }
-    });
-});
+const fixedDepositsInput =
+    document.getElementById("fixedDeposits");
+
+const tBillsInput =
+    document.getElementById("tBills");
+
+const investmentsInput =
+    document.getElementById("investments");
+
+const otherLiquidAssetsInput =
+    document.getElementById("otherLiquidAssets");
+
+const totalLiquidAssetsElement =
+    document.getElementById("totalLiquidAssets");
+
+const monthlyEmploymentIncomeInput =
+    document.getElementById("monthlyEmploymentIncome");
+
+const annualBonusInput =
+    document.getElementById("annualBonus");
+
+const otherMonthlyIncomeInput =
+    document.getElementById("otherMonthlyIncome");
+
+const totalMonthlyIncomeElement =
+    document.getElementById("totalMonthlyIncome");
+
+const cpfOaInput =
+    document.getElementById("cpfOa");
+
+const cpfSaInput =
+    document.getElementById("cpfSa");
+
+const cpfMaInput =
+    document.getElementById("cpfMa");
+
+const cpfRaInput =
+    document.getElementById("cpfRa");
+
+const totalCpfElement =
+    document.getElementById("totalCpf");
+
+const addPropertyButton =
+    document.getElementById("addPropertyButton");
+
+const propertyList =
+    document.getElementById("propertyList");
+
+const emptyPropertyMessage =
+    document.getElementById("emptyPropertyMessage");
+
+const totalPropertyValueElement =
+    document.getElementById("totalPropertyValue");
 
 /* ========================================
-   LIQUID ASSETS
+   ASSETS AND INCOME INPUTS
 ======================================== */
 
-function openLiquidAssetsModal() {
-    liquidAssetsBalance.value =
-        clientPlan.priorities.assets.liquidAssets.balance || "";
+const financialInputs = [
+    cashInBankInput,
+    fixedDepositsInput,
+    tBillsInput,
+    investmentsInput,
+    otherLiquidAssetsInput,
+    monthlyEmploymentIncomeInput,
+    annualBonusInput,
+    otherMonthlyIncomeInput,
+    cpfOaInput,
+    cpfSaInput,
+    cpfMaInput,
+    cpfRaInput
+];
 
-    liquidAssetsFormMessage.textContent = "";
-    liquidAssetsModal.hidden = false;
-
-    setTimeout(function () {
-        liquidAssetsBalance.focus();
-    }, 0);
-}
-
-function closeLiquidAssetsModal() {
-    liquidAssetsModal.hidden = true;
-    liquidAssetsFormMessage.textContent = "";
-}
-
-if (closeLiquidAssetsModalButton) {
-    closeLiquidAssetsModalButton.addEventListener(
-        "click",
-        closeLiquidAssetsModal
-    );
-}
-
-if (cancelLiquidAssetsButton) {
-    cancelLiquidAssetsButton.addEventListener(
-        "click",
-        closeLiquidAssetsModal
-    );
-}
-
-if (liquidAssetsModal) {
-    liquidAssetsModal.addEventListener("click", function (event) {
-        if (event.target === liquidAssetsModal) {
-            closeLiquidAssetsModal();
-        }
-    });
-}
-
-if (liquidAssetsForm) {
-    liquidAssetsForm.addEventListener(
-        "submit",
-        handleLiquidAssetsSubmit
-    );
-}
-
-function handleLiquidAssetsSubmit(event) {
-    event.preventDefault();
-
-    const balance = Math.round(
-    Number(liquidAssetsBalance.value)
-);
-
-    if (
-        !Number.isFinite(balance) ||
-        balance < 0
-    ) {
-        liquidAssetsFormMessage.textContent =
-            "Please enter a valid amount.";
-
-        liquidAssetsBalance.focus();
+financialInputs.forEach(function (input) {
+    if (!input) {
         return;
     }
 
-    clientPlan.priorities.assets.liquidAssets.balance =
-        balance;
-        updateLiquidAssetsSummary();
+    input.addEventListener("input", handleFinancialInput);
+});
 
-    console.log(
-        "Liquid assets saved:",
-        clientPlan.priorities.assets.liquidAssets
-    );
-
-    closeLiquidAssetsModal();
+function handleFinancialInput() {
+    updateAssetsAndIncomeData();
+    updateAssetsAndIncomeTotals();
 }
 
-function updateLiquidAssetsSummary() {
+function updateAssetsAndIncomeData() {
+    const assets =
+        clientPlan.priorities.assets;
 
-    const balance =
-        clientPlan.priorities.assets
-            .liquidAssets.balance;
+    assets.liquidAssets.cashInBank =
+        getWholeNumber(cashInBankInput.value);
 
-    if (balance <= 0) {
+    assets.liquidAssets.fixedDeposits =
+        getWholeNumber(fixedDepositsInput.value);
 
-        liquidAssetsSummary.textContent =
-            "No balance entered.";
+    assets.liquidAssets.tBills =
+        getWholeNumber(tBillsInput.value);
 
-        liquidAssetsSummary.classList.remove(
-            "has-value"
+    assets.liquidAssets.investments =
+        getWholeNumber(investmentsInput.value);
+
+    assets.liquidAssets.others =
+        getWholeNumber(otherLiquidAssetsInput.value);
+
+    assets.income.monthlyEmployment =
+        getWholeNumber(monthlyEmploymentIncomeInput.value);
+
+    assets.income.annualBonus =
+        getWholeNumber(annualBonusInput.value);
+
+    assets.income.otherMonthly =
+        getWholeNumber(otherMonthlyIncomeInput.value);
+
+    assets.cpf.oa =
+        getWholeNumber(cpfOaInput.value);
+
+    assets.cpf.sa =
+        getWholeNumber(cpfSaInput.value);
+
+    assets.cpf.ma =
+        getWholeNumber(cpfMaInput.value);
+
+    assets.cpf.ra =
+        getWholeNumber(cpfRaInput.value);
+}
+
+function updateAssetsAndIncomeTotals() {
+    const assets =
+        clientPlan.priorities.assets;
+
+    const totalLiquidAssets =
+        assets.liquidAssets.cashInBank +
+        assets.liquidAssets.fixedDeposits +
+        assets.liquidAssets.tBills +
+        assets.liquidAssets.investments +
+        assets.liquidAssets.others;
+
+    const equivalentMonthlyIncome =
+        assets.income.monthlyEmployment +
+        assets.income.otherMonthly +
+        Math.round(
+            assets.income.annualBonus / 12
         );
 
-        return;
-    }
+    const totalCpf =
+        assets.cpf.oa +
+        assets.cpf.sa +
+        assets.cpf.ma +
+        assets.cpf.ra;
 
-    liquidAssetsSummary.textContent =
-        formatCurrency(balance);
+    const totalPropertyValue =
+        assets.properties.reduce(
+            function (total, property) {
+                return total +
+                    getWholeNumber(property.value);
+            },
+            0
+        );
 
-    liquidAssetsSummary.classList.add(
-        "has-value"
-    );
+    totalLiquidAssetsElement.textContent =
+        formatCurrency(totalLiquidAssets);
+
+    totalMonthlyIncomeElement.textContent =
+        formatCurrency(equivalentMonthlyIncome);
+
+    totalCpfElement.textContent =
+        formatCurrency(totalCpf);
+
+    totalPropertyValueElement.textContent =
+        formatCurrency(totalPropertyValue);
 }
 
 /* ========================================
@@ -603,10 +642,38 @@ function clearFinancialPlan() {
     });
 
     clientPlan.priorities.goals = [];
-    clientPlan.priorities.assets.liquidAssets.balance = 0;
-    updateLiquidAssetsSummary();
-    clientPlan.priorities.liabilities = [];
 
+    clientPlan.priorities.assets.liquidAssets = {
+    cashInBank: 0,
+    fixedDeposits: 0,
+    tBills: 0,
+    investments: 0,
+    others: 0
+};
+
+clientPlan.priorities.assets.income = {
+    monthlyEmployment: 0,
+    annualBonus: 0,
+    otherMonthly: 0
+};
+
+clientPlan.priorities.assets.cpf = {
+    oa: 0,
+    sa: 0,
+    ma: 0,
+    ra: 0
+};
+
+clientPlan.priorities.assets.properties = [];
+financialInputs.forEach(function (input) {
+    if (input) {
+        input.value = "";
+    }
+});
+
+updateAssetsAndIncomeTotals();
+
+    clientPlan.priorities.liabilities = [];
     clientPlan.costOfWants = {};
     clientPlan.protection = {};
     clientPlan.summary = {};
@@ -681,14 +748,25 @@ function getTodayDate() {
     return today.toISOString().split("T")[0];
 }
 
-function formatCurrency(value) {
+function getWholeNumber(value) {
+    const number = Number(value);
 
+    if (
+        !Number.isFinite(number) ||
+        number < 0
+    ) {
+        return 0;
+    }
+
+    return Math.round(number);
+}
+
+function formatCurrency(value) {
     return "$" +
-        Number(value).toLocaleString(
+        getWholeNumber(value).toLocaleString(
             "en-SG",
             {
                 maximumFractionDigits: 0
             }
         );
-
 }
