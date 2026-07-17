@@ -11,10 +11,16 @@ import {
     formatDeduction,
     formatPercentage,
     getInputWholeNumber,
-    getTodayDate,
     getWholeNumber,
-    isValidEmail,
 } from "./utils/client-utils.js";
+
+import {
+    getClientAge,
+    initializeProfile,
+    isProfileComplete,
+    resetProfile,
+    showProfileMessage,
+} from "./modules/client-profile.js";
 
 const supabaseClient =
     window.supabaseClient;
@@ -31,49 +37,9 @@ const logoutButton = document.getElementById("logoutButton");
 
 const clearPlanButton = document.getElementById("clearPlanButton");
 
-const clientHeading = document.getElementById("clientName");
-
-const profileForm = document.getElementById("profileForm");
-
-const clientNameInput = document.getElementById("clientNameInput");
-
-const dateOfBirthInput = document.getElementById("dateOfBirth");
-
-const genderInput = document.getElementById("gender");
-
-const maritalStatusInput = document.getElementById("maritalStatus");
-
-const occupationInput = document.getElementById("occupation");
-
-const employmentStatusInput = document.getElementById("employmentStatus");
-
-const dependantsInput = document.getElementById("dependants");
-
-const phoneInput = document.getElementById("phone");
-
-const emailInput = document.getElementById("email");
-
 const sidebarItems = document.querySelectorAll(".sidebar-item");
 
 const workspaceSections = document.querySelectorAll(".workspace-section");
-
-const profileFormMessage = document.getElementById("profileFormMessage");
-
-const profileValidationModal = document.getElementById(
-  "profileValidationModal",
-);
-
-const profileValidationMessage = document.getElementById(
-  "profileValidationMessage",
-);
-
-const closeProfileValidationModalButton = document.getElementById(
-  "closeProfileValidationModal",
-);
-
-const validationModalBackdrop = document.querySelector(
-  "[data-close-validation-modal]",
-);
 
 const profileNextButton = document.getElementById("profileNextButton");
 
@@ -96,6 +62,16 @@ const CPF_ANNUAL_WAGE_CEILING = 102000;
    INITIALIZATION
 ======================================== */
 
+initializeProfile({
+    onProfileChanged:
+        updateProfileDependentSections,
+
+    onProfileCompleted:
+        function () {
+            openSection("priorities");
+        },
+});
+
 initializePage();
 
 async function initializePage() {
@@ -110,184 +86,19 @@ async function initializePage() {
       return;
     }
 
-    // Prevent future birth dates
-    dateOfBirthInput.max = getTodayDate();
-
     loadingMessage.hidden = true;
     clientWorkspace.hidden = false;
 
-    updateClientHeading();
     updateCpfFields();
     updateAssetsAndIncomeTotals();
     renderProperties();
+
   } catch (error) {
     console.error("Financial planner error:", error);
 
     loadingMessage.textContent =
       "Something went wrong while opening the planner.";
   }
-}
-
-/* ========================================
-   PROFILE FORM
-======================================== */
-
-if (profileForm) {
-  profileForm.addEventListener("input", handleProfileInput);
-
-  profileForm.addEventListener("change", handleProfileInput);
-
-  profileForm.addEventListener("submit", handleProfileSubmit);
-}
-
-function handleProfileInput() {
-  clearProfileMessage();
-
-  clientPlan.profile.fullName = clientNameInput.value.trim();
-
-  clientPlan.profile.dateOfBirth = dateOfBirthInput.value;
-
-  clientPlan.profile.gender = genderInput.value;
-
-  clientPlan.profile.maritalStatus = maritalStatusInput.value;
-
-  clientPlan.profile.occupation = occupationInput.value.trim();
-
-  clientPlan.profile.employmentStatus = employmentStatusInput.value;
-
-  clientPlan.profile.dependants = dependantsInput.value
-    ? Number(dependantsInput.value)
-    : 0;
-
-  clientPlan.profile.phone = phoneInput.value.trim();
-
-  clientPlan.profile.email = emailInput.value.trim();
-
-  updateClientHeading();
-  updateProfileDependentSections();
-}
-
-function handleProfileSubmit(event) {
-  event.preventDefault();
-
-  clearProfileMessage();
-
-  handleProfileInput();
-
-  const emailValue = clientPlan.profile.email;
-
-  if (emailValue && !isValidEmail(emailValue)) {
-    showProfileMessage("Please enter a valid email address.");
-
-    emailInput.focus();
-    return;
-  }
-
-  if (!clientPlan.profile.fullName) {
-    showProfileMessage("Please enter the client's full name.");
-
-    clientNameInput.focus();
-    return;
-  }
-
-  if (!clientPlan.profile.dateOfBirth) {
-    showProfileMessage("Please enter the client's date of birth.");
-
-    dateOfBirthInput.focus();
-    return;
-  }
-
-  const selectedDate = new Date(clientPlan.profile.dateOfBirth);
-
-  const today = new Date();
-
-  selectedDate.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-
-  if (selectedDate > today) {
-    showProfileMessage("Date of birth cannot be in the future.");
-
-    dateOfBirthInput.focus();
-    return;
-  }
-
-  if (!clientPlan.profile.gender) {
-    showProfileMessage("Please select the client's gender.");
-
-    genderInput.focus();
-    return;
-  }
-
-  if (!clientPlan.profile.maritalStatus) {
-    showProfileMessage("Please select the client's marital status.");
-
-    maritalStatusInput.focus();
-    return;
-  }
-
-  if (!clientPlan.profile.occupation) {
-    showProfileMessage("Please enter the client's occupation.");
-
-    occupationInput.focus();
-    return;
-  }
-
-  if (!clientPlan.profile.employmentStatus) {
-    showProfileMessage("Please select the client's employment status.");
-
-    employmentStatusInput.focus();
-    return;
-  }
-
-  openSection("priorities");
-}
-
-function updateClientHeading() {
-  clientHeading.textContent = clientPlan.profile.fullName
-    ? `${clientPlan.profile.fullName}'s Financial Plan`
-    : "New Financial Plan";
-
-  document.title = clientPlan.profile.fullName
-    ? `${clientPlan.profile.fullName} | Financial Plan`
-    : "New Financial Plan";
-}
-
-/* ========================================
-   PROFILE VALIDATION MODAL
-======================================== */
-
-if (closeProfileValidationModalButton) {
-  closeProfileValidationModalButton.addEventListener(
-    "click",
-    closeProfileValidationModal,
-  );
-}
-
-if (validationModalBackdrop) {
-  validationModalBackdrop.addEventListener(
-    "click",
-    closeProfileValidationModal,
-  );
-}
-
-document.addEventListener("keydown", function (event) {
-  if (
-    event.key === "Escape" &&
-    profileValidationModal &&
-    !profileValidationModal.hidden
-  ) {
-    closeProfileValidationModal();
-  }
-});
-
-function closeProfileValidationModal() {
-  if (!profileValidationModal) {
-    return;
-  }
-
-  profileValidationModal.hidden = true;
-
-  document.body.classList.remove("validation-modal-open");
 }
 
 /* ========================================
@@ -1369,9 +1180,7 @@ function clearFinancialPlan() {
     /*
      * Reset the profile form fields.
      */
-    if (profileForm) {
-        profileForm.reset();
-    }
+    resetProfile();
 
     /*
      * Reset the selected wealth cards.
@@ -1416,9 +1225,6 @@ function clearFinancialPlan() {
     /*
      * Reset headings and messages.
      */
-    updateClientHeading();
-    clearProfileMessage();
-    closeProfileValidationModal();
     closePropertyModal();
 
     /*
@@ -1465,19 +1271,6 @@ async function handleLogout() {
    HELPERS
 ======================================== */
 
-function isProfileComplete() {
-  const profile = clientPlan.profile;
-
-  return Boolean(
-    profile.fullName &&
-    profile.dateOfBirth &&
-    profile.gender &&
-    profile.maritalStatus &&
-    profile.occupation &&
-    profile.employmentStatus,
-  );
-}
-
 function updateProfileDependentSections() {
     updateCpfFields();
     updateAssetsAndIncomeTotals();
@@ -1488,30 +1281,6 @@ function updateProfileDependentSections() {
     updateCostOfWants();
     updateSummaryReport();
     */
-}
-
-function getClientAge() {
-  const dateOfBirth = clientPlan.profile.dateOfBirth;
-
-  if (!dateOfBirth) {
-    return null;
-  }
-
-  const today = new Date();
-
-  const [birthYear, birthMonth, birthDay] = dateOfBirth.split("-").map(Number);
-
-  let age = today.getFullYear() - birthYear;
-
-  const hasHadBirthdayThisYear =
-    today.getMonth() + 1 > birthMonth ||
-    (today.getMonth() + 1 === birthMonth && today.getDate() >= birthDay);
-
-  if (!hasHadBirthdayThisYear) {
-    age--;
-  }
-
-  return age;
 }
 
 function updateCpfFields() {
@@ -1541,26 +1310,4 @@ function updateCpfFields() {
 
 function redirectToLogin() {
   window.location.replace("index.html");
-}
-
-function showProfileMessage(message) {
-  if (!profileValidationModal || !profileValidationMessage) {
-    window.alert(message);
-    return;
-  }
-
-  profileValidationMessage.textContent = message;
-  profileValidationModal.hidden = false;
-
-  document.body.classList.add("validation-modal-open");
-
-  if (closeProfileValidationModalButton) {
-    closeProfileValidationModalButton.focus();
-  }
-}
-
-function clearProfileMessage() {
-  if (profileFormMessage) {
-    profileFormMessage.textContent = "";
-  }
 }
