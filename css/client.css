@@ -913,3 +913,102 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ========================================
+   VALIDATION MODAL
+======================================== */
+
+.validation-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.validation-modal[hidden] {
+    display: none;
+}
+
+.validation-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(3px);
+}
+
+.validation-modal-dialog {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+    text-align: center;
+    animation: validationModalEnter 180ms ease-out;
+}
+
+.validation-modal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 24px;
+}
+
+.validation-modal-dialog h2 {
+    margin: 0 0 10px;
+    color: #0f172a;
+    font-size: 22px;
+}
+
+.validation-modal-dialog p {
+    margin: 0 0 24px;
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.validation-modal-button {
+    width: 100%;
+    min-height: 46px;
+    border: none;
+    border-radius: 10px;
+    background: #0f172a;
+    color: #ffffff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.validation-modal-button:hover {
+    background: #1e293b;
+}
+
+.validation-modal-button:focus-visible {
+    outline: 3px solid rgba(15, 23, 42, 0.25);
+    outline-offset: 3px;
+}
+
+@keyframes validationModalEnter {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+body.validation-modal-open {
+    overflow: hidden;
+}

@@ -58,6 +58,22 @@ const workspaceSections =
 const profileFormMessage =
     document.getElementById("profileFormMessage");
 
+const profileValidationModal =
+    document.getElementById("profileValidationModal");
+
+const profileValidationMessage =
+    document.getElementById("profileValidationMessage");
+
+const closeProfileValidationModalButton =
+    document.getElementById(
+        "closeProfileValidationModal"
+    );
+
+const validationModalBackdrop =
+    document.querySelector(
+        "[data-close-validation-modal]"
+    );
+
 const profileNextButton =
     document.getElementById("profileNextButton");
 
@@ -328,6 +344,46 @@ function updateClientHeading() {
         clientPlan.profile.fullName
             ? `${clientPlan.profile.fullName} | Financial Plan`
             : "New Financial Plan";
+}
+
+/* ========================================
+   PROFILE VALIDATION MODAL
+======================================== */
+
+if (closeProfileValidationModalButton) {
+    closeProfileValidationModalButton.addEventListener(
+        "click",
+        closeProfileValidationModal
+    );
+}
+
+if (validationModalBackdrop) {
+    validationModalBackdrop.addEventListener(
+        "click",
+        closeProfileValidationModal
+    );
+}
+
+document.addEventListener("keydown", function (event) {
+    if (
+        event.key === "Escape" &&
+        profileValidationModal &&
+        !profileValidationModal.hidden
+    ) {
+        closeProfileValidationModal();
+    }
+});
+
+function closeProfileValidationModal() {
+    if (!profileValidationModal) {
+        return;
+    }
+
+    profileValidationModal.hidden = true;
+
+    document.body.classList.remove(
+        "validation-modal-open"
+    );
 }
 
 /* ========================================
@@ -876,11 +932,30 @@ function isValidEmail(email) {
 }
 
 function showProfileMessage(message) {
-    profileFormMessage.textContent = message;
+    if (
+        !profileValidationModal ||
+        !profileValidationMessage
+    ) {
+        window.alert(message);
+        return;
+    }
+
+    profileValidationMessage.textContent = message;
+    profileValidationModal.hidden = false;
+
+    document.body.classList.add(
+        "validation-modal-open"
+    );
+
+    if (closeProfileValidationModalButton) {
+        closeProfileValidationModalButton.focus();
+    }
 }
 
 function clearProfileMessage() {
-    profileFormMessage.textContent = "";
+    if (profileFormMessage) {
+        profileFormMessage.textContent = "";
+    }
 }
 
 function getTodayDate() {

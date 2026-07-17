@@ -1158,6 +1158,49 @@
         Checking login...
     </div>
 
+    <!-- ========================================
+     PROFILE VALIDATION MODAL
+======================================== -->
+
+<div
+    id="profileValidationModal"
+    class="validation-modal"
+    hidden
+>
+    <div
+        class="validation-modal-backdrop"
+        data-close-validation-modal
+    ></div>
+
+    <div
+        class="validation-modal-dialog"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="profileValidationTitle"
+        aria-describedby="profileValidationMessage"
+    >
+        <div class="validation-modal-icon">
+            <i class="fa-solid fa-circle-exclamation"></i>
+        </div>
+
+        <h2 id="profileValidationTitle">
+            Complete Client Profile
+        </h2>
+
+        <p id="profileValidationMessage">
+            Please complete all required client information before continuing.
+        </p>
+
+        <button
+            id="closeProfileValidationModal"
+            class="validation-modal-button"
+            type="button"
+        >
+            Return to Profile
+        </button>
+    </div>
+</div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script src="js/client.js"></script>
