@@ -1,114 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Dashboard</title>
 
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
 
     <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    >
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
-</head>
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-<body>
-
+  <body>
     <main id="dashboardContent" class="dashboard" hidden>
+      <!-- Dashboard Header -->
+      <header class="dashboard-header">
+        <div>
+          <p class="dashboard-label">Financial Planning Platform</p>
 
-        <!-- Dashboard Header -->
-        <header class="dashboard-header">
+          <h1>
+            Welcome,
+            <span id="userName">User</span>
+          </h1>
 
-            <div>
-                <p class="dashboard-label">
-                    Financial Planning Platform
-                </p>
+          <p class="dashboard-subtitle">
+            Begin a new financial planning session.
+          </p>
+        </div>
 
-                <h1>
-                    Welcome,
-                    <span id="userName">User</span>
-                </h1>
+        <button id="logoutButton" class="logout-button" type="button">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Logout
+        </button>
+      </header>
 
-                <p class="dashboard-subtitle">
-                    Begin a new financial planning session.
-                </p>
+      <!-- Main Dashboard Action -->
+      <section class="dashboard-actions" aria-labelledby="actionHeading">
+        <div class="section-heading">
+          <h2 id="actionHeading">Financial Planning</h2>
+
+          <p>
+            Create a new financial plan without storing the client's information
+            online.
+          </p>
+        </div>
+
+        <div class="action-grid action-grid--single">
+          <a href="client.html" class="action-card">
+            <div class="action-icon">
+              <i class="fa-solid fa-file-circle-plus"></i>
             </div>
 
-            <button
-                id="logoutButton"
-                class="logout-button"
-                type="button"
-            >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Logout
-            </button>
+            <div class="action-card-content">
+              <h3>Create Financial Plan</h3>
 
-        </header>
+              <p>
+                Enter the client's profile, goals, assets, liabilities and
+                protection requirements.
+              </p>
 
-        <!-- Main Dashboard Action -->
-        <section
-            class="dashboard-actions"
-            aria-labelledby="actionHeading"
-        >
-
-            <div class="section-heading">
-                <h2 id="actionHeading">
-                    Financial Planning
-                </h2>
-
-                <p>
-                    Create a new financial plan without storing the
-                    client's information online.
-                </p>
+              <span class="action-link">
+                Start planning
+                <i class="fa-solid fa-arrow-right"></i>
+              </span>
             </div>
-
-            <div class="action-grid action-grid--single">
-
-                <a href="client.html" class="action-card">
-
-                    <div class="action-icon">
-                        <i class="fa-solid fa-file-circle-plus"></i>
-                    </div>
-
-                    <div class="action-card-content">
-
-                        <h3>Create Financial Plan</h3>
-
-                        <p>
-                            Enter the client's profile, goals, assets,
-                            liabilities and protection requirements.
-                        </p>
-
-                        <span class="action-link">
-                            Start planning
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </span>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-        </section>
-
+          </a>
+        </div>
+      </section>
     </main>
 
-    <p id="loadingMessage" class="loading-message">
-        Checking login...
-    </p>
+    <p id="loadingMessage" class="loading-message">Checking login...</p>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script src="js/dashboard.js"></script>
-
-</body>
+  </body>
 </html>

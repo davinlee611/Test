@@ -1,81 +1,79 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
 
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/login.css" />
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet">
-</head>
-<body>
-
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <main class="container">
-
-    <!-- Login Card -->   
-    <div class="login-card">
-
+      <!-- Login Card -->
+      <div class="login-card">
         <h1>Login</h1>
 
         <p>Please enter your credentials to access your account.</p>
 
         <!-- Login Form -->
         <form id="loginForm">
+          <!-- User ID -->
+          <div class="form-group">
+            <label for="userid">Email</label>
 
-            <!-- User ID -->
-            <div class="form-group">
-                <label for="userid">Email</label>
-
-                <div class="input-box">
-                    <i class="fa-regular fa-user"></i>
-                    <input
-                        id="userid"
-                        name="userid"
-                        type="text"
-                        placeholder="Enter your Email"
-                        autocomplete="username"
-                        required>
-                </div>
+            <div class="input-box">
+              <i class="fa-regular fa-user"></i>
+              <input
+                id="userid"
+                name="userid"
+                type="text"
+                placeholder="Enter your Email"
+                autocomplete="username"
+                required
+              />
             </div>
+          </div>
 
-            <!-- Password -->
-            <div class="form-group">
-                <label for="password">Password</label>
+          <!-- Password -->
+          <div class="form-group">
+            <label for="password">Password</label>
 
-                <div class="input-box">
-                    <i class="fa-solid fa-key"></i>
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        placeholder="Enter your password"
-                        autocomplete="current-password"
-                        required>
-                </div>
+            <div class="input-box">
+              <i class="fa-solid fa-key"></i>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              />
             </div>
+          </div>
 
-            <p id="loginError" class="login-error" aria-live="polite"></p>
+          <p id="loginError" class="login-error" aria-live="polite"></p>
 
-            <button id="loginButton" type="submit">
-                Login
-                <i class="fa-solid fa-arrow-right"></i>
-            </button>
-
+          <button id="loginButton" type="submit">
+            Login
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
         </form>
-
-    </div>
-
-</main>
+      </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script src="js/login.js"></script>
-
-</body>
+  </body>
 </html>

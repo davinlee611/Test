@@ -3,25 +3,25 @@
 ======================================== */
 
 :root {
-    /* Colors */
-    --primary-color: #5b4ef5;
-    --primary-hover: #4a3de8;
+  /* Colors */
+  --primary-color: #5b4ef5;
+  --primary-hover: #4a3de8;
 
-    --background-color: #f8fafc;
-    --card-background: #ffffff;
+  --background-color: #f8fafc;
+  --card-background: #ffffff;
 
-    --text-primary: #24324b;
-    --text-secondary: #8a94a6;
+  --text-primary: #24324b;
+  --text-secondary: #8a94a6;
 
-    --border-color: #e3e7ef;
+  --border-color: #e3e7ef;
 
-    /* Sizes */
-    --border-radius: 8px;
-    --input-height: 46px;
-    --button-height: 48px;
+  /* Sizes */
+  --border-radius: 8px;
+  --input-height: 46px;
+  --button-height: 48px;
 
-    /* Effects */
-    --box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
+  /* Effects */
+  --box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
 }
 
 /* ========================================
@@ -29,10 +29,10 @@
 ======================================== */
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
 }
 
 /* ========================================
@@ -40,13 +40,9 @@
 ======================================== */
 
 body {
-    background: linear-gradient(
-        135deg,
-        #eef2ff 0%,
-        var(--background-color) 100%
-    );
-    min-height: 100vh;
-    line-height: 1.5;
+  background: linear-gradient(135deg, #eef2ff 0%, var(--background-color) 100%);
+  min-height: 100vh;
+  line-height: 1.5;
 }
 
 /* ========================================
@@ -54,14 +50,14 @@ body {
 ======================================== */
 
 .form-group {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 13px;
-    font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 /* ========================================
@@ -69,33 +65,33 @@ body {
 ======================================== */
 
 .input-box {
-    position: relative;
+  position: relative;
 }
 
 .input-box i {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #B0B6C3;
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #b0b6c3;
 }
 
 .input-box input {
-    width: 100%;
-    height: var(--input-height);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding-left: 42px;
-    font-size: 14px;
-    outline: none;
-    transition:
-        border-color .25s ease,
-        box-shadow .25s ease;
+  width: 100%;
+  height: var(--input-height);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding-left: 42px;
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .input-box input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(91,78,245,.15);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(91, 78, 245, 0.15);
 }
 
 /* ========================================
@@ -103,31 +99,31 @@ body {
 ======================================== */
 
 button {
-    width: 100%;
-    height: var(--button-height);
-    border: none;
-    border-radius: var(--border-radius);
-    background: var(--primary-color);
-    color: white;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition:
-        background-color 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+  width: 100%;
+  height: var(--button-height);
+  border: none;
+  border-radius: var(--border-radius);
+  background: var(--primary-color);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 button:hover {
-    background: var(--primary-hover);
-    transform: translateY(-2px);
+  background: var(--primary-hover);
+  transform: translateY(-2px);
 }
 
 button:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+  opacity: 0.7;
+  cursor: not-allowed;
 }

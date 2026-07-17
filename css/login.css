@@ -3,10 +3,10 @@
 ======================================== */
 
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
 /* ========================================
@@ -14,8 +14,8 @@ body {
 ======================================== */
 
 .container {
-    width: 100%;
-    max-width: 450px;
+  width: 100%;
+  max-width: 450px;
 }
 
 /* ========================================
@@ -23,24 +23,24 @@ body {
 ======================================== */
 
 .login-card {
-    background: var(--card-background);
-    border-radius: 16px;
-    padding: 40px;
-    box-shadow: var(--box-shadow);
+  background: var(--card-background);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: var(--box-shadow);
 }
 
 .login-card h1 {
-    margin-bottom: 10px;
-    color: var(--text-primary);
-    font-size: 36px;
-    text-align: center;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  font-size: 36px;
+  text-align: center;
 }
 
 .login-card p {
-    margin-bottom: 35px;
-    color: var(--text-secondary);
-    font-size: 14px;
-    text-align: center;
+  margin-bottom: 35px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
 }
 
 /* ========================================
@@ -48,17 +48,17 @@ body {
 ======================================== */
 
 @media (max-width: 480px) {
-    body {
-        padding: 15px;
-    }
+  body {
+    padding: 15px;
+  }
 
-    .login-card {
-        padding: 30px 22px;
-    }
+  .login-card {
+    padding: 30px 22px;
+  }
 
-    .login-card h1 {
-        font-size: 30px;
-    }
+  .login-card h1 {
+    font-size: 30px;
+  }
 }
 
 /* ========================================
@@ -66,9 +66,9 @@ body {
 ======================================== */
 
 .login-error {
-    min-height: 20px;
-    margin-bottom: 12px;
-    color: #dc2626;
-    font-size: 13px;
-    text-align: center;
+  min-height: 20px;
+  margin-bottom: 12px;
+  color: #dc2626;
+  font-size: 13px;
+  text-align: center;
 }

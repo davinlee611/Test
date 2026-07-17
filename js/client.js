@@ -4,141 +4,121 @@
    PAGE ELEMENTS
 ======================================== */
 
-const clientWorkspace =
-    document.getElementById("clientWorkspace");
+const clientWorkspace = document.getElementById("clientWorkspace");
 
-const loadingMessage =
-    document.getElementById("loadingMessage");
+const loadingMessage = document.getElementById("loadingMessage");
 
-const logoutButton =
-    document.getElementById("logoutButton");
+const logoutButton = document.getElementById("logoutButton");
 
-const clearPlanButton =
-    document.getElementById("clearPlanButton");
+const clearPlanButton = document.getElementById("clearPlanButton");
 
-const clientHeading =
-    document.getElementById("clientName");
+const clientHeading = document.getElementById("clientName");
 
-const profileForm =
-    document.getElementById("profileForm");
+const profileForm = document.getElementById("profileForm");
 
-const clientNameInput =
-    document.getElementById("clientNameInput");
+const clientNameInput = document.getElementById("clientNameInput");
 
-const dateOfBirthInput =
-    document.getElementById("dateOfBirth");
+const dateOfBirthInput = document.getElementById("dateOfBirth");
 
-const genderInput =
-    document.getElementById("gender");
+const genderInput = document.getElementById("gender");
 
-const maritalStatusInput =
-    document.getElementById("maritalStatus");
+const maritalStatusInput = document.getElementById("maritalStatus");
 
-const occupationInput =
-    document.getElementById("occupation");
+const occupationInput = document.getElementById("occupation");
 
-const employmentStatusInput =
-    document.getElementById("employmentStatus");
+const employmentStatusInput = document.getElementById("employmentStatus");
 
-const dependantsInput =
-    document.getElementById("dependants");
+const dependantsInput = document.getElementById("dependants");
 
-const phoneInput =
-    document.getElementById("phone");
+const phoneInput = document.getElementById("phone");
 
-const emailInput =
-    document.getElementById("email");
+const emailInput = document.getElementById("email");
 
-const sidebarItems =
-    document.querySelectorAll(".sidebar-item");
+const sidebarItems = document.querySelectorAll(".sidebar-item");
 
-const workspaceSections =
-    document.querySelectorAll(".workspace-section");
+const workspaceSections = document.querySelectorAll(".workspace-section");
 
-const profileFormMessage =
-    document.getElementById("profileFormMessage");
+const profileFormMessage = document.getElementById("profileFormMessage");
 
-const profileValidationModal =
-    document.getElementById("profileValidationModal");
+const profileValidationModal = document.getElementById(
+  "profileValidationModal",
+);
 
-const profileValidationMessage =
-    document.getElementById("profileValidationMessage");
+const profileValidationMessage = document.getElementById(
+  "profileValidationMessage",
+);
 
-const closeProfileValidationModalButton =
-    document.getElementById(
-        "closeProfileValidationModal"
-    );
+const closeProfileValidationModalButton = document.getElementById(
+  "closeProfileValidationModal",
+);
 
-const validationModalBackdrop =
-    document.querySelector(
-        "[data-close-validation-modal]"
-    );
+const validationModalBackdrop = document.querySelector(
+  "[data-close-validation-modal]",
+);
 
-const profileNextButton =
-    document.getElementById("profileNextButton");
+const profileNextButton = document.getElementById("profileNextButton");
 
-const prioritiesBackButton =
-    document.getElementById("prioritiesBackButton");
+const prioritiesBackButton = document.getElementById("prioritiesBackButton");
 
-const prioritiesNextButton =
-    document.getElementById("prioritiesNextButton");
+const prioritiesNextButton = document.getElementById("prioritiesNextButton");
 
-const wealthPreferenceCards =
-    document.querySelectorAll(".wealth-preference-card");
+const wealthPreferenceCards = document.querySelectorAll(
+  ".wealth-preference-card",
+);
 
 /* ========================================
    IN-MEMORY PLAN DATA
 ======================================== */
 
 const clientPlan = {
-    profile: {
-        fullName: "",
-        dateOfBirth: "",
-        gender: "",
-        maritalStatus: "",
-        occupation: "",
-        employmentStatus: "",
-        dependants: 0,
-        phone: "",
-        email: ""
-    },
+  profile: {
+    fullName: "",
+    dateOfBirth: "",
+    gender: "",
+    maritalStatus: "",
+    occupation: "",
+    employmentStatus: "",
+    dependants: 0,
+    phone: "",
+    email: "",
+  },
 
-    priorities: {
+  priorities: {
     selectedWealthTypes: [],
 
     goals: [],
 
     assets: {
-    liquidAssets: {
+      liquidAssets: {
         cashInBank: 0,
         fixedDeposits: 0,
         tBills: 0,
         investments: 0,
-        others: 0
-    },
+        others: 0,
+      },
 
-    income: {
+      income: {
         monthlyEmployment: 0,
         annualBonus: 0,
-        otherMonthly: 0
-    },
+        otherMonthly: 0,
+      },
 
-    cpf: {
+      cpf: {
         oa: 0,
         sa: 0,
         ma: 0,
-        ra: 0
+        ra: 0,
+      },
+
+      properties: [],
     },
 
-    properties: []
-},
+    liabilities: [],
+  },
 
-    liabilities: []
-},
-
-    costOfWants: {},
-    protection: {},
-    summary: {}
+  costOfWants: {},
+  protection: {},
+  summary: {},
 };
 
 /* ========================================
@@ -148,37 +128,33 @@ const clientPlan = {
 initializePage();
 
 async function initializePage() {
-    try {
-        const {
-            data: { user },
-            error
-        } = await supabaseClient.auth.getUser();
+  try {
+    const {
+      data: { user },
+      error,
+    } = await supabaseClient.auth.getUser();
 
-        if (error || !user) {
-            redirectToLogin();
-            return;
-        }
-
-        // Prevent future birth dates
-        dateOfBirthInput.max = getTodayDate();
-
-        loadingMessage.hidden = true;
-clientWorkspace.hidden = false;
-
-updateClientHeading();
-updateCpfFields();
-updateAssetsAndIncomeTotals();
-renderProperties();
-
-    } catch (error) {
-        console.error(
-            "Financial planner error:",
-            error
-        );
-
-        loadingMessage.textContent =
-            "Something went wrong while opening the planner.";
+    if (error || !user) {
+      redirectToLogin();
+      return;
     }
+
+    // Prevent future birth dates
+    dateOfBirthInput.max = getTodayDate();
+
+    loadingMessage.hidden = true;
+    clientWorkspace.hidden = false;
+
+    updateClientHeading();
+    updateCpfFields();
+    updateAssetsAndIncomeTotals();
+    renderProperties();
+  } catch (error) {
+    console.error("Financial planner error:", error);
+
+    loadingMessage.textContent =
+      "Something went wrong while opening the planner.";
+  }
 }
 
 /* ========================================
@@ -186,165 +162,123 @@ renderProperties();
 ======================================== */
 
 if (profileForm) {
-    profileForm.addEventListener(
-        "input",
-        handleProfileInput
-    );
+  profileForm.addEventListener("input", handleProfileInput);
 
-    profileForm.addEventListener(
-        "change",
-        handleProfileInput
-    );
+  profileForm.addEventListener("change", handleProfileInput);
 
-    profileForm.addEventListener(
-        "submit",
-        handleProfileSubmit
-    );
+  profileForm.addEventListener("submit", handleProfileSubmit);
 }
 
 function handleProfileInput() {
+  clearProfileMessage();
 
-    clearProfileMessage();
+  clientPlan.profile.fullName = clientNameInput.value.trim();
 
-    clientPlan.profile.fullName =
-        clientNameInput.value.trim();
+  clientPlan.profile.dateOfBirth = dateOfBirthInput.value;
 
-    clientPlan.profile.dateOfBirth =
-        dateOfBirthInput.value;
+  clientPlan.profile.gender = genderInput.value;
 
-    clientPlan.profile.gender =
-        genderInput.value;
+  clientPlan.profile.maritalStatus = maritalStatusInput.value;
 
-    clientPlan.profile.maritalStatus =
-        maritalStatusInput.value;
+  clientPlan.profile.occupation = occupationInput.value.trim();
 
-    clientPlan.profile.occupation =
-        occupationInput.value.trim();
+  clientPlan.profile.employmentStatus = employmentStatusInput.value;
 
-    clientPlan.profile.employmentStatus =
-        employmentStatusInput.value;
+  clientPlan.profile.dependants = dependantsInput.value
+    ? Number(dependantsInput.value)
+    : 0;
 
-    clientPlan.profile.dependants =
-        dependantsInput.value
-            ? Number(dependantsInput.value)
-            : 0;
+  clientPlan.profile.phone = phoneInput.value.trim();
 
-    clientPlan.profile.phone =
-        phoneInput.value.trim();
+  clientPlan.profile.email = emailInput.value.trim();
 
-    clientPlan.profile.email =
-        emailInput.value.trim();
-
-    updateClientHeading();
-    updateProfileDependentSections();
+  updateClientHeading();
+  updateProfileDependentSections();
 }
 
 function handleProfileSubmit(event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    clearProfileMessage();
+  clearProfileMessage();
 
-    handleProfileInput();
+  handleProfileInput();
 
-    const emailValue =
-        clientPlan.profile.email;
+  const emailValue = clientPlan.profile.email;
 
-    if (
-        emailValue &&
-        !isValidEmail(emailValue)
-    ) {
-        showProfileMessage(
-            "Please enter a valid email address."
-        );
+  if (emailValue && !isValidEmail(emailValue)) {
+    showProfileMessage("Please enter a valid email address.");
 
-        emailInput.focus();
-        return;
-    }
+    emailInput.focus();
+    return;
+  }
 
-    if (!clientPlan.profile.fullName) {
-        showProfileMessage(
-            "Please enter the client's full name."
-        );
+  if (!clientPlan.profile.fullName) {
+    showProfileMessage("Please enter the client's full name.");
 
-        clientNameInput.focus();
-        return;
-    }
+    clientNameInput.focus();
+    return;
+  }
 
-    if (!clientPlan.profile.dateOfBirth) {
-        showProfileMessage(
-            "Please enter the client's date of birth."
-        );
-
-        dateOfBirthInput.focus();
-        return;
-    }
-
-    const selectedDate =
-    new Date(clientPlan.profile.dateOfBirth);
-
-const today = new Date();
-
-selectedDate.setHours(0, 0, 0, 0);
-today.setHours(0, 0, 0, 0);
-
-if (selectedDate > today) {
-    showProfileMessage(
-        "Date of birth cannot be in the future."
-    );
+  if (!clientPlan.profile.dateOfBirth) {
+    showProfileMessage("Please enter the client's date of birth.");
 
     dateOfBirthInput.focus();
     return;
-}
+  }
 
-    if (!clientPlan.profile.gender) {
-    showProfileMessage(
-        "Please select the client's gender."
-    );
+  const selectedDate = new Date(clientPlan.profile.dateOfBirth);
+
+  const today = new Date();
+
+  selectedDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  if (selectedDate > today) {
+    showProfileMessage("Date of birth cannot be in the future.");
+
+    dateOfBirthInput.focus();
+    return;
+  }
+
+  if (!clientPlan.profile.gender) {
+    showProfileMessage("Please select the client's gender.");
 
     genderInput.focus();
     return;
-}
+  }
 
-if (!clientPlan.profile.maritalStatus) {
-    showProfileMessage(
-        "Please select the client's marital status."
-    );
+  if (!clientPlan.profile.maritalStatus) {
+    showProfileMessage("Please select the client's marital status.");
 
     maritalStatusInput.focus();
     return;
-}
+  }
 
-if (!clientPlan.profile.occupation) {
-    showProfileMessage(
-        "Please enter the client's occupation."
-    );
+  if (!clientPlan.profile.occupation) {
+    showProfileMessage("Please enter the client's occupation.");
 
     occupationInput.focus();
     return;
-}
+  }
 
-if (!clientPlan.profile.employmentStatus) {
-    showProfileMessage(
-        "Please select the client's employment status."
-    );
+  if (!clientPlan.profile.employmentStatus) {
+    showProfileMessage("Please select the client's employment status.");
 
     employmentStatusInput.focus();
     return;
-}
+  }
 
-    openSection("priorities");
+  openSection("priorities");
 }
 
 function updateClientHeading() {
-    clientHeading.textContent =
-        clientPlan.profile.fullName
-            ? `${clientPlan.profile.fullName}'s Financial Plan`
-            : "New Financial Plan";
+  clientHeading.textContent = clientPlan.profile.fullName
+    ? `${clientPlan.profile.fullName}'s Financial Plan`
+    : "New Financial Plan";
 
-    document.title =
-        clientPlan.profile.fullName
-            ? `${clientPlan.profile.fullName} | Financial Plan`
-            : "New Financial Plan";
+  document.title = clientPlan.profile.fullName
+    ? `${clientPlan.profile.fullName} | Financial Plan`
+    : "New Financial Plan";
 }
 
 /* ========================================
@@ -352,39 +286,37 @@ function updateClientHeading() {
 ======================================== */
 
 if (closeProfileValidationModalButton) {
-    closeProfileValidationModalButton.addEventListener(
-        "click",
-        closeProfileValidationModal
-    );
+  closeProfileValidationModalButton.addEventListener(
+    "click",
+    closeProfileValidationModal,
+  );
 }
 
 if (validationModalBackdrop) {
-    validationModalBackdrop.addEventListener(
-        "click",
-        closeProfileValidationModal
-    );
+  validationModalBackdrop.addEventListener(
+    "click",
+    closeProfileValidationModal,
+  );
 }
 
 document.addEventListener("keydown", function (event) {
-    if (
-        event.key === "Escape" &&
-        profileValidationModal &&
-        !profileValidationModal.hidden
-    ) {
-        closeProfileValidationModal();
-    }
+  if (
+    event.key === "Escape" &&
+    profileValidationModal &&
+    !profileValidationModal.hidden
+  ) {
+    closeProfileValidationModal();
+  }
 });
 
 function closeProfileValidationModal() {
-    if (!profileValidationModal) {
-        return;
-    }
+  if (!profileValidationModal) {
+    return;
+  }
 
-    profileValidationModal.hidden = true;
+  profileValidationModal.hidden = true;
 
-    document.body.classList.remove(
-        "validation-modal-open"
-    );
+  document.body.classList.remove("validation-modal-open");
 }
 
 /* ========================================
@@ -392,175 +324,139 @@ function closeProfileValidationModal() {
 ======================================== */
 
 wealthPreferenceCards.forEach(function (card) {
-    card.addEventListener("click", function () {
-        const wealthType = card.dataset.wealthType;
+  card.addEventListener("click", function () {
+    const wealthType = card.dataset.wealthType;
 
-        if (!wealthType) {
-            return;
-        }
+    if (!wealthType) {
+      return;
+    }
 
-        const isSelected =
-            card.classList.toggle("selected");
+    const isSelected = card.classList.toggle("selected");
 
-        card.setAttribute(
-            "aria-pressed",
-            String(isSelected)
+    card.setAttribute("aria-pressed", String(isSelected));
+
+    if (isSelected) {
+      const isAlreadySelected =
+        clientPlan.priorities.selectedWealthTypes.includes(wealthType);
+
+      if (!isAlreadySelected) {
+        clientPlan.priorities.selectedWealthTypes.push(wealthType);
+      }
+    } else {
+      clientPlan.priorities.selectedWealthTypes =
+        clientPlan.priorities.selectedWealthTypes.filter(
+          function (selectedType) {
+            return selectedType !== wealthType;
+          },
         );
+    }
 
-        if (isSelected) {
-            const isAlreadySelected =
-                clientPlan.priorities.selectedWealthTypes.includes(
-                    wealthType
-                );
-
-            if (!isAlreadySelected) {
-                clientPlan.priorities.selectedWealthTypes.push(
-                    wealthType
-                );
-            }
-        } else {
-            clientPlan.priorities.selectedWealthTypes =
-                clientPlan.priorities.selectedWealthTypes.filter(
-                    function (selectedType) {
-                        return selectedType !== wealthType;
-                    }
-                );
-        }
-
-        console.log(
-            "Selected wealth types:",
-            clientPlan.priorities.selectedWealthTypes
-        );
-    });
+    console.log(
+      "Selected wealth types:",
+      clientPlan.priorities.selectedWealthTypes,
+    );
+  });
 });
 
 /* ========================================
    ASSETS AND INCOME ELEMENTS
 ======================================== */
 
-const cashInBankInput =
-    document.getElementById("cashInBank");
+const cashInBankInput = document.getElementById("cashInBank");
 
-const fixedDepositsInput =
-    document.getElementById("fixedDeposits");
+const fixedDepositsInput = document.getElementById("fixedDeposits");
 
-const tBillsInput =
-    document.getElementById("tBills");
+const tBillsInput = document.getElementById("tBills");
 
-const investmentsInput =
-    document.getElementById("investments");
+const investmentsInput = document.getElementById("investments");
 
-const otherLiquidAssetsInput =
-    document.getElementById("otherLiquidAssets");
+const otherLiquidAssetsInput = document.getElementById("otherLiquidAssets");
 
-const totalLiquidAssetsElement =
-    document.getElementById("totalLiquidAssets");
+const totalLiquidAssetsElement = document.getElementById("totalLiquidAssets");
 
-const monthlyEmploymentIncomeInput =
-    document.getElementById("monthlyEmploymentIncome");
+const monthlyEmploymentIncomeInput = document.getElementById(
+  "monthlyEmploymentIncome",
+);
 
-const annualBonusInput =
-    document.getElementById("annualBonus");
+const annualBonusInput = document.getElementById("annualBonus");
 
-const otherMonthlyIncomeInput =
-    document.getElementById("otherMonthlyIncome");
+const otherMonthlyIncomeInput = document.getElementById("otherMonthlyIncome");
 
-const totalMonthlyIncomeElement =
-    document.getElementById("totalMonthlyIncome");
+const totalMonthlyIncomeElement = document.getElementById("totalMonthlyIncome");
 
-const cpfOaInput =
-    document.getElementById("cpfOa");
+const cpfOaInput = document.getElementById("cpfOa");
 
-const cpfSaInput =
-    document.getElementById("cpfSa");
+const cpfSaInput = document.getElementById("cpfSa");
 
-const cpfMaInput =
-    document.getElementById("cpfMa");
+const cpfMaInput = document.getElementById("cpfMa");
 
-const cpfRaInput =
-    document.getElementById("cpfRa");
+const cpfRaInput = document.getElementById("cpfRa");
 
-const cpfSaGroup =
-    document.getElementById("cpfSaGroup");
+const cpfSaGroup = document.getElementById("cpfSaGroup");
 
-const cpfRaGroup =
-    document.getElementById("cpfRaGroup");
+const cpfRaGroup = document.getElementById("cpfRaGroup");
 
-const totalCpfElement =
-    document.getElementById("totalCpf");
+const totalCpfElement = document.getElementById("totalCpf");
 
-const addPropertyButton =
-    document.getElementById("addPropertyButton");
+const addPropertyButton = document.getElementById("addPropertyButton");
 
-const propertyList =
-    document.getElementById("propertyList");
+const propertyList = document.getElementById("propertyList");
 
-const emptyPropertyMessage =
-    document.getElementById("emptyPropertyMessage");
+const emptyPropertyMessage = document.getElementById("emptyPropertyMessage");
 
-const totalPropertyValueElement =
-    document.getElementById("totalPropertyValue");
+const totalPropertyValueElement = document.getElementById("totalPropertyValue");
 
-const propertyModal =
-    document.getElementById("propertyModal");
+const propertyModal = document.getElementById("propertyModal");
 
-const propertyForm =
-    document.getElementById("propertyForm");
+const propertyForm = document.getElementById("propertyForm");
 
-const propertyModalTitle =
-    document.getElementById("propertyModalTitle");
+const propertyModalTitle = document.getElementById("propertyModalTitle");
 
-const editingPropertyIdInput =
-    document.getElementById("editingPropertyId");
+const editingPropertyIdInput = document.getElementById("editingPropertyId");
 
-const propertyTypeInput =
-    document.getElementById("propertyType");
+const propertyTypeInput = document.getElementById("propertyType");
 
-const propertyMarketValueInput =
-    document.getElementById("propertyMarketValue");
+const propertyMarketValueInput = document.getElementById("propertyMarketValue");
 
-const propertyOwnershipInput =
-    document.getElementById("propertyOwnership");
+const propertyOwnershipInput = document.getElementById("propertyOwnership");
 
-const propertyFormMessage =
-    document.getElementById("propertyFormMessage");
+const propertyFormMessage = document.getElementById("propertyFormMessage");
 
-const closePropertyModalButton =
-    document.getElementById("closePropertyModalButton");
+const closePropertyModalButton = document.getElementById(
+  "closePropertyModalButton",
+);
 
-const cancelPropertyButton =
-    document.getElementById("cancelPropertyButton");
+const cancelPropertyButton = document.getElementById("cancelPropertyButton");
 
-const propertyModalBackdrop =
-    document.querySelector(
-        "[data-close-property-modal]"
-    );
+const propertyModalBackdrop = document.querySelector(
+  "[data-close-property-modal]",
+);
 
 /* ========================================
    ASSETS AND INCOME INPUTS
 ======================================== */
 
 const financialInputs = [
-    cashInBankInput,
-    fixedDepositsInput,
-    tBillsInput,
-    investmentsInput,
-    otherLiquidAssetsInput,
-    monthlyEmploymentIncomeInput,
-    annualBonusInput,
-    otherMonthlyIncomeInput,
-    cpfOaInput,
-    cpfSaInput,
-    cpfMaInput,
-    cpfRaInput
+  cashInBankInput,
+  fixedDepositsInput,
+  tBillsInput,
+  investmentsInput,
+  otherLiquidAssetsInput,
+  monthlyEmploymentIncomeInput,
+  annualBonusInput,
+  otherMonthlyIncomeInput,
+  cpfOaInput,
+  cpfSaInput,
+  cpfMaInput,
+  cpfRaInput,
 ];
 
 financialInputs.forEach(function (input) {
-    if (!input) {
-        return;
-    }
+  if (!input) {
+    return;
+  }
 
-    input.addEventListener("input", handleFinancialInput);
+  input.addEventListener("input", handleFinancialInput);
 });
 
 /* ========================================
@@ -568,457 +464,343 @@ financialInputs.forEach(function (input) {
 ======================================== */
 
 if (addPropertyButton) {
-    addPropertyButton.addEventListener(
-        "click",
-        openAddPropertyModal
-    );
+  addPropertyButton.addEventListener("click", openAddPropertyModal);
 }
 
 if (propertyForm) {
-    propertyForm.addEventListener(
-        "submit",
-        handlePropertySubmit
-    );
+  propertyForm.addEventListener("submit", handlePropertySubmit);
 }
 
 if (closePropertyModalButton) {
-    closePropertyModalButton.addEventListener(
-        "click",
-        closePropertyModal
-    );
+  closePropertyModalButton.addEventListener("click", closePropertyModal);
 }
 
 if (cancelPropertyButton) {
-    cancelPropertyButton.addEventListener(
-        "click",
-        closePropertyModal
-    );
+  cancelPropertyButton.addEventListener("click", closePropertyModal);
 }
 
 if (propertyModalBackdrop) {
-    propertyModalBackdrop.addEventListener(
-        "click",
-        closePropertyModal
-    );
+  propertyModalBackdrop.addEventListener("click", closePropertyModal);
 }
 
 document.addEventListener("keydown", function (event) {
-    if (
-        event.key === "Escape" &&
-        propertyModal &&
-        !propertyModal.hidden
-    ) {
-        closePropertyModal();
-    }
+  if (event.key === "Escape" && propertyModal && !propertyModal.hidden) {
+    closePropertyModal();
+  }
 });
 
 function openAddPropertyModal() {
-    if (!propertyModal || !propertyForm) {
-        return;
-    }
+  if (!propertyModal || !propertyForm) {
+    return;
+  }
 
-    propertyForm.reset();
+  propertyForm.reset();
 
-    editingPropertyIdInput.value = "";
-    propertyOwnershipInput.value = "100";
-    propertyFormMessage.textContent = "";
-    propertyModalTitle.textContent = "Add Property";
+  editingPropertyIdInput.value = "";
+  propertyOwnershipInput.value = "100";
+  propertyFormMessage.textContent = "";
+  propertyModalTitle.textContent = "Add Property";
 
-    propertyModal.hidden = false;
-    document.body.classList.add("property-modal-open");
+  propertyModal.hidden = false;
+  document.body.classList.add("property-modal-open");
 
-    propertyTypeInput.focus();
+  propertyTypeInput.focus();
 }
 
 function openEditPropertyModal(propertyId) {
-    const property =
-        clientPlan.priorities.assets.properties.find(
-            function (savedProperty) {
-                return savedProperty.id === propertyId;
-            }
-        );
+  const property = clientPlan.priorities.assets.properties.find(
+    function (savedProperty) {
+      return savedProperty.id === propertyId;
+    },
+  );
 
-    if (!property || !propertyModal) {
-        return;
-    }
+  if (!property || !propertyModal) {
+    return;
+  }
 
-    editingPropertyIdInput.value = property.id;
-    propertyTypeInput.value = property.type;
-    propertyMarketValueInput.value =
-        property.marketValue;
-    propertyOwnershipInput.value =
-        property.ownershipPercentage;
+  editingPropertyIdInput.value = property.id;
+  propertyTypeInput.value = property.type;
+  propertyMarketValueInput.value = property.marketValue;
+  propertyOwnershipInput.value = property.ownershipPercentage;
 
-    propertyFormMessage.textContent = "";
-    propertyModalTitle.textContent = "Edit Property";
+  propertyFormMessage.textContent = "";
+  propertyModalTitle.textContent = "Edit Property";
 
-    propertyModal.hidden = false;
-    document.body.classList.add("property-modal-open");
+  propertyModal.hidden = false;
+  document.body.classList.add("property-modal-open");
 
-    propertyTypeInput.focus();
+  propertyTypeInput.focus();
 }
 
 function closePropertyModal() {
-    if (!propertyModal) {
-        return;
-    }
+  if (!propertyModal) {
+    return;
+  }
 
-    propertyModal.hidden = true;
-    document.body.classList.remove("property-modal-open");
+  propertyModal.hidden = true;
+  document.body.classList.remove("property-modal-open");
 }
 
 function handlePropertySubmit(event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    const propertyType = propertyTypeInput.value;
-    const marketValue =
-        getWholeNumber(propertyMarketValueInput.value);
-    const ownershipPercentage =
-        getWholeNumber(propertyOwnershipInput.value);
-    const editingPropertyId =
-        editingPropertyIdInput.value;
+  const propertyType = propertyTypeInput.value;
+  const marketValue = getWholeNumber(propertyMarketValueInput.value);
+  const ownershipPercentage = getWholeNumber(propertyOwnershipInput.value);
+  const editingPropertyId = editingPropertyIdInput.value;
 
-    propertyFormMessage.textContent = "";
+  propertyFormMessage.textContent = "";
 
-    if (!propertyType) {
-        propertyFormMessage.textContent =
-            "Please select a property type.";
+  if (!propertyType) {
+    propertyFormMessage.textContent = "Please select a property type.";
 
-        propertyTypeInput.focus();
-        return;
-    }
+    propertyTypeInput.focus();
+    return;
+  }
 
-    if (marketValue <= 0) {
-        propertyFormMessage.textContent =
-            "Please enter the property's market value.";
+  if (marketValue <= 0) {
+    propertyFormMessage.textContent =
+      "Please enter the property's market value.";
 
-        propertyMarketValueInput.focus();
-        return;
-    }
+    propertyMarketValueInput.focus();
+    return;
+  }
 
-    if (
-        ownershipPercentage < 1 ||
-        ownershipPercentage > 100
-    ) {
-        propertyFormMessage.textContent =
-            "Ownership percentage must be between 1% and 100%.";
+  if (ownershipPercentage < 1 || ownershipPercentage > 100) {
+    propertyFormMessage.textContent =
+      "Ownership percentage must be between 1% and 100%.";
 
-        propertyOwnershipInput.focus();
-        return;
-    }
+    propertyOwnershipInput.focus();
+    return;
+  }
 
-    if (editingPropertyId) {
-        updateProperty(
-            editingPropertyId,
-            propertyType,
-            marketValue,
-            ownershipPercentage
-        );
-    } else {
-        addProperty(
-            propertyType,
-            marketValue,
-            ownershipPercentage
-        );
-    }
+  if (editingPropertyId) {
+    updateProperty(
+      editingPropertyId,
+      propertyType,
+      marketValue,
+      ownershipPercentage,
+    );
+  } else {
+    addProperty(propertyType, marketValue, ownershipPercentage);
+  }
 
-    renderProperties();
-    updateAssetsAndIncomeTotals();
-    closePropertyModal();
+  renderProperties();
+  updateAssetsAndIncomeTotals();
+  closePropertyModal();
 }
 
-function addProperty(
-    propertyType,
-    marketValue,
-    ownershipPercentage
-) {
-    clientPlan.priorities.assets.properties.push({
-        id: createUniqueId(),
-        type: propertyType,
-        marketValue: marketValue,
-        ownershipPercentage: ownershipPercentage
-    });
+function addProperty(propertyType, marketValue, ownershipPercentage) {
+  clientPlan.priorities.assets.properties.push({
+    id: createUniqueId(),
+    type: propertyType,
+    marketValue: marketValue,
+    ownershipPercentage: ownershipPercentage,
+  });
 }
 
 function updateProperty(
-    propertyId,
-    propertyType,
-    marketValue,
-    ownershipPercentage
+  propertyId,
+  propertyType,
+  marketValue,
+  ownershipPercentage,
 ) {
-    const property =
-        clientPlan.priorities.assets.properties.find(
-            function (savedProperty) {
-                return savedProperty.id === propertyId;
-            }
-        );
+  const property = clientPlan.priorities.assets.properties.find(
+    function (savedProperty) {
+      return savedProperty.id === propertyId;
+    },
+  );
 
-    if (!property) {
-        return;
-    }
+  if (!property) {
+    return;
+  }
 
-    property.type = propertyType;
-    property.marketValue = marketValue;
-    property.ownershipPercentage =
-        ownershipPercentage;
+  property.type = propertyType;
+  property.marketValue = marketValue;
+  property.ownershipPercentage = ownershipPercentage;
 }
 
 function deleteProperty(propertyId) {
-    const shouldDelete = window.confirm(
-        "Delete this property?"
-    );
+  const shouldDelete = window.confirm("Delete this property?");
 
-    if (!shouldDelete) {
-        return;
-    }
+  if (!shouldDelete) {
+    return;
+  }
 
-    clientPlan.priorities.assets.properties =
-        clientPlan.priorities.assets.properties.filter(
-            function (property) {
-                return property.id !== propertyId;
-            }
-        );
+  clientPlan.priorities.assets.properties =
+    clientPlan.priorities.assets.properties.filter(function (property) {
+      return property.id !== propertyId;
+    });
 
-    renderProperties();
-    updateAssetsAndIncomeTotals();
+  renderProperties();
+  updateAssetsAndIncomeTotals();
 }
 
 function renderProperties() {
-    if (!propertyList || !emptyPropertyMessage) {
-        return;
-    }
+  if (!propertyList || !emptyPropertyMessage) {
+    return;
+  }
 
-    const properties =
-        clientPlan.priorities.assets.properties;
+  const properties = clientPlan.priorities.assets.properties;
 
-    propertyList.innerHTML = "";
+  propertyList.innerHTML = "";
 
-    emptyPropertyMessage.hidden =
-        properties.length > 0;
+  emptyPropertyMessage.hidden = properties.length > 0;
 
-    properties.forEach(function (property) {
-        const clientPropertyValue = Math.round(
-            property.marketValue *
-            (property.ownershipPercentage / 100)
-        );
+  properties.forEach(function (property) {
+    const clientPropertyValue = Math.round(
+      property.marketValue * (property.ownershipPercentage / 100),
+    );
 
-        const propertyItem =
-            document.createElement("div");
+    const propertyItem = document.createElement("div");
 
-        propertyItem.className = "property-item";
+    propertyItem.className = "property-item";
 
-        const propertyMain =
-            document.createElement("div");
+    const propertyMain = document.createElement("div");
 
-        propertyMain.className =
-            "property-item-main";
+    propertyMain.className = "property-item-main";
 
-        const propertyIcon =
-            document.createElement("div");
+    const propertyIcon = document.createElement("div");
 
-        propertyIcon.className =
-            "property-item-icon";
+    propertyIcon.className = "property-item-icon";
 
-        propertyIcon.innerHTML =
-            '<i class="fa-solid fa-house"></i>';
+    propertyIcon.innerHTML = '<i class="fa-solid fa-house"></i>';
 
-        const propertyDetails =
-            document.createElement("div");
+    const propertyDetails = document.createElement("div");
 
-        propertyDetails.className =
-            "property-item-details";
+    propertyDetails.className = "property-item-details";
 
-        const propertyTitle =
-            document.createElement("h4");
+    const propertyTitle = document.createElement("h4");
 
-        propertyTitle.textContent = property.type;
+    propertyTitle.textContent = property.type;
 
-        const propertyDescription =
-            document.createElement("p");
+    const propertyDescription = document.createElement("p");
 
-        propertyDescription.textContent =
-            `${formatCurrency(property.marketValue)} market value · ` +
-            `${property.ownershipPercentage}% ownership · ` +
-            `${formatCurrency(clientPropertyValue)} client value`;
+    propertyDescription.textContent =
+      `${formatCurrency(property.marketValue)} market value · ` +
+      `${property.ownershipPercentage}% ownership · ` +
+      `${formatCurrency(clientPropertyValue)} client value`;
 
-        propertyDetails.append(
-            propertyTitle,
-            propertyDescription
-        );
+    propertyDetails.append(propertyTitle, propertyDescription);
 
-        propertyMain.append(
-            propertyIcon,
-            propertyDetails
-        );
+    propertyMain.append(propertyIcon, propertyDetails);
 
-        const propertyActions =
-            document.createElement("div");
+    const propertyActions = document.createElement("div");
 
-        propertyActions.className =
-            "property-item-actions";
+    propertyActions.className = "property-item-actions";
 
-        const editButton =
-            document.createElement("button");
+    const editButton = document.createElement("button");
 
-        editButton.type = "button";
-        editButton.className =
-            "property-action-button";
-        editButton.setAttribute(
-            "aria-label",
-            `Edit ${property.type}`
-        );
+    editButton.type = "button";
+    editButton.className = "property-action-button";
+    editButton.setAttribute("aria-label", `Edit ${property.type}`);
 
-        editButton.innerHTML =
-            '<i class="fa-solid fa-pen"></i>';
+    editButton.innerHTML = '<i class="fa-solid fa-pen"></i>';
 
-        editButton.addEventListener(
-            "click",
-            function () {
-                openEditPropertyModal(property.id);
-            }
-        );
-
-        const deleteButton =
-            document.createElement("button");
-
-        deleteButton.type = "button";
-        deleteButton.className =
-            "property-action-button delete";
-        deleteButton.setAttribute(
-            "aria-label",
-            `Delete ${property.type}`
-        );
-
-        deleteButton.innerHTML =
-            '<i class="fa-solid fa-trash"></i>';
-
-        deleteButton.addEventListener(
-            "click",
-            function () {
-                deleteProperty(property.id);
-            }
-        );
-
-        propertyActions.append(
-            editButton,
-            deleteButton
-        );
-
-        propertyItem.append(
-            propertyMain,
-            propertyActions
-        );
-
-        propertyList.appendChild(propertyItem);
+    editButton.addEventListener("click", function () {
+      openEditPropertyModal(property.id);
     });
+
+    const deleteButton = document.createElement("button");
+
+    deleteButton.type = "button";
+    deleteButton.className = "property-action-button delete";
+    deleteButton.setAttribute("aria-label", `Delete ${property.type}`);
+
+    deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
+
+    deleteButton.addEventListener("click", function () {
+      deleteProperty(property.id);
+    });
+
+    propertyActions.append(editButton, deleteButton);
+
+    propertyItem.append(propertyMain, propertyActions);
+
+    propertyList.appendChild(propertyItem);
+  });
 }
 
 function handleFinancialInput() {
-    updateAssetsAndIncomeData();
-    updateAssetsAndIncomeTotals();
+  updateAssetsAndIncomeData();
+  updateAssetsAndIncomeTotals();
 }
 
 function updateAssetsAndIncomeData() {
-    const assets =
-        clientPlan.priorities.assets;
+  const assets = clientPlan.priorities.assets;
 
-    assets.liquidAssets.cashInBank =
-        getInputWholeNumber(cashInBankInput);
+  assets.liquidAssets.cashInBank = getInputWholeNumber(cashInBankInput);
 
-    assets.liquidAssets.fixedDeposits =
-        getInputWholeNumber(fixedDepositsInput);
+  assets.liquidAssets.fixedDeposits = getInputWholeNumber(fixedDepositsInput);
 
-    assets.liquidAssets.tBills =
-        getInputWholeNumber(tBillsInput);
+  assets.liquidAssets.tBills = getInputWholeNumber(tBillsInput);
 
-    assets.liquidAssets.investments =
-        getInputWholeNumber(investmentsInput);
+  assets.liquidAssets.investments = getInputWholeNumber(investmentsInput);
 
-    assets.liquidAssets.others =
-        getInputWholeNumber(otherLiquidAssetsInput);
+  assets.liquidAssets.others = getInputWholeNumber(otherLiquidAssetsInput);
 
-    assets.income.monthlyEmployment =
-        getInputWholeNumber(
-            monthlyEmploymentIncomeInput
-        );
+  assets.income.monthlyEmployment = getInputWholeNumber(
+    monthlyEmploymentIncomeInput,
+  );
 
-    assets.income.annualBonus =
-        getInputWholeNumber(annualBonusInput);
+  assets.income.annualBonus = getInputWholeNumber(annualBonusInput);
 
-    assets.income.otherMonthly =
-        getInputWholeNumber(otherMonthlyIncomeInput);
+  assets.income.otherMonthly = getInputWholeNumber(otherMonthlyIncomeInput);
 
-    assets.cpf.oa =
-        getInputWholeNumber(cpfOaInput);
+  assets.cpf.oa = getInputWholeNumber(cpfOaInput);
 
-    assets.cpf.sa =
-        getInputWholeNumber(cpfSaInput);
+  assets.cpf.sa = getInputWholeNumber(cpfSaInput);
 
-    assets.cpf.ma =
-        getInputWholeNumber(cpfMaInput);
+  assets.cpf.ma = getInputWholeNumber(cpfMaInput);
 
-    assets.cpf.ra =
-        getInputWholeNumber(cpfRaInput);
+  assets.cpf.ra = getInputWholeNumber(cpfRaInput);
 }
 
 function updateAssetsAndIncomeTotals() {
-    const assets =
-        clientPlan.priorities.assets;
+  const assets = clientPlan.priorities.assets;
 
-    const totalLiquidAssets =
-        assets.liquidAssets.cashInBank +
-        assets.liquidAssets.fixedDeposits +
-        assets.liquidAssets.tBills +
-        assets.liquidAssets.investments +
-        assets.liquidAssets.others;
+  const totalLiquidAssets =
+    assets.liquidAssets.cashInBank +
+    assets.liquidAssets.fixedDeposits +
+    assets.liquidAssets.tBills +
+    assets.liquidAssets.investments +
+    assets.liquidAssets.others;
 
-    const equivalentMonthlyIncome =
-        assets.income.monthlyEmployment +
-        assets.income.otherMonthly +
-        Math.round(
-            assets.income.annualBonus / 12
-        );
+  const equivalentMonthlyIncome =
+    assets.income.monthlyEmployment +
+    assets.income.otherMonthly +
+    Math.round(assets.income.annualBonus / 12);
 
-    const totalCpf =
-        assets.cpf.oa +
-        assets.cpf.sa +
-        assets.cpf.ma +
-        assets.cpf.ra;
+  const totalCpf =
+    assets.cpf.oa + assets.cpf.sa + assets.cpf.ma + assets.cpf.ra;
 
-    const totalPropertyValue =
-    assets.properties.reduce(
-        function (total, property) {
-            const clientPropertyValue =
-                property.marketValue *
-                (
-                    property.ownershipPercentage /
-                    100
-                );
+  const totalPropertyValue = assets.properties.reduce(function (
+    total,
+    property,
+  ) {
+    const clientPropertyValue =
+      property.marketValue * (property.ownershipPercentage / 100);
 
-            return total + clientPropertyValue;
-        },
-        0
+    return total + clientPropertyValue;
+  }, 0);
+
+  if (totalLiquidAssetsElement) {
+    totalLiquidAssetsElement.textContent = formatCurrency(totalLiquidAssets);
+  }
+
+  if (totalMonthlyIncomeElement) {
+    totalMonthlyIncomeElement.textContent = formatCurrency(
+      equivalentMonthlyIncome,
     );
+  }
 
-    if (totalLiquidAssetsElement) {
-    totalLiquidAssetsElement.textContent =
-        formatCurrency(totalLiquidAssets);
-}
+  if (totalCpfElement) {
+    totalCpfElement.textContent = formatCurrency(totalCpf);
+  }
 
-if (totalMonthlyIncomeElement) {
-    totalMonthlyIncomeElement.textContent =
-        formatCurrency(equivalentMonthlyIncome);
-}
-
-if (totalCpfElement) {
-    totalCpfElement.textContent =
-        formatCurrency(totalCpf);
-}
-
-if (totalPropertyValueElement) {
-    totalPropertyValueElement.textContent =
-        formatCurrency(totalPropertyValue);
-}
+  if (totalPropertyValueElement) {
+    totalPropertyValueElement.textContent = formatCurrency(totalPropertyValue);
+  }
 }
 
 /* ========================================
@@ -1026,48 +808,36 @@ if (totalPropertyValueElement) {
 ======================================== */
 
 sidebarItems.forEach(function (item) {
-    item.addEventListener("click", function () {
+  item.addEventListener("click", function () {
+    const section = item.dataset.section;
 
-        const section =
-            item.dataset.section;
+    // Client Profile is always accessible
+    if (section === "profile") {
+      openSection(section);
+      return;
+    }
 
-        // Client Profile is always accessible
-        if (section === "profile") {
-            openSection(section);
-            return;
-        }
+    // Other sections require a completed profile
+    if (!isProfileComplete()) {
+      showProfileMessage("Complete the Client Profile before continuing.");
 
-        // Other sections require a completed profile
-        if (!isProfileComplete()) {
+      openSection("profile");
 
-            showProfileMessage(
-                "Complete the Client Profile before continuing."
-            );
+      return;
+    }
 
-            openSection("profile");
-
-            return;
-        }
-
-        openSection(section);
-
-    });
+    openSection(section);
+  });
 });
 
 function openSection(sectionName) {
-    sidebarItems.forEach(function (item) {
-        item.classList.toggle(
-            "active",
-            item.dataset.section === sectionName
-        );
-    });
+  sidebarItems.forEach(function (item) {
+    item.classList.toggle("active", item.dataset.section === sectionName);
+  });
 
-    workspaceSections.forEach(function (section) {
-        section.classList.toggle(
-            "active",
-            section.dataset.content === sectionName
-        );
-    });
+  workspaceSections.forEach(function (section) {
+    section.classList.toggle("active", section.dataset.content === sectionName);
+  });
 }
 
 /* ========================================
@@ -1075,21 +845,15 @@ function openSection(sectionName) {
 ======================================== */
 
 if (prioritiesBackButton) {
-    prioritiesBackButton.addEventListener(
-        "click",
-        function () {
-            openSection("profile");
-        }
-    );
+  prioritiesBackButton.addEventListener("click", function () {
+    openSection("profile");
+  });
 }
 
 if (prioritiesNextButton) {
-    prioritiesNextButton.addEventListener(
-        "click",
-        function () {
-            openSection("cost");
-        }
-    );
+  prioritiesNextButton.addEventListener("click", function () {
+    openSection("cost");
+  });
 }
 
 /* ========================================
@@ -1097,80 +861,77 @@ if (prioritiesNextButton) {
 ======================================== */
 
 if (clearPlanButton) {
-    clearPlanButton.addEventListener(
-        "click",
-        clearFinancialPlan
-    );
+  clearPlanButton.addEventListener("click", clearFinancialPlan);
 }
 
 function clearFinancialPlan() {
-    const shouldClear = window.confirm(
-        "Clear all information entered in this financial plan?"
-    );
+  const shouldClear = window.confirm(
+    "Clear all information entered in this financial plan?",
+  );
 
-    if (!shouldClear) {
-        return;
-    }
+  if (!shouldClear) {
+    return;
+  }
 
-    profileForm.reset();
+  profileForm.reset();
 
-    clientPlan.profile.fullName = "";
-    clientPlan.profile.dateOfBirth = "";
-    clientPlan.profile.gender = "";
-    clientPlan.profile.maritalStatus = "";
-    clientPlan.profile.occupation = "";
-    clientPlan.profile.employmentStatus = "";
-    clientPlan.profile.dependants = 0;
-    clientPlan.profile.phone = "";
-    clientPlan.profile.email = "";
+  clientPlan.profile.fullName = "";
+  clientPlan.profile.dateOfBirth = "";
+  clientPlan.profile.gender = "";
+  clientPlan.profile.maritalStatus = "";
+  clientPlan.profile.occupation = "";
+  clientPlan.profile.employmentStatus = "";
+  clientPlan.profile.dependants = 0;
+  clientPlan.profile.phone = "";
+  clientPlan.profile.email = "";
 
-    clientPlan.priorities.selectedWealthTypes = [];
+  clientPlan.priorities.selectedWealthTypes = [];
 
-    wealthPreferenceCards.forEach(function (card) {
-        card.classList.remove("selected");
-        card.setAttribute("aria-pressed", "false");
-    });
+  wealthPreferenceCards.forEach(function (card) {
+    card.classList.remove("selected");
+    card.setAttribute("aria-pressed", "false");
+  });
 
-    clientPlan.priorities.goals = [];
+  clientPlan.priorities.goals = [];
 
-    clientPlan.priorities.assets.liquidAssets = {
+  clientPlan.priorities.assets.liquidAssets = {
     cashInBank: 0,
     fixedDeposits: 0,
     tBills: 0,
     investments: 0,
-    others: 0
-};
+    others: 0,
+  };
 
-clientPlan.priorities.assets.income = {
+  clientPlan.priorities.assets.income = {
     monthlyEmployment: 0,
     annualBonus: 0,
-    otherMonthly: 0
-};
+    otherMonthly: 0,
+  };
 
-clientPlan.priorities.assets.cpf = {
+  clientPlan.priorities.assets.cpf = {
     oa: 0,
     sa: 0,
     ma: 0,
-    ra: 0
-};
+    ra: 0,
+  };
 
-clientPlan.priorities.assets.properties = [];
-renderProperties();
-financialInputs.forEach(function (input) {
+  clientPlan.priorities.assets.properties = [];
+  renderProperties();
+  financialInputs.forEach(function (input) {
     if (input) {
-        input.value = "";
+      input.value = "";
     }
-});
+  });
 
-updateAssetsAndIncomeTotals();
+  updateAssetsAndIncomeTotals();
 
-    clientPlan.priorities.liabilities = [];
-    clientPlan.costOfWants = {};
-    clientPlan.protection = {};
-    clientPlan.summary = {};
+  clientPlan.priorities.liabilities = [];
+  clientPlan.costOfWants = {};
+  clientPlan.protection = {};
+  clientPlan.summary = {};
 
-    updateClientHeading();
-    openSection("profile");
+  updateClientHeading();
+  openSection("profile");
 }
 
 /* ========================================
@@ -1178,62 +939,56 @@ updateAssetsAndIncomeTotals();
 ======================================== */
 
 if (logoutButton) {
-    logoutButton.addEventListener(
-        "click",
-        handleLogout
-    );
+  logoutButton.addEventListener("click", handleLogout);
 }
 
 async function handleLogout() {
-    logoutButton.disabled = true;
+  logoutButton.disabled = true;
 
-    logoutButton.innerHTML = `
+  logoutButton.innerHTML = `
         <i class="fa-solid fa-spinner fa-spin"></i>
         Logging out...
     `;
 
-    const { error } =
-        await supabaseClient.auth.signOut();
+  const { error } = await supabaseClient.auth.signOut();
 
-    if (error) {
-        console.error("Logout error:", error);
+  if (error) {
+    console.error("Logout error:", error);
 
-        logoutButton.disabled = false;
+    logoutButton.disabled = false;
 
-        logoutButton.innerHTML = `
+    logoutButton.innerHTML = `
             <i class="fa-solid fa-right-from-bracket"></i>
             Logout
         `;
 
-        return;
-    }
+    return;
+  }
 
-    redirectToLogin();
+  redirectToLogin();
 }
-
-
 
 /* ========================================
    HELPERS
 ======================================== */
 
 function isProfileComplete() {
-    const profile = clientPlan.profile;
+  const profile = clientPlan.profile;
 
-    return Boolean(
-        profile.fullName &&
-        profile.dateOfBirth &&
-        profile.gender &&
-        profile.maritalStatus &&
-        profile.occupation &&
-        profile.employmentStatus
-    );
+  return Boolean(
+    profile.fullName &&
+    profile.dateOfBirth &&
+    profile.gender &&
+    profile.maritalStatus &&
+    profile.occupation &&
+    profile.employmentStatus,
+  );
 }
 
 function updateProfileDependentSections() {
-    updateCpfFields();
+  updateCpfFields();
 
-    /*
+  /*
         Later, add other profile-dependent updates here:
 
         updateProtectionAnalysis();
@@ -1243,152 +998,121 @@ function updateProfileDependentSections() {
 }
 
 function getClientAge() {
-    const dateOfBirth =
-        clientPlan.profile.dateOfBirth;
+  const dateOfBirth = clientPlan.profile.dateOfBirth;
 
-    if (!dateOfBirth) {
-        return null;
-    }
+  if (!dateOfBirth) {
+    return null;
+  }
 
-    const today = new Date();
+  const today = new Date();
 
-    const [
-        birthYear,
-        birthMonth,
-        birthDay
-    ] = dateOfBirth
-        .split("-")
-        .map(Number);
+  const [birthYear, birthMonth, birthDay] = dateOfBirth.split("-").map(Number);
 
-    let age =
-        today.getFullYear() - birthYear;
+  let age = today.getFullYear() - birthYear;
 
-    const hasHadBirthdayThisYear =
-        today.getMonth() + 1 > birthMonth ||
-        (
-            today.getMonth() + 1 === birthMonth &&
-            today.getDate() >= birthDay
-        );
+  const hasHadBirthdayThisYear =
+    today.getMonth() + 1 > birthMonth ||
+    (today.getMonth() + 1 === birthMonth && today.getDate() >= birthDay);
 
-    if (!hasHadBirthdayThisYear) {
-        age--;
-    }
+  if (!hasHadBirthdayThisYear) {
+    age--;
+  }
 
-    return age;
+  return age;
 }
 
 function updateCpfFields() {
-    if (
-        !cpfSaGroup ||
-        !cpfRaGroup ||
-        !cpfSaInput ||
-        !cpfRaInput
-    ) {
-        return;
-    }
+  if (!cpfSaGroup || !cpfRaGroup || !cpfSaInput || !cpfRaInput) {
+    return;
+  }
 
-    const age = getClientAge();
-    const cpf = clientPlan.priorities.assets.cpf;
+  const age = getClientAge();
+  const cpf = clientPlan.priorities.assets.cpf;
 
-    if (age === null || age < 55) {
-        cpfSaGroup.hidden = false;
-        cpfRaGroup.hidden = true;
+  if (age === null || age < 55) {
+    cpfSaGroup.hidden = false;
+    cpfRaGroup.hidden = true;
 
-        cpfRaInput.value = "";
-        cpf.ra = 0;
-    } else {
-        cpfSaGroup.hidden = true;
-        cpfRaGroup.hidden = false;
+    cpfRaInput.value = "";
+    cpf.ra = 0;
+  } else {
+    cpfSaGroup.hidden = true;
+    cpfRaGroup.hidden = false;
 
-        cpfSaInput.value = "";
-        cpf.sa = 0;
-    }
+    cpfSaInput.value = "";
+    cpf.sa = 0;
+  }
 
-    updateAssetsAndIncomeTotals();
+  updateAssetsAndIncomeTotals();
 }
 
 function redirectToLogin() {
-    window.location.replace("index.html");
+  window.location.replace("index.html");
 }
 
 function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function showProfileMessage(message) {
-    if (
-        !profileValidationModal ||
-        !profileValidationMessage
-    ) {
-        window.alert(message);
-        return;
-    }
+  if (!profileValidationModal || !profileValidationMessage) {
+    window.alert(message);
+    return;
+  }
 
-    profileValidationMessage.textContent = message;
-    profileValidationModal.hidden = false;
+  profileValidationMessage.textContent = message;
+  profileValidationModal.hidden = false;
 
-    document.body.classList.add(
-        "validation-modal-open"
-    );
+  document.body.classList.add("validation-modal-open");
 
-    if (closeProfileValidationModalButton) {
-        closeProfileValidationModalButton.focus();
-    }
+  if (closeProfileValidationModalButton) {
+    closeProfileValidationModalButton.focus();
+  }
 }
 
 function clearProfileMessage() {
-    if (profileFormMessage) {
-        profileFormMessage.textContent = "";
-    }
+  if (profileFormMessage) {
+    profileFormMessage.textContent = "";
+  }
 }
 
 function getTodayDate() {
-    const today = new Date();
+  const today = new Date();
 
-    return today.toISOString().split("T")[0];
+  return today.toISOString().split("T")[0];
 }
 
 function getWholeNumber(value) {
-    const number = Number(value);
+  const number = Number(value);
 
-    if (
-        !Number.isFinite(number) ||
-        number < 0
-    ) {
-        return 0;
-    }
+  if (!Number.isFinite(number) || number < 0) {
+    return 0;
+  }
 
-    return Math.trunc(number);
+  return Math.trunc(number);
 }
 
 function getInputWholeNumber(inputElement) {
-    if (!inputElement) {
-        return 0;
-    }
+  if (!inputElement) {
+    return 0;
+  }
 
-    return getWholeNumber(inputElement.value);
+  return getWholeNumber(inputElement.value);
 }
 
 function formatCurrency(value) {
-    return "$" +
-        getWholeNumber(value).toLocaleString(
-            "en-SG",
-            {
-                maximumFractionDigits: 0
-            }
-        );
+  return (
+    "$" +
+    getWholeNumber(value).toLocaleString("en-SG", {
+      maximumFractionDigits: 0,
+    })
+  );
 }
 
 function createUniqueId() {
-    if (
-        window.crypto &&
-        typeof window.crypto.randomUUID === "function"
-    ) {
-        return window.crypto.randomUUID();
-    }
+  if (window.crypto && typeof window.crypto.randomUUID === "function") {
+    return window.crypto.randomUUID();
+  }
 
-    return (
-        Date.now().toString(36) +
-        Math.random().toString(36).slice(2)
-    );
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
