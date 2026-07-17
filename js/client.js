@@ -5,8 +5,6 @@ import {
     resetClientPlan,
 } from "./state/client-state.js";
 
-void resetClientPlan;
-
 const supabaseClient =
     window.supabaseClient;
 
@@ -1377,73 +1375,78 @@ if (clearPlanButton) {
 }
 
 function clearFinancialPlan() {
-  const shouldClear = window.confirm(
-    "Clear all information entered in this financial plan?",
-  );
+    const shouldClear = window.confirm(
+        "Clear all information entered in this financial plan?",
+    );
 
-  if (!shouldClear) {
-    return;
-  }
-
-  profileForm.reset();
-
-  clientPlan.profile.fullName = "";
-  clientPlan.profile.dateOfBirth = "";
-  clientPlan.profile.gender = "";
-  clientPlan.profile.maritalStatus = "";
-  clientPlan.profile.occupation = "";
-  clientPlan.profile.employmentStatus = "";
-  clientPlan.profile.dependants = 0;
-  clientPlan.profile.phone = "";
-  clientPlan.profile.email = "";
-
-  clientPlan.priorities.selectedWealthTypes = [];
-
-  wealthPreferenceCards.forEach(function (card) {
-    card.classList.remove("selected");
-    card.setAttribute("aria-pressed", "false");
-  });
-
-  clientPlan.priorities.goals = [];
-
-  clientPlan.priorities.assets.liquidAssets = {
-    cashInBank: 0,
-    fixedDeposits: 0,
-    tBills: 0,
-    investments: 0,
-    others: 0,
-  };
-
-  clientPlan.priorities.assets.income = {
-    monthlyEmployment: 0,
-    annualBonus: 0,
-    otherMonthly: 0,
-  };
-
-  clientPlan.priorities.assets.cpf = {
-    oa: 0,
-    sa: 0,
-    ma: 0,
-    ra: 0,
-  };
-
-  clientPlan.priorities.assets.properties = [];
-  renderProperties();
-  financialInputs.forEach(function (input) {
-    if (input) {
-      input.value = "";
+    if (!shouldClear) {
+        return;
     }
-  });
 
-  updateAssetsAndIncomeTotals();
+    /*
+     * Reset the shared JavaScript state.
+     */
+    resetClientPlan();
 
-  clientPlan.priorities.liabilities = [];
-  clientPlan.costOfWants = {};
-  clientPlan.protection = {};
-  clientPlan.summary = {};
+    /*
+     * Reset the profile form fields.
+     */
+    if (profileForm) {
+        profileForm.reset();
+    }
 
-  updateClientHeading();
-  openSection("profile");
+    /*
+     * Reset the selected wealth cards.
+     */
+    wealthPreferenceCards.forEach(function (card) {
+        card.classList.remove("selected");
+        card.setAttribute(
+            "aria-pressed",
+            "false",
+        );
+    });
+
+    /*
+     * Reset all financial input fields.
+     */
+    financialInputs.forEach(function (input) {
+        if (!input) {
+            return;
+        }
+
+        input.value = "";
+    });
+
+    /*
+     * Reset the property interface.
+     */
+    renderProperties();
+
+    /*
+     * Reapply age-dependent CPF field visibility.
+     *
+     * With no DOB entered, SA should be shown
+     * and RA should be hidden.
+     */
+    updateCpfFields();
+
+    /*
+     * Recalculate all displayed totals.
+     */
+    updateAssetsAndIncomeTotals();
+
+    /*
+     * Reset headings and messages.
+     */
+    updateClientHeading();
+    clearProfileMessage();
+    closeProfileValidationModal();
+    closePropertyModal();
+
+    /*
+     * Return to the Client Profile section.
+     */
+    openSection("profile");
 }
 
 /* ========================================
