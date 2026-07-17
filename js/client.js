@@ -216,6 +216,7 @@ function handleProfileInput() {
         emailInput.value.trim();
 
     updateClientHeading();
+updateProfileDependentSections();
     updateCpfFields();
 }
 
@@ -818,6 +819,70 @@ function isProfileComplete() {
         profile.occupation &&
         profile.employmentStatus
     );
+}
+
+function updateProfileDependentSections() {
+    updateCpfFields();
+
+    /*
+        Later, add other profile-dependent updates here:
+
+        updateProtectionAnalysis();
+        updateCostOfWants();
+        updateSummaryReport();
+    */
+}
+
+function getClientAge() {
+    const dateOfBirth =
+        clientPlan.profile.dateOfBirth;
+
+    if (!dateOfBirth) {
+        return null;
+    }
+
+    const today = new Date();
+
+    const [
+        birthYear,
+        birthMonth,
+        birthDay
+    ] = dateOfBirth
+        .split("-")
+        .map(Number);
+
+    let age =
+        today.getFullYear() - birthYear;
+
+    const hasHadBirthdayThisYear =
+        today.getMonth() + 1 > birthMonth ||
+        (
+            today.getMonth() + 1 === birthMonth &&
+            today.getDate() >= birthDay
+        );
+
+    if (!hasHadBirthdayThisYear) {
+        age--;
+    }
+
+    return age;
+}
+
+function updateCpfFields() {
+    if (!cpfSaGroup || !cpfRaGroup) {
+        return;
+    }
+
+    const age = getClientAge();
+
+    if (age === null || age < 55) {
+        cpfSaGroup.hidden = false;
+        cpfRaGroup.hidden = true;
+        return;
+    }
+
+    cpfSaGroup.hidden = true;
+    cpfRaGroup.hidden = false;
 }
 
 function redirectToLogin() {
