@@ -14,8 +14,6 @@ async function protectDashboard() {
             error: userError
         } = await supabaseClient.auth.getUser();
 
-        console.log("Authenticated user:", user);
-
         if (userError || !user) {
             window.location.replace("index.html");
             return;
@@ -27,9 +25,6 @@ async function protectDashboard() {
                 .select("full_name, role, is_active")
                 .eq("id", user.id)
                 .single();
-
-        console.log("Profile result:", profile);
-        console.log("Profile error:", profileError);
 
         if (profileError) {
             loadingMessage.textContent =

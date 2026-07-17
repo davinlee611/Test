@@ -186,6 +186,9 @@ if (profileForm) {
 }
 
 function handleProfileInput() {
+
+    clearProfileMessage();
+    
     clientPlan.profile.fullName =
         clientNameInput.value.trim();
 
@@ -216,8 +219,7 @@ function handleProfileInput() {
         emailInput.value.trim();
 
     updateClientHeading();
-updateProfileDependentSections();
-    updateCpfFields();
+    updateProfileDependentSections();
 }
 
 function handleProfileSubmit(event) {
@@ -578,39 +580,6 @@ if (totalPropertyValueElement) {
     totalPropertyValueElement.textContent =
         formatCurrency(totalPropertyValue);
 }
-}
-
-function updateCpfFields() {
-    if (!dateOfBirthInput.value) {
-        cpfSaGroup.hidden = false;
-        cpfRaGroup.hidden = true;
-        return;
-    }
-
-    const today = new Date();
-    const dob = new Date(dateOfBirthInput.value);
-
-    let age =
-        today.getFullYear() - dob.getFullYear();
-
-    const birthdayPassed =
-        today.getMonth() > dob.getMonth() ||
-        (
-            today.getMonth() === dob.getMonth() &&
-            today.getDate() >= dob.getDate()
-        );
-
-    if (!birthdayPassed) {
-        age--;
-    }
-
-    if (age >= 55) {
-        cpfSaGroup.hidden = true;
-        cpfRaGroup.hidden = false;
-    } else {
-        cpfSaGroup.hidden = false;
-        cpfRaGroup.hidden = true;
-    }
 }
 
 /* ========================================
