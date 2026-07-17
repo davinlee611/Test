@@ -1,5 +1,15 @@
 "use strict";
 
+import {
+    clientPlan,
+    resetClientPlan,
+} from "./state/client-state.js";
+
+void resetClientPlan;
+
+const supabaseClient =
+    window.supabaseClient;
+
 /* ========================================
    PAGE ELEMENTS
 ======================================== */
@@ -72,61 +82,6 @@ const wealthPreferenceCards = document.querySelectorAll(
 
 const CPF_ORDINARY_WAGE_CEILING = 8000;
 const CPF_ANNUAL_WAGE_CEILING = 102000;
-
-/* ========================================
-   IN-MEMORY PLAN DATA
-======================================== */
-
-const clientPlan = {
-  profile: {
-    fullName: "",
-    dateOfBirth: "",
-    gender: "",
-    maritalStatus: "",
-    occupation: "",
-    employmentStatus: "",
-    dependants: 0,
-    phone: "",
-    email: "",
-  },
-
-  priorities: {
-    selectedWealthTypes: [],
-
-    goals: [],
-
-    assets: {
-      liquidAssets: {
-        cashInBank: 0,
-        fixedDeposits: 0,
-        tBills: 0,
-        investments: 0,
-        others: 0,
-      },
-
-      income: {
-        monthlyEmployment: 0,
-        annualBonus: 0,
-        otherMonthly: 0,
-      },
-
-      cpf: {
-        oa: 0,
-        sa: 0,
-        ma: 0,
-        ra: 0,
-      },
-
-      properties: [],
-    },
-
-    liabilities: [],
-  },
-
-  costOfWants: {},
-  protection: {},
-  summary: {},
-};
 
 /* ========================================
    INITIALIZATION
