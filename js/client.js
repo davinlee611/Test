@@ -70,9 +70,6 @@ const prioritiesNextButton =
 const wealthPreferenceCards =
     document.querySelectorAll(".wealth-preference-card");
 
-const assetCategoryCards =
-    document.querySelectorAll(".asset-category-card");
-
 /* ========================================
    IN-MEMORY PLAN DATA
 ======================================== */
@@ -150,9 +147,10 @@ async function initializePage() {
         dateOfBirthInput.max = getTodayDate();
 
         loadingMessage.hidden = true;
-        clientWorkspace.hidden = false;
+clientWorkspace.hidden = false;
 
-        updateClientHeading();
+updateClientHeading();
+updateAssetsAndIncomeTotals();
 
     } catch (error) {
         console.error(
@@ -462,6 +460,15 @@ financialInputs.forEach(function (input) {
     input.addEventListener("input", handleFinancialInput);
 });
 
+if (addPropertyButton) {
+    addPropertyButton.addEventListener(
+        "click",
+        function () {
+            console.log("Add Property clicked");
+        }
+    );
+}
+
 function handleFinancialInput() {
     updateAssetsAndIncomeData();
     updateAssetsAndIncomeTotals();
@@ -472,40 +479,42 @@ function updateAssetsAndIncomeData() {
         clientPlan.priorities.assets;
 
     assets.liquidAssets.cashInBank =
-        getWholeNumber(cashInBankInput.value);
+        getInputWholeNumber(cashInBankInput);
 
     assets.liquidAssets.fixedDeposits =
-        getWholeNumber(fixedDepositsInput.value);
+        getInputWholeNumber(fixedDepositsInput);
 
     assets.liquidAssets.tBills =
-        getWholeNumber(tBillsInput.value);
+        getInputWholeNumber(tBillsInput);
 
     assets.liquidAssets.investments =
-        getWholeNumber(investmentsInput.value);
+        getInputWholeNumber(investmentsInput);
 
     assets.liquidAssets.others =
-        getWholeNumber(otherLiquidAssetsInput.value);
+        getInputWholeNumber(otherLiquidAssetsInput);
 
     assets.income.monthlyEmployment =
-        getWholeNumber(monthlyEmploymentIncomeInput.value);
+        getInputWholeNumber(
+            monthlyEmploymentIncomeInput
+        );
 
     assets.income.annualBonus =
-        getWholeNumber(annualBonusInput.value);
+        getInputWholeNumber(annualBonusInput);
 
     assets.income.otherMonthly =
-        getWholeNumber(otherMonthlyIncomeInput.value);
+        getInputWholeNumber(otherMonthlyIncomeInput);
 
     assets.cpf.oa =
-        getWholeNumber(cpfOaInput.value);
+        getInputWholeNumber(cpfOaInput);
 
     assets.cpf.sa =
-        getWholeNumber(cpfSaInput.value);
+        getInputWholeNumber(cpfSaInput);
 
     assets.cpf.ma =
-        getWholeNumber(cpfMaInput.value);
+        getInputWholeNumber(cpfMaInput);
 
     assets.cpf.ra =
-        getWholeNumber(cpfRaInput.value);
+        getInputWholeNumber(cpfRaInput);
 }
 
 function updateAssetsAndIncomeTotals() {
@@ -541,17 +550,25 @@ function updateAssetsAndIncomeTotals() {
             0
         );
 
+    if (totalLiquidAssetsElement) {
     totalLiquidAssetsElement.textContent =
         formatCurrency(totalLiquidAssets);
+}
 
+if (totalMonthlyIncomeElement) {
     totalMonthlyIncomeElement.textContent =
         formatCurrency(equivalentMonthlyIncome);
+}
 
+if (totalCpfElement) {
     totalCpfElement.textContent =
         formatCurrency(totalCpf);
+}
 
+if (totalPropertyValueElement) {
     totalPropertyValueElement.textContent =
         formatCurrency(totalPropertyValue);
+}
 }
 
 /* ========================================
@@ -758,7 +775,15 @@ function getWholeNumber(value) {
         return 0;
     }
 
-    return Math.round(number);
+    return Math.trunc(number);
+}
+
+function getInputWholeNumber(inputElement) {
+    if (!inputElement) {
+        return 0;
+    }
+
+    return getWholeNumber(inputElement.value);
 }
 
 function formatCurrency(value) {
