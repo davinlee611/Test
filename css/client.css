@@ -360,95 +360,6 @@ body {
 }
 
 /* ========================================
-   ASSET CATEGORIES
-======================================== */
-
-.asset-category-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-}
-
-.asset-category-card {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    width: 100%;
-    height: auto;
-    min-height: 135px;
-    padding: 20px 44px 20px 20px;
-    color: inherit;
-    text-align: left;
-    background: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        background-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.asset-category-card:hover {
-    background: #fdfdff;
-    border-color: var(--primary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-}
-
-.asset-category-card.active {
-    background: rgba(91, 78, 245, 0.07);
-    border-color: var(--primary-color);
-}
-
-.asset-category-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-    width: 46px;
-    height: 46px;
-    color: var(--primary-color);
-    background: rgba(91, 78, 245, 0.1);
-    border-radius: 12px;
-    font-size: 18px;
-}
-
-.asset-category-card h4 {
-    margin-bottom: 7px;
-    color: var(--text-primary);
-    font-size: 16px;
-}
-
-.asset-category-card p {
-    color: var(--text-secondary);
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-.asset-category-arrow {
-    position: absolute;
-    top: 50%;
-    right: 18px;
-    color: var(--text-secondary);
-    transform: translateY(-50%);
-}
-
-.asset-summary {
-    margin-top: 6px;
-    color: var(--text-secondary);
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-.asset-summary.has-value {
-    color: var(--primary-color);
-    font-size: 18px;
-    font-weight: 700;
-}
-
-/* ========================================
    EMPTY ENTRY LISTS
 ======================================== */
 
@@ -776,6 +687,18 @@ body {
     text-align: right;
 }
 
+/* Remove number input arrows */
+.financial-amount-input::-webkit-outer-spin-button,
+.financial-amount-input::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+}
+
+.financial-amount-input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
 .property-list {
     display: flex;
     flex-direction: column;
@@ -812,19 +735,8 @@ body {
 }
 
 /* ========================================
-   MODAL
+   CURRENCY INPUT
 ======================================== */
-
-.modal-header h2 {
-    color: var(--text-primary);
-    font-size: 24px;
-}
-
-.modal-header p:not(.section-label) {
-    margin-top: 6px;
-    color: var(--text-secondary);
-    font-size: 13px;
-}
 
 .currency-input {
     position: relative;
@@ -896,10 +808,6 @@ body {
     grid-template-columns: 1fr;
     }
 
-    .asset-category-grid {
-    grid-template-columns: 1fr;
-    }
-
 }
 
 /* ========================================
@@ -949,82 +857,59 @@ body {
     }
 
     .form-actions {
-    flex-direction: column;
-    gap: 12px;
-}
+        flex-direction: column;
+        gap: 12px;
+    }
 
-.form-actions--right,
-.form-actions--between {
-    justify-content: stretch;
-}
+    .form-actions--right,
+    .form-actions--between {
+        justify-content: stretch;
+    }
 
-.next-button,
-.header-button {
-    width: 100%;
-}
+    .next-button,
+    .header-button {
+        width: 100%;
+    }
 
-.next-button {
-    width: 100%;
-}
+    .wealth-preferences-section {
+        padding: 20px;
+    }
 
-.wealth-preferences-section {
-    padding: 20px;
-}
+    .wealth-preference-card {
+        padding: 20px 48px 20px 18px;
+    }
 
-.wealth-preference-card {
-    padding: 20px 48px 20px 18px;
-}
+    .planning-category-section {
+        padding: 20px;
+    }
 
-.planning-category-section {
-    padding: 20px;
-}
+    .planning-category-heading {
+        flex-direction: column;
+    }
 
-.planning-category-heading {
-    flex-direction: column;
-}
+    .category-action-button {
+        width: 100%;
+    }
 
-.category-action-button {
-    width: 100%;
-}
+    .financial-category-card {
+        padding: 20px;
+    }
 
-.asset-category-card {
-    padding: 18px 42px 18px 18px;
-}
+    .financial-category-header {
+        flex-direction: column;
+    }
 
-.modal-card {
-    padding: 22px;
-}
+    .financial-category-total {
+        min-width: 0;
+        text-align: left;
+    }
 
-.modal-actions {
-    flex-direction: column-reverse;
-}
+    .financial-input-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
 
-.modal-actions .header-button,
-.modal-actions .next-button {
-    width: 100%;
+    .financial-input-grid {
+        grid-template-columns: 1fr;
+    }
 }
-
-.financial-category-card {
-    padding: 20px;
-}
-
-.financial-category-header {
-    flex-direction: column;
-}
-
-.financial-category-total {
-    min-width: 0;
-    text-align: left;
-}
-
-.financial-input-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
-}
-
-.financial-input-grid {
-    grid-template-columns: 1fr;
-}
-
-}
-

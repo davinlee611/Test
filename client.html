@@ -320,6 +320,7 @@
                                     id="employmentStatus"
                                     name="employmentStatus"
                                     class="form-control"
+                                    required
                                 >
                                     <option value="">
                                         Select employment status
@@ -593,399 +594,380 @@
             <h3>Assets &amp; Income</h3>
 
             <p>
-                Select a category to enter the client's financial
-                information.
+                Enter the client's current assets, income,
+                CPF balances and property details.
             </p>
         </div>
     </div>
 
-    <div class="asset-category-grid">
+    <div class="assets-income-section">
 
-<!-- ========================================
-     ASSETS AND INCOME
-======================================== -->
+        <!-- Liquid Assets -->
+        <div class="financial-category-card">
 
-<section class="planning-section assets-income-section">
+            <div class="financial-category-header">
+                <div>
+                    <h3>Liquid Assets</h3>
 
-    <div class="planning-section-header">
-        <div>
-            <p class="section-label">Financial Position</p>
+                    <p>
+                        Enter cash and investments that can be accessed
+                        or converted relatively easily.
+                    </p>
+                </div>
 
-            <h2>Assets &amp; Income</h2>
+                <div class="financial-category-total">
+                    <span>Total Liquid Assets</span>
 
-            <p>
-                Enter the client's current assets and income details.
-            </p>
-        </div>
-    </div>
-
-    <!-- Liquid Assets -->
-    <div class="financial-category-card">
-
-        <div class="financial-category-header">
-            <div>
-                <h3>Liquid Assets</h3>
-
-                <p>
-                    Cash and investments that can be accessed or converted
-                    relatively easily.
-                </p>
-            </div>
-
-            <div class="financial-category-total">
-                <span>Total Liquid Assets</span>
-
-                <strong id="totalLiquidAssets">
-                    $0
-                </strong>
-            </div>
-        </div>
-
-        <div class="financial-input-list">
-
-            <div class="financial-input-row">
-                <label for="cashInBank">
-                    Cash in Bank
-                </label>
-
-                <div class="currency-input">
-                    <span>$</span>
-
-                    <input
-                        id="cashInBank"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
+                    <strong id="totalLiquidAssets">
+                        $0
+                    </strong>
                 </div>
             </div>
 
-            <div class="financial-input-row">
-                <label for="fixedDeposits">
-                    Fixed Deposits
-                </label>
+            <div class="financial-input-list">
 
-                <div class="currency-input">
-                    <span>$</span>
+                <div class="financial-input-row">
+                    <label for="cashInBank">
+                        Cash in Bank
+                    </label>
 
-                    <input
-                        id="fixedDeposits"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
+                    <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                            id="cashInBank"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
                 </div>
-            </div>
 
-            <div class="financial-input-row">
-                <label for="tBills">
-                    T-Bills
-                </label>
+                <div class="financial-input-row">
+                    <label for="fixedDeposits">
+                        Fixed Deposits
+                    </label>
 
-                <div class="currency-input">
-                    <span>$</span>
+                    <div class="currency-input">
+                        <span>$</span>
 
-                    <input
-                        id="tBills"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
+                        <input
+                            id="fixedDeposits"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
                 </div>
-            </div>
 
-            <div class="financial-input-row">
-                <label for="investments">
-                    Investments
-                </label>
+                <div class="financial-input-row">
+                    <label for="tBills">
+                        T-Bills
+                    </label>
 
-                <div class="currency-input">
-                    <span>$</span>
+                    <div class="currency-input">
+                        <span>$</span>
 
-                    <input
-                        id="investments"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
+                        <input
+                            id="tBills"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
                 </div>
-            </div>
 
-            <div class="financial-input-row">
-                <label for="otherLiquidAssets">
-                    Others
-                </label>
+                <div class="financial-input-row">
+                    <label for="investments">
+                        Investments
+                    </label>
 
-                <div class="currency-input">
-                    <span>$</span>
+                    <div class="currency-input">
+                        <span>$</span>
 
-                    <input
-                        id="otherLiquidAssets"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
+                        <input
+                            id="investments"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
                 </div>
+
+                <div class="financial-input-row">
+                    <label for="otherLiquidAssets">
+                        Others
+                    </label>
+
+                    <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                            id="otherLiquidAssets"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
+                </div>
+
             </div>
 
         </div>
 
-    </div>
+        <!-- Income -->
+        <div class="financial-category-card">
 
-    <!-- Income -->
-    <div class="financial-category-card">
+            <div class="financial-category-header">
+                <div>
+                    <h3>Income</h3>
 
-        <div class="financial-category-header">
-            <div>
-                <h3>Income</h3>
+                    <p>
+                        Enter the client's regular monthly income
+                        and annual bonus.
+                    </p>
+                </div>
 
-                <p>
-                    Enter the client's regular income and annual bonus.
-                </p>
-            </div>
+                <div class="financial-category-total">
+                    <span>Equivalent Monthly Income</span>
 
-            <div class="financial-category-total">
-                <span>Equivalent Monthly Income</span>
-
-                <strong id="totalMonthlyIncome">
-                    $0
-                </strong>
-            </div>
-        </div>
-
-        <div class="financial-input-list">
-
-            <div class="financial-input-row">
-                <label for="monthlyEmploymentIncome">
-                    Monthly Employment Income
-                </label>
-
-                <div class="currency-input">
-                    <span>$</span>
-
-                    <input
-                        id="monthlyEmploymentIncome"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
+                    <strong id="totalMonthlyIncome">
+                        $0
+                    </strong>
                 </div>
             </div>
 
-            <div class="financial-input-row">
-                <label for="annualBonus">
-                    Annual Bonus
-                </label>
+            <div class="financial-input-list">
 
-                <div class="currency-input">
-                    <span>$</span>
+                <div class="financial-input-row">
+                    <label for="monthlyEmploymentIncome">
+                        Monthly Employment Income
+                    </label>
 
-                    <input
-                        id="annualBonus"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
+                    <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                            id="monthlyEmploymentIncome"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
                 </div>
-            </div>
 
-            <div class="financial-input-row">
-                <label for="otherMonthlyIncome">
-                    Other Monthly Income
-                </label>
+                <div class="financial-input-row">
+                    <label for="annualBonus">
+                        Annual Bonus
+                    </label>
 
-                <div class="currency-input">
-                    <span>$</span>
+                    <div class="currency-input">
+                        <span>$</span>
 
-                    <input
-                        id="otherMonthlyIncome"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
+                        <input
+                            id="annualBonus"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
                 </div>
-            </div>
 
-        </div>
+                <div class="financial-input-row">
+                    <label for="otherMonthlyIncome">
+                        Other Monthly Income
+                    </label>
 
-    </div>
+                    <div class="currency-input">
+                        <span>$</span>
 
-    <!-- CPF -->
-    <div class="financial-category-card">
-
-        <div class="financial-category-header">
-            <div>
-                <h3>CPF</h3>
-
-                <p>
-                    Enter the client's current CPF account balances.
-                </p>
-            </div>
-
-            <div class="financial-category-total">
-                <span>Total CPF</span>
-
-                <strong id="totalCpf">
-                    $0
-                </strong>
-            </div>
-        </div>
-
-        <div class="financial-input-grid">
-
-            <div class="form-group">
-                <label for="cpfOa">
-                    Ordinary Account (OA)
-                </label>
-
-                <div class="currency-input">
-                    <span>$</span>
-
-                    <input
-                        id="cpfOa"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
+                        <input
+                            id="otherMonthlyIncome"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="cpfSa">
-                    Special Account (SA)
-                </label>
-
-                <div class="currency-input">
-                    <span>$</span>
-
-                    <input
-                        id="cpfSa"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="cpfMa">
-                    MediSave Account (MA)
-                </label>
-
-                <div class="currency-input">
-                    <span>$</span>
-
-                    <input
-                        id="cpfMa"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="cpfRa">
-                    Retirement Account (RA)
-                </label>
-
-                <div class="currency-input">
-                    <span>$</span>
-
-                    <input
-                        id="cpfRa"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                    >
-                </div>
             </div>
 
         </div>
 
-    </div>
+        <!-- CPF -->
+        <div class="financial-category-card">
 
-    <!-- Property -->
-    <div class="financial-category-card">
+            <div class="financial-category-header">
+                <div>
+                    <h3>CPF</h3>
 
-        <div class="financial-category-header">
-            <div>
-                <h3>Property</h3>
+                    <p>
+                        Enter the client's current CPF account balances.
+                    </p>
+                </div>
 
-                <p>
-                    Add each property owned by the client.
-                </p>
+                <div class="financial-category-total">
+                    <span>Total CPF</span>
+
+                    <strong id="totalCpf">
+                        $0
+                    </strong>
+                </div>
             </div>
 
-            <div class="financial-category-total">
-                <span>Total Property Value</span>
+            <div class="financial-input-grid">
 
-                <strong id="totalPropertyValue">
-                    $0
-                </strong>
+                <div class="form-group">
+                    <label for="cpfOa">
+                        Ordinary Account (OA)
+                    </label>
+
+                    <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                            id="cpfOa"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cpfSa">
+                        Special Account (SA)
+                    </label>
+
+                    <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                            id="cpfSa"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cpfMa">
+                        MediSave Account (MA)
+                    </label>
+
+                    <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                            id="cpfMa"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cpfRa">
+                        Retirement Account (RA)
+                    </label>
+
+                    <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                            id="cpfRa"
+                            class="form-control financial-amount-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                        >
+                    </div>
+                </div>
+
             </div>
+
         </div>
 
-        <div
-            id="propertyList"
-            class="property-list"
-        >
-            <p
-                id="emptyPropertyMessage"
-                class="empty-state-message"
+        <!-- Property -->
+        <div class="financial-category-card">
+
+            <div class="financial-category-header">
+                <div>
+                    <h3>Property</h3>
+
+                    <p>
+                        Add each property owned by the client.
+                    </p>
+                </div>
+
+                <div class="financial-category-total">
+                    <span>Total Property Value</span>
+
+                    <strong id="totalPropertyValue">
+                        $0
+                    </strong>
+                </div>
+            </div>
+
+            <div
+                id="propertyList"
+                class="property-list"
             >
-                No property added.
-            </p>
+                <p
+                    id="emptyPropertyMessage"
+                    class="empty-state-message"
+                >
+                    No property added.
+                </p>
+            </div>
+
+            <button
+                id="addPropertyButton"
+                class="add-financial-item-button"
+                type="button"
+            >
+                <i class="fa-solid fa-plus"></i>
+                Add Property
+            </button>
+
         </div>
-
-        <button
-            id="addPropertyButton"
-            class="add-financial-item-button"
-            type="button"
-        >
-            <i class="fa-solid fa-plus"></i>
-            Add Property
-        </button>
-
-    </div>
-
-</section>
 
     </div>
 
