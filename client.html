@@ -555,37 +555,6 @@
 
     </section>
 
-    <!-- Goals -->
-<section class="planning-category-section">
-
-    <div class="planning-category-heading">
-        <div>
-            <h3>Goals</h3>
-
-            <p>
-                Record what the client wants to achieve and which
-                priorities matter most.
-            </p>
-        </div>
-
-        <button
-            id="addGoalButton"
-            class="category-action-button"
-            type="button"
-        >
-            <i class="fa-solid fa-plus"></i>
-            Add Goal
-        </button>
-    </div>
-
-    <div id="goalsList" class="entry-list">
-        <p class="empty-list-message">
-            No goals added yet.
-        </p>
-    </div>
-
-</section>
-
 <!-- Assets and Income -->
 <section class="planning-category-section">
 
@@ -979,6 +948,37 @@
 
 </section>
 
+<!-- Goals -->
+<section class="planning-category-section">
+
+    <div class="planning-category-heading">
+        <div>
+            <h3>Goals</h3>
+
+            <p>
+                Record what the client wants to achieve and which
+                priorities matter most.
+            </p>
+        </div>
+
+        <button
+            id="addGoalButton"
+            class="category-action-button"
+            type="button"
+        >
+            <i class="fa-solid fa-plus"></i>
+            Add Goal
+        </button>
+    </div>
+
+    <div id="goalsList" class="entry-list">
+        <p class="empty-list-message">
+            No goals added yet.
+        </p>
+    </div>
+
+</section>
+
 <!-- Liabilities -->
 <section class="planning-category-section">
 
@@ -1160,7 +1160,7 @@
 
     <!-- ========================================
      PROFILE VALIDATION MODAL
-======================================== -->
+    ======================================== -->
 
 <div
     id="profileValidationModal"
@@ -1198,6 +1198,165 @@
         >
             Return to Profile
         </button>
+    </div>
+</div>
+
+<!-- ========================================
+     PROPERTY MODAL
+======================================== -->
+
+<div
+    id="propertyModal"
+    class="property-modal"
+    hidden
+>
+    <div
+        class="property-modal-backdrop"
+        data-close-property-modal
+    ></div>
+
+    <div
+        class="property-modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="propertyModalTitle"
+    >
+        <div class="property-modal-header">
+            <div>
+                <p class="property-modal-eyebrow">
+                    Assets & Income
+                </p>
+
+                <h2 id="propertyModalTitle">
+                    Add Property
+                </h2>
+            </div>
+
+            <button
+                id="closePropertyModalButton"
+                class="property-modal-close"
+                type="button"
+                aria-label="Close property form"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form id="propertyForm">
+            <input
+                id="editingPropertyId"
+                type="hidden"
+            >
+
+            <div class="property-form-grid">
+                <div class="form-group">
+                    <label for="propertyType">
+                        Property Type
+                    </label>
+
+                    <select
+                        id="propertyType"
+                        class="form-control"
+                        required
+                    >
+                        <option value="">
+                            Select property type
+                        </option>
+
+                        <option value="HDB 2-Room">
+                            HDB 2-Room
+                        </option>
+
+                        <option value="HDB 3-Room">
+                            HDB 3-Room
+                        </option>
+
+                        <option value="HDB 4-Room">
+                            HDB 4-Room
+                        </option>
+
+                        <option value="HDB 5-Room">
+                            HDB 5-Room
+                        </option>
+
+                        <option value="Condominium">
+                            Condominium
+                        </option>
+
+                        <option value="Landed">
+                            Landed
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="propertyMarketValue">
+                        Market Value
+                    </label>
+
+                    <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                            id="propertyMarketValue"
+                            class="form-control"
+                            type="number"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="0"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="propertyOwnership">
+                        Ownership Percentage
+                    </label>
+
+                    <div class="percentage-input">
+                        <input
+                            id="propertyOwnership"
+                            class="form-control"
+                            type="number"
+                            min="1"
+                            max="100"
+                            step="1"
+                            inputmode="numeric"
+                            value="100"
+                            required
+                        >
+
+                        <span>%</span>
+                    </div>
+                </div>
+            </div>
+
+            <p
+                id="propertyFormMessage"
+                class="property-form-message"
+                aria-live="polite"
+            ></p>
+
+            <div class="property-modal-actions">
+                <button
+                    id="cancelPropertyButton"
+                    class="secondary-button"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    id="savePropertyButton"
+                    class="primary-button"
+                    type="submit"
+                >
+                    Save Property
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 

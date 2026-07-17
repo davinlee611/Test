@@ -168,6 +168,7 @@ clientWorkspace.hidden = false;
 updateClientHeading();
 updateCpfFields();
 updateAssetsAndIncomeTotals();
+renderProperties();
 
     } catch (error) {
         console.error(
@@ -500,6 +501,41 @@ const emptyPropertyMessage =
 const totalPropertyValueElement =
     document.getElementById("totalPropertyValue");
 
+const propertyModal =
+    document.getElementById("propertyModal");
+
+const propertyForm =
+    document.getElementById("propertyForm");
+
+const propertyModalTitle =
+    document.getElementById("propertyModalTitle");
+
+const editingPropertyIdInput =
+    document.getElementById("editingPropertyId");
+
+const propertyTypeInput =
+    document.getElementById("propertyType");
+
+const propertyMarketValueInput =
+    document.getElementById("propertyMarketValue");
+
+const propertyOwnershipInput =
+    document.getElementById("propertyOwnership");
+
+const propertyFormMessage =
+    document.getElementById("propertyFormMessage");
+
+const closePropertyModalButton =
+    document.getElementById("closePropertyModalButton");
+
+const cancelPropertyButton =
+    document.getElementById("cancelPropertyButton");
+
+const propertyModalBackdrop =
+    document.querySelector(
+        "[data-close-property-modal]"
+    );
+
 /* ========================================
    ASSETS AND INCOME INPUTS
 ======================================== */
@@ -527,13 +563,354 @@ financialInputs.forEach(function (input) {
     input.addEventListener("input", handleFinancialInput);
 });
 
+/* ========================================
+   PROPERTY MODAL CONTROLS
+======================================== */
+
 if (addPropertyButton) {
     addPropertyButton.addEventListener(
         "click",
-        function () {
-            console.log("Add Property clicked");
-        }
+        openAddPropertyModal
     );
+}
+
+if (propertyForm) {
+    propertyForm.addEventListener(
+        "submit",
+        handlePropertySubmit
+    );
+}
+
+if (closePropertyModalButton) {
+    closePropertyModalButton.addEventListener(
+        "click",
+        closePropertyModal
+    );
+}
+
+if (cancelPropertyButton) {
+    cancelPropertyButton.addEventListener(
+        "click",
+        closePropertyModal
+    );
+}
+
+if (propertyModalBackdrop) {
+    propertyModalBackdrop.addEventListener(
+        "click",
+        closePropertyModal
+    );
+}
+
+document.addEventListener("keydown", function (event) {
+    if (
+        event.key === "Escape" &&
+        propertyModal &&
+        !propertyModal.hidden
+    ) {
+        closePropertyModal();
+    }
+});
+
+function openAddPropertyModal() {
+    if (!propertyModal || !propertyForm) {
+        return;
+    }
+
+    propertyForm.reset();
+
+    editingPropertyIdInput.value = "";
+    propertyOwnershipInput.value = "100";
+    propertyFormMessage.textContent = "";
+    propertyModalTitle.textContent = "Add Property";
+
+    propertyModal.hidden = false;
+    document.body.classList.add("property-modal-open");
+
+    propertyTypeInput.focus();
+}
+
+function openEditPropertyModal(propertyId) {
+    const property =
+        clientPlan.priorities.assets.properties.find(
+            function (savedProperty) {
+                return savedProperty.id === propertyId;
+            }
+        );
+
+    if (!property || !propertyModal) {
+        return;
+    }
+
+    editingPropertyIdInput.value = property.id;
+    propertyTypeInput.value = property.type;
+    propertyMarketValueInput.value =
+        property.marketValue;
+    propertyOwnershipInput.value =
+        property.ownershipPercentage;
+
+    propertyFormMessage.textContent = "";
+    propertyModalTitle.textContent = "Edit Property";
+
+    propertyModal.hidden = false;
+    document.body.classList.add("property-modal-open");
+
+    propertyTypeInput.focus();
+}
+
+function closePropertyModal() {
+    if (!propertyModal) {
+        return;
+    }
+
+    propertyModal.hidden = true;
+    document.body.classList.remove("property-modal-open");
+}
+
+function handlePropertySubmit(event) {
+    event.preventDefault();
+
+    const propertyType = propertyTypeInput.value;
+    const marketValue =
+        getWholeNumber(propertyMarketValueInput.value);
+    const ownershipPercentage =
+        getWholeNumber(propertyOwnershipInput.value);
+    const editingPropertyId =
+        editingPropertyIdInput.value;
+
+    propertyFormMessage.textContent = "";
+
+    if (!propertyType) {
+        propertyFormMessage.textContent =
+            "Please select a property type.";
+
+        propertyTypeInput.focus();
+        return;
+    }
+
+    if (marketValue <= 0) {
+        propertyFormMessage.textContent =
+            "Please enter the property's market value.";
+
+        propertyMarketValueInput.focus();
+        return;
+    }
+
+    if (
+        ownershipPercentage < 1 ||
+        ownershipPercentage > 100
+    ) {
+        propertyFormMessage.textContent =
+            "Ownership percentage must be between 1% and 100%.";
+
+        propertyOwnershipInput.focus();
+        return;
+    }
+
+    if (editingPropertyId) {
+        updateProperty(
+            editingPropertyId,
+            propertyType,
+            marketValue,
+            ownershipPercentage
+        );
+    } else {
+        addProperty(
+            propertyType,
+            marketValue,
+            ownershipPercentage
+        );
+    }
+
+    renderProperties();
+    updateAssetsAndIncomeTotals();
+    closePropertyModal();
+}
+
+function addProperty(
+    propertyType,
+    marketValue,
+    ownershipPercentage
+) {
+    clientPlan.priorities.assets.properties.push({
+        id: createUniqueId(),
+        type: propertyType,
+        marketValue: marketValue,
+        ownershipPercentage: ownershipPercentage
+    });
+}
+
+function updateProperty(
+    propertyId,
+    propertyType,
+    marketValue,
+    ownershipPercentage
+) {
+    const property =
+        clientPlan.priorities.assets.properties.find(
+            function (savedProperty) {
+                return savedProperty.id === propertyId;
+            }
+        );
+
+    if (!property) {
+        return;
+    }
+
+    property.type = propertyType;
+    property.marketValue = marketValue;
+    property.ownershipPercentage =
+        ownershipPercentage;
+}
+
+function deleteProperty(propertyId) {
+    const shouldDelete = window.confirm(
+        "Delete this property?"
+    );
+
+    if (!shouldDelete) {
+        return;
+    }
+
+    clientPlan.priorities.assets.properties =
+        clientPlan.priorities.assets.properties.filter(
+            function (property) {
+                return property.id !== propertyId;
+            }
+        );
+
+    renderProperties();
+    updateAssetsAndIncomeTotals();
+}
+
+function renderProperties() {
+    if (!propertyList || !emptyPropertyMessage) {
+        return;
+    }
+
+    const properties =
+        clientPlan.priorities.assets.properties;
+
+    propertyList.innerHTML = "";
+
+    emptyPropertyMessage.hidden =
+        properties.length > 0;
+
+    properties.forEach(function (property) {
+        const clientPropertyValue = Math.round(
+            property.marketValue *
+            (property.ownershipPercentage / 100)
+        );
+
+        const propertyItem =
+            document.createElement("div");
+
+        propertyItem.className = "property-item";
+
+        const propertyMain =
+            document.createElement("div");
+
+        propertyMain.className =
+            "property-item-main";
+
+        const propertyIcon =
+            document.createElement("div");
+
+        propertyIcon.className =
+            "property-item-icon";
+
+        propertyIcon.innerHTML =
+            '<i class="fa-solid fa-house"></i>';
+
+        const propertyDetails =
+            document.createElement("div");
+
+        propertyDetails.className =
+            "property-item-details";
+
+        const propertyTitle =
+            document.createElement("h4");
+
+        propertyTitle.textContent = property.type;
+
+        const propertyDescription =
+            document.createElement("p");
+
+        propertyDescription.textContent =
+            `${formatCurrency(property.marketValue)} market value · ` +
+            `${property.ownershipPercentage}% ownership · ` +
+            `${formatCurrency(clientPropertyValue)} client value`;
+
+        propertyDetails.append(
+            propertyTitle,
+            propertyDescription
+        );
+
+        propertyMain.append(
+            propertyIcon,
+            propertyDetails
+        );
+
+        const propertyActions =
+            document.createElement("div");
+
+        propertyActions.className =
+            "property-item-actions";
+
+        const editButton =
+            document.createElement("button");
+
+        editButton.type = "button";
+        editButton.className =
+            "property-action-button";
+        editButton.setAttribute(
+            "aria-label",
+            `Edit ${property.type}`
+        );
+
+        editButton.innerHTML =
+            '<i class="fa-solid fa-pen"></i>';
+
+        editButton.addEventListener(
+            "click",
+            function () {
+                openEditPropertyModal(property.id);
+            }
+        );
+
+        const deleteButton =
+            document.createElement("button");
+
+        deleteButton.type = "button";
+        deleteButton.className =
+            "property-action-button delete";
+        deleteButton.setAttribute(
+            "aria-label",
+            `Delete ${property.type}`
+        );
+
+        deleteButton.innerHTML =
+            '<i class="fa-solid fa-trash"></i>';
+
+        deleteButton.addEventListener(
+            "click",
+            function () {
+                deleteProperty(property.id);
+            }
+        );
+
+        propertyActions.append(
+            editButton,
+            deleteButton
+        );
+
+        propertyItem.append(
+            propertyMain,
+            propertyActions
+        );
+
+        propertyList.appendChild(propertyItem);
+    });
 }
 
 function handleFinancialInput() {
@@ -609,13 +986,19 @@ function updateAssetsAndIncomeTotals() {
         assets.cpf.ra;
 
     const totalPropertyValue =
-        assets.properties.reduce(
-            function (total, property) {
-                return total +
-                    getWholeNumber(property.value);
-            },
-            0
-        );
+    assets.properties.reduce(
+        function (total, property) {
+            const clientPropertyValue =
+                property.marketValue *
+                (
+                    property.ownershipPercentage /
+                    100
+                );
+
+            return total + clientPropertyValue;
+        },
+        0
+    );
 
     if (totalLiquidAssetsElement) {
     totalLiquidAssetsElement.textContent =
@@ -772,6 +1155,7 @@ clientPlan.priorities.assets.cpf = {
 };
 
 clientPlan.priorities.assets.properties = [];
+renderProperties();
 financialInputs.forEach(function (input) {
     if (input) {
         input.value = "";
@@ -993,4 +1377,18 @@ function formatCurrency(value) {
                 maximumFractionDigits: 0
             }
         );
+}
+
+function createUniqueId() {
+    if (
+        window.crypto &&
+        typeof window.crypto.randomUUID === "function"
+    ) {
+        return window.crypto.randomUUID();
+    }
+
+    return (
+        Date.now().toString(36) +
+        Math.random().toString(36).slice(2)
+    );
 }
