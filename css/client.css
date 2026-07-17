@@ -435,6 +435,19 @@ body {
     transform: translateY(-50%);
 }
 
+.asset-summary {
+    margin-top: 6px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.asset-summary.has-value {
+    color: var(--primary-color);
+    font-size: 18px;
+    font-weight: 700;
+}
+
 /* ========================================
    EMPTY ENTRY LISTS
 ======================================== */

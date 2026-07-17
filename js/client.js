@@ -91,6 +91,11 @@ const closeLiquidAssetsModalButton =
 const cancelLiquidAssetsButton =
     document.getElementById("cancelLiquidAssetsButton");
 
+const liquidAssetsSummary =
+    document.getElementById(
+        "liquidAssetsSummary"
+    );
+
 /* ========================================
    IN-MEMORY PLAN DATA
 ======================================== */
@@ -474,6 +479,7 @@ function handleLiquidAssetsSubmit(event) {
 
     clientPlan.priorities.assets.liquidAssets.balance =
         balance;
+        updateLiquidAssetsSummary();
 
     console.log(
         "Liquid assets saved:",
@@ -481,6 +487,32 @@ function handleLiquidAssetsSubmit(event) {
     );
 
     closeLiquidAssetsModal();
+}
+
+function updateLiquidAssetsSummary() {
+
+    const balance =
+        clientPlan.priorities.assets
+            .liquidAssets.balance;
+
+    if (balance <= 0) {
+
+        liquidAssetsSummary.textContent =
+            "No balance entered.";
+
+        liquidAssetsSummary.classList.remove(
+            "has-value"
+        );
+
+        return;
+    }
+
+    liquidAssetsSummary.textContent =
+        formatCurrency(balance);
+
+    liquidAssetsSummary.classList.add(
+        "has-value"
+    );
 }
 
 /* ========================================
@@ -572,6 +604,7 @@ function clearFinancialPlan() {
 
     clientPlan.priorities.goals = [];
     clientPlan.priorities.assets.liquidAssets.balance = 0;
+    updateLiquidAssetsSummary();
     clientPlan.priorities.liabilities = [];
 
     clientPlan.costOfWants = {};
@@ -620,6 +653,8 @@ async function handleLogout() {
     redirectToLogin();
 }
 
+
+
 /* ========================================
    HELPERS
 ======================================== */
@@ -644,4 +679,16 @@ function getTodayDate() {
     const today = new Date();
 
     return today.toISOString().split("T")[0];
+}
+
+function formatCurrency(value) {
+
+    return "$" +
+        Number(value).toLocaleString(
+            "en-SG",
+            {
+                maximumFractionDigits: 0
+            }
+        );
+
 }
