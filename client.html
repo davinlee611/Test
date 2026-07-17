@@ -242,13 +242,9 @@
                   >
                     <option value="">Select employment status</option>
 
-                    <option value="full_time_employed">
-                      Full-time Employed
-                    </option>
+                    <option value="full_time_employed">Full-time Employed</option>
 
-                    <option value="self_employed">
-                      Self-employed
-                    </option>
+                    <option value="self_employed">Self-employed</option>
 
                     <option value="unemployed">Unemployed</option>
 
@@ -571,80 +567,216 @@
                   </div>
                 </div>
 
-                <!-- Income -->
+                <!-- ========================================
+                     INCOME
+                ======================================== -->
+                
                 <div class="financial-category-card">
                   <div class="financial-category-header">
                     <div>
                       <h3>Income</h3>
-
+                
                       <p>
-                        Enter the client's regular monthly income and annual
-                        bonus.
+                        Enter the client's monthly gross salary,
+                        annual bonus and other monthly income.
                       </p>
-
                     </div>
-
                   </div>
-
+                
                   <div class="financial-input-list">
                     <div class="financial-input-row">
                       <label for="monthlyEmploymentIncome">
                         Monthly Gross Salary
                       </label>
-
+                
                       <div class="currency-input">
                         <span>$</span>
-
-                        <input
-                          id="monthlyEmploymentIncome"
-                          class="form-control financial-amount-input"
-                          type="number"
-                          min="0"
-                          step="1"
-                          inputmode="numeric"
-                          placeholder="0"
-                        />
+                
+                        <input id="monthlyEmploymentIncome" class="form-control financial-amount-input" type="number" min="0" step="1"
+                          inputmode="numeric" placeholder="0" />
                       </div>
                     </div>
-
+                
                     <div class="financial-input-row">
-                      <label for="annualBonus"> Annual Bonus </label>
-
+                      <label for="annualBonus">
+                        Annual Bonus
+                      </label>
+                
                       <div class="currency-input">
                         <span>$</span>
-
-                        <input
-                          id="annualBonus"
-                          class="form-control financial-amount-input"
-                          type="number"
-                          min="0"
-                          step="1"
-                          inputmode="numeric"
-                          placeholder="0"
-                        />
+                
+                        <input id="annualBonus" class="form-control financial-amount-input" type="number" min="0" step="1"
+                          inputmode="numeric" placeholder="0" />
                       </div>
                     </div>
-
+                
                     <div class="financial-input-row">
                       <label for="otherMonthlyIncome">
                         Other Monthly Income
                       </label>
-
+                
                       <div class="currency-input">
                         <span>$</span>
-
-                        <input
-                          id="otherMonthlyIncome"
-                          class="form-control financial-amount-input"
-                          type="number"
-                          min="0"
-                          step="1"
-                          inputmode="numeric"
-                          placeholder="0"
-                        />
+                
+                        <input id="otherMonthlyIncome" class="form-control financial-amount-input" type="number" min="0" step="1"
+                          inputmode="numeric" placeholder="0" />
                       </div>
                     </div>
                   </div>
+                
+                  <!-- ========================================
+                         INCOME SUMMARY
+                    ======================================== -->
+                
+                  <div class="income-summary">
+                    <div class="income-summary-row">
+                      <div class="income-summary-content">
+                        <span class="income-summary-label">
+                          Employee CPF Contribution
+                        </span>
+                
+                        <span id="employeeCpfContributionNote" class="income-summary-note">
+                          Select employment status and date of birth
+                        </span>
+                      </div>
+                
+                      <strong id="employeeCpfContribution" class="income-summary-value income-deduction">
+                        $0
+                      </strong>
+                    </div>
+                
+                    <div class="income-summary-row">
+                      <div class="income-summary-content">
+                        <span class="income-summary-label">
+                          Monthly Take-home Income
+                        </span>
+                
+                        <span class="income-summary-note">
+                          Including other monthly income
+                        </span>
+                      </div>
+                
+                      <strong id="monthlyTakeHomeIncome" class="income-summary-value">
+                        $0
+                      </strong>
+                    </div>
+                
+                    <div class="income-summary-row">
+                      <div class="income-summary-content">
+                        <span class="income-summary-label">
+                          Annual Employee CPF
+                        </span>
+                
+                        <span id="annualEmployeeCpfNote" class="income-summary-note">
+                          Includes CPF on ordinary and additional wages
+                        </span>
+                      </div>
+                
+                      <strong id="annualEmployeeCpf" class="income-summary-value income-deduction">
+                        $0
+                      </strong>
+                    </div>
+                
+                    <div class="income-summary-row">
+                      <div class="income-summary-content">
+                        <span class="income-summary-label">
+                          Annual Gross Income
+                        </span>
+                
+                        <span class="income-summary-note">
+                          Including Annual Bonus
+                        </span>
+                      </div>
+                
+                      <strong id="annualGrossIncome" class="income-summary-value">
+                        $0
+                      </strong>
+                    </div>
+                
+                    <div class="income-summary-row income-summary-featured">
+                      <div class="income-summary-content">
+                        <span class="income-summary-label">
+                          Annual Take-home Income
+                        </span>
+                
+                        <span class="income-summary-note">
+                          Including Annual Bonus
+                        </span>
+                      </div>
+                
+                      <strong id="annualTakeHomeIncome" class="income-summary-value">
+                        $0
+                      </strong>
+                    </div>
+                  </div>
+                
+                  <!-- ========================================
+                         CPF DETAILS
+                    ======================================== -->
+                
+                  <details class="cpf-details">
+                    <summary>
+                      <span>CPF Details</span>
+                
+                      <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                    </summary>
+                
+                    <div class="cpf-details-content">
+                      <div id="cpfNotApplicableMessage" class="cpf-not-applicable-message" hidden></div>
+                
+                      <div id="cpfDetailsRows" class="cpf-details-rows">
+                        <div class="cpf-detail-row">
+                          <span>Employee CPF Rate</span>
+                          <strong id="employeeCpfRate">0%</strong>
+                        </div>
+                
+                        <div class="cpf-detail-row">
+                          <span>Ordinary Wage Ceiling</span>
+                          <strong id="ordinaryWageCeiling">$8,000</strong>
+                        </div>
+                
+                        <div class="cpf-detail-row">
+                          <span>Monthly Wage Subject to CPF</span>
+                          <strong id="monthlyWageSubjectToCpf">$0</strong>
+                        </div>
+                
+                        <div class="cpf-detail-row">
+                          <span>
+                            Annual Ordinary Wages Subject to CPF
+                          </span>
+                
+                          <strong id="annualOrdinaryWagesSubjectToCpf">
+                            $0
+                          </strong>
+                        </div>
+                
+                        <div class="cpf-detail-row">
+                          <span>Additional Wage Ceiling</span>
+                          <strong id="additionalWageCeiling">$0</strong>
+                        </div>
+                
+                        <div class="cpf-detail-row">
+                          <span>Annual Bonus Subject to CPF</span>
+                          <strong id="bonusSubjectToCpf">$0</strong>
+                        </div>
+                
+                        <div class="cpf-detail-row">
+                          <span>Annual Bonus Not Subject to CPF</span>
+                          <strong id="bonusNotSubjectToCpf">$0</strong>
+                        </div>
+                
+                        <div class="cpf-detail-row">
+                          <span>CPF on Ordinary Wages</span>
+                          <strong id="cpfOnOrdinaryWages">$0</strong>
+                        </div>
+                
+                        <div class="cpf-detail-row">
+                          <span>CPF on Additional Wages</span>
+                          <strong id="cpfOnAdditionalWages">$0</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </details>
                 </div>
 
                 <!-- CPF -->

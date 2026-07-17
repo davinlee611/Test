@@ -1235,3 +1235,192 @@ body.property-modal-open {
     width: 100%;
   }
 }
+
+/* ========================================
+   INCOME SUMMARY
+======================================== */
+
+.income-summary {
+  margin-top: 26px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+}
+
+.income-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.income-summary-row:last-child {
+  border-bottom: none;
+}
+
+.income-summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.income-summary-label {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.income-summary-note {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.income-summary-value {
+  flex-shrink: 0;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.income-summary-value.income-deduction {
+  color: #dc2626;
+}
+
+.income-summary-featured {
+  background: rgba(91, 78, 245, 0.06);
+}
+
+.income-summary-featured .income-summary-label {
+  font-size: 15px;
+}
+
+.income-summary-featured .income-summary-value {
+  color: var(--primary-color);
+  font-size: 24px;
+}
+
+
+/* ========================================
+   CPF DETAILS
+======================================== */
+
+.cpf-details {
+  margin-top: 16px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+}
+
+.cpf-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.cpf-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.cpf-details summary i {
+  color: var(--text-secondary);
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.cpf-details[open] summary i {
+  transform: rotate(180deg);
+}
+
+.cpf-details-content {
+  padding: 0 20px 18px;
+  border-top: 1px solid var(--border-color);
+}
+
+.cpf-details-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.cpf-details-rows[hidden] {
+  display: none;
+}
+
+.cpf-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 13px 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.cpf-detail-row:last-child {
+  border-bottom: none;
+}
+
+.cpf-detail-row span {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.cpf-detail-row strong {
+  flex-shrink: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  text-align: right;
+}
+
+.cpf-not-applicable-message {
+  margin-top: 18px;
+  padding: 14px 16px;
+  color: var(--text-secondary);
+  background: #f8fafc;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.cpf-not-applicable-message[hidden] {
+  display: none;
+}
+
+
+/* ========================================
+   INCOME RESPONSIVE
+======================================== */
+
+@media (max-width: 600px) {
+  .income-summary-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .income-summary-value {
+    text-align: left;
+  }
+
+  .cpf-detail-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .cpf-detail-row strong {
+    text-align: left;
+  }
+}

@@ -66,6 +66,10 @@ const wealthPreferenceCards = document.querySelectorAll(
   ".wealth-preference-card",
 );
 
+/* ========================================
+   CPF CONFIGURATION
+======================================== */
+
 const CPF_ORDINARY_WAGE_CEILING = 8000;
 const CPF_ANNUAL_WAGE_CEILING = 102000;
 
@@ -385,7 +389,87 @@ const annualBonusInput = document.getElementById("annualBonus");
 
 const otherMonthlyIncomeInput = document.getElementById("otherMonthlyIncome");
 
-const totalMonthlyIncomeElement = document.getElementById("totalMonthlyIncome");
+/* ========================================
+   INCOME SUMMARY ELEMENTS
+======================================== */
+
+const employeeCpfContributionElement = document.getElementById(
+    "employeeCpfContribution",
+);
+
+const employeeCpfContributionNote = document.getElementById(
+    "employeeCpfContributionNote",
+);
+
+const monthlyTakeHomeIncomeElement = document.getElementById(
+    "monthlyTakeHomeIncome",
+);
+
+const annualEmployeeCpfElement = document.getElementById(
+    "annualEmployeeCpf",
+);
+
+const annualEmployeeCpfNote = document.getElementById(
+    "annualEmployeeCpfNote",
+);
+
+const annualGrossIncomeElement = document.getElementById(
+    "annualGrossIncome",
+);
+
+const annualTakeHomeIncomeElement = document.getElementById(
+    "annualTakeHomeIncome",
+);
+
+
+/* ========================================
+   CPF DETAILS ELEMENTS
+======================================== */
+
+const cpfNotApplicableMessage = document.getElementById(
+    "cpfNotApplicableMessage",
+);
+
+const cpfDetailsRows = document.getElementById(
+    "cpfDetailsRows",
+);
+
+const employeeCpfRateElement = document.getElementById(
+    "employeeCpfRate",
+);
+
+const ordinaryWageCeilingElement = document.getElementById(
+    "ordinaryWageCeiling",
+);
+
+const monthlyWageSubjectToCpfElement = document.getElementById(
+    "monthlyWageSubjectToCpf",
+);
+
+const annualOrdinaryWagesSubjectToCpfElement =
+    document.getElementById(
+        "annualOrdinaryWagesSubjectToCpf",
+    );
+
+const additionalWageCeilingElement = document.getElementById(
+    "additionalWageCeiling",
+);
+
+const bonusSubjectToCpfElement = document.getElementById(
+    "bonusSubjectToCpf",
+);
+
+const bonusNotSubjectToCpfElement = document.getElementById(
+    "bonusNotSubjectToCpf",
+);
+
+const cpfOnOrdinaryWagesElement = document.getElementById(
+    "cpfOnOrdinaryWages",
+);
+
+const cpfOnAdditionalWagesElement = document.getElementById(
+    "cpfOnAdditionalWages",
+);
 
 const cpfOaInput = document.getElementById("cpfOa");
 
@@ -759,51 +843,521 @@ function updateAssetsAndIncomeData() {
   assets.cpf.ra = getInputWholeNumber(cpfRaInput);
 }
 
+/* ========================================
+   ASSETS AND INCOME TOTALS
+======================================== */
+
 function updateAssetsAndIncomeTotals() {
-  const assets = clientPlan.priorities.assets;
+    const assets = clientPlan.priorities.assets;
 
-  const totalLiquidAssets =
-    assets.liquidAssets.cashInBank +
-    assets.liquidAssets.fixedDeposits +
-    assets.liquidAssets.tBills +
-    assets.liquidAssets.investments +
-    assets.liquidAssets.others;
+    const totalLiquidAssets =
+        assets.liquidAssets.cashInBank +
+        assets.liquidAssets.fixedDeposits +
+        assets.liquidAssets.tBills +
+        assets.liquidAssets.investments +
+        assets.liquidAssets.others;
 
-  const equivalentMonthlyIncome =
-    assets.income.monthlyEmployment +
-    assets.income.otherMonthly +
-    Math.round(assets.income.annualBonus / 12);
+    const incomeSummary = calculateIncomeSummary();
 
-  const totalCpf =
-    assets.cpf.oa + assets.cpf.sa + assets.cpf.ma + assets.cpf.ra;
+    const totalCpf =
+        assets.cpf.oa +
+        assets.cpf.sa +
+        assets.cpf.ma +
+        assets.cpf.ra;
 
-  const totalPropertyValue = assets.properties.reduce(function (
-    total,
-    property,
-  ) {
-    const clientPropertyValue =
-      property.marketValue * (property.ownershipPercentage / 100);
+    const totalPropertyValue = assets.properties.reduce(
+        function (total, property) {
+            const clientPropertyValue =
+                property.marketValue *
+                (property.ownershipPercentage / 100);
 
-    return total + clientPropertyValue;
-  }, 0);
-
-  if (totalLiquidAssetsElement) {
-    totalLiquidAssetsElement.textContent = formatCurrency(totalLiquidAssets);
-  }
-
-  if (totalMonthlyIncomeElement) {
-    totalMonthlyIncomeElement.textContent = formatCurrency(
-      equivalentMonthlyIncome,
+            return total + clientPropertyValue;
+        },
+        0,
     );
-  }
 
-  if (totalCpfElement) {
-    totalCpfElement.textContent = formatCurrency(totalCpf);
-  }
+    if (totalLiquidAssetsElement) {
+        totalLiquidAssetsElement.textContent =
+            formatCurrency(totalLiquidAssets);
+    }
 
-  if (totalPropertyValueElement) {
-    totalPropertyValueElement.textContent = formatCurrency(totalPropertyValue);
-  }
+    updateIncomeSummaryDisplay(incomeSummary);
+
+    if (totalCpfElement) {
+        totalCpfElement.textContent =
+            formatCurrency(totalCpf);
+    }
+
+    if (totalPropertyValueElement) {
+        totalPropertyValueElement.textContent =
+            formatCurrency(totalPropertyValue);
+    }
+}
+
+
+/* ========================================
+   INCOME CALCULATION
+======================================== */
+
+function calculateIncomeSummary() {
+    const income = clientPlan.priorities.assets.income;
+
+    const monthlyGrossSalary =
+        income.monthlyEmployment;
+
+    const annualBonus =
+        income.annualBonus;
+
+    const otherMonthlyIncome =
+        income.otherMonthly;
+
+    const age = getClientAge();
+
+    const cpfApplies =
+        clientPlan.profile.employmentStatus ===
+            "full_time_employed" &&
+        age !== null;
+
+    const cpfRates =
+        getCpfContributionRates(age);
+
+    const employeeCpfRate =
+        cpfApplies
+            ? cpfRates.employeeRate
+            : 0;
+
+    /* ========================================
+       ORDINARY WAGES
+    ======================================== */
+
+    const monthlyCpfOrdinaryWage =
+        cpfApplies
+            ? Math.min(
+                monthlyGrossSalary,
+                CPF_ORDINARY_WAGE_CEILING,
+            )
+            : 0;
+
+    const annualCpfOrdinaryWage =
+        monthlyCpfOrdinaryWage * 12;
+
+    /* ========================================
+       ADDITIONAL WAGES
+    ======================================== */
+
+    const additionalWageCeiling =
+        cpfApplies
+            ? Math.max(
+                0,
+                CPF_ANNUAL_WAGE_CEILING -
+                    annualCpfOrdinaryWage,
+            )
+            : 0;
+
+    const cpfAdditionalWage =
+        cpfApplies
+            ? Math.min(
+                annualBonus,
+                additionalWageCeiling,
+            )
+            : 0;
+
+    const bonusNotSubjectToCpf =
+        cpfApplies
+            ? Math.max(
+                0,
+                annualBonus -
+                    cpfAdditionalWage,
+            )
+            : annualBonus;
+
+    /* ========================================
+       EMPLOYEE CPF
+    ======================================== */
+
+    const monthlyEmployeeCpf =
+        cpfApplies
+            ? Math.round(
+                monthlyCpfOrdinaryWage *
+                    employeeCpfRate,
+            )
+            : 0;
+
+    const annualOrdinaryWageEmployeeCpf =
+        monthlyEmployeeCpf * 12;
+
+    const annualAdditionalWageEmployeeCpf =
+        cpfApplies
+            ? Math.round(
+                cpfAdditionalWage *
+                    employeeCpfRate,
+            )
+            : 0;
+
+    const annualEmployeeCpf =
+        annualOrdinaryWageEmployeeCpf +
+        annualAdditionalWageEmployeeCpf;
+
+    /* ========================================
+       INCOME SUMMARY
+    ======================================== */
+
+    const monthlyTakeHome =
+        monthlyGrossSalary -
+        monthlyEmployeeCpf +
+        otherMonthlyIncome;
+
+    const annualGross =
+        monthlyGrossSalary * 12 +
+        annualBonus;
+
+    const annualTakeHome =
+        annualGross -
+        annualEmployeeCpf +
+        otherMonthlyIncome * 12;
+
+    return {
+        cpfApplies: cpfApplies,
+        employeeCpfRate: employeeCpfRate,
+
+        monthlyCpfOrdinaryWage:
+            monthlyCpfOrdinaryWage,
+
+        annualCpfOrdinaryWage:
+            annualCpfOrdinaryWage,
+
+        additionalWageCeiling:
+            additionalWageCeiling,
+
+        cpfAdditionalWage:
+            cpfAdditionalWage,
+
+        bonusNotSubjectToCpf:
+            bonusNotSubjectToCpf,
+
+        monthlyEmployeeCpf:
+            monthlyEmployeeCpf,
+
+        annualOrdinaryWageEmployeeCpf:
+            annualOrdinaryWageEmployeeCpf,
+
+        annualAdditionalWageEmployeeCpf:
+            annualAdditionalWageEmployeeCpf,
+
+        annualEmployeeCpf:
+            annualEmployeeCpf,
+
+        monthlyTakeHome:
+            monthlyTakeHome,
+
+        annualGross:
+            annualGross,
+
+        annualTakeHome:
+            annualTakeHome,
+    };
+}
+
+
+/* ========================================
+   CPF CONTRIBUTION RATES
+======================================== */
+
+function getCpfContributionRates(age) {
+    if (age === null || age < 0) {
+        return {
+            employeeRate: 0,
+            employerRate: 0,
+        };
+    }
+
+    if (age <= 55) {
+        return {
+            employeeRate: 0.20,
+            employerRate: 0.17,
+        };
+    }
+
+    if (age <= 60) {
+        return {
+            employeeRate: 0.18,
+            employerRate: 0.16,
+        };
+    }
+
+    if (age <= 65) {
+        return {
+            employeeRate: 0.125,
+            employerRate: 0.125,
+        };
+    }
+
+    if (age <= 70) {
+        return {
+            employeeRate: 0.075,
+            employerRate: 0.09,
+        };
+    }
+
+    return {
+        employeeRate: 0.05,
+        employerRate: 0.075,
+    };
+}
+
+
+/* ========================================
+   INCOME SUMMARY DISPLAY
+======================================== */
+
+function updateIncomeSummaryDisplay(summary) {
+    const employmentStatus =
+        clientPlan.profile.employmentStatus;
+
+    const age = getClientAge();
+
+    if (employeeCpfContributionElement) {
+        employeeCpfContributionElement.textContent =
+            formatDeduction(
+                summary.monthlyEmployeeCpf,
+            );
+    }
+
+    if (monthlyTakeHomeIncomeElement) {
+        monthlyTakeHomeIncomeElement.textContent =
+            formatCurrency(
+                summary.monthlyTakeHome,
+            );
+    }
+
+    if (annualEmployeeCpfElement) {
+        annualEmployeeCpfElement.textContent =
+            formatDeduction(
+                summary.annualEmployeeCpf,
+            );
+    }
+
+    if (annualGrossIncomeElement) {
+        annualGrossIncomeElement.textContent =
+            formatCurrency(
+                summary.annualGross,
+            );
+    }
+
+    if (annualTakeHomeIncomeElement) {
+        annualTakeHomeIncomeElement.textContent =
+            formatCurrency(
+                summary.annualTakeHome,
+            );
+    }
+
+    if (employeeCpfContributionNote) {
+        employeeCpfContributionNote.textContent =
+            getCpfSummaryNote(
+                employmentStatus,
+                age,
+                summary,
+            );
+    }
+
+    if (annualEmployeeCpfNote) {
+        annualEmployeeCpfNote.textContent =
+            summary.cpfApplies
+                ? "Includes CPF on ordinary and additional wages"
+                : "No employee CPF deduction applied";
+    }
+
+    if (cpfNotApplicableMessage) {
+        cpfNotApplicableMessage.hidden =
+            summary.cpfApplies;
+
+        if (!summary.cpfApplies) {
+            cpfNotApplicableMessage.textContent =
+                getCpfNotApplicableMessage(
+                    employmentStatus,
+                    age,
+                );
+        }
+    }
+
+    if (cpfDetailsRows) {
+        cpfDetailsRows.hidden =
+            !summary.cpfApplies;
+    }
+
+    if (employeeCpfRateElement) {
+        employeeCpfRateElement.textContent =
+            formatPercentage(
+                summary.employeeCpfRate,
+            );
+    }
+
+    if (ordinaryWageCeilingElement) {
+        ordinaryWageCeilingElement.textContent =
+            formatCurrency(
+                CPF_ORDINARY_WAGE_CEILING,
+            );
+    }
+
+    if (monthlyWageSubjectToCpfElement) {
+        monthlyWageSubjectToCpfElement.textContent =
+            formatCurrency(
+                summary.monthlyCpfOrdinaryWage,
+            );
+    }
+
+    if (
+        annualOrdinaryWagesSubjectToCpfElement
+    ) {
+        annualOrdinaryWagesSubjectToCpfElement.textContent =
+            formatCurrency(
+                summary.annualCpfOrdinaryWage,
+            );
+    }
+
+    if (additionalWageCeilingElement) {
+        additionalWageCeilingElement.textContent =
+            formatCurrency(
+                summary.additionalWageCeiling,
+            );
+    }
+
+    if (bonusSubjectToCpfElement) {
+        bonusSubjectToCpfElement.textContent =
+            formatCurrency(
+                summary.cpfAdditionalWage,
+            );
+    }
+
+    if (bonusNotSubjectToCpfElement) {
+        bonusNotSubjectToCpfElement.textContent =
+            formatCurrency(
+                summary.bonusNotSubjectToCpf,
+            );
+    }
+
+    if (cpfOnOrdinaryWagesElement) {
+        cpfOnOrdinaryWagesElement.textContent =
+            formatCurrency(
+                summary
+                    .annualOrdinaryWageEmployeeCpf,
+            );
+    }
+
+    if (cpfOnAdditionalWagesElement) {
+        cpfOnAdditionalWagesElement.textContent =
+            formatCurrency(
+                summary
+                    .annualAdditionalWageEmployeeCpf,
+            );
+    }
+}
+
+
+/* ========================================
+   CPF DISPLAY MESSAGES
+======================================== */
+
+function getCpfSummaryNote(
+    employmentStatus,
+    age,
+    summary,
+) {
+    if (!employmentStatus) {
+        return "Select an employment status";
+    }
+
+    if (
+        employmentStatus !==
+        "full_time_employed"
+    ) {
+        return "CPF not applied for this employment status";
+    }
+
+    if (age === null) {
+        return "Enter the client's date of birth";
+    }
+
+    return (
+        formatPercentage(
+            summary.employeeCpfRate,
+        ) +
+        " of CPF-applicable monthly wages"
+    );
+}
+
+
+function getCpfNotApplicableMessage(
+    employmentStatus,
+    age,
+) {
+    if (!employmentStatus) {
+        return (
+            "Select the client's employment status " +
+            "to determine whether CPF applies."
+        );
+    }
+
+    if (
+        employmentStatus ===
+        "self_employed"
+    ) {
+        return (
+            "Employee CPF is not applied to " +
+            "self-employed income. Self-employed " +
+            "MediSave obligations are not included " +
+            "in this calculation."
+        );
+    }
+
+    if (
+        employmentStatus ===
+            "full_time_employed" &&
+        age === null
+    ) {
+        return (
+            "Enter the client's date of birth " +
+            "to determine the applicable CPF rate."
+        );
+    }
+
+    return (
+        "Employee CPF is not applied to this " +
+        "employment status."
+    );
+}
+
+
+/* ========================================
+   INCOME FORMATTERS
+======================================== */
+
+function formatDeduction(value) {
+    const amount = Math.round(
+        Number(value) || 0,
+    );
+
+    if (amount === 0) {
+        return "$0";
+    }
+
+    return "-" + formatCurrency(amount);
+}
+
+
+function formatPercentage(decimalRate) {
+    const percentage =
+        decimalRate * 100;
+
+    return (
+        Number(percentage).toLocaleString(
+            "en-SG",
+            {
+                maximumFractionDigits: 1,
+            },
+        ) +
+        "%"
+    );
 }
 
 /* ========================================
@@ -989,14 +1543,14 @@ function isProfileComplete() {
 }
 
 function updateProfileDependentSections() {
-  updateCpfFields();
+    updateCpfFields();
+    updateAssetsAndIncomeTotals();
 
-  /*
-        Later, add other profile-dependent updates here:
-
-        updateProtectionAnalysis();
-        updateCostOfWants();
-        updateSummaryReport();
+    /*
+    Later, add other profile-dependent updates here:
+    updateProtectionAnalysis();
+    updateCostOfWants();
+    updateSummaryReport();
     */
 }
 
