@@ -14,6 +14,11 @@ const wealthTypeCards =
         ".wealth-type-card",
     );
 
+const wealthTypeProgress =
+    document.getElementById(
+        "wealthTypeProgress",
+    );
+
 
 /* ========================================
    MODULE STATE
@@ -105,7 +110,6 @@ function handleWealthTypeClick(card) {
     emitWealthTypeChanged();
 }
 
-
 /* ========================================
    RENDERING
 ======================================== */
@@ -119,10 +123,18 @@ function renderWealthTypeSelections() {
         const wealthType =
             card.dataset.wealthType;
 
-        const isSelected =
-            selectedWealthTypes.includes(
+        const selectedIndex =
+            selectedWealthTypes.indexOf(
                 wealthType,
             );
+
+        const isSelected =
+            selectedIndex !== -1;
+
+        const ranking =
+            isSelected
+                ? selectedIndex + 1
+                : "";
 
         card.classList.toggle(
             "selected",
@@ -133,9 +145,64 @@ function renderWealthTypeSelections() {
             "aria-pressed",
             String(isSelected),
         );
+
+        card.setAttribute(
+            "aria-label",
+            createWealthTypeAriaLabel(
+                card,
+                ranking,
+            ),
+        );
+
+        const selectionIndicator =
+            card.querySelector(
+                ".selection-indicator",
+            );
+
+        if (selectionIndicator) {
+            selectionIndicator.textContent =
+                ranking;
+        }
     });
+
+    if (wealthTypeProgress) {
+        const selectedCount =
+            selectedWealthTypes.length;
+
+        wealthTypeProgress.textContent =
+            `${selectedCount} of 4 ranked`;
+
+        wealthTypeProgress.classList.toggle(
+            "complete",
+            selectedCount === 4,
+        );
+    }
+
 }
 
+function createWealthTypeAriaLabel(
+    card,
+    ranking,
+) {
+    const heading =
+        card.querySelector("h4");
+
+    const wealthTypeName =
+        heading?.textContent?.trim() ||
+        "Wealth priority";
+
+    if (!ranking) {
+        return (
+            `${wealthTypeName}. ` +
+            "Not currently ranked."
+        );
+    }
+
+    return (
+        `${wealthTypeName}. ` +
+        `Ranked number ${ranking}.`
+    );
+}
 
 /* ========================================
    EVENTS
