@@ -590,14 +590,6 @@ export function renderGoals() {
     });
 }
 
-    goals.forEach(function (goal) {
-        goalsList.appendChild(
-            createGoalItem(goal),
-        );
-    });
-}
-
-
 function createGoalItem(goal) {
     const goalItem =
         document.createElement("div");
