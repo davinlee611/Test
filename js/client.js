@@ -21,6 +21,7 @@ import {
 
 import {
     initializeGoals,
+    resetGoals,
 } from "./modules/goals.js";
 
 import {
@@ -114,6 +115,11 @@ function clearFinancialPlan() {
      * Reset the Wealth Type selections.
     */
     resetWealthType();
+
+    /*
+    * Reset financial goals.
+    */
+    resetGoals();
 
     /*
     * Reset Liquid Assets, Income and CPF.

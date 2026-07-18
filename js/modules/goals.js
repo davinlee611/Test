@@ -5,12 +5,17 @@ import {
 } from "../state/client-state.js";
 
 import {
-    eventBus,
+    emit,
 } from "../events/event-bus.js";
 
 import {
     EVENTS,
 } from "../events/events.js";
+
+import {
+    createUniqueId,
+    getWholeNumber,
+} from "../utils/client-utils.js";
 
 
 /* ========================================
@@ -19,6 +24,7 @@ import {
 
 let goalsContainer = null;
 let addGoalButton = null;
+let moduleInitialized = false;
 
 
 /* ========================================
@@ -26,9 +32,14 @@ let addGoalButton = null;
 ======================================== */
 
 export function initializeGoals() {
+    if (moduleInitialized) {
+        renderGoals();
+        return;
+    }
+
     goalsContainer =
         document.getElementById(
-            "goalsContainer",
+            "goalsList",
         );
 
     addGoalButton =
@@ -48,7 +59,21 @@ export function initializeGoals() {
         addGoal,
     );
 
+    moduleInitialized = true;
+
     renderGoals();
+}
+
+
+/* ========================================
+   PUBLIC RESET
+======================================== */
+
+export function resetGoals() {
+    clientPlan.priorities.goals = [];
+
+    renderGoals();
+    emitGoalsChanged();
 }
 
 
@@ -58,7 +83,7 @@ export function initializeGoals() {
 
 function addGoal() {
     const goal = {
-        id: crypto.randomUUID(),
+        id: createUniqueId(),
         type: "",
         name: "",
         targetAmount: 0,
@@ -70,27 +95,20 @@ function addGoal() {
     );
 
     renderGoals();
-
-    eventBus.emit(
-        EVENTS.GOALS_CHANGED,
-        clientPlan.priorities.goals,
-    );
+    emitGoalsChanged();
 }
 
 
 function deleteGoal(goalId) {
     clientPlan.priorities.goals =
         clientPlan.priorities.goals.filter(
-            (goal) =>
-                goal.id !== goalId,
+            function (goal) {
+                return goal.id !== goalId;
+            },
         );
 
     renderGoals();
-
-    eventBus.emit(
-        EVENTS.GOALS_CHANGED,
-        clientPlan.priorities.goals,
-    );
+    emitGoalsChanged();
 }
 
 
@@ -99,6 +117,10 @@ function deleteGoal(goalId) {
 ======================================== */
 
 function renderGoals() {
+    if (!goalsContainer) {
+        return;
+    }
+
     goalsContainer.innerHTML = "";
 
     if (
@@ -106,7 +128,7 @@ function renderGoals() {
             .length === 0
     ) {
         goalsContainer.innerHTML = `
-            <p class="empty-state">
+            <p class="empty-list-message">
                 No goals added yet.
             </p>
         `;
@@ -115,7 +137,7 @@ function renderGoals() {
     }
 
     clientPlan.priorities.goals.forEach(
-        (goal) => {
+        function (goal) {
             goalsContainer.appendChild(
                 createGoalCard(goal),
             );
@@ -129,34 +151,52 @@ function createGoalCard(goal) {
         document.createElement("div");
 
     card.className = "goal-card";
-
     card.dataset.goalId = goal.id;
+
+    const typeInputId =
+        `goalType-${goal.id}`;
+
+    const nameInputId =
+        `goalName-${goal.id}`;
+
+    const amountInputId =
+        `goalAmount-${goal.id}`;
+
+    const yearInputId =
+        `goalYear-${goal.id}`;
 
     card.innerHTML = `
         <div class="goal-card-header">
             <h4>
-                ${
+                ${escapeHtml(
                     goal.name ||
-                    "New Goal"
-                }
+                    "New Goal",
+                )}
             </h4>
 
             <button
                 type="button"
                 class="goal-delete-button"
+                aria-label="Delete goal"
             >
+                <i
+                    class="fa-solid fa-trash"
+                    aria-hidden="true"
+                ></i>
+
                 Delete
             </button>
         </div>
 
         <div class="goal-fields">
             <div class="form-field">
-                <label>
+                <label for="${typeInputId}">
                     Goal Type
                 </label>
 
                 <select
-                    class="goal-type-input"
+                    id="${typeInputId}"
+                    class="form-control goal-type-input"
                 >
                     <option value="">
                         Select goal
@@ -193,13 +233,14 @@ function createGoalCard(goal) {
             </div>
 
             <div class="form-field">
-                <label>
+                <label for="${nameInputId}">
                     Goal Name
                 </label>
 
                 <input
+                    id="${nameInputId}"
                     type="text"
-                    class="goal-name-input"
+                    class="form-control goal-name-input"
                     value="${escapeHtml(
                         goal.name,
                     )}"
@@ -207,15 +248,17 @@ function createGoalCard(goal) {
             </div>
 
             <div class="form-field">
-                <label>
+                <label for="${amountInputId}">
                     Target Amount
                 </label>
 
                 <input
+                    id="${amountInputId}"
                     type="number"
                     min="0"
                     step="1"
-                    class="goal-amount-input"
+                    inputmode="numeric"
+                    class="form-control goal-amount-input"
                     value="${
                         goal.targetAmount ||
                         ""
@@ -224,15 +267,17 @@ function createGoalCard(goal) {
             </div>
 
             <div class="form-field">
-                <label>
+                <label for="${yearInputId}">
                     Target Year
                 </label>
 
                 <input
+                    id="${yearInputId}"
                     type="number"
                     min="${new Date().getFullYear()}"
                     step="1"
-                    class="goal-year-input"
+                    inputmode="numeric"
+                    class="form-control goal-year-input"
                     value="${
                         goal.targetYear ||
                         ""
@@ -267,11 +312,14 @@ function createGoalCard(goal) {
             ".goal-delete-button",
         );
 
+    const heading =
+        card.querySelector("h4");
+
     typeInput.value = goal.type;
 
     typeInput.addEventListener(
         "change",
-        () => {
+        function () {
             goal.type =
                 typeInput.value;
 
@@ -281,12 +329,11 @@ function createGoalCard(goal) {
 
     nameInput.addEventListener(
         "input",
-        () => {
+        function () {
             goal.name =
                 nameInput.value.trim();
 
-            card.querySelector("h4")
-                .textContent =
+            heading.textContent =
                 goal.name ||
                 "New Goal";
 
@@ -296,9 +343,9 @@ function createGoalCard(goal) {
 
     amountInput.addEventListener(
         "input",
-        () => {
+        function () {
             goal.targetAmount =
-                toWholeNumber(
+                getWholeNumber(
                     amountInput.value,
                 );
 
@@ -308,9 +355,9 @@ function createGoalCard(goal) {
 
     yearInput.addEventListener(
         "input",
-        () => {
+        function () {
             goal.targetYear =
-                toWholeNumber(
+                getWholeNumber(
                     yearInput.value,
                 ) || null;
 
@@ -320,7 +367,7 @@ function createGoalCard(goal) {
 
     deleteButton.addEventListener(
         "click",
-        () => {
+        function () {
             deleteGoal(goal.id);
         },
     );
@@ -334,9 +381,14 @@ function createGoalCard(goal) {
 ======================================== */
 
 function emitGoalsChanged() {
-    eventBus.emit(
+    emit(
         EVENTS.GOALS_CHANGED,
-        clientPlan.priorities.goals,
+        {
+            goals: [
+                ...clientPlan.priorities
+                    .goals,
+            ],
+        },
     );
 }
 
@@ -344,21 +396,6 @@ function emitGoalsChanged() {
 /* ========================================
    HELPERS
 ======================================== */
-
-function toWholeNumber(value) {
-    const number =
-        Number.parseInt(value, 10);
-
-    if (
-        !Number.isFinite(number) ||
-        number < 0
-    ) {
-        return 0;
-    }
-
-    return number;
-}
-
 
 function escapeHtml(value = "") {
     return String(value)
