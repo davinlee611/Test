@@ -200,6 +200,7 @@ function openAddGoalModal() {
     }
 
     goalForm.reset();
+    setMinimumGoalMonth();
 
     if (editingGoalIdInput) {
         editingGoalIdInput.value = "";
@@ -268,6 +269,7 @@ function openEditGoalModal(goalId) {
             "Edit Goal";
     }
 
+    setMinimumGoalMonthForEdit(goal);
     goalModal.hidden = false;
 
     document.body.classList.add(
@@ -327,12 +329,13 @@ function handleGoalSubmit(event) {
     clearGoalFormMessage();
 
     const validationResult =
-        validateGoal({
-            goalType,
-            goalName,
-            targetAmount,
-            targetDate,
-        });
+    validateGoal({
+        goalType,
+        goalName,
+        targetAmount,
+        targetDate,
+        editingGoalId,
+    });
 
     if (!validationResult.isValid) {
         showGoalFormMessage(
@@ -372,6 +375,7 @@ function validateGoal({
     goalName,
     targetAmount,
     targetDate,
+    editingGoalId,
 }) {
     if (!goalType) {
         return {
@@ -406,6 +410,68 @@ function validateGoal({
             isValid: false,
             message:
                 "Please select the target month and year.",
+            element:
+                goalTargetDateInput,
+        };
+    }
+
+    const minimumTargetDate =
+        getMinimumGoalMonth();
+
+    if (!editingGoalId) {
+        if (
+            targetDate <
+            minimumTargetDate
+        ) {
+            return {
+                isValid: false,
+                message:
+                    "The target month must be in the future.",
+                element:
+                    goalTargetDateInput,
+            };
+        }
+
+        return {
+            isValid: true,
+        };
+    }
+
+    const existingGoal =
+        clientPlan.priorities.goals.find(
+            function (goal) {
+                return (
+                    goal.id ===
+                    editingGoalId
+                );
+            },
+        );
+
+    const existingTargetDate =
+        existingGoal
+            ? getSavedGoalDate(
+                  existingGoal,
+              )
+            : "";
+
+    const dateWasChanged =
+        targetDate !==
+        existingTargetDate;
+
+    /*
+     * An existing past date may remain unchanged.
+     * If the user changes the date, the new date
+     * must be in the future.
+     */
+    if (
+        dateWasChanged &&
+        targetDate <
+            minimumTargetDate
+    ) {
+        return {
+            isValid: false,
+            message:
+                "The new target month must be in the future.",
             element:
                 goalTargetDateInput,
         };
@@ -724,6 +790,66 @@ function formatGoalDate(targetDate) {
     ).format(date);
 }
 
+function getMinimumGoalMonth() {
+    const today = new Date();
+
+    today.setDate(1);
+
+    today.setMonth(
+        today.getMonth() + 1,
+    );
+
+    const year =
+        today.getFullYear();
+
+    const month =
+        String(
+            today.getMonth() + 1,
+        ).padStart(2, "0");
+
+    return `${year}-${month}`;
+}
+
+function setMinimumGoalMonth() {
+    if (!goalTargetDateInput) {
+        return;
+    }
+
+    goalTargetDateInput.min =
+        getMinimumGoalMonth();
+}
+
+function setMinimumGoalMonthForEdit(
+    goal,
+) {
+    if (!goalTargetDateInput) {
+        return;
+    }
+
+    const savedTargetDate =
+        getSavedGoalDate(goal);
+
+    const minimumFutureMonth =
+        getMinimumGoalMonth();
+
+    /*
+     * Preserve an existing past month as a
+     * valid selectable value while editing.
+     */
+    if (
+        savedTargetDate &&
+        savedTargetDate <
+            minimumFutureMonth
+    ) {
+        goalTargetDateInput.min =
+            savedTargetDate;
+
+        return;
+    }
+
+    goalTargetDateInput.min =
+        minimumFutureMonth;
+}
 
 /* ========================================
    DISPLAY HELPERS
