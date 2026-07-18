@@ -556,10 +556,6 @@ function createPropertyItem(property) {
     propertyIcon.className =
         "planning-item-icon";
 
-    /*
-     * Copy the existing propertyIcon.innerHTML
-     * SVG from client.js and place it here.
-     */
     propertyIcon.innerHTML = '<i class="fa-solid fa-house"></i>';
 
     const propertyDetails =
@@ -636,10 +632,6 @@ function createEditButton(property) {
         `Edit ${property.type}`,
     );
 
-    /*
-     * Copy the existing editButton.innerHTML
-     * SVG from client.js and place it here.
-     */
     editButton.innerHTML = '<i class="fa-solid fa-pen"></i>';
 
     editButton.addEventListener(
@@ -669,10 +661,6 @@ function createDeleteButton(property) {
         `Delete ${property.type}`,
     );
 
-    /*
-     * Copy the existing deleteButton.innerHTML
-     * SVG from client.js and place it here.
-     */
     deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
 
     deleteButton.addEventListener(

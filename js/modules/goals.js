@@ -681,7 +681,7 @@ function createEditButton(goal) {
     editButton.type = "button";
 
     editButton.className =
-    "planning-item-button";
+        "planning-item-button";
 
     editButton.setAttribute(
         "aria-label",
