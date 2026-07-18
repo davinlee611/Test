@@ -1,5 +1,7 @@
 "use strict";
 
+
+
 import {
     clientPlan,
     resetClientPlan,
@@ -24,6 +26,12 @@ import {
     initializeSidebar,
     openSection,
 } from "./modules/sidebar.js";
+
+import {
+    initializeProperties,
+    renderProperties,
+    resetProperties,
+} from "./modules/properties.js";
 
 import {
     on,
@@ -70,6 +78,7 @@ on(
 
 initializeProfile();
 initializeSidebar();
+initializeProperties();
 initializePage();
 
 async function initializePage() {
