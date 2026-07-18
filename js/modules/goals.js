@@ -581,14 +581,8 @@ export function renderGoals() {
     goalsList.innerHTML = "";
 
     if (goals.length === 0) {
-        goalsList.innerHTML = `
-            <p class="empty-list-message">
-                No goals added yet.
-            </p>
-        `;
-
-        return;
-    }
+    return;
+}
 
     goals.forEach(function (goal) {
         goalsList.appendChild(

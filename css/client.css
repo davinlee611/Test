@@ -1426,6 +1426,51 @@ body.property-modal-open {
 }
 
 /* ========================================
+   GOAL CARD
+======================================== */
+
+.goal-add-button {
+
+  width: 100%;
+
+  margin-top: 16px;
+
+  padding: 16px;
+
+  border: 2px dashed var(--border-color);
+
+  border-radius: 12px;
+
+  background: transparent;
+
+  color: var(--primary-color);
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background .2s,
+    border-color .2s,
+    color .2s;
+}
+
+.goal-add-button:hover {
+
+  background:
+    rgba(var(--primary-rgb),
+      .05);
+
+  border-color:
+    var(--primary-color);
+}
+
+.goal-add-button i {
+
+  margin-right: 8px;
+}
+
+/* ========================================
    GOAL MODAL
 ======================================== */
 
@@ -1534,14 +1579,22 @@ body.goal-modal-open {
 ======================================== */
 
 .goal-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 18px;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  background: #ffffff;
+
+  padding: 20px;
+
+  border-radius: 16px;
+
+  transition:
+    box-shadow .2s,
+    transform .15s;
+}
+
+.goal-item:hover {
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 24px rgba(15, 23, 42, .08);
 }
 
 .goal-item+.goal-item {
