@@ -595,19 +595,19 @@ function createGoalItem(goal) {
         document.createElement("div");
 
     goalItem.className =
-        "property-item";
+        "planning-item";
 
     const goalMain =
         document.createElement("div");
 
     goalMain.className =
-        "property-item-main";
+        "planning-item-main";
 
     const goalIcon =
         document.createElement("div");
 
     goalIcon.className =
-        "property-item-icon";
+        "planning-item-icon";
 
     goalIcon.innerHTML =
         getGoalIcon(goal.type);
@@ -616,7 +616,7 @@ function createGoalItem(goal) {
         document.createElement("div");
 
     goalDetails.className =
-        "property-item-details";
+        "planning-item-details";
 
     const goalTitle =
         document.createElement("h4");
@@ -652,7 +652,7 @@ function createGoalItem(goal) {
         document.createElement("div");
 
     goalActions.className =
-        "property-item-actions";
+        "planning-item-actions";
 
     const editButton =
         createEditButton(goal);
@@ -681,7 +681,7 @@ function createEditButton(goal) {
     editButton.type = "button";
 
     editButton.className =
-    "property-action-button";
+    "planning-item-button";
 
     editButton.setAttribute(
         "aria-label",
@@ -709,7 +709,7 @@ function createDeleteButton(goal) {
     deleteButton.type = "button";
 
     deleteButton.className =
-    "property-action-button delete";
+    "planning-item-button delete";
 
     deleteButton.setAttribute(
         "aria-label",

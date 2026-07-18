@@ -542,19 +542,19 @@ function createPropertyItem(property) {
         document.createElement("div");
 
     propertyItem.className =
-        "property-item";
+        "planning-item";
 
     const propertyMain =
         document.createElement("div");
 
     propertyMain.className =
-        "property-item-main";
+        "planning-item-main";
 
     const propertyIcon =
         document.createElement("div");
 
     propertyIcon.className =
-        "property-item-icon";
+        "planning-item-icon";
 
     /*
      * Copy the existing propertyIcon.innerHTML
@@ -566,7 +566,7 @@ function createPropertyItem(property) {
         document.createElement("div");
 
     propertyDetails.className =
-        "property-item-details";
+        "planning-item-details";
 
     const propertyTitle =
         document.createElement("h4");
@@ -600,7 +600,7 @@ function createPropertyItem(property) {
         document.createElement("div");
 
     propertyActions.className =
-        "property-item-actions";
+        "planning-item-actions";
 
     const editButton =
         createEditButton(property);
@@ -629,7 +629,7 @@ function createEditButton(property) {
     editButton.type = "button";
 
     editButton.className =
-        "property-action-button";
+        "planning-item-button";
 
     editButton.setAttribute(
         "aria-label",
@@ -662,7 +662,7 @@ function createDeleteButton(property) {
     deleteButton.type = "button";
 
     deleteButton.className =
-        "property-action-button delete";
+        "planning-item-button delete";
 
     deleteButton.setAttribute(
         "aria-label",
