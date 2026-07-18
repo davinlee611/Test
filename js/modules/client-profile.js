@@ -13,6 +13,9 @@ import {
     emit,
 } from "../events/event-bus.js";
 
+import {
+    EVENTS,
+} from "../events/events.js";
 
 /* ========================================
    PROFILE ELEMENTS
@@ -160,7 +163,7 @@ function handleProfileInput() {
     syncProfileState();
     updateClientHeading();
 
-    emit("profile:changed", {
+    emit(EVENTS.PROFILE_CHANGED, {
         profile: clientPlan.profile,
     });
 }
@@ -221,7 +224,7 @@ function handleProfileSubmit(event) {
         return;
     }
 
-    emit("profile:completed", {
+    emit(EVENTS.PROFILE_COMPLETED, {
         profile: clientPlan.profile,
     });
 }

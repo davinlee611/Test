@@ -29,6 +29,10 @@ import {
     on,
 } from "./events/event-bus.js";
 
+import {
+    EVENTS,
+} from "./events/events.js";
+
 const supabaseClient =
     window.supabaseClient;
 
@@ -60,7 +64,7 @@ const CPF_ANNUAL_WAGE_CEILING = 102000;
 ======================================== */
 
 on(
-    "profile:changed",
+    EVENTS.PROFILE_CHANGED,
     updateProfileDependentSections,
 );
 

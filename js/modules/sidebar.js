@@ -9,6 +9,10 @@ import {
     on,
 } from "../events/event-bus.js";
 
+import {
+    EVENTS,
+} from "../events/events.js";
+
 
 /* ========================================
    SIDEBAR ELEMENTS
@@ -146,7 +150,7 @@ function navigateToSection(sectionName) {
 
 function attachProfileEventListeners() {
     on(
-        "profile:completed",
+        EVENTS.PROFILE_COMPLETED,
         function () {
             openSection("priorities");
         },
