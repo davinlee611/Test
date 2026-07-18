@@ -17,10 +17,13 @@ import {
 import {
     getClientAge,
     initializeProfile,
-    isProfileComplete,
     resetProfile,
-    showProfileMessage,
 } from "./modules/client-profile.js";
+
+import {
+    initializeSidebar,
+    openSection,
+} from "./modules/sidebar.js";
 
 import {
     on,
@@ -40,16 +43,6 @@ const loadingMessage = document.getElementById("loadingMessage");
 const logoutButton = document.getElementById("logoutButton");
 
 const clearPlanButton = document.getElementById("clearPlanButton");
-
-const sidebarItems = document.querySelectorAll(".sidebar-item");
-
-const workspaceSections = document.querySelectorAll(".workspace-section");
-
-const profileNextButton = document.getElementById("profileNextButton");
-
-const prioritiesBackButton = document.getElementById("prioritiesBackButton");
-
-const prioritiesNextButton = document.getElementById("prioritiesNextButton");
 
 const wealthPreferenceCards = document.querySelectorAll(
   ".wealth-preference-card",
@@ -71,14 +64,8 @@ on(
     updateProfileDependentSections,
 );
 
-on(
-    "profile:completed",
-    function () {
-        openSection("priorities");
-    },
-);
-
 initializeProfile();
+initializeSidebar();
 initializePage();
 
 async function initializePage() {
@@ -1107,59 +1094,6 @@ function getCpfNotApplicableMessage(
         "Employee CPF is not applied to this " +
         "employment status."
     );
-}
-
-/* ========================================
-   SIDEBAR NAVIGATION
-======================================== */
-
-sidebarItems.forEach(function (item) {
-  item.addEventListener("click", function () {
-    const section = item.dataset.section;
-
-    // Client Profile is always accessible
-    if (section === "profile") {
-      openSection(section);
-      return;
-    }
-
-    // Other sections require a completed profile
-    if (!isProfileComplete()) {
-      showProfileMessage("Complete the Client Profile before continuing.");
-
-      openSection("profile");
-
-      return;
-    }
-
-    openSection(section);
-  });
-});
-
-function openSection(sectionName) {
-  sidebarItems.forEach(function (item) {
-    item.classList.toggle("active", item.dataset.section === sectionName);
-  });
-
-  workspaceSections.forEach(function (section) {
-    section.classList.toggle("active", section.dataset.content === sectionName);
-  });
-}
-
-/* ========================================
-   PRIORITIES NAVIGATION
-======================================== */
-
-if (prioritiesBackButton) {
-  prioritiesBackButton.addEventListener("click", function () {
-    openSection("profile");
-  });
-}
-
-if (prioritiesNextButton) {
-  prioritiesNextButton.addEventListener("click", function () {
-    openSection("cost");
-  });
 }
 
 /* ========================================
