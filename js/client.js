@@ -24,6 +24,10 @@ import {
 } from "./modules/sidebar.js";
 
 import {
+    initializeWealthType,
+} from "./modules/wealth-type.js";
+
+import {
     initializeProperties,
     resetProperties,
 } from "./modules/properties.js";
@@ -79,6 +83,7 @@ on(
 initializeProfile();
 initializeSidebar();
 initializeProperties();
+initializeWealthType();
 initializePage();
 
 async function initializePage() {
