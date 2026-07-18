@@ -17,8 +17,6 @@ import {
 
 import {
     CPF_ORDINARY_WAGE_CEILING,
-    CPF_ANNUAL_WAGE_CEILING,
-    getCpfContributionRates,
 } from "../services/cpf-service.js";
 
 import {
@@ -114,7 +112,7 @@ const annualEmployeeCpfNote =
         "annualEmployeeCpfNote",
     );
 
-const annualGrossIncomeElement =
+const annualEmploymentIncomeElement =
     document.getElementById(
         "annualGrossIncome",
     );
@@ -489,8 +487,27 @@ function updateAssetsAndIncomeTotals() {
         assets.liquidAssets.investments +
         assets.liquidAssets.others;
 
+    const income =
+        assets.income;
+
     const incomeSummary =
-        calculateIncomeSummary();
+        calculateIncomeSummary({
+            monthlyEmploymentIncome:
+                income.monthlyEmployment,
+
+            annualBonus:
+                income.annualBonus,
+
+            monthlyOtherIncome:
+                income.otherMonthly,
+
+            employmentStatus:
+                clientPlan.profile
+                    .employmentStatus,
+
+            age:
+                getClientAge(),
+        });
 
     const totalCpf =
         assets.cpf.oa +
@@ -513,132 +530,6 @@ function updateAssetsAndIncomeTotals() {
         totalCpfElement.textContent =
             formatCurrency(totalCpf);
     }
-}
-
-
-/* ========================================
-   INCOME CALCULATION
-======================================== */
-
-function calculateIncomeSummaryOLD() {
-    const income =
-        clientPlan.priorities.assets.income;
-
-    const monthlyGrossSalary =
-        income.monthlyEmployment;
-
-    const annualBonus =
-        income.annualBonus;
-
-    const otherMonthlyIncome =
-        income.otherMonthly;
-
-    const age = getClientAge();
-
-    const cpfApplies =
-        clientPlan.profile
-            .employmentStatus ===
-            "full_time_employed" &&
-        age !== null;
-
-    const cpfRates =
-        getCpfContributionRates(age);
-
-    const employeeCpfRate =
-        cpfApplies
-            ? cpfRates.employeeRate
-            : 0;
-
-    const monthlyCpfOrdinaryWage =
-        cpfApplies
-            ? Math.min(
-                  monthlyGrossSalary,
-                  CPF_ORDINARY_WAGE_CEILING,
-              )
-            : 0;
-
-    const annualCpfOrdinaryWage =
-        monthlyCpfOrdinaryWage * 12;
-
-    const additionalWageCeiling =
-        cpfApplies
-            ? Math.max(
-                  0,
-                  CPF_ANNUAL_WAGE_CEILING -
-                      annualCpfOrdinaryWage,
-              )
-            : 0;
-
-    const cpfAdditionalWage =
-        cpfApplies
-            ? Math.min(
-                  annualBonus,
-                  additionalWageCeiling,
-              )
-            : 0;
-
-    const bonusNotSubjectToCpf =
-        cpfApplies
-            ? Math.max(
-                  0,
-                  annualBonus -
-                      cpfAdditionalWage,
-              )
-            : annualBonus;
-
-    const monthlyEmployeeCpf =
-        cpfApplies
-            ? Math.round(
-                  monthlyCpfOrdinaryWage *
-                      employeeCpfRate,
-              )
-            : 0;
-
-    const annualOrdinaryWageEmployeeCpf =
-        monthlyEmployeeCpf * 12;
-
-    const annualAdditionalWageEmployeeCpf =
-        cpfApplies
-            ? Math.round(
-                  cpfAdditionalWage *
-                      employeeCpfRate,
-              )
-            : 0;
-
-    const annualEmployeeCpf =
-        annualOrdinaryWageEmployeeCpf +
-        annualAdditionalWageEmployeeCpf;
-
-    const monthlyTakeHome =
-        monthlyGrossSalary -
-        monthlyEmployeeCpf +
-        otherMonthlyIncome;
-
-    const annualGross =
-        monthlyGrossSalary * 12 +
-        annualBonus;
-
-    const annualTakeHome =
-        annualGross -
-        annualEmployeeCpf +
-        otherMonthlyIncome * 12;
-
-    return {
-        cpfApplies,
-        employeeCpfRate,
-        monthlyCpfOrdinaryWage,
-        annualCpfOrdinaryWage,
-        additionalWageCeiling,
-        cpfAdditionalWage,
-        bonusNotSubjectToCpf,
-        monthlyEmployeeCpf,
-        annualOrdinaryWageEmployeeCpf,
-        annualAdditionalWageEmployeeCpf,
-        annualEmployeeCpf,
-        monthlyTakeHome,
-        annualGross,
-        annualTakeHome,
-    };
 }
 
 /* ========================================
@@ -665,7 +556,7 @@ function updateIncomeSummaryDisplay(
         monthlyTakeHomeIncomeElement
             .textContent =
             formatCurrency(
-                summary.monthlyTakeHome,
+                summary.monthlyTakeHomeIncome,
             );
     }
 
@@ -677,11 +568,11 @@ function updateIncomeSummaryDisplay(
             );
     }
 
-    if (annualGrossIncomeElement) {
-        annualGrossIncomeElement
+    if (annualEmploymentIncomeElement) {
+        annualEmploymentIncomeElement
             .textContent =
             formatCurrency(
-                summary.annualGross,
+                summary.annualEmploymentIncome,
             );
     }
 
@@ -689,7 +580,7 @@ function updateIncomeSummaryDisplay(
         annualTakeHomeIncomeElement
             .textContent =
             formatCurrency(
-                summary.annualTakeHome,
+                summary.annualTakeHomeIncome,
             );
     }
 
