@@ -16,6 +16,12 @@ import {
 } from "./client-profile.js";
 
 import {
+    CPF_ORDINARY_WAGE_CEILING,
+    CPF_ANNUAL_WAGE_CEILING,
+    getCpfContributionRates,
+} from "../services/cpf-service.js";
+
+import {
     on,
     emit,
 } from "../events/event-bus.js";
@@ -23,15 +29,6 @@ import {
 import {
     EVENTS,
 } from "../events/events.js";
-
-
-/* ========================================
-   CPF CONFIGURATION
-======================================== */
-
-const CPF_ORDINARY_WAGE_CEILING = 8000;
-const CPF_ANNUAL_WAGE_CEILING = 102000;
-
 
 /* ========================================
    LIQUID ASSET ELEMENTS
@@ -639,54 +636,6 @@ function calculateIncomeSummary() {
         annualTakeHome,
     };
 }
-
-
-/* ========================================
-   CPF CONTRIBUTION RATES
-======================================== */
-
-function getCpfContributionRates(age) {
-    if (age === null || age < 0) {
-        return {
-            employeeRate: 0,
-            employerRate: 0,
-        };
-    }
-
-    if (age <= 55) {
-        return {
-            employeeRate: 0.20,
-            employerRate: 0.17,
-        };
-    }
-
-    if (age <= 60) {
-        return {
-            employeeRate: 0.18,
-            employerRate: 0.16,
-        };
-    }
-
-    if (age <= 65) {
-        return {
-            employeeRate: 0.125,
-            employerRate: 0.125,
-        };
-    }
-
-    if (age <= 70) {
-        return {
-            employeeRate: 0.075,
-            employerRate: 0.09,
-        };
-    }
-
-    return {
-        employeeRate: 0.05,
-        employerRate: 0.075,
-    };
-}
-
 
 /* ========================================
    INCOME SUMMARY DISPLAY
