@@ -1425,47 +1425,240 @@ body.property-modal-open {
   }
 }
 
-.goal-card {
-  padding: 1.25rem;
-  margin-top: 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.75rem;
-  background: var(--surface-color);
-}
+/* ========================================
+   GOAL MODAL
+======================================== */
 
-.goal-card-header {
+.goal-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  justify-content: center;
+  padding: 24px;
 }
 
-.goal-card-header h4 {
+.goal-modal[hidden] {
+  display: none;
+}
+
+.goal-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.goal-modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 30px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.24);
+}
+
+.goal-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.goal-modal-eyebrow {
+  margin: 0 0 5px;
+  color: var(--primary-color);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.goal-modal-header h2 {
   margin: 0;
 }
 
-.goal-fields {
+.goal-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+  cursor: pointer;
+}
+
+.goal-modal-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.goal-form-grid {
   display: grid;
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 20px;
 }
 
-.goal-delete-button {
-  border: 0;
-  background: transparent;
+.goal-form-message {
+  min-height: 20px;
+  margin: 16px 0 0;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.goal-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+body.goal-modal-open {
+  overflow: hidden;
+}
+
+
+/* ========================================
+   GOAL ITEMS
+======================================== */
+
+.goal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.goal-item+.goal-item {
+  margin-top: 12px;
+}
+
+.goal-item-main {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 14px;
+}
+
+.goal-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: var(--primary-color);
+  font-size: 18px;
+}
+
+.goal-item-details {
+  min-width: 0;
+}
+
+.goal-item-details h4 {
+  margin: 0 0 5px;
+  color: #0f172a;
+  font-size: 16px;
+}
+
+.goal-item-details p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.goal-item-actions {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.goal-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 9px;
+  background: #f1f5f9;
+  color: #475569;
   cursor: pointer;
-  color: #b42318;
 }
 
-.empty-state {
-  margin: 1rem 0 0;
-  color: var(--text-muted);
+.goal-action-button:hover {
+  background: #e2e8f0;
+  color: #0f172a;
 }
+
+.goal-action-button.delete {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.goal-action-button.delete:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
 
 @media (max-width: 768px) {
-  .goal-fields {
+  .goal-form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .goal-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .goal-modal-actions button {
+    width: 100%;
+  }
+
+  .goal-item {
+    align-items: flex-start;
+  }
+
+  .goal-item-main {
+    align-items: flex-start;
+  }
+}
+
+
+@media (max-width: 520px) {
+  .goal-modal {
+    padding: 12px;
+  }
+
+  .goal-modal-dialog {
+    padding: 22px;
+  }
+
+  .goal-item {
+    flex-direction: column;
+  }
+
+  .goal-item-actions {
+    justify-content: flex-end;
+    width: 100%;
   }
 }

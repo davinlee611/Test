@@ -1103,7 +1103,7 @@
 
     <!-- ========================================
      PROPERTY MODAL
-======================================== -->
+    ======================================== -->
 
     <div id="propertyModal" class="property-modal" hidden>
       <div class="property-modal-backdrop" data-close-property-modal></div>
@@ -1210,6 +1210,124 @@
               type="submit"
             >
               Save Property
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========================================
+         GOAL MODAL
+    ======================================== -->
+    
+    <div id="goalModal" class="goal-modal" hidden>
+      <div class="goal-modal-backdrop" data-close-goal-modal></div>
+    
+      <div class="goal-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+        <div class="goal-modal-header">
+          <div>
+            <p class="goal-modal-eyebrow">
+              Priorities & Situation
+            </p>
+    
+            <h2 id="goalModalTitle">
+              Add Goal
+            </h2>
+          </div>
+    
+          <button id="closeGoalModalButton" class="goal-modal-close" type="button" aria-label="Close goal form">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+    
+        <form id="goalForm">
+          <input id="editingGoalId" type="hidden" />
+    
+          <div class="goal-form-grid">
+            <div class="form-group">
+              <label for="goalType">
+                Goal Type
+              </label>
+    
+              <select id="goalType" class="form-control" required>
+                <option value="">
+                  Select goal type
+                </option>
+    
+                <option value="retirement">
+                  Retirement
+                </option>
+    
+                <option value="education">
+                  Children’s Education
+                </option>
+    
+                <option value="property">
+                  Property Purchase
+                </option>
+    
+                <option value="emergency_fund">
+                  Emergency Fund
+                </option>
+    
+                <option value="wedding">
+                  Wedding
+                </option>
+    
+                <option value="travel">
+                  Travel
+                </option>
+    
+                <option value="legacy">
+                  Legacy
+                </option>
+    
+                <option value="other">
+                  Others
+                </option>
+              </select>
+            </div>
+    
+            <div class="form-group">
+              <label for="goalName">
+                Goal Name
+              </label>
+    
+              <input id="goalName" class="form-control" type="text" placeholder="For example, Wedding" maxlength="100"
+                required />
+            </div>
+    
+            <div class="form-group">
+              <label for="goalTargetAmount">
+                Target Amount
+              </label>
+    
+              <div class="currency-input">
+                <span>$</span>
+    
+                <input id="goalTargetAmount" class="form-control" type="number" min="1" step="1" inputmode="numeric"
+                  placeholder="0" required />
+              </div>
+            </div>
+    
+            <div class="form-group">
+              <label for="goalTargetDate">
+                Target Month
+              </label>
+    
+              <input id="goalTargetDate" class="form-control" type="month" required />
+            </div>
+          </div>
+    
+          <p id="goalFormMessage" class="goal-form-message" aria-live="polite"></p>
+    
+          <div class="goal-modal-actions">
+            <button id="cancelGoalButton" class="secondary-button" type="button">
+              Cancel
+            </button>
+    
+            <button id="saveGoalButton" class="primary-button" type="submit">
+              Save Goal
             </button>
           </div>
         </form>

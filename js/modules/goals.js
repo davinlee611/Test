@@ -14,16 +14,90 @@ import {
 
 import {
     createUniqueId,
+    formatCurrency,
     getWholeNumber,
 } from "../utils/client-utils.js";
+
+
+/* ========================================
+   DOM REFERENCES
+======================================== */
+
+const addGoalButton =
+    document.getElementById(
+        "addGoalButton",
+    );
+
+const goalsList =
+    document.getElementById(
+        "goalsList",
+    );
+
+const goalModal =
+    document.getElementById(
+        "goalModal",
+    );
+
+const goalForm =
+    document.getElementById(
+        "goalForm",
+    );
+
+const goalModalTitle =
+    document.getElementById(
+        "goalModalTitle",
+    );
+
+const editingGoalIdInput =
+    document.getElementById(
+        "editingGoalId",
+    );
+
+const goalTypeInput =
+    document.getElementById(
+        "goalType",
+    );
+
+const goalNameInput =
+    document.getElementById(
+        "goalName",
+    );
+
+const goalTargetAmountInput =
+    document.getElementById(
+        "goalTargetAmount",
+    );
+
+const goalTargetDateInput =
+    document.getElementById(
+        "goalTargetDate",
+    );
+
+const goalFormMessage =
+    document.getElementById(
+        "goalFormMessage",
+    );
+
+const closeGoalModalButton =
+    document.getElementById(
+        "closeGoalModalButton",
+    );
+
+const cancelGoalButton =
+    document.getElementById(
+        "cancelGoalButton",
+    );
+
+const goalModalBackdrop =
+    document.querySelector(
+        "[data-close-goal-modal]",
+    );
 
 
 /* ========================================
    MODULE STATE
 ======================================== */
 
-let goalsContainer = null;
-let addGoalButton = null;
 let moduleInitialized = false;
 
 
@@ -37,69 +111,383 @@ export function initializeGoals() {
         return;
     }
 
-    goalsContainer =
-        document.getElementById(
-            "goalsList",
-        );
-
-    addGoalButton =
-        document.getElementById(
-            "addGoalButton",
-        );
-
-    if (
-        !goalsContainer ||
-        !addGoalButton
-    ) {
-        return;
-    }
-
-    addGoalButton.addEventListener(
-        "click",
-        addGoal,
-    );
+    attachGoalListeners();
+    renderGoals();
 
     moduleInitialized = true;
-
-    renderGoals();
 }
 
 
 /* ========================================
-   PUBLIC RESET
+   RESET
 ======================================== */
 
 export function resetGoals() {
     clientPlan.priorities.goals = [];
 
+    closeGoalModal();
     renderGoals();
     emitGoalsChanged();
 }
 
 
 /* ========================================
-   GOAL ACTIONS
+   EVENT LISTENERS
 ======================================== */
 
-function addGoal() {
-    const goal = {
-        id: createUniqueId(),
-        type: "",
-        name: "",
-        targetAmount: 0,
-        targetYear: null,
-    };
+function attachGoalListeners() {
+    if (addGoalButton) {
+        addGoalButton.addEventListener(
+            "click",
+            openAddGoalModal,
+        );
+    }
 
-    clientPlan.priorities.goals.push(
-        goal,
+    if (goalForm) {
+        goalForm.addEventListener(
+            "submit",
+            handleGoalSubmit,
+        );
+    }
+
+    if (closeGoalModalButton) {
+        closeGoalModalButton
+            .addEventListener(
+                "click",
+                closeGoalModal,
+            );
+    }
+
+    if (cancelGoalButton) {
+        cancelGoalButton.addEventListener(
+            "click",
+            closeGoalModal,
+        );
+    }
+
+    if (goalModalBackdrop) {
+        goalModalBackdrop.addEventListener(
+            "click",
+            closeGoalModal,
+        );
+    }
+
+    document.addEventListener(
+        "keydown",
+        handleDocumentKeydown,
+    );
+}
+
+
+function handleDocumentKeydown(event) {
+    if (
+        event.key === "Escape" &&
+        goalModal &&
+        !goalModal.hidden
+    ) {
+        closeGoalModal();
+    }
+}
+
+
+/* ========================================
+   MODAL
+======================================== */
+
+function openAddGoalModal() {
+    if (!goalModal || !goalForm) {
+        return;
+    }
+
+    goalForm.reset();
+
+    if (editingGoalIdInput) {
+        editingGoalIdInput.value = "";
+    }
+
+    clearGoalFormMessage();
+
+    if (goalModalTitle) {
+        goalModalTitle.textContent =
+            "Add Goal";
+    }
+
+    goalModal.hidden = false;
+
+    document.body.classList.add(
+        "goal-modal-open",
     );
 
+    goalTypeInput?.focus();
+}
+
+
+function openEditGoalModal(goalId) {
+    const goal =
+        clientPlan.priorities.goals.find(
+            function (savedGoal) {
+                return (
+                    savedGoal.id === goalId
+                );
+            },
+        );
+
+    if (!goal || !goalModal) {
+        return;
+    }
+
+    if (editingGoalIdInput) {
+        editingGoalIdInput.value =
+            goal.id;
+    }
+
+    if (goalTypeInput) {
+        goalTypeInput.value =
+            goal.type || "";
+    }
+
+    if (goalNameInput) {
+        goalNameInput.value =
+            goal.name || "";
+    }
+
+    if (goalTargetAmountInput) {
+        goalTargetAmountInput.value =
+            goal.targetAmount || "";
+    }
+
+    if (goalTargetDateInput) {
+        goalTargetDateInput.value =
+            getSavedGoalDate(goal);
+    }
+
+    clearGoalFormMessage();
+
+    if (goalModalTitle) {
+        goalModalTitle.textContent =
+            "Edit Goal";
+    }
+
+    goalModal.hidden = false;
+
+    document.body.classList.add(
+        "goal-modal-open",
+    );
+
+    goalTypeInput?.focus();
+}
+
+
+function closeGoalModal() {
+    if (!goalModal) {
+        return;
+    }
+
+    goalModal.hidden = true;
+
+    document.body.classList.remove(
+        "goal-modal-open",
+    );
+
+    clearGoalFormMessage();
+}
+
+
+function clearGoalFormMessage() {
+    if (goalFormMessage) {
+        goalFormMessage.textContent = "";
+    }
+}
+
+
+/* ========================================
+   FORM SUBMISSION
+======================================== */
+
+function handleGoalSubmit(event) {
+    event.preventDefault();
+
+    const goalType =
+        goalTypeInput?.value || "";
+
+    const goalName =
+        goalNameInput?.value.trim() || "";
+
+    const targetAmount =
+        getWholeNumber(
+            goalTargetAmountInput?.value,
+        );
+
+    const targetDate =
+        goalTargetDateInput?.value || "";
+
+    const editingGoalId =
+        editingGoalIdInput?.value || "";
+
+    clearGoalFormMessage();
+
+    const validationResult =
+        validateGoal({
+            goalType,
+            goalName,
+            targetAmount,
+            targetDate,
+        });
+
+    if (!validationResult.isValid) {
+        showGoalFormMessage(
+            validationResult.message,
+        );
+
+        validationResult.element?.focus();
+
+        return;
+    }
+
+    if (editingGoalId) {
+        updateGoal({
+            goalId: editingGoalId,
+            goalType,
+            goalName,
+            targetAmount,
+            targetDate,
+        });
+    } else {
+        addGoal({
+            goalType,
+            goalName,
+            targetAmount,
+            targetDate,
+        });
+    }
+
     renderGoals();
+    closeGoalModal();
     emitGoalsChanged();
 }
 
 
+function validateGoal({
+    goalType,
+    goalName,
+    targetAmount,
+    targetDate,
+}) {
+    if (!goalType) {
+        return {
+            isValid: false,
+            message:
+                "Please select a goal type.",
+            element: goalTypeInput,
+        };
+    }
+
+    if (!goalName) {
+        return {
+            isValid: false,
+            message:
+                "Please enter a goal name.",
+            element: goalNameInput,
+        };
+    }
+
+    if (targetAmount <= 0) {
+        return {
+            isValid: false,
+            message:
+                "Please enter the target amount.",
+            element:
+                goalTargetAmountInput,
+        };
+    }
+
+    if (!targetDate) {
+        return {
+            isValid: false,
+            message:
+                "Please select the target month and year.",
+            element:
+                goalTargetDateInput,
+        };
+    }
+
+    return {
+        isValid: true,
+    };
+}
+
+
+function showGoalFormMessage(message) {
+    if (goalFormMessage) {
+        goalFormMessage.textContent =
+            message;
+    }
+}
+
+
+/* ========================================
+   GOAL DATA
+======================================== */
+
+function addGoal({
+    goalType,
+    goalName,
+    targetAmount,
+    targetDate,
+}) {
+    clientPlan.priorities.goals.push({
+        id: createUniqueId(),
+        type: goalType,
+        name: goalName,
+        targetAmount,
+        targetDate,
+    });
+}
+
+
+function updateGoal({
+    goalId,
+    goalType,
+    goalName,
+    targetAmount,
+    targetDate,
+}) {
+    const goal =
+        clientPlan.priorities.goals.find(
+            function (savedGoal) {
+                return (
+                    savedGoal.id === goalId
+                );
+            },
+        );
+
+    if (!goal) {
+        return;
+    }
+
+    goal.type = goalType;
+    goal.name = goalName;
+    goal.targetAmount = targetAmount;
+    goal.targetDate = targetDate;
+
+    /*
+     * Remove the old property after converting
+     * an older goal that used targetYear.
+     */
+    delete goal.targetYear;
+}
+
+
 function deleteGoal(goalId) {
+    const shouldDelete =
+        window.confirm(
+            "Delete this goal?",
+        );
+
+    if (!shouldDelete) {
+        return;
+    }
+
     clientPlan.priorities.goals =
         clientPlan.priorities.goals.filter(
             function (goal) {
@@ -116,18 +504,18 @@ function deleteGoal(goalId) {
    RENDERING
 ======================================== */
 
-function renderGoals() {
-    if (!goalsContainer) {
+export function renderGoals() {
+    if (!goalsList) {
         return;
     }
 
-    goalsContainer.innerHTML = "";
+    const goals =
+        clientPlan.priorities.goals;
 
-    if (
-        clientPlan.priorities.goals
-            .length === 0
-    ) {
-        goalsContainer.innerHTML = `
+    goalsList.innerHTML = "";
+
+    if (goals.length === 0) {
+        goalsList.innerHTML = `
             <p class="empty-list-message">
                 No goals added yet.
             </p>
@@ -136,234 +524,141 @@ function renderGoals() {
         return;
     }
 
-    clientPlan.priorities.goals.forEach(
-        function (goal) {
-            goalsContainer.appendChild(
-                createGoalCard(goal),
-            );
-        },
-    );
+    goals.forEach(function (goal) {
+        goalsList.appendChild(
+            createGoalItem(goal),
+        );
+    });
 }
 
 
-function createGoalCard(goal) {
-    const card =
+function createGoalItem(goal) {
+    const goalItem =
         document.createElement("div");
 
-    card.className = "goal-card";
-    card.dataset.goalId = goal.id;
+    goalItem.className = "goal-item";
 
-    const typeInputId =
-        `goalType-${goal.id}`;
+    const goalMain =
+        document.createElement("div");
 
-    const nameInputId =
-        `goalName-${goal.id}`;
+    goalMain.className =
+        "goal-item-main";
 
-    const amountInputId =
-        `goalAmount-${goal.id}`;
+    const goalIcon =
+        document.createElement("div");
 
-    const yearInputId =
-        `goalYear-${goal.id}`;
+    goalIcon.className =
+        "goal-item-icon";
 
-    card.innerHTML = `
-        <div class="goal-card-header">
-            <h4>
-                ${escapeHtml(
-                    goal.name ||
-                    "New Goal",
-                )}
-            </h4>
+    goalIcon.innerHTML =
+        getGoalIcon(goal.type);
 
-            <button
-                type="button"
-                class="goal-delete-button"
-                aria-label="Delete goal"
-            >
-                <i
-                    class="fa-solid fa-trash"
-                    aria-hidden="true"
-                ></i>
+    const goalDetails =
+        document.createElement("div");
 
-                Delete
-            </button>
-        </div>
+    goalDetails.className =
+        "goal-item-details";
 
-        <div class="goal-fields">
-            <div class="form-field">
-                <label for="${typeInputId}">
-                    Goal Type
-                </label>
+    const goalTitle =
+        document.createElement("h4");
 
-                <select
-                    id="${typeInputId}"
-                    class="form-control goal-type-input"
-                >
-                    <option value="">
-                        Select goal
-                    </option>
+    goalTitle.textContent =
+        goal.name;
 
-                    <option value="retirement">
-                        Retirement
-                    </option>
+    const goalDescription =
+        document.createElement("p");
 
-                    <option value="education">
-                        Children’s Education
-                    </option>
+    goalDescription.textContent =
+        `${getGoalTypeLabel(
+            goal.type,
+        )} · ` +
+        `${formatCurrency(
+            goal.targetAmount,
+        )} · ` +
+        `${formatGoalDate(
+            getSavedGoalDate(goal),
+        )}`;
 
-                    <option value="property">
-                        Property Purchase
-                    </option>
+    goalDetails.append(
+        goalTitle,
+        goalDescription,
+    );
 
-                    <option value="emergency_fund">
-                        Emergency Fund
-                    </option>
+    goalMain.append(
+        goalIcon,
+        goalDetails,
+    );
 
-                    <option value="travel">
-                        Travel
-                    </option>
+    const goalActions =
+        document.createElement("div");
 
-                    <option value="legacy">
-                        Legacy
-                    </option>
+    goalActions.className =
+        "goal-item-actions";
 
-                    <option value="other">
-                        Others
-                    </option>
-                </select>
-            </div>
-
-            <div class="form-field">
-                <label for="${nameInputId}">
-                    Goal Name
-                </label>
-
-                <input
-                    id="${nameInputId}"
-                    type="text"
-                    class="form-control goal-name-input"
-                    value="${escapeHtml(
-                        goal.name,
-                    )}"
-                >
-            </div>
-
-            <div class="form-field">
-                <label for="${amountInputId}">
-                    Target Amount
-                </label>
-
-                <input
-                    id="${amountInputId}"
-                    type="number"
-                    min="0"
-                    step="1"
-                    inputmode="numeric"
-                    class="form-control goal-amount-input"
-                    value="${
-                        goal.targetAmount ||
-                        ""
-                    }"
-                >
-            </div>
-
-            <div class="form-field">
-                <label for="${yearInputId}">
-                    Target Year
-                </label>
-
-                <input
-                    id="${yearInputId}"
-                    type="number"
-                    min="${new Date().getFullYear()}"
-                    step="1"
-                    inputmode="numeric"
-                    class="form-control goal-year-input"
-                    value="${
-                        goal.targetYear ||
-                        ""
-                    }"
-                >
-            </div>
-        </div>
-    `;
-
-    const typeInput =
-        card.querySelector(
-            ".goal-type-input",
-        );
-
-    const nameInput =
-        card.querySelector(
-            ".goal-name-input",
-        );
-
-    const amountInput =
-        card.querySelector(
-            ".goal-amount-input",
-        );
-
-    const yearInput =
-        card.querySelector(
-            ".goal-year-input",
-        );
+    const editButton =
+        createEditButton(goal);
 
     const deleteButton =
-        card.querySelector(
-            ".goal-delete-button",
-        );
+        createDeleteButton(goal);
 
-    const heading =
-        card.querySelector("h4");
+    goalActions.append(
+        editButton,
+        deleteButton,
+    );
 
-    typeInput.value = goal.type;
+    goalItem.append(
+        goalMain,
+        goalActions,
+    );
 
-    typeInput.addEventListener(
-        "change",
+    return goalItem;
+}
+
+
+function createEditButton(goal) {
+    const editButton =
+        document.createElement("button");
+
+    editButton.type = "button";
+
+    editButton.className =
+        "goal-action-button";
+
+    editButton.setAttribute(
+        "aria-label",
+        `Edit ${goal.name}`,
+    );
+
+    editButton.innerHTML =
+        '<i class="fa-solid fa-pen"></i>';
+
+    editButton.addEventListener(
+        "click",
         function () {
-            goal.type =
-                typeInput.value;
-
-            emitGoalsChanged();
+            openEditGoalModal(goal.id);
         },
     );
 
-    nameInput.addEventListener(
-        "input",
-        function () {
-            goal.name =
-                nameInput.value.trim();
+    return editButton;
+}
 
-            heading.textContent =
-                goal.name ||
-                "New Goal";
 
-            emitGoalsChanged();
-        },
+function createDeleteButton(goal) {
+    const deleteButton =
+        document.createElement("button");
+
+    deleteButton.type = "button";
+
+    deleteButton.className =
+        "goal-action-button delete";
+
+    deleteButton.setAttribute(
+        "aria-label",
+        `Delete ${goal.name}`,
     );
 
-    amountInput.addEventListener(
-        "input",
-        function () {
-            goal.targetAmount =
-                getWholeNumber(
-                    amountInput.value,
-                );
-
-            emitGoalsChanged();
-        },
-    );
-
-    yearInput.addEventListener(
-        "input",
-        function () {
-            goal.targetYear =
-                getWholeNumber(
-                    yearInput.value,
-                ) || null;
-
-            emitGoalsChanged();
-        },
-    );
+    deleteButton.innerHTML =
+        '<i class="fa-solid fa-trash"></i>';
 
     deleteButton.addEventListener(
         "click",
@@ -372,7 +667,124 @@ function createGoalCard(goal) {
         },
     );
 
-    return card;
+    return deleteButton;
+}
+
+
+/* ========================================
+   DATE HELPERS
+======================================== */
+
+function getSavedGoalDate(goal) {
+    if (goal.targetDate) {
+        return goal.targetDate;
+    }
+
+    /*
+     * Compatibility with goals created before
+     * targetDate was introduced.
+     */
+    if (goal.targetYear) {
+        return `${goal.targetYear}-01`;
+    }
+
+    return "";
+}
+
+
+function formatGoalDate(targetDate) {
+    if (!targetDate) {
+        return "No target date";
+    }
+
+    const [
+        year,
+        month,
+    ] = targetDate.split("-");
+
+    const date =
+        new Date(
+            Number(year),
+            Number(month) - 1,
+            1,
+        );
+
+    if (
+        Number.isNaN(date.getTime())
+    ) {
+        return targetDate;
+    }
+
+    return new Intl.DateTimeFormat(
+        "en-SG",
+        {
+            month: "long",
+            year: "numeric",
+        },
+    ).format(date);
+}
+
+
+/* ========================================
+   DISPLAY HELPERS
+======================================== */
+
+function getGoalTypeLabel(goalType) {
+    const labels = {
+        retirement: "Retirement",
+        education:
+            "Children’s Education",
+        property:
+            "Property Purchase",
+        emergency_fund:
+            "Emergency Fund",
+        wedding: "Wedding",
+        travel: "Travel",
+        legacy: "Legacy",
+        other: "Others",
+    };
+
+    return labels[goalType] || "Goal";
+}
+
+
+function getGoalIcon(goalType) {
+    const icons = {
+        retirement:
+            "fa-solid fa-umbrella-beach",
+
+        education:
+            "fa-solid fa-graduation-cap",
+
+        property:
+            "fa-solid fa-house",
+
+        emergency_fund:
+            "fa-solid fa-shield-halved",
+
+        wedding:
+            "fa-solid fa-ring",
+
+        travel:
+            "fa-solid fa-plane",
+
+        legacy:
+            "fa-solid fa-hand-holding-heart",
+
+        other:
+            "fa-solid fa-bullseye",
+    };
+
+    const iconClass =
+        icons[goalType] ||
+        icons.other;
+
+    return `
+        <i
+            class="${iconClass}"
+            aria-hidden="true"
+        ></i>
+    `;
 }
 
 
@@ -390,18 +802,4 @@ function emitGoalsChanged() {
             ],
         },
     );
-}
-
-
-/* ========================================
-   HELPERS
-======================================== */
-
-function escapeHtml(value = "") {
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
 }
