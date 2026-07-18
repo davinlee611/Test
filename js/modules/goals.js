@@ -580,8 +580,14 @@ export function renderGoals() {
 
     goalsList.innerHTML = "";
 
-    if (goals.length === 0) {
-    return;
+    goals.forEach(function (goal) {
+        const goalItem =
+            createGoalItem(goal);
+
+        goalsList.appendChild(
+            goalItem,
+        );
+    });
 }
 
     goals.forEach(function (goal) {
@@ -596,19 +602,20 @@ function createGoalItem(goal) {
     const goalItem =
         document.createElement("div");
 
-    goalItem.className = "goal-item";
+    goalItem.className =
+        "property-item";
 
     const goalMain =
         document.createElement("div");
 
     goalMain.className =
-        "goal-item-main";
+        "property-item-main";
 
     const goalIcon =
         document.createElement("div");
 
     goalIcon.className =
-        "goal-item-icon";
+        "property-item-icon";
 
     goalIcon.innerHTML =
         getGoalIcon(goal.type);
@@ -617,7 +624,7 @@ function createGoalItem(goal) {
         document.createElement("div");
 
     goalDetails.className =
-        "goal-item-details";
+        "property-item-details";
 
     const goalTitle =
         document.createElement("h4");
@@ -634,10 +641,10 @@ function createGoalItem(goal) {
         )} · ` +
         `${formatCurrency(
             goal.targetAmount,
-        )} · ` +
+        )} target amount · ` +
         `${formatGoalDate(
             getSavedGoalDate(goal),
-        )}`;
+        )} target date`;
 
     goalDetails.append(
         goalTitle,
@@ -653,7 +660,7 @@ function createGoalItem(goal) {
         document.createElement("div");
 
     goalActions.className =
-        "goal-item-actions";
+        "property-item-actions";
 
     const editButton =
         createEditButton(goal);
@@ -682,7 +689,7 @@ function createEditButton(goal) {
     editButton.type = "button";
 
     editButton.className =
-        "goal-action-button";
+    "property-action-button";
 
     editButton.setAttribute(
         "aria-label",
@@ -710,7 +717,7 @@ function createDeleteButton(goal) {
     deleteButton.type = "button";
 
     deleteButton.className =
-        "goal-action-button delete";
+    "property-action-button delete";
 
     deleteButton.setAttribute(
         "aria-label",
