@@ -1,12 +1,6 @@
 "use strict";
 
 import {
-    initializeProperties,
-    renderProperties,
-    resetProperties,
-} from "./modules/properties.js";
-
-import {
     clientPlan,
     resetClientPlan,
 } from "./state/client-state.js";
@@ -30,6 +24,12 @@ import {
     initializeSidebar,
     openSection,
 } from "./modules/sidebar.js";
+
+import {
+    initializeProperties,
+    renderProperties,
+    resetProperties,
+} from "./modules/properties.js";
 
 import {
     on,
