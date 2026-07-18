@@ -653,6 +653,12 @@ body {
   font-weight: 600;
 }
 
+.financial-category-divider {
+  height: 1px;
+  margin: 20px 0;
+  background: var(--border-color);
+}
+
 .financial-category-total strong {
   color: var(--primary-color);
   font-size: 22px;
