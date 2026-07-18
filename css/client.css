@@ -1534,10 +1534,6 @@ body.goal-modal-open {
   overflow: hidden;
 }
 
-.goals-category-card {
-  margin-bottom: 24px;
-}
-
 @media (max-width: 768px) {
   .goal-form-grid {
     grid-template-columns: 1fr;
