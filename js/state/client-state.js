@@ -62,8 +62,8 @@ export function createEmptyClientPlan() {
    ACTIVE CLIENT PLAN
 ======================================== */
 
-export const clientPlan = createEmptyClientPlan();
-
+/*--- export const clientPlan = createEmptyClientPlan(); ---*/
+export const clientPlan =createTestClientPlan();
 
 /* ========================================
    RESET CLIENT PLAN
@@ -175,4 +175,28 @@ function replaceObjectContents(target, source) {
     });
 
     Object.assign(target, source);
+}
+
+/* ========================================
+   REMOVE IN FUTURE, PREFILL-ED CLIENT INFO
+======================================== */
+
+export function createTestClientPlan() {
+    const plan =
+        createEmptyClientPlan();
+
+    plan.profile = {
+        fullName: "Test Client",
+        dateOfBirth: "1990-01-15",
+        gender: "male",
+        maritalStatus: "married",
+        occupation: "Manager",
+        employmentStatus:
+            "full_time_employed",
+        dependants: 2,
+        phone: "91234567",
+        email: "test@example.com",
+    };
+
+    return plan;
 }
