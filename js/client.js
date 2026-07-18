@@ -25,6 +25,7 @@ import {
 
 import {
     initializeWealthType,
+    resetWealthType,
 } from "./modules/wealth-type.js";
 
 import {
@@ -54,10 +55,6 @@ const loadingMessage = document.getElementById("loadingMessage");
 const logoutButton = document.getElementById("logoutButton");
 
 const clearPlanButton = document.getElementById("clearPlanButton");
-
-const wealthPreferenceCards = document.querySelectorAll(
-  ".wealth-preference-card",
-);
 
 /* ========================================
    CPF CONFIGURATION
@@ -111,45 +108,6 @@ async function initializePage() {
       "Something went wrong while opening the planner.";
   }
 }
-
-/* ========================================
-   FOUR TYPES OF WEALTH
-======================================== */
-
-wealthPreferenceCards.forEach(function (card) {
-  card.addEventListener("click", function () {
-    const wealthType = card.dataset.wealthType;
-
-    if (!wealthType) {
-      return;
-    }
-
-    const isSelected = card.classList.toggle("selected");
-
-    card.setAttribute("aria-pressed", String(isSelected));
-
-    if (isSelected) {
-      const isAlreadySelected =
-        clientPlan.priorities.selectedWealthTypes.includes(wealthType);
-
-      if (!isAlreadySelected) {
-        clientPlan.priorities.selectedWealthTypes.push(wealthType);
-      }
-    } else {
-      clientPlan.priorities.selectedWealthTypes =
-        clientPlan.priorities.selectedWealthTypes.filter(
-          function (selectedType) {
-            return selectedType !== wealthType;
-          },
-        );
-    }
-
-    console.log(
-      "Selected wealth types:",
-      clientPlan.priorities.selectedWealthTypes,
-    );
-  });
-});
 
 /* ========================================
    ASSETS AND INCOME ELEMENTS
@@ -830,15 +788,9 @@ function clearFinancialPlan() {
     resetProfile();
 
     /*
-     * Reset the selected wealth cards.
-     */
-    wealthPreferenceCards.forEach(function (card) {
-        card.classList.remove("selected");
-        card.setAttribute(
-            "aria-pressed",
-            "false",
-        );
-    });
+     * Reset the Wealth Type selections.
+    */
+    resetWealthType();
 
     /*
      * Reset all financial input fields.
