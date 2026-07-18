@@ -22,6 +22,11 @@ import {
     showProfileMessage,
 } from "./modules/client-profile.js";
 
+import {
+    emit,
+    on,
+} from "./events/event-bus.js";
+
 const supabaseClient =
     window.supabaseClient;
 
