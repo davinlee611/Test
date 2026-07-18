@@ -9,6 +9,10 @@ import {
     isValidEmail,
 } from "../utils/client-utils.js";
 
+import {
+    emit,
+} from "../events/event-bus.js";
+
 
 /* ========================================
    PROFILE ELEMENTS
@@ -81,31 +85,11 @@ const validationModalBackdrop =
 
 let moduleInitialized = false;
 
-let onProfileChanged = function () {};
-let onProfileCompleted = function () {};
-
-
 /* ========================================
    INITIALIZATION
 ======================================== */
 
-export function initializeProfile(options = {}) {
-    if (
-        typeof options.onProfileChanged ===
-        "function"
-    ) {
-        onProfileChanged =
-            options.onProfileChanged;
-    }
-
-    if (
-        typeof options.onProfileCompleted ===
-        "function"
-    ) {
-        onProfileCompleted =
-            options.onProfileCompleted;
-    }
-
+export function initializeProfile() {
     if (!moduleInitialized) {
         attachProfileListeners();
         moduleInitialized = true;
@@ -175,9 +159,11 @@ function handleProfileInput() {
     clearProfileMessage();
     syncProfileState();
     updateClientHeading();
-    onProfileChanged();
-}
 
+    emit("profile:changed", {
+        profile: clientPlan.profile,
+    });
+}
 
 function syncProfileState() {
     const profile = clientPlan.profile;
@@ -235,7 +221,9 @@ function handleProfileSubmit(event) {
         return;
     }
 
-    onProfileCompleted();
+    emit("profile:completed", {
+        profile: clientPlan.profile,
+    });
 }
 
 

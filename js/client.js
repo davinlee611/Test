@@ -23,7 +23,6 @@ import {
 } from "./modules/client-profile.js";
 
 import {
-    emit,
     on,
 } from "./events/event-bus.js";
 
@@ -67,16 +66,19 @@ const CPF_ANNUAL_WAGE_CEILING = 102000;
    INITIALIZATION
 ======================================== */
 
-initializeProfile({
-    onProfileChanged:
-        updateProfileDependentSections,
+on(
+    "profile:changed",
+    updateProfileDependentSections,
+);
 
-    onProfileCompleted:
-        function () {
-            openSection("priorities");
-        },
-});
+on(
+    "profile:completed",
+    function () {
+        openSection("priorities");
+    },
+);
 
+initializeProfile();
 initializePage();
 
 async function initializePage() {
