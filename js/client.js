@@ -20,6 +20,10 @@ import {
 } from "./modules/wealth-type.js";
 
 import {
+    initializeGoals,
+} from "./modules/goals.js";
+
+import {
     initializeAssetsIncome,
     resetAssetsIncome,
 } from "./modules/assets-income.js";
@@ -52,6 +56,7 @@ initializeProfile();
 initializeSidebar();
 initializeProperties();
 initializeWealthType();
+initializeGoals();
 initializeAssetsIncome();
 initializePage();
 
