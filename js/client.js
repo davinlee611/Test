@@ -29,10 +29,6 @@ import {
 } from "./modules/wealth-type.js";
 
 import {
-    initializeIncome,
-} from "./modules/income.js";
-
-import {
     initializeProperties,
     resetProperties,
 } from "./modules/properties.js";
@@ -85,7 +81,6 @@ initializeProfile();
 initializeSidebar();
 initializeProperties();
 initializeWealthType();
-initializeIncome();
 initializePage();
 
 async function initializePage() {
