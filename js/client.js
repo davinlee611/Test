@@ -27,8 +27,6 @@ import {
 
 import {
     initializeProperties,
-    renderProperties,
-    resetProperties,
 } from "./modules/properties.js";
 
 import {
