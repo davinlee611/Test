@@ -265,8 +265,6 @@ const totalCpfElement = document.getElementById("totalCpf");
 
 const addPropertyButton = document.getElementById("addPropertyButton");
 
-const propertyList = document.getElementById("propertyList");
-
 const emptyPropertyMessage = document.getElementById("emptyPropertyMessage");
 
 const totalPropertyValueElement = document.getElementById("totalPropertyValue");
@@ -274,6 +272,8 @@ const totalPropertyValueElement = document.getElementById("totalPropertyValue");
 const propertyModal = document.getElementById("propertyModal");
 
 const propertyForm = document.getElementById("propertyForm");
+
+const propertyList = document.getElementById("propertyList");
 
 const propertyModalTitle = document.getElementById("propertyModalTitle");
 
@@ -287,15 +287,11 @@ const propertyOwnershipInput = document.getElementById("propertyOwnership");
 
 const propertyFormMessage = document.getElementById("propertyFormMessage");
 
-const closePropertyModalButton = document.getElementById(
-  "closePropertyModalButton",
-);
+const closePropertyModalButton = document.getElementById("closePropertyModalButton",);
 
 const cancelPropertyButton = document.getElementById("cancelPropertyButton");
 
-const propertyModalBackdrop = document.querySelector(
-  "[data-close-property-modal]",
-);
+const propertyModalBackdrop = document.querySelector("[data-close-property-modal]",);
 
 /* ========================================
    ASSETS AND INCOME INPUTS
