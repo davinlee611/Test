@@ -22,6 +22,10 @@ import {
 } from "../services/cpf-service.js";
 
 import {
+    calculateIncomeSummary,
+} from "../services/income-calculator.js";
+
+import {
     on,
     emit,
 } from "../events/event-bus.js";
@@ -516,7 +520,7 @@ function updateAssetsAndIncomeTotals() {
    INCOME CALCULATION
 ======================================== */
 
-function calculateIncomeSummary() {
+function calculateIncomeSummaryOLD() {
     const income =
         clientPlan.priorities.assets.income;
 
