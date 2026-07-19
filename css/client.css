@@ -289,6 +289,14 @@ body {
    FORM MESSAGE AND ACTIONS
 ======================================== */
 
+.policy-form-message {
+  min-height: 20px;
+  margin: 0;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .form-message {
   min-height: 22px;
   margin-top: 18px;
@@ -1731,9 +1739,12 @@ body.liability-modal-open {
 }
 
 .policy-modal .form-group input:focus,
-.policy-modal .form-group select:focus {
+.policy-modal .form-group select:focus,
+.policy-modal .form-group textarea:focus {
   outline: none;
   border-color: var(--primary-color);
+  box-shadow:
+    0 0 0 3px rgba(91, 78, 245, 0.15);
 }
 
 .policy-modal-section+.policy-modal-section {
@@ -1741,13 +1752,28 @@ body.liability-modal-open {
   border-top: 1px solid var(--border-color);
 }
 
-.policy-modal .modal-footer {
-  margin: 0;
-  padding: 20px 30px;
-  border-top: 1px solid var(--border-color);
-  background: #f8fafc;
+.policy-modal-footer {
+  position: static;
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
+.policy-modal-footer button {
+  width: 100%;
+  min-height: var(--button-height);
+}
+
+.policy-modal-footer .next-button,
+.policy-modal-footer .header-button {
+  width: 100%;
+  min-width: 0;
+}
 
 /* ========================================
    POLICY VALIDATION
@@ -1877,7 +1903,7 @@ body.liability-modal-open {
   grid-column: 1 / -1;
 }
 
-.form-group textarea {
+.policy-modal .form-group textarea {
   width: 100%;
   min-height: 90px;
   padding: 12px 14px;
@@ -1888,11 +1914,6 @@ body.liability-modal-open {
   font: inherit;
   line-height: 1.5;
   resize: vertical;
-}
-
-.form-group textarea:focus {
-  border-color: var(--primary-color);
-  outline: none;
 }
 
 .benefit-item-meta {
@@ -1957,6 +1978,10 @@ body.liability-modal-open {
     padding: 18px;
   }
 
+  .policy-modal .form-grid {
+    grid-template-columns: 1fr;
+  }
+
   .policy-modal-section-header--actions {
     align-items: stretch;
     flex-direction: column;
@@ -1966,8 +1991,8 @@ body.liability-modal-open {
     width: 100%;
   }
 
-  .policy-modal .modal-footer {
-    padding: 18px 20px;
+  .policy-modal-footer {
+    grid-template-columns: 1fr;
   }
 }
 

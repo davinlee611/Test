@@ -1498,7 +1498,7 @@
     
         </div>
     
-      </div class="modal-body policy-modal-body">
+      <div class="modal-body policy-modal-body">
 
   <!-- ========================================
        POLICY INFORMATION
@@ -1523,12 +1523,8 @@
           <span class="required-label">*</span>
         </label>
 
-        <input
-          id="policyNameInput"
-          type="text"
-          placeholder="e.g. Whole Life Supreme"
-          autocomplete="off"
-        >
+        <input id="policyNameInput" class="form-control" type="text" placeholder="For example, Whole Life Supreme"
+          autocomplete="off">
 
       </div>
 
@@ -1745,21 +1741,20 @@
 
       <!-- Premium -->
       <div class="form-group">
-
+      
         <label for="premiumInput">
           Premium
           <span class="optional-label">(Optional)</span>
         </label>
-
-        <input
-          id="premiumInput"
-          type="number"
-          min="0"
-          step="1"
-          inputmode="numeric"
-          placeholder="0"
-        >
-
+      
+        <div class="currency-input">
+      
+          <span>$</span>
+      
+          <input id="premiumInput" class="form-control" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+      
+        </div>
+      
       </div>
 
       <!-- Premium Frequency -->
@@ -2037,33 +2032,21 @@
         
         </section>
 
-  <p
-    id="policyFormMessage"
-    class="policy-form-message"
-    aria-live="polite"
-  ></p>
-
-</div>
-    
-        <div class="modal-footer">
-    
-          <button id="cancelPolicyButton" type="button" class="header-button header-button-secondary">
-    
-            Cancel
-    
-          </button>
-    
-          <button id="savePolicyButton" type="button" class="next-button">
-    
-            Save Policy
-    
-          </button>
-    
-        </div>
-    
-      </div>
-    
-    </div>
+  <p id="policyFormMessage" class="policy-form-message" aria-live="polite"></p>
+  
+  <div class="modal-footer policy-modal-footer">
+  
+    <button id="cancelPolicyButton" type="button" class="header-button header-button-secondary">
+      Cancel
+    </button>
+  
+    <button id="savePolicyButton" type="button" class="next-button">
+      Save Policy
+    </button>
+  
+  </div>
+  
+  </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
