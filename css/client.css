@@ -601,6 +601,10 @@ body {
   display: none !important;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 /* ========================================
    ASSETS AND INCOME
 ======================================== */
@@ -1814,12 +1818,30 @@ body.liability-modal-open {
 }
 
 .policy-add-benefit-button {
-  width: auto;
-  flex-shrink: 0;
+  width: 100%;
   margin: 0;
-  padding-inline: 18px;
 }
 
+/* Policy premium currency field */
+
+.policy-modal .currency-input {
+  position: relative;
+  width: 100%;
+}
+
+.policy-modal .currency-input>span {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  z-index: 1;
+  color: var(--text-secondary);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.policy-modal .currency-input input.form-control {
+  padding-left: 40px;
+}
 
 /* ========================================
    POLICY VALIDATION
@@ -2057,10 +2079,6 @@ body.liability-modal-open {
     .policy-modal-section-header--actions {
       align-items: center;
     }
-
-  .policy-add-benefit-button {
-    width: 100%;
-  }
 
   .policy-modal-footer {
     grid-template-columns: 1fr;

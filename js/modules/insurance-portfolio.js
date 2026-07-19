@@ -393,7 +393,7 @@ function bindInsuranceEvents() {
 
     elements.insurerSelect?.addEventListener(
         "change",
-        toggleOtherInsurer,
+        handleInsurerChange,
     );
 
     elements.addBenefitButton?.addEventListener(
@@ -442,6 +442,8 @@ function bindInsuranceEvents() {
 
 function openAddPolicyModal() {
     resetPolicyForm();
+
+    handleInsurerChange();
 
     elements.policyModalTitle.textContent =
         "Add Policy";
@@ -498,17 +500,18 @@ function resetPolicyForm() {
 }
 
 
-function toggleOtherInsurer() {
-    const showOtherInsurer =
-        elements.insurerSelect.value ===
-        "other";
+function handleInsurerChange() {
+    const isOtherSelected =
+        elements.insurerSelect.value === "other";
 
     elements.otherInsurerGroup.hidden =
-        !showOtherInsurer;
+        !isOtherSelected;
 
-    if (!showOtherInsurer) {
-        elements.otherInsurerInput.value =
-            "";
+    elements.otherInsurerInput.required =
+        isOtherSelected;
+
+    if (!isOtherSelected) {
+        elements.otherInsurerInput.value = "";
     }
 }
 
