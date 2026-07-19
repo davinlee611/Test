@@ -1455,7 +1455,7 @@
             Add Policy
           </h2>
     
-          <button id="closePolicyModalButton" type="button" class="icon-button">
+          <button id="closePolicyModalButton" type="button" class="icon-button" aria-label="Close policy form">
     
             <i class="fa-solid fa-xmark"></i>
     
@@ -1463,191 +1463,296 @@
     
         </div>
     
-        <div class="modal-body">
-        
-          <div class="form-grid">
-        
-            <div class="form-group">
-        
-              <label for="policyNameInput">
-        
-                Policy Name
-        
-              </label>
-        
-              <input id="policyNameInput" type="text" placeholder="e.g. Whole Life Supreme">
-        
-            </div>
-        
-            <div class="form-group">
-        
-              <label for="insurerSelect">
-        
-                Insurer
-        
-              </label>
-        
-              <select id="insurerSelect">
-        
-                <option value="">
-                  Select insurer
-                </option>
-        
-                <option>AIA</option>
-                <option>Great Eastern</option>
-                <option>Prudential</option>
-                <option>Income Insurance</option>
-                <option>Singlife</option>
-                <option>HSBC Life</option>
-                <option>Manulife</option>
-                <option>Tokio Marine</option>
-                <option>Etiqa</option>
-                <option>FWD</option>
-                <option>China Taiping</option>
-        
-                <option value="other">
-        
-                  Other...
-        
-                </option>
-        
-              </select>
-        
-            </div>
-        
-            <div id="otherInsurerGroup" class="form-group" hidden>
-        
-              <label for="otherInsurerInput">
-        
-                Other Insurer
-        
-              </label>
-        
-              <input id="otherInsurerInput" type="text">
-        
-            </div>
-        
-            <div class="form-group">
-        
-              <label for="policyOwnerInput">
-        
-                Policy Owner
-        
-              </label>
-        
-              <input id="policyOwnerInput" type="text">
-        
-            </div>
-        
-            <div class="form-group">
-        
-              <label for="lifeAssuredInput">
-        
-                Life Assured
-        
-              </label>
-        
-              <input id="lifeAssuredInput" type="text">
-        
-            </div>
-        
-            <div class="form-group">
-        
-              <label for="policyStatusSelect">
-        
-                Status
-        
-              </label>
-        
-              <select id="policyStatusSelect">
-        
-                <option value="">
-        
-                  Select
-        
-                </option>
-        
-                <option value="active">
-        
-                  Active
-        
-                </option>
-        
-                <option value="paid_up">
-        
-                  Paid-Up
-        
-                </option>
-        
-                <option value="lapsed">
-        
-                  Lapsed
-        
-                </option>
-        
-              </select>
-        
-            </div>
-        
-            <div class="form-group">
-        
-              <label for="premiumInput">
-        
-                Annual Premium
-        
-              </label>
-        
-              <input id="premiumInput" type="number" min="0" step="1">
-        
-            </div>
-        
-            <div class="form-group">
-        
-              <label for="premiumFrequencySelect">
-        
-                Premium Frequency
-        
-              </label>
-        
-              <select id="premiumFrequencySelect">
-        
-                <option value="annual">
-        
-                  Annual
-        
-                </option>
-        
-                <option value="half_yearly">
-        
-                  Half-Yearly
-        
-                </option>
-        
-                <option value="quarterly">
-        
-                  Quarterly
-        
-                </option>
-        
-                <option value="monthly">
-        
-                  Monthly
-        
-                </option>
-        
-                <option value="single">
-        
-                  Single Premium
-        
-                </option>
-        
-              </select>
-        
-            </div>
-        
-          </div>
-        
-        </div>
+        <div class="modal-body policy-modal-body">
+
+  <!-- ========================================
+       POLICY INFORMATION
+  ========================================= -->
+
+  <section class="policy-modal-section">
+
+    <div class="policy-modal-section-header">
+      <div>
+        <h3>Policy Information</h3>
+        <p>Enter the main details shown on the policy schedule.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+
+      <!-- Policy Name -->
+      <div class="form-group">
+
+        <label for="policyNameInput">
+          Policy Name
+          <span class="required-label">*</span>
+        </label>
+
+        <input
+          id="policyNameInput"
+          type="text"
+          placeholder="e.g. Whole Life Supreme"
+          autocomplete="off"
+        >
+
+      </div>
+
+      <!-- Insurer -->
+      <div class="form-group">
+
+        <label for="insurerSelect">
+          Insurer
+          <span class="required-label">*</span>
+        </label>
+
+        <select id="insurerSelect">
+
+          <option value="">
+            Select insurer
+          </option>
+
+          <option value="AIA">AIA</option>
+
+          <option value="Great Eastern">
+            Great Eastern
+          </option>
+
+          <option value="Prudential">
+            Prudential
+          </option>
+
+          <option value="Income Insurance">
+            Income Insurance
+          </option>
+
+          <option value="Singlife">
+            Singlife
+          </option>
+
+          <option value="HSBC Life">
+            HSBC Life
+          </option>
+
+          <option value="Manulife">
+            Manulife
+          </option>
+
+          <option value="Tokio Marine">
+            Tokio Marine
+          </option>
+
+          <option value="Etiqa">
+            Etiqa
+          </option>
+
+          <option value="FWD">
+            FWD
+          </option>
+
+          <option value="China Taiping">
+            China Taiping
+          </option>
+
+          <option value="other">
+            Other...
+          </option>
+
+        </select>
+
+      </div>
+
+      <!-- Other Insurer -->
+      <div
+        id="otherInsurerGroup"
+        class="form-group"
+        hidden
+      >
+
+        <label for="otherInsurerInput">
+          Other Insurer
+          <span class="required-label">*</span>
+        </label>
+
+        <input
+          id="otherInsurerInput"
+          type="text"
+          placeholder="Enter insurer name"
+          autocomplete="off"
+        >
+
+      </div>
+
+      <!-- Policy Number -->
+      <div class="form-group">
+
+        <label for="policyNumberInput">
+          Policy Number
+          <span class="optional-label">(Optional)</span>
+        </label>
+
+        <input
+          id="policyNumberInput"
+          type="text"
+          placeholder="e.g. L123456789"
+          autocomplete="off"
+        >
+
+      </div>
+
+      <!-- Policy Owner -->
+      <div class="form-group">
+
+        <label for="policyOwnerInput">
+          Policy Owner
+          <span class="optional-label">(Optional)</span>
+        </label>
+
+        <input
+          id="policyOwnerInput"
+          type="text"
+          placeholder="e.g. Client"
+          autocomplete="off"
+        >
+
+      </div>
+
+      <!-- Status -->
+      <div class="form-group">
+
+        <label for="policyStatusSelect">
+          Status
+          <span class="required-label">*</span>
+        </label>
+
+        <select id="policyStatusSelect">
+
+          <option value="">
+            Select status
+          </option>
+
+          <option value="active">
+            Active
+          </option>
+
+          <option value="paid_up">
+            Paid-Up
+          </option>
+
+          <option value="lapsed">
+            Lapsed
+          </option>
+
+        </select>
+
+      </div>
+
+      <!-- Premium -->
+      <div class="form-group">
+
+        <label for="premiumInput">
+          Premium
+          <span class="optional-label">(Optional)</span>
+        </label>
+
+        <input
+          id="premiumInput"
+          type="number"
+          min="0"
+          step="1"
+          inputmode="numeric"
+          placeholder="0"
+        >
+
+      </div>
+
+      <!-- Premium Frequency -->
+      <div class="form-group">
+
+        <label for="premiumFrequencySelect">
+          Premium Frequency
+        </label>
+
+        <select id="premiumFrequencySelect">
+
+          <option value="annual">
+            Annual
+          </option>
+
+          <option value="half_yearly">
+            Half-Yearly
+          </option>
+
+          <option value="quarterly">
+            Quarterly
+          </option>
+
+          <option value="monthly">
+            Monthly
+          </option>
+
+          <option value="single">
+            Single Premium
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ========================================
+       POLICY BENEFITS
+  ========================================= -->
+
+  <section class="policy-modal-section">
+
+    <div class="policy-modal-section-header policy-modal-section-header--actions">
+
+      <div>
+        <h3>Benefits</h3>
+
+        <p>
+          Add the insurance benefits provided by this policy.
+        </p>
+      </div>
+
+      <button
+        id="addBenefitButton"
+        type="button"
+        class="add-planning-item-button policy-add-benefit-button"
+      >
+        <i class="fa-solid fa-plus"></i>
+        Add Benefit
+      </button>
+
+    </div>
+
+    <div
+      id="policyBenefitList"
+      class="planning-item-list policy-benefit-list"
+    >
+
+      <p
+        id="emptyPolicyBenefitMessage"
+        class="empty-state-message"
+      >
+        No benefits added yet.
+      </p>
+
+    </div>
+
+  </section>
+
+  <p
+    id="policyFormMessage"
+    class="policy-form-message"
+    aria-live="polite"
+  ></p>
+
+</div>
     
         <div class="modal-footer">
     

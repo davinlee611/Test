@@ -1563,6 +1563,107 @@ body.liability-modal-open {
 }
 
 /* ========================================
+   POLICY MODAL
+======================================== */
+
+.policy-modal {
+  width: min(760px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+}
+
+.policy-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  overflow-y: auto;
+}
+
+.policy-modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.policy-modal-section+.policy-modal-section {
+  padding-top: 28px;
+  border-top: 1px solid var(--border-color);
+}
+
+.policy-modal-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.policy-modal-section-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.policy-modal-section-header p {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.policy-modal-section-header--actions {
+  align-items: center;
+}
+
+.policy-add-benefit-button {
+  width: auto;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.policy-benefit-list {
+  min-height: 80px;
+}
+
+.policy-form-message {
+  min-height: 20px;
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+.required-label {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.optional-label {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+
+/* ========================================
+   POLICY MODAL RESPONSIVE
+======================================== */
+
+@media (max-width: 640px) {
+  .policy-modal {
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 24px);
+  }
+
+  .policy-modal-section-header--actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .policy-add-benefit-button {
+    width: 100%;
+  }
+}
+
+/* ========================================
    INSURANCE PORTFOLIO
 ======================================== */
 

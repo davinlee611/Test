@@ -141,6 +141,71 @@ function cacheInsuranceElements() {
             document.getElementById(
                 "premiumFrequencySelect",
             ),
+
+        policyNameInput:
+            document.getElementById(
+                "policyNameInput",
+            ),
+
+        insurerSelect:
+            document.getElementById(
+                "insurerSelect",
+            ),
+
+        otherInsurerGroup:
+            document.getElementById(
+                "otherInsurerGroup",
+            ),
+
+        otherInsurerInput:
+            document.getElementById(
+                "otherInsurerInput",
+            ),
+
+        policyNumberInput:
+            document.getElementById(
+                "policyNumberInput",
+            ),
+
+        policyOwnerInput:
+            document.getElementById(
+                "policyOwnerInput",
+            ),
+
+        policyStatusSelect:
+            document.getElementById(
+                "policyStatusSelect",
+            ),
+
+        premiumInput:
+            document.getElementById(
+                "premiumInput",
+            ),
+
+        premiumFrequencySelect:
+            document.getElementById(
+                "premiumFrequencySelect",
+            ),
+
+        addBenefitButton:
+            document.getElementById(
+                "addBenefitButton",
+            ),
+
+        policyBenefitList:
+            document.getElementById(
+                "policyBenefitList",
+            ),
+
+        emptyPolicyBenefitMessage:
+            document.getElementById(
+                "emptyPolicyBenefitMessage",
+            ),
+
+        policyFormMessage:
+            document.getElementById(
+                "policyFormMessage",
+            ),
     };
 }
 
@@ -162,16 +227,17 @@ function toggleOtherInsurer() {
 }
 
 function resetPolicyForm() {
-
     elements.policyNameInput.value = "";
 
     elements.insurerSelect.value = "";
 
     elements.otherInsurerInput.value = "";
 
-    elements.policyOwnerInput.value = "";
+    elements.otherInsurerGroup.hidden = true;
 
-    elements.lifeAssuredInput.value = "";
+    elements.policyNumberInput.value = "";
+
+    elements.policyOwnerInput.value = "";
 
     elements.policyStatusSelect.value = "";
 
@@ -180,6 +246,21 @@ function resetPolicyForm() {
     elements.premiumFrequencySelect.value =
         "annual";
 
+    elements.policyFormMessage.textContent = "";
+
+    elements.policyBenefitList.innerHTML = `
+        <p
+            id="emptyPolicyBenefitMessage"
+            class="empty-state-message"
+        >
+            No benefits added yet.
+        </p>
+    `;
+
+    elements.emptyPolicyBenefitMessage =
+        document.getElementById(
+            "emptyPolicyBenefitMessage",
+        );
 }
 
 
