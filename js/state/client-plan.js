@@ -15,37 +15,58 @@ export function createEmptyClientPlan() {
         },
 
         priorities: {
-            wealthTypes: [],
 
-            assets: {
-                liquidAssets: {
-                    cashInBank: 0,
-                    fixedDeposits: 0,
-                    tBills: 0,
-                    investments: 0,
-                    others: 0,
-                },
+    selectedWealthTypes: [],
 
-                income: {
-                    monthlyEmployment: 0,
-                    annualBonus: 0,
-                    otherMonthly: 0,
-                },
+    assets: {
 
-                cpf: {
-                    oa: 0,
-                    sa: 0,
-                    ma: 0,
-                    ra: 0,
-                },
+        liquidAssets: {
 
-                properties: [],
-            },
+            cashInBank: 0,
+            fixedDeposits: 0,
+            tBills: 0,
+            investments: 0,
+            others: 0,
 
-            goals: [],
-            liabilities: [],
-            policies: [],
         },
+
+        income: {
+
+            monthlyEmployment: 0,
+            annualBonus: 0,
+            otherMonthly: 0,
+
+            monthlyEmploymentIncome: 0,
+            annualEmploymentIncome: 0,
+
+            monthlyOtherIncome: 0,
+            annualOtherIncome: 0,
+
+            monthlyTakeHomeIncome: 0,
+            annualTakeHomeIncome: 0,
+
+        },
+
+        cpf: {
+
+            oa: 0,
+            sa: 0,
+            ma: 0,
+            ra: 0,
+
+        },
+
+        properties: [],
+
+    },
+
+    goals: [],
+
+    liabilities: [],
+
+    policies: [],
+
+},
 
         costOfWants: {},
     };
