@@ -1,9 +1,3 @@
-
-
-body.modal-open {
-  overflow: hidden;
-}
-
 @import url("./layout/client-workspace.css");
 @import url("./layout/client-header.css");
 @import url("./layout/client-sidebar.css");
