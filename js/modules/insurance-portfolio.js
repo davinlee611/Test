@@ -416,6 +416,11 @@ function bindInsuranceEvents() {
         closeBenefitEditor,
     );
 
+    elements.policyTypeSelect?.addEventListener(
+        "change",
+        updateBenefitFields,
+    );
+
     elements.benefitTypeSelect?.addEventListener(
         "change",
         updateBenefitFields,
@@ -1409,11 +1414,28 @@ function updateBenefitFields() {
         benefitType === "tpd";
 
     const requiresPayoutType =
-        benefitType === "critical_illness" ||
-        benefitType === "early_critical_illness";
+        benefitType ===
+        "critical_illness" ||
+        benefitType ===
+        "early_critical_illness";
 
+    /*
+     * CI and ECI:
+     * Show the payout type dropdown.
+     *
+     * Whole Life TPD:
+     * Hide the dropdown because it is
+     * always accelerated.
+     */
     elements.benefitPayoutTypeGroup.hidden =
-        !requiresPayoutType &&
+        !requiresPayoutType ||
+        isWholeLifeTpd;
+
+    /*
+     * Only show the information message
+     * for Whole Life TPD.
+     */
+    elements.benefitPayoutInfo.hidden =
         !isWholeLifeTpd;
 
     if (isWholeLifeTpd) {
@@ -1425,7 +1447,9 @@ function updateBenefitFields() {
     }
 
     elements.benefitAmountLabel.innerHTML =
-        getBenefitAmountLabel(benefitType);
+        getBenefitAmountLabel(
+            benefitType,
+        );
 }
 
 
@@ -1491,23 +1515,27 @@ function saveBenefit() {
 
 
 function getBenefitFormData() {
+    const benefitType =
+        elements.benefitTypeSelect.value;
 
     const policyType =
         elements.policyTypeSelect.value;
 
     let payoutType =
-        elements.benefitPayoutTypeSelect.value;
+        elements.benefitPayoutTypeSelect
+            .value || null;
 
     if (
         policyType === "whole_life" &&
-        benefit.type === "tpd"
+        benefitType === "tpd"
     ) {
-        payoutType = "accelerated";
+        payoutType =
+            "accelerated";
     }
 
     return {
         type:
-            elements.benefitTypeSelect.value,
+            benefitType,
 
         lifeAssured:
             elements.benefitLifeAssuredInput
@@ -1520,9 +1548,7 @@ function getBenefitFormData() {
                     .value,
             ),
 
-        payoutType:
-            elements.benefitPayoutTypeSelect
-                .value || null,
+        payoutType,
 
         notes:
             elements.benefitNotesInput
