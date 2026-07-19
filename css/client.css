@@ -328,6 +328,16 @@ body {
   margin-left: 8px;
 }
 
+.required-label {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.optional-label {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
 /* ========================================
    PLANNING CATEGORIES
 ======================================== */
@@ -1530,11 +1540,26 @@ body.liability-modal-open {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 50px;
   width: 50px;
   height: 50px;
+  padding: 0;
   border: 1px solid var(--border-color);
   border-radius: 14px;
   background: #f8fafc;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.modal-close-button:hover {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+  background: #eef2ff;
 }
 
 .modal-footer {
@@ -1718,6 +1743,7 @@ body.liability-modal-open {
 .policy-modal .form-group {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .policy-modal .form-group label {
@@ -1729,13 +1755,25 @@ body.liability-modal-open {
 .policy-modal .form-group input,
 .policy-modal .form-group select {
   width: 100%;
+  min-width: 0;
   height: 56px;
   padding: 0 16px;
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: white;
+  background: var(--card-background);
+  color: var(--text-primary);
   font: inherit;
-  transition: border-color .2s;
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.policy-modal .form-group input::placeholder,
+.policy-modal .form-group textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 1;
 }
 
 .policy-modal .form-group input:focus,
@@ -1758,7 +1796,7 @@ body.liability-modal-open {
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
   gap: 14px;
-  margin-top: 4px;
+  margin-top: 6px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -1769,11 +1807,19 @@ body.liability-modal-open {
   min-height: var(--button-height);
 }
 
-.policy-modal-footer .next-button,
-.policy-modal-footer .header-button {
+.policy-modal-footer .primary-button,
+.policy-modal-footer .secondary-button {
   width: 100%;
   min-width: 0;
 }
+
+.policy-add-benefit-button {
+  width: auto;
+  flex-shrink: 0;
+  margin: 0;
+  padding-inline: 18px;
+}
+
 
 /* ========================================
    POLICY VALIDATION
@@ -1986,6 +2032,31 @@ body.liability-modal-open {
     align-items: stretch;
     flex-direction: column;
   }
+
+    .policy-modal-section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+  
+    .policy-modal-section-header h3 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+  
+    .policy-modal-section-header p {
+      margin: 7px 0 0;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+  
+    .policy-modal-section-header--actions {
+      align-items: center;
+    }
 
   .policy-add-benefit-button {
     width: 100%;

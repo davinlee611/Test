@@ -1536,7 +1536,7 @@
           <span class="required-label">*</span>
         </label>
       
-        <select id="policyTypeSelect">
+        <select id="policyTypeSelect" class="form-control">
       
           <option value="">
             Select Policy Type
@@ -1598,7 +1598,7 @@
           <span class="required-label">*</span>
         </label>
 
-        <select id="insurerSelect">
+        <select id="insurerSelect" class="form-control">
 
           <option value="">
             Select insurer
@@ -1666,9 +1666,7 @@
           <span class="required-label">*</span>
         </label>
 
-        <input
-          id="otherInsurerInput"
-          type="text"
+        <input id="otherInsurerInput" class="form-control" type="text"
           placeholder="Enter insurer name"
           autocomplete="off"
         >
@@ -1683,9 +1681,7 @@
           <span class="optional-label">(Optional)</span>
         </label>
 
-        <input
-          id="policyNumberInput"
-          type="text"
+        <input id="policyNumberInput" class="form-control" type="text"
           placeholder="e.g. L123456789"
           autocomplete="off"
         >
@@ -1700,9 +1696,7 @@
           <span class="optional-label">(Optional)</span>
         </label>
 
-        <input
-          id="policyOwnerInput"
-          type="text"
+        <input id="policyOwnerInput" class="form-control" type="text"
           placeholder="e.g. Client"
           autocomplete="off"
         >
@@ -1717,7 +1711,7 @@
           <span class="required-label">*</span>
         </label>
 
-        <select id="policyStatusSelect">
+        <select id="policyStatusSelect" class="form-control">
 
           <option value="">
             Select status
@@ -1764,7 +1758,7 @@
           Premium Frequency
         </label>
 
-        <select id="premiumFrequencySelect">
+        <select id="premiumFrequencySelect" class="form-control">
 
           <option value="annual">
             Annual
@@ -1851,7 +1845,7 @@
             <span class="required-label">*</span>
           </label>
   
-          <select id="benefitTypeSelect">
+          <select id="benefitTypeSelect" class="form-control">
   
             <option value="">
               Select benefit type
@@ -1902,7 +1896,7 @@
             <span class="optional-label">(Optional)</span>
           </label>
   
-          <input id="benefitLifeAssuredInput" type="text" placeholder="e.g. Client" autocomplete="off">
+          <input id="benefitLifeAssuredInput" class="form-control" type="text" placeholder="e.g. Client" autocomplete="off">
   
         </div>
   
@@ -1919,7 +1913,7 @@
   
             <span>$</span>
   
-            <input id="benefitAmountInput" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+            <input id="benefitAmountInput" class="form-control" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
   
           </div>
   
@@ -1934,7 +1928,7 @@
             <span class="required-label">*</span>
           </label>
   
-          <select id="benefitPayoutTypeSelect">
+          <select id="benefitPayoutTypeSelect" class="form-control">
   
             <option value="">
               Select payout type
@@ -1965,7 +1959,7 @@
             <span class="optional-label">(Optional)</span>
           </label>
   
-          <textarea id="benefitNotesInput" rows="3" placeholder="Add any relevant benefit details"></textarea>
+          <textarea id="benefitNotesInput" class="form-control" rows="3" placeholder="Add any relevant benefit details"></textarea>
   
         </div>
   
@@ -2036,17 +2030,21 @@
   
   <div class="modal-footer policy-modal-footer">
   
-    <button id="cancelPolicyButton" type="button" class="header-button header-button-secondary">
+    <button id="cancelPolicyButton" type="button" class="secondary-button">
       Cancel
     </button>
-  
-    <button id="savePolicyButton" type="button" class="next-button">
+    
+    <button id="savePolicyButton" type="button" class="primary-button">
       Save Policy
     </button>
   
   </div>
   
-  </div>
+  </div> <!-- closes .policy-modal-body -->
+
+  </div> <!-- closes .policy-modal-->
+
+</div> <!-- closes #policyModal -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
