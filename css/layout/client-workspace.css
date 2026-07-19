@@ -1,0 +1,25 @@
+/* ========================================
+   CLIENT WORKSPACE
+======================================== */
+
+body {
+    padding: var(--space-7);
+}
+
+.client-workspace {
+    width: 100%;
+    max-width: var(--workspace-max-width);
+    margin: 0 auto;
+}
+
+.workspace-layout {
+    display: grid;
+    grid-template-columns:
+        var(--sidebar-width) minmax(0, 1fr);
+    min-height: 650px;
+    overflow: hidden;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-lg);
+}

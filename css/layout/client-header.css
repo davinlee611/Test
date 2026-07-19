@@ -1,0 +1,91 @@
+/* ========================================
+   CLIENT HEADER
+======================================== */
+
+.client-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: var(--space-7);
+}
+
+.client-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.client-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    width: 58px;
+    height: 58px;
+    color: var(--primary-color);
+    background: var(--primary-soft);
+    border-radius: var(--radius-xl);
+    font-size: 22px;
+}
+
+.client-label,
+.section-label {
+    margin-bottom: 5px;
+    color: var(--primary-color);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.client-header h1 {
+    color: var(--text-primary);
+    font-size: var(--font-size-page-title);
+    line-height: 1.2;
+}
+
+.client-header p:not(.client-label) {
+    margin-top: 5px;
+    color: var(--text-secondary);
+    font-size: var(--font-size-md);
+}
+
+.client-header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* ========================================
+   HEADER BUTTONS
+======================================== */
+
+.header-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+    min-width: 120px;
+    height: var(--button-height);
+    padding: 0 18px;
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.header-button-secondary {
+    color: var(--text-primary);
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+}
+
+.header-button-secondary:hover {
+    background: var(--surface-hover);
+}
+
+.logout-button {
+    width: auto;
+    min-width: 110px;
+}

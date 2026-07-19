@@ -1,48 +1,147 @@
 /* ========================================
-   THEME
+   DESIGN SYSTEM
 ======================================== */
 
 :root {
-  /* Colors */
+  /* Brand colours */
   --primary-color: #5b4ef5;
   --primary-hover: #4a3de8;
+  --primary-soft: rgba(91, 78, 245, 0.1);
+  --primary-soft-hover: rgba(91, 78, 245, 0.15);
+  --primary-surface: #eef2ff;
 
+  /* Background colours */
   --background-color: #f8fafc;
-  --card-background: #ffffff;
+  --surface-color: #ffffff;
+  --surface-muted: #f8fafc;
+  --surface-hover: #f1f5f9;
 
+  /* Existing compatibility variable */
+  --card-background: var(--surface-color);
+
+  /* Text colours */
   --text-primary: #24324b;
   --text-secondary: #8a94a6;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --text-subtle: #475569;
 
+  /* Border colours */
   --border-color: #e3e7ef;
+  --border-strong: #cbd5e1;
+  --border-muted: #e2e8f0;
 
-  /* Sizes */
-  --border-radius: 8px;
+  /* Status colours */
+  --success-color: #15803d;
+  --success-background: #f0fdf4;
+
+  --warning-color: #9d6500;
+  --warning-background: #fff2dc;
+
+  --danger-color: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-background: #fef2f2;
+  --danger-border: #fecaca;
+
+  /* Typography */
+  --font-family: "Inter", sans-serif;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-base: 15px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 22px;
+  --font-size-page-title: 32px;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* Component dimensions */
   --input-height: 46px;
   --button-height: 48px;
+  --sidebar-width: 260px;
 
-  /* Effects */
-  --box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-pill: 999px;
+
+  /* Existing compatibility variable */
+  --border-radius: var(--radius-md);
+
+  /* Shadows */
+  --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 12px 30px rgba(15, 23, 42, 0.12);
+  --shadow-lg: 0 25px 60px rgba(15, 23, 42, 0.12);
+  --shadow-overlay: 0 24px 60px rgba(15, 23, 42, 0.24);
+
+  /* Existing compatibility variable */
+  --box-shadow: var(--shadow-lg);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.25s ease;
+
+  /* Layout */
+  --workspace-max-width: 1280px;
+  --modal-max-width: 640px;
 }
 
 /* ========================================
-   RESET
+   GLOBAL RESET
 ======================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: "Inter", sans-serif;
+}
+
+html {
+  font-family: var(--font-family);
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 /* ========================================
-   PAGE LAYOUT
+   SHARED BODY STYLES
 ======================================== */
 
 body {
-  background: linear-gradient(135deg, #eef2ff 0%, var(--background-color) 100%);
   min-height: 100vh;
+  color: var(--text-primary);
+  background:
+    linear-gradient(135deg,
+      var(--primary-surface) 0%,
+      var(--background-color) 100%);
   line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ========================================
