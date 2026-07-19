@@ -1642,6 +1642,111 @@ body.liability-modal-open {
   font-weight: 400;
 }
 
+/* ========================================
+   BENEFIT EDITOR
+======================================== */
+
+.benefit-editor {
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--background-color);
+}
+
+.benefit-editor[hidden] {
+  display: none;
+}
+
+.benefit-editor-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.benefit-editor-header h4 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.benefit-editor-header p {
+  margin: 5px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.benefit-editor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.form-group--full {
+  grid-column: 1 / -1;
+}
+
+.form-group textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--card-background);
+  color: var(--text-primary);
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.form-group textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.benefit-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.benefit-item-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--background-color);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+
+/* ========================================
+   BENEFIT EDITOR RESPONSIVE
+======================================== */
+
+@media (max-width: 640px) {
+  .benefit-editor {
+    padding: 16px;
+  }
+
+  .benefit-editor-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .benefit-editor-actions button {
+    width: 100%;
+  }
+}
 
 /* ========================================
    POLICY MODAL RESPONSIVE

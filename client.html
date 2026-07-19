@@ -1705,45 +1705,208 @@
 
   <!-- ========================================
        POLICY BENEFITS
-  ========================================= -->
-
+  ======================================== -->
+  
   <section class="policy-modal-section">
-
+  
     <div class="policy-modal-section-header policy-modal-section-header--actions">
-
+  
       <div>
         <h3>Benefits</h3>
-
+  
         <p>
           Add the insurance benefits provided by this policy.
         </p>
       </div>
-
-      <button
-        id="addBenefitButton"
-        type="button"
-        class="add-planning-item-button policy-add-benefit-button"
-      >
+  
+      <button id="addBenefitButton" type="button" class="add-planning-item-button policy-add-benefit-button">
         <i class="fa-solid fa-plus"></i>
         Add Benefit
       </button>
-
+  
     </div>
-
-    <div
-      id="policyBenefitList"
-      class="planning-item-list policy-benefit-list"
-    >
-
-      <p
-        id="emptyPolicyBenefitMessage"
-        class="empty-state-message"
-      >
+  
+  
+    <!-- Benefit editor -->
+    <div id="benefitEditor" class="benefit-editor" hidden>
+  
+      <div class="benefit-editor-header">
+  
+        <div>
+          <h4 id="benefitEditorTitle">
+            Add Benefit
+          </h4>
+  
+          <p>
+            Enter the coverage details for this benefit.
+          </p>
+        </div>
+  
+        <button id="closeBenefitEditorButton" type="button" class="icon-button" aria-label="Close benefit form">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+  
+      </div>
+  
+  
+      <div class="form-grid">
+  
+        <!-- Benefit Type -->
+        <div class="form-group">
+  
+          <label for="benefitTypeSelect">
+            Benefit Type
+            <span class="required-label">*</span>
+          </label>
+  
+          <select id="benefitTypeSelect">
+  
+            <option value="">
+              Select benefit type
+            </option>
+  
+            <option value="death">
+              Death
+            </option>
+  
+            <option value="tpd">
+              Total and Permanent Disability
+            </option>
+  
+            <option value="critical_illness">
+              Critical Illness
+            </option>
+  
+            <option value="early_critical_illness">
+              Early Critical Illness
+            </option>
+  
+            <option value="hospitalisation">
+              Hospitalisation
+            </option>
+  
+            <option value="hospital_cash">
+              Hospital Cash
+            </option>
+  
+            <option value="personal_accident">
+              Personal Accident
+            </option>
+  
+            <option value="disability_income">
+              Disability Income
+            </option>
+  
+          </select>
+  
+        </div>
+  
+  
+        <!-- Life Assured -->
+        <div class="form-group">
+  
+          <label for="benefitLifeAssuredInput">
+            Life Assured
+            <span class="optional-label">(Optional)</span>
+          </label>
+  
+          <input id="benefitLifeAssuredInput" type="text" placeholder="e.g. Client" autocomplete="off">
+  
+        </div>
+  
+  
+        <!-- Coverage Amount -->
+        <div id="benefitAmountGroup" class="form-group">
+  
+          <label id="benefitAmountLabel" for="benefitAmountInput">
+            Coverage Amount
+            <span class="required-label">*</span>
+          </label>
+  
+          <div class="currency-input">
+  
+            <span>$</span>
+  
+            <input id="benefitAmountInput" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+  
+          </div>
+  
+        </div>
+  
+  
+        <!-- Payout Type -->
+        <div id="benefitPayoutTypeGroup" class="form-group" hidden>
+  
+          <label for="benefitPayoutTypeSelect">
+            Payout Type
+            <span class="required-label">*</span>
+          </label>
+  
+          <select id="benefitPayoutTypeSelect">
+  
+            <option value="">
+              Select payout type
+            </option>
+  
+            <option value="accelerated">
+              Accelerated
+            </option>
+  
+            <option value="additional">
+              Additional
+            </option>
+  
+            <option value="standalone">
+              Standalone
+            </option>
+  
+          </select>
+  
+        </div>
+  
+  
+        <!-- Benefit Notes -->
+        <div class="form-group form-group--full">
+  
+          <label for="benefitNotesInput">
+            Notes
+            <span class="optional-label">(Optional)</span>
+          </label>
+  
+          <textarea id="benefitNotesInput" rows="3" placeholder="Add any relevant benefit details"></textarea>
+  
+        </div>
+  
+      </div>
+  
+  
+      <p id="benefitFormMessage" class="policy-form-message" aria-live="polite"></p>
+  
+  
+      <div class="benefit-editor-actions">
+  
+        <button id="cancelBenefitButton" type="button" class="secondary-button">
+          Cancel
+        </button>
+  
+        <button id="saveBenefitButton" type="button" class="primary-button">
+          Add Benefit
+        </button>
+  
+      </div>
+  
+    </div>
+  
+  
+    <!-- Saved benefits -->
+    <div id="policyBenefitList" class="planning-item-list policy-benefit-list">
+  
+      <p id="emptyPolicyBenefitMessage" class="empty-state-message">
         No benefits added yet.
       </p>
-
+  
     </div>
-
+  
   </section>
 
   <p
