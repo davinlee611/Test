@@ -1464,9 +1464,189 @@
         </div>
     
         <div class="modal-body">
-    
-          <!-- we'll add the inputs next -->
-    
+        
+          <div class="form-grid">
+        
+            <div class="form-group">
+        
+              <label for="policyNameInput">
+        
+                Policy Name
+        
+              </label>
+        
+              <input id="policyNameInput" type="text" placeholder="e.g. Whole Life Supreme">
+        
+            </div>
+        
+            <div class="form-group">
+        
+              <label for="insurerSelect">
+        
+                Insurer
+        
+              </label>
+        
+              <select id="insurerSelect">
+        
+                <option value="">
+                  Select insurer
+                </option>
+        
+                <option>AIA</option>
+                <option>Great Eastern</option>
+                <option>Prudential</option>
+                <option>Income Insurance</option>
+                <option>Singlife</option>
+                <option>HSBC Life</option>
+                <option>Manulife</option>
+                <option>Tokio Marine</option>
+                <option>Etiqa</option>
+                <option>FWD</option>
+                <option>China Taiping</option>
+        
+                <option value="other">
+        
+                  Other...
+        
+                </option>
+        
+              </select>
+        
+            </div>
+        
+            <div id="otherInsurerGroup" class="form-group" hidden>
+        
+              <label for="otherInsurerInput">
+        
+                Other Insurer
+        
+              </label>
+        
+              <input id="otherInsurerInput" type="text">
+        
+            </div>
+        
+            <div class="form-group">
+        
+              <label for="policyOwnerInput">
+        
+                Policy Owner
+        
+              </label>
+        
+              <input id="policyOwnerInput" type="text">
+        
+            </div>
+        
+            <div class="form-group">
+        
+              <label for="lifeAssuredInput">
+        
+                Life Assured
+        
+              </label>
+        
+              <input id="lifeAssuredInput" type="text">
+        
+            </div>
+        
+            <div class="form-group">
+        
+              <label for="policyStatusSelect">
+        
+                Status
+        
+              </label>
+        
+              <select id="policyStatusSelect">
+        
+                <option value="">
+        
+                  Select
+        
+                </option>
+        
+                <option value="active">
+        
+                  Active
+        
+                </option>
+        
+                <option value="paid_up">
+        
+                  Paid-Up
+        
+                </option>
+        
+                <option value="lapsed">
+        
+                  Lapsed
+        
+                </option>
+        
+              </select>
+        
+            </div>
+        
+            <div class="form-group">
+        
+              <label for="premiumInput">
+        
+                Annual Premium
+        
+              </label>
+        
+              <input id="premiumInput" type="number" min="0" step="1">
+        
+            </div>
+        
+            <div class="form-group">
+        
+              <label for="premiumFrequencySelect">
+        
+                Premium Frequency
+        
+              </label>
+        
+              <select id="premiumFrequencySelect">
+        
+                <option value="annual">
+        
+                  Annual
+        
+                </option>
+        
+                <option value="half_yearly">
+        
+                  Half-Yearly
+        
+                </option>
+        
+                <option value="quarterly">
+        
+                  Quarterly
+        
+                </option>
+        
+                <option value="monthly">
+        
+                  Monthly
+        
+                </option>
+        
+                <option value="single">
+        
+                  Single Premium
+        
+                </option>
+        
+              </select>
+        
+            </div>
+        
+          </div>
+        
         </div>
     
         <div class="modal-footer">

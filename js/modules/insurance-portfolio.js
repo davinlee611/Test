@@ -96,7 +96,90 @@ function cacheInsuranceElements() {
             document.getElementById(
                 "savePolicyButton",
             ),
+
+        policyNameInput:
+            document.getElementById(
+                "policyNameInput",
+            ),
+
+        insurerSelect:
+            document.getElementById(
+                "insurerSelect",
+            ),
+
+        otherInsurerGroup:
+            document.getElementById(
+                "otherInsurerGroup",
+            ),
+
+        otherInsurerInput:
+            document.getElementById(
+                "otherInsurerInput",
+            ),
+
+        policyOwnerInput:
+            document.getElementById(
+                "policyOwnerInput",
+            ),
+
+        lifeAssuredInput:
+            document.getElementById(
+                "lifeAssuredInput",
+            ),
+
+        policyStatusSelect:
+            document.getElementById(
+                "policyStatusSelect",
+            ),
+
+        premiumInput:
+            document.getElementById(
+                "premiumInput",
+            ),
+
+        premiumFrequencySelect:
+            document.getElementById(
+                "premiumFrequencySelect",
+            ),
     };
+}
+
+function toggleOtherInsurer() {
+
+    const showOther =
+        elements.insurerSelect.value ===
+        "other";
+
+    elements.otherInsurerGroup.hidden =
+        !showOther;
+
+    if (!showOther) {
+
+        elements.otherInsurerInput.value = "";
+
+    }
+
+}
+
+function resetPolicyForm() {
+
+    elements.policyNameInput.value = "";
+
+    elements.insurerSelect.value = "";
+
+    elements.otherInsurerInput.value = "";
+
+    elements.policyOwnerInput.value = "";
+
+    elements.lifeAssuredInput.value = "";
+
+    elements.policyStatusSelect.value = "";
+
+    elements.premiumInput.value = "";
+
+    elements.premiumFrequencySelect.value =
+        "annual";
+
 }
 
 
@@ -120,6 +203,11 @@ function bindInsuranceEvents() {
         closePolicyModal,
     );
 
+    elements.insurerSelect?.addEventListener(
+        "change",
+        toggleOtherInsurer,
+    );
+
     closeModalOnOverlayClick(
         elements.policyModal,
     );
@@ -127,6 +215,7 @@ function bindInsuranceEvents() {
     closeModalOnEscape(
         elements.policyModal,
     );
+    
 }
 
 
@@ -140,9 +229,14 @@ function openAddPolicyModal() {
             "Add Policy";
     }
 
+    resetPolicyForm();
+
+    toggleOtherInsurer();
+
     openModal(
         elements.policyModal,
     );
+    
 }
 
 
