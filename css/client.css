@@ -1518,6 +1518,17 @@ body.liability-modal-open {
   width: 100%;
 }
 
+.modal-close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -1560,86 +1571,6 @@ body.liability-modal-open {
   .modal-footer button {
     width: 100%;
   }
-}
-
-/* ========================================
-   POLICY MODAL
-======================================== */
-
-.policy-modal {
-  width: min(760px, calc(100vw - 32px));
-  max-height: calc(100vh - 48px);
-}
-
-.policy-modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  overflow-y: auto;
-}
-
-.policy-modal-section {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.policy-modal-section+.policy-modal-section {
-  padding-top: 28px;
-  border-top: 1px solid var(--border-color);
-}
-
-.policy-modal-section-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.policy-modal-section-header h3 {
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.policy-modal-section-header p {
-  margin: 6px 0 0;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
-
-.policy-modal-section-header--actions {
-  align-items: center;
-}
-
-.policy-add-benefit-button {
-  width: auto;
-  flex-shrink: 0;
-  margin: 0;
-}
-
-.policy-benefit-list {
-  min-height: 80px;
-}
-
-.policy-form-message {
-  min-height: 20px;
-  margin: 0;
-  color: #dc2626;
-  font-size: 0.875rem;
-}
-
-.required-label {
-  color: #dc2626;
-  font-weight: 600;
-}
-
-.optional-label {
-  color: var(--text-secondary);
-  font-size: 0.8125rem;
-  font-weight: 400;
 }
 
 /* ========================================
@@ -1709,7 +1640,7 @@ body.liability-modal-open {
 ======================================== */
 
 .policy-modal {
-  width: min(820px, calc(100vw - 32px));
+  width: min(960px, calc(100vw - 48px));
   max-height: calc(100vh - 48px);
   padding: 0;
   overflow: hidden;
@@ -1720,9 +1651,10 @@ body.liability-modal-open {
   padding: 28px 30px 24px;
   border-bottom: 1px solid var(--border-color);
   background:
-    linear-gradient(135deg,
-      rgba(37, 99, 235, 0.08),
-      rgba(255, 255, 255, 0));
+      linear-gradient(135deg,
+        #eef3ff 0%,
+        #f6f8ff 55%,
+        #ffffff 100%);
 }
 
 .policy-modal-header>div {
@@ -1767,6 +1699,41 @@ body.liability-modal-open {
   border: 1px solid var(--border-color);
   border-radius: 16px;
   background: var(--card-background);
+}
+
+.policy-modal .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.policy-modal .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.policy-modal .form-group label {
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.policy-modal .form-group input,
+.policy-modal .form-group select {
+  width: 100%;
+  height: 56px;
+  padding: 0 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: white;
+  font: inherit;
+  transition: border-color .2s;
+}
+
+.policy-modal .form-group input:focus,
+.policy-modal .form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
 }
 
 .policy-modal-section+.policy-modal-section {
