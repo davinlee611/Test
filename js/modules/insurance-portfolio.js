@@ -73,9 +73,6 @@ const POLICY_STATUS_LABELS = {
 
     paid_up:
         "Paid-Up",
-
-    lapsed:
-        "Lapsed",
 };
 
 
@@ -284,6 +281,11 @@ function cacheInsuranceElements() {
         benefitEditorTitle:
             document.getElementById(
                 "benefitEditorTitle",
+            ),
+
+        benefitPayoutInfo:
+            document.getElementById(
+                "benefitPayoutInfo",
             ),
 
         closeBenefitEditorButton:
@@ -1399,16 +1401,25 @@ function updateBenefitFields() {
     const benefitType =
         elements.benefitTypeSelect.value;
 
+    const policyType =
+        elements.policyTypeSelect.value;
+
+    const isWholeLifeTpd =
+        policyType === "whole_life" &&
+        benefitType === "tpd";
+
     const requiresPayoutType =
-        benefitType ===
-        "critical_illness" ||
-        benefitType ===
-        "early_critical_illness";
+        benefitType === "critical_illness" ||
+        benefitType === "early_critical_illness";
 
     elements.benefitPayoutTypeGroup.hidden =
-        !requiresPayoutType;
+        !requiresPayoutType &&
+        !isWholeLifeTpd;
 
-    if (!requiresPayoutType) {
+    if (isWholeLifeTpd) {
+        elements.benefitPayoutTypeSelect.value =
+            "accelerated";
+    } else if (!requiresPayoutType) {
         elements.benefitPayoutTypeSelect.value =
             "";
     }
@@ -1480,6 +1491,20 @@ function saveBenefit() {
 
 
 function getBenefitFormData() {
+
+    const policyType =
+        elements.policyTypeSelect.value;
+
+    let payoutType =
+        elements.benefitPayoutTypeSelect.value;
+
+    if (
+        policyType === "whole_life" &&
+        benefit.type === "tpd"
+    ) {
+        payoutType = "accelerated";
+    }
+
     return {
         type:
             elements.benefitTypeSelect.value,
