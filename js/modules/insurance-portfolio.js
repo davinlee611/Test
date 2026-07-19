@@ -1,6 +1,8 @@
 "use strict";
 
-import { clientPlan } from "../state/client-plan.js";
+import {
+    clientPlan,
+} from "../state/client-plan.js";
 
 import {
     openModal,
@@ -9,103 +11,103 @@ import {
     closeModalOnEscape,
 } from "../utils/modal.js";
 
+
+/* ========================================
+   MODULE STATE
+======================================== */
+
 let moduleInitialized = false;
+
 let elements = {};
 
-const BENEFIT_TYPES = [
-    "death",
-    "tpd",
-    "critical_illness",
-    "early_critical_illness",
-    "hospitalisation",
-    "hospital_cash",
-    "personal_accident",
-    "disability_income",
-];
 
-const policyLists = {};
-const emptyMessages = {};
+/* ========================================
+   INITIALIZATION
+======================================== */
 
 export function initializeInsurancePortfolio() {
     cacheInsuranceElements();
 
     if (!moduleInitialized) {
         bindInsuranceEvents();
+
         moduleInitialized = true;
     }
 
     renderInsurancePortfolio();
 }
 
+
+/* ========================================
+   RESET
+======================================== */
+
 export function resetInsurancePortfolio() {
     clientPlan.priorities.policies = [];
+
+    closePolicyModal();
+
     renderInsurancePortfolio();
 }
 
+
+/* ========================================
+   DOM ELEMENTS
+======================================== */
+
 function cacheInsuranceElements() {
-    policyLists.life =
-        document.getElementById("lifePolicyList");
+    elements = {
+        policyList:
+            document.getElementById(
+                "policyList",
+            ),
 
-    policyLists.critical_illness =
-        document.getElementById("criticalIllnessPolicyList");
+        emptyPolicyMessage:
+            document.getElementById(
+                "emptyPolicyMessage",
+            ),
 
-    policyLists.hospitalisation =
-        document.getElementById("hospitalisationPolicyList");
+        addPolicyButton:
+            document.getElementById(
+                "addPolicyButton",
+            ),
 
-    policyLists.personal_accident =
-        document.getElementById("personalAccidentPolicyList");
+        policyModal:
+            document.getElementById(
+                "policyModal",
+            ),
 
-    policyLists.disability_income =
-        document.getElementById("disabilityIncomePolicyList");
+        policyModalTitle:
+            document.getElementById(
+                "policyModalTitle",
+            ),
 
-    emptyMessages.life =
-        document.getElementById("emptyLifePolicyMessage");
+        closePolicyModalButton:
+            document.getElementById(
+                "closePolicyModalButton",
+            ),
 
-    emptyMessages.critical_illness =
-        document.getElementById(
-            "emptyCriticalIllnessPolicyMessage"
-        );
+        cancelPolicyButton:
+            document.getElementById(
+                "cancelPolicyButton",
+            ),
 
-    emptyMessages.hospitalisation =
-        document.getElementById(
-            "emptyHospitalisationPolicyMessage"
-        );
-
-    emptyMessages.personal_accident =
-        document.getElementById(
-            "emptyPersonalAccidentPolicyMessage"
-        );
-
-    emptyMessages.disability_income =
-        document.getElementById(
-            "emptyDisabilityIncomePolicyMessage"
-        );
-
-    elements.policyModal =
-        document.getElementById("policyModal");
-
-    elements.policyModalTitle =
-        document.getElementById("policyModalTitle");
-
-    elements.closePolicyModalButton =
-        document.getElementById("closePolicyModalButton");
-
-    elements.cancelPolicyButton =
-        document.getElementById("cancelPolicyButton");
-
-    elements.savePolicyButton =
-        document.getElementById("savePolicyButton");
+        savePolicyButton:
+            document.getElementById(
+                "savePolicyButton",
+            ),
+    };
 }
 
-function bindInsuranceEvents() {
 
+/* ========================================
+   EVENTS
+======================================== */
+
+function bindInsuranceEvents() {
     elements.addPolicyButton?.addEventListener(
         "click",
-        () => {
-
-            openPolicyModal();
-
-        },
+        openAddPolicyModal,
     );
 
     elements.closePolicyModalButton?.addEventListener(
@@ -125,62 +127,151 @@ function bindInsuranceEvents() {
     closeModalOnEscape(
         elements.policyModal,
     );
-
 }
+
+
+/* ========================================
+   MODAL
+======================================== */
+
+function openAddPolicyModal() {
+    if (elements.policyModalTitle) {
+        elements.policyModalTitle.textContent =
+            "Add Policy";
+    }
+
+    openModal(
+        elements.policyModal,
+    );
+}
+
+
+function closePolicyModal() {
+    closeModal(
+        elements.policyModal,
+    );
+}
+
+
+/* ========================================
+   RENDERING
+======================================== */
 
 function renderInsurancePortfolio() {
-
     renderPolicies();
-
 }
 
+
+function renderPolicies() {
+    if (!elements.policyList) {
+        return;
+    }
+
+    const policies =
+        clientPlan.priorities.policies;
+
+    elements.policyList.innerHTML = "";
+
+    if (policies.length === 0) {
+        renderEmptyState();
+
+        return;
+    }
+
+    policies.forEach(function (policy) {
+        const policyElement =
+            createPolicyElement(policy);
+
+        elements.policyList.appendChild(
+            policyElement,
+        );
+    });
+}
+
+
+function renderEmptyState() {
+    const emptyMessage =
+        document.createElement("p");
+
+    emptyMessage.id =
+        "emptyPolicyMessage";
+
+    emptyMessage.className =
+        "empty-state-message";
+
+    emptyMessage.textContent =
+        "No policies added yet.";
+
+    elements.emptyPolicyMessage =
+        emptyMessage;
+
+    elements.policyList.appendChild(
+        emptyMessage,
+    );
+}
+
+
 function createPolicyElement(policy) {
-    const item = document.createElement("article");
-    item.className = "planning-item";
+    const item =
+        document.createElement("article");
+
+    item.className =
+        "planning-item";
+
+    const policyName =
+        escapeHtml(
+            policy.policyName ||
+            "Unnamed Policy",
+        );
+
+    const insurer =
+        escapeHtml(
+            policy.insurer ||
+            "Insurer not specified",
+        );
 
     item.innerHTML = `
         <div class="planning-item-main">
-            <div class="planning-item-details">
-                <h4>${escapeHtml(policy.policyName)}</h4>
-
-                <p>
-                    ${escapeHtml(policy.insurer)}
-                </p>
+            <div class="planning-item-icon">
+                <i class="fa-solid fa-shield-heart"></i>
             </div>
+
+            <div class="planning-item-details">
+                <h4>${policyName}</h4>
+                <p>${insurer}</p>
+            </div>
+        </div>
+
+        <div class="planning-item-actions">
+            <button
+                type="button"
+                class="planning-item-button"
+                data-policy-action="edit"
+                data-policy-id="${escapeHtml(policy.id)}"
+            >
+                <i class="fa-solid fa-pen"></i>
+                Edit
+            </button>
+
+            <button
+                type="button"
+                class="planning-item-button planning-item-button-danger"
+                data-policy-action="delete"
+                data-policy-id="${escapeHtml(policy.id)}"
+            >
+                <i class="fa-solid fa-trash"></i>
+                Delete
+            </button>
         </div>
     `;
 
     return item;
 }
 
-function openPolicyModal() {
 
-    elements.policyModalTitle.textContent =
-        "Add Policy";
-
-    openModal(
-        elements.policyModal,
-    );
-
-}
-
-function closePolicyModal() {
-    closeModal(elements.policyModal);
-
-    delete elements.policyModal.dataset.policyType;
-}
-
-function getPolicyTypeLabel(policyType) {
-    const labels = {
-        life: "Life Insurance",
-        critical_illness: "Critical Illness",
-        hospitalisation: "Hospitalisation",
-        personal_accident: "Personal Accident",
-        disability_income: "Disability Income",
-    };
-
-    return labels[policyType] ?? "Insurance";
-}
+/* ========================================
+   SECURITY
+======================================== */
 
 function escapeHtml(value) {
     return String(value ?? "")
