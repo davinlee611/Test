@@ -28,6 +28,11 @@ const addGoalButton =
         "addGoalButton",
     );
 
+const emptyGoalMessage =
+    document.getElementById(
+        "emptyGoalMessage",
+    );
+
 const goalsList =
     document.getElementById(
         "goalsList",
@@ -588,6 +593,15 @@ export function renderGoals() {
             goalItem,
         );
     });
+
+    if (
+        goals.length === 0 &&
+        emptyGoalMessage
+    ) {
+        goalsList.appendChild(
+            emptyGoalMessage,
+        );
+    }
 }
 
 function createGoalItem(goal) {

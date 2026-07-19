@@ -128,7 +128,7 @@ function clearFinancialPlan() {
     resetGoals();
 
     /*
-    * Reset Liquid Assets, Income and CPF.
+    * Reset Withdrawable Assets, Income and CPF.
     */
     resetAssetsIncome();
 

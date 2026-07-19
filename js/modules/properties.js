@@ -503,10 +503,7 @@ function deleteProperty(propertyId) {
 ======================================== */
 
 export function renderProperties() {
-    if (
-        !propertyList ||
-        !emptyPropertyMessage
-    ) {
+    if (!propertyList) {
         return;
     }
 
@@ -516,9 +513,6 @@ export function renderProperties() {
 
     propertyList.innerHTML = "";
 
-    emptyPropertyMessage.hidden =
-        properties.length > 0;
-
     properties.forEach(function (property) {
         const propertyItem =
             createPropertyItem(property);
@@ -527,6 +521,15 @@ export function renderProperties() {
             propertyItem,
         );
     });
+
+    if (
+        properties.length === 0 &&
+        emptyPropertyMessage
+    ) {
+        propertyList.appendChild(
+            emptyPropertyMessage,
+        );
+    }
 
     updatePropertyTotal();
 }
