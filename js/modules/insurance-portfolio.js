@@ -2,7 +2,15 @@
 
 import { clientPlan } from "../state/client-plan.js";
 
+import {
+    openModal,
+    closeModal,
+    closeModalOnOverlayClick,
+    closeModalOnEscape,
+} from "../utils/modal.js";
+
 let moduleInitialized = false;
+let elements = {};
 
 const POLICY_TYPES = [
     "life",
@@ -69,6 +77,21 @@ function cacheInsuranceElements() {
         document.getElementById(
             "emptyDisabilityIncomePolicyMessage"
         );
+
+    elements.policyModal =
+        document.getElementById("policyModal");
+
+    elements.policyModalTitle =
+        document.getElementById("policyModalTitle");
+
+    elements.closePolicyModalButton =
+        document.getElementById("closePolicyModalButton");
+
+    elements.cancelPolicyButton =
+        document.getElementById("cancelPolicyButton");
+
+    elements.savePolicyButton =
+        document.getElementById("savePolicyButton");
 }
 
 function bindInsuranceEvents() {
