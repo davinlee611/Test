@@ -1447,13 +1447,25 @@
 
     <div id="policyModal" class="modal-overlay" hidden>
     
-      <div class="modal">
+      <div class="modal policy-modal" role="dialog" aria-modal="true" aria-labelledby="policyModalTitle">
     
-        <div class="modal-header">
+        <div class="modal-header policy-modal-header">
     
-          <h2 id="policyModalTitle">
-            Add Policy
-          </h2>
+          <div>
+    
+            <p class="policy-modal-eyebrow">
+              Protection Planning
+            </p>
+    
+            <h2 id="policyModalTitle">
+              Add Policy
+            </h2>
+    
+            <p class="policy-modal-description">
+              Record the policy information and benefits attached to this policy.
+            </p>
+    
+          </div>
     
           <button id="closePolicyModalButton" type="button" class="icon-button" aria-label="Close policy form">
     
@@ -1960,52 +1972,47 @@
     </div>
   
   
-    <!-- Saved benefits -->
-    <div id="policyBenefitList" class="planning-item-list policy-benefit-list">
-  
-      <p id="emptyPolicyBenefitMessage" class="empty-state-message">
-        No benefits added yet.
-      </p>
-  
-    </div>
-
-    <!-- ========================================
-         POLICY VALIDATION
-    ======================================== -->
-    
-    <section id="policyValidationSection" class="policy-modal-section policy-validation-section">
-    
-      <div class="policy-modal-section-header">
-    
-        <div>
-    
-          <h3>Validation</h3>
-    
-          <p>
-            Review policy structure before saving.
+        <!-- Saved benefits -->
+        <div id="policyBenefitList" class="planning-item-list policy-benefit-list">
+        
+          <p id="emptyPolicyBenefitMessage" class="empty-state-message">
+            No benefits added yet.
           </p>
-    
+        
         </div>
-    
-      </div>
-    
-      <div id="policyValidationList" class="policy-validation-list">
-    
-        <div class="validation-item validation-success">
-    
-          <i class="fa-solid fa-circle-check"></i>
-    
-          <span>
-            No validation issues.
-          </span>
-    
-        </div>
-    
-      </div>
-    
-    </section>
-  
-  </section>
+        
+        </section>
+        
+        
+        <!-- ========================================
+               POLICY VALIDATION
+          ======================================== -->
+        
+        <section id="policyValidationSection" class="policy-validation-panel" hidden>
+        
+          <div class="policy-validation-header">
+        
+            <div class="policy-validation-icon">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+        
+            <div>
+        
+              <h3>
+                Benefit Checks
+              </h3>
+        
+              <p>
+                These checks only apply to benefits attached to this policy.
+              </p>
+        
+            </div>
+        
+          </div>
+        
+          <div id="policyValidationList" class="policy-validation-list" aria-live="polite"></div>
+        
+        </section>
 
   <p
     id="policyFormMessage"

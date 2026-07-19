@@ -352,6 +352,16 @@ function cacheInsuranceElements() {
             document.getElementById(
                 "emptyPolicyBenefitMessage",
             ),
+
+        policyValidationSection:
+            document.getElementById(
+                "policyValidationSection",
+            ),
+
+        policyValidationList:
+            document.getElementById(
+                "policyValidationList",
+            ),
     };
 }
 
@@ -620,9 +630,392 @@ function validatePolicyForm(formData) {
         return "Add at least one benefit to the policy.";
     }
 
+    const benefitErrors =
+        validatePolicyBenefits(
+            draftBenefits,
+        );
+
+    if (benefitErrors.length > 0) {
+        return benefitErrors[0];
+    }
+
     return "";
 }
 
+function validatePolicyBenefits(benefits) {
+    const errors = [];
+
+    const deathBenefits =
+        benefits.filter(function (benefit) {
+            return benefit.type === "death";
+        });
+
+    const deathBenefit =
+        deathBenefits[0] ?? null;
+
+    const criticalIllnessBenefits =
+        benefits.filter(function (benefit) {
+            return (
+                benefit.type ===
+                "critical_illness"
+            );
+        });
+
+    const acceleratedCiBenefits =
+        criticalIllnessBenefits.filter(
+            function (benefit) {
+                return (
+                    benefit.payoutType ===
+                    "accelerated"
+                );
+            },
+        );
+
+    const earlyCiBenefits =
+        benefits.filter(function (benefit) {
+            return (
+                benefit.type ===
+                "early_critical_illness"
+            );
+        });
+
+
+    if (deathBenefits.length > 1) {
+        errors.push(
+            "A policy can only contain one Death benefit.",
+        );
+    }
+
+
+    acceleratedCiBenefits.forEach(
+        function (ciBenefit) {
+            if (!deathBenefit) {
+                errors.push(
+                    "Accelerated Critical Illness requires a Death benefit in the same policy.",
+                );
+
+                return;
+            }
+
+            if (
+                ciBenefit.amount >
+                deathBenefit.amount
+            ) {
+                errors.push(
+                    `Accelerated Critical Illness cannot exceed the Death sum assured of ${formatCurrency(
+                        deathBenefit.amount,
+                    )}.`,
+                );
+            }
+        },
+    );
+
+
+    earlyCiBenefits.forEach(
+        function (earlyCiBenefit) {
+            const relatedCiBenefit =
+                findRelatedCriticalIllnessBenefit(
+                    criticalIllnessBenefits,
+                );
+
+            if (!deathBenefit) {
+                errors.push(
+                    "Early Critical Illness requires a Death benefit in the same policy.",
+                );
+            }
+
+            if (!relatedCiBenefit) {
+                errors.push(
+                    "Early Critical Illness requires a Critical Illness benefit in the same policy.",
+                );
+            }
+
+            if (
+                deathBenefit &&
+                earlyCiBenefit.amount >
+                deathBenefit.amount
+            ) {
+                errors.push(
+                    `Early Critical Illness cannot exceed the Death sum assured of ${formatCurrency(
+                        deathBenefit.amount,
+                    )}.`,
+                );
+            }
+
+            if (
+                relatedCiBenefit &&
+                earlyCiBenefit.amount >
+                relatedCiBenefit.amount
+            ) {
+                errors.push(
+                    `Early Critical Illness cannot exceed the Critical Illness sum assured of ${formatCurrency(
+                        relatedCiBenefit.amount,
+                    )}.`,
+                );
+            }
+        },
+    );
+
+    return [...new Set(errors)];
+}
+
+
+function findRelatedCriticalIllnessBenefit(
+    criticalIllnessBenefits,
+) {
+    if (
+        criticalIllnessBenefits.length === 0
+    ) {
+        return null;
+    }
+
+    const acceleratedCiBenefit =
+        criticalIllnessBenefits.find(
+            function (benefit) {
+                return (
+                    benefit.payoutType ===
+                    "accelerated"
+                );
+            },
+        );
+
+    return (
+        acceleratedCiBenefit ??
+        criticalIllnessBenefits[0]
+    );
+}
+
+function renderPolicyValidation() {
+    if (
+        !elements.policyValidationSection ||
+        !elements.policyValidationList
+    ) {
+        return;
+    }
+
+    elements.policyValidationList.innerHTML =
+        "";
+
+    if (draftBenefits.length === 0) {
+        elements.policyValidationSection.hidden =
+            true;
+
+        return;
+    }
+
+    elements.policyValidationSection.hidden =
+        false;
+
+    const validationItems =
+        getPolicyValidationItems();
+
+    validationItems.forEach(
+        function (item) {
+            const validationItem =
+                document.createElement("div");
+
+            validationItem.className =
+                item.valid
+                    ? "policy-validation-item policy-validation-item--valid"
+                    : "policy-validation-item policy-validation-item--invalid";
+
+            const iconClass =
+                item.valid
+                    ? "fa-solid fa-circle-check"
+                    : "fa-solid fa-circle-exclamation";
+
+            validationItem.innerHTML = `
+                <i
+                    class="${iconClass}"
+                    aria-hidden="true"
+                ></i>
+
+                <span>
+                    ${escapeHtml(item.message)}
+                </span>
+            `;
+
+            elements.policyValidationList
+                .appendChild(
+                    validationItem,
+                );
+        },
+    );
+}
+
+
+function getPolicyValidationItems() {
+    const items = [];
+
+    const deathBenefits =
+        draftBenefits.filter(
+            function (benefit) {
+                return benefit.type === "death";
+            },
+        );
+
+    const deathBenefit =
+        deathBenefits[0] ?? null;
+
+    const criticalIllnessBenefits =
+        draftBenefits.filter(
+            function (benefit) {
+                return (
+                    benefit.type ===
+                    "critical_illness"
+                );
+            },
+        );
+
+    const acceleratedCiBenefits =
+        criticalIllnessBenefits.filter(
+            function (benefit) {
+                return (
+                    benefit.payoutType ===
+                    "accelerated"
+                );
+            },
+        );
+
+    const earlyCiBenefits =
+        draftBenefits.filter(
+            function (benefit) {
+                return (
+                    benefit.type ===
+                    "early_critical_illness"
+                );
+            },
+        );
+
+
+    if (deathBenefits.length > 0) {
+        items.push({
+            valid:
+                deathBenefits.length === 1,
+
+            message:
+                deathBenefits.length === 1
+                    ? "One Death benefit recorded."
+                    : "A policy can only contain one Death benefit.",
+        });
+    }
+
+
+    acceleratedCiBenefits.forEach(
+        function (ciBenefit) {
+            if (!deathBenefit) {
+                items.push({
+                    valid:
+                        false,
+
+                    message:
+                        "Accelerated CI requires a Death benefit.",
+                });
+
+                return;
+            }
+
+            const amountIsValid =
+                ciBenefit.amount <=
+                deathBenefit.amount;
+
+            items.push({
+                valid:
+                    amountIsValid,
+
+                message:
+                    amountIsValid
+                        ? "Accelerated CI does not exceed the Death sum assured."
+                        : `Accelerated CI exceeds the Death sum assured of ${formatCurrency(
+                            deathBenefit.amount,
+                        )}.`,
+            });
+        },
+    );
+
+
+    earlyCiBenefits.forEach(
+        function (earlyCiBenefit) {
+            const relatedCiBenefit =
+                findRelatedCriticalIllnessBenefit(
+                    criticalIllnessBenefits,
+                );
+
+            if (!deathBenefit) {
+                items.push({
+                    valid:
+                        false,
+
+                    message:
+                        "Early CI requires a Death benefit.",
+                });
+            }
+
+            if (!relatedCiBenefit) {
+                items.push({
+                    valid:
+                        false,
+
+                    message:
+                        "Early CI requires a Critical Illness benefit.",
+                });
+            }
+
+            if (deathBenefit) {
+                const belowDeath =
+                    earlyCiBenefit.amount <=
+                    deathBenefit.amount;
+
+                items.push({
+                    valid:
+                        belowDeath,
+
+                    message:
+                        belowDeath
+                            ? "Early CI does not exceed the Death sum assured."
+                            : `Early CI exceeds the Death sum assured of ${formatCurrency(
+                                deathBenefit.amount,
+                            )}.`,
+                });
+            }
+
+            if (relatedCiBenefit) {
+                const belowCi =
+                    earlyCiBenefit.amount <=
+                    relatedCiBenefit.amount;
+
+                items.push({
+                    valid:
+                        belowCi,
+
+                    message:
+                        belowCi
+                            ? "Early CI does not exceed the Critical Illness sum assured."
+                            : `Early CI exceeds the Critical Illness sum assured of ${formatCurrency(
+                                relatedCiBenefit.amount,
+                            )}.`,
+                });
+            }
+        },
+    );
+
+
+    if (
+        acceleratedCiBenefits.length === 0 &&
+        earlyCiBenefits.length === 0 &&
+        deathBenefits.length <= 1
+    ) {
+        items.push({
+            valid:
+                true,
+
+            message:
+                "No CI or Early CI conflicts detected.",
+        });
+    }
+
+    return items;
+}
 
 function createPolicyObject(formData) {
     return {
@@ -1060,6 +1453,8 @@ function renderDraftBenefits() {
     if (draftBenefits.length === 0) {
         renderEmptyBenefitMessage();
 
+        renderPolicyValidation();
+
         return;
     }
 
@@ -1068,6 +1463,8 @@ function renderDraftBenefits() {
             createBenefitElement(benefit),
         );
     });
+
+    renderPolicyValidation();
 }
 
 
@@ -1109,13 +1506,6 @@ function createBenefitElement(benefit) {
             benefit,
         );
 
-    const payoutLabel =
-        benefit.payoutType
-            ? PAYOUT_TYPE_LABELS[
-            benefit.payoutType
-            ]
-            : "";
-
     const lifeAssuredText =
         benefit.lifeAssured
             ? `
@@ -1124,15 +1514,6 @@ function createBenefitElement(benefit) {
                     ${escapeHtml(
                 benefit.lifeAssured,
             )}
-                </span>
-            `
-            : "";
-
-    const payoutText =
-        payoutLabel
-            ? `
-                <span>
-                    ${escapeHtml(payoutLabel)}
                 </span>
             `
             : "";
@@ -1146,20 +1527,30 @@ function createBenefitElement(benefit) {
 
             <div class="planning-item-details">
 
-                <h4>
-                    ${escapeHtml(benefitLabel)}
-                </h4>
+    <div class="benefit-title-row">
 
-                <p>
-                    ${escapeHtml(amountLabel)}
-                </p>
+        <h4>
+            ${escapeHtml(benefitLabel)}
+        </h4>
 
+        ${createBenefitBadge(benefit)}
+
+    </div>
+
+    <p>
+        ${escapeHtml(amountLabel)}
+    </p>
+
+    ${lifeAssuredText
+            ? `
                 <div class="benefit-item-meta">
                     ${lifeAssuredText}
-                    ${payoutText}
                 </div>
+            `
+            : ""
+    }
 
-            </div>
+</div>
 
         </div>
 

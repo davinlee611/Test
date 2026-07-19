@@ -1705,6 +1705,163 @@ body.liability-modal-open {
 }
 
 /* ========================================
+   POLICY MODAL HEADER
+======================================== */
+
+.policy-modal {
+  width: min(820px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  padding: 0;
+  overflow: hidden;
+}
+
+.policy-modal-header {
+  margin: 0;
+  padding: 28px 30px 24px;
+  border-bottom: 1px solid var(--border-color);
+  background:
+    linear-gradient(135deg,
+      rgba(37, 99, 235, 0.08),
+      rgba(255, 255, 255, 0));
+}
+
+.policy-modal-header>div {
+  min-width: 0;
+}
+
+.policy-modal-eyebrow {
+  margin: 0 0 6px;
+  color: var(--primary-color);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.policy-modal-header h2 {
+  margin: 0;
+}
+
+.policy-modal-description {
+  max-width: 600px;
+  margin: 7px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.policy-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-height: calc(100vh - 220px);
+  padding: 26px 30px;
+  overflow-y: auto;
+}
+
+.policy-modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 22px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--card-background);
+}
+
+.policy-modal-section+.policy-modal-section {
+  padding-top: 22px;
+  border-top: 1px solid var(--border-color);
+}
+
+.policy-modal .modal-footer {
+  margin: 0;
+  padding: 20px 30px;
+  border-top: 1px solid var(--border-color);
+  background: #f8fafc;
+}
+
+
+/* ========================================
+   POLICY VALIDATION
+======================================== */
+
+.policy-validation-panel {
+  padding: 20px 22px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.policy-validation-panel[hidden] {
+  display: none;
+}
+
+.policy-validation-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.policy-validation-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  color: var(--primary-color);
+  background: #dbeafe;
+  border-radius: 10px;
+}
+
+.policy-validation-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.policy-validation-header p {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.policy-validation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.policy-validation-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.policy-validation-item i {
+  margin-top: 2px;
+}
+
+.policy-validation-item--valid {
+  color: #166534;
+  background: #f0fdf4;
+}
+
+.policy-validation-item--invalid {
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+/* ========================================
    BENEFIT EDITOR
 ======================================== */
 
@@ -1820,6 +1977,19 @@ body.liability-modal-open {
     max-height: calc(100vh - 24px);
   }
 
+  .policy-modal-header {
+    padding: 22px;
+  }
+
+  .policy-modal-body {
+    max-height: calc(100vh - 210px);
+    padding: 20px;
+  }
+
+  .policy-modal-section {
+    padding: 18px;
+  }
+
   .policy-modal-section-header--actions {
     align-items: stretch;
     flex-direction: column;
@@ -1827,6 +1997,10 @@ body.liability-modal-open {
 
   .policy-add-benefit-button {
     width: 100%;
+  }
+
+  .policy-modal .modal-footer {
+    padding: 18px 20px;
   }
 }
 
