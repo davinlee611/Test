@@ -400,6 +400,17 @@ export function getClientAge() {
 ======================================== */
 
 export function renderProfile() {
+
+    if (
+        DEV_MODE &&
+        !clientPlan.profile.fullName
+    ) {
+        Object.assign(
+            clientPlan.profile,
+            seedClientProfile(),
+        );
+    }
+
     const profile = clientPlan.profile;
 
     setInputValue(
