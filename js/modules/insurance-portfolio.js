@@ -105,6 +105,19 @@ function bindInsuranceEvents() {
                 openPolicyModal(policyType);
             });
         });
+
+    elements.closePolicyModalButton?.addEventListener(
+        "click",
+        closePolicyModal,
+    );
+
+    elements.cancelPolicyButton?.addEventListener(
+        "click",
+        closePolicyModal,
+    );
+
+    closeModalOnOverlayClick(elements.policyModal);
+    closeModalOnEscape(elements.policyModal);
 }
 
 function renderInsurancePortfolio() {
@@ -157,7 +170,35 @@ function createPolicyElement(policy) {
 }
 
 function openPolicyModal(policyType) {
-    console.log("Open policy modal:", policyType);
+    if (!POLICY_TYPES.includes(policyType)) {
+        return;
+    }
+
+    elements.policyModal.dataset.policyType =
+        policyType;
+
+    elements.policyModalTitle.textContent =
+        `Add ${getPolicyTypeLabel(policyType)} Policy`;
+
+    openModal(elements.policyModal);
+}
+
+function closePolicyModal() {
+    closeModal(elements.policyModal);
+
+    delete elements.policyModal.dataset.policyType;
+}
+
+function getPolicyTypeLabel(policyType) {
+    const labels = {
+        life: "Life Insurance",
+        critical_illness: "Critical Illness",
+        hospitalisation: "Hospitalisation",
+        personal_accident: "Personal Accident",
+        disability_income: "Disability Income",
+    };
+
+    return labels[policyType] ?? "Insurance";
 }
 
 function escapeHtml(value) {
