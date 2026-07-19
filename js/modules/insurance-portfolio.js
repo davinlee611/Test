@@ -414,7 +414,6 @@ function bindInsuranceEvents() {
         closeBenefitEditor,
     );
 
-    
     elements.benefitTypeSelect?.addEventListener(
         "change",
         updateBenefitFields,
