@@ -29,6 +29,71 @@ let editingBenefitId = null;
    BENEFIT CONFIGURATION
 ======================================== */
 
+const POLICY_TYPE_LABELS = {
+    whole_life:
+        "Whole Life",
+
+    term:
+        "Term",
+
+    endowment:
+        "Endowment",
+
+    investment_linked:
+        "Investment-Linked (ILP)",
+
+    integrated_shield:
+        "Integrated Shield Plan",
+
+    critical_illness:
+        "Standalone Critical Illness",
+
+    personal_accident:
+        "Personal Accident",
+
+    disability_income:
+        "Disability Income",
+
+    long_term_care:
+        "Long-Term Care",
+
+    annuity:
+        "Annuity",
+
+    other:
+        "Other",
+};
+
+
+const POLICY_STATUS_LABELS = {
+    active:
+        "Active",
+
+    paid_up:
+        "Paid-Up",
+
+    lapsed:
+        "Lapsed",
+};
+
+
+const PREMIUM_FREQUENCY_LABELS = {
+    annual:
+        "Annual",
+
+    half_yearly:
+        "Half-Yearly",
+
+    quarterly:
+        "Quarterly",
+
+    monthly:
+        "Monthly",
+
+    single:
+        "Single Premium",
+};
+
 const BENEFIT_LABELS = {
     death:
         "Death",
@@ -311,6 +376,11 @@ function bindInsuranceEvents() {
         closePolicyModal,
     );
 
+    elements.savePolicyButton?.addEventListener(
+        "click",
+        savePolicy,
+    );
+
     elements.insurerSelect?.addEventListener(
         "change",
         toggleOtherInsurer,
@@ -365,6 +435,9 @@ function openAddPolicyModal() {
 
     elements.policyModalTitle.textContent =
         "Add Policy";
+
+    elements.policyOwnerInput.value =
+        clientPlan.profile.fullName || "";
 
     openModal(
         elements.policyModal,
@@ -429,6 +502,192 @@ function toggleOtherInsurer() {
     }
 }
 
+/* ========================================
+   SAVE POLICY
+======================================== */
+
+function savePolicy() {
+    clearPolicyFormMessage();
+
+    const formData =
+        getPolicyFormData();
+
+    const validationMessage =
+        validatePolicyForm(formData);
+
+    if (validationMessage) {
+        showPolicyFormMessage(
+            validationMessage,
+        );
+
+        return;
+    }
+
+    const policy =
+        createPolicyObject(formData);
+
+    clientPlan.priorities.policies.push(
+        policy,
+    );
+
+    renderInsurancePortfolio();
+
+    closePolicyModal();
+}
+
+
+function getPolicyFormData() {
+    const selectedInsurer =
+        elements.insurerSelect.value;
+
+    const insurer =
+        selectedInsurer === "other"
+            ? elements.otherInsurerInput
+                .value
+                .trim()
+            : selectedInsurer;
+
+    return {
+        policyName:
+            elements.policyNameInput
+                .value
+                .trim(),
+
+        policyType:
+            elements.policyTypeSelect.value,
+
+        insurer,
+
+        policyNumber:
+            elements.policyNumberInput
+                .value
+                .trim(),
+
+        policyOwner:
+            elements.policyOwnerInput
+                .value
+                .trim(),
+
+        status:
+            elements.policyStatusSelect.value,
+
+        premiumAmount:
+            parseWholeNumber(
+                elements.premiumInput.value,
+            ),
+
+        premiumFrequency:
+            elements
+                .premiumFrequencySelect
+                .value,
+    };
+}
+
+
+function validatePolicyForm(formData) {
+    if (!formData.policyName) {
+        return "Enter the policy name.";
+    }
+
+    if (!formData.policyType) {
+        return "Select a policy type.";
+    }
+
+    if (!elements.insurerSelect.value) {
+        return "Select an insurer.";
+    }
+
+    if (
+        elements.insurerSelect.value ===
+        "other" &&
+        !formData.insurer
+    ) {
+        return "Enter the insurer name.";
+    }
+
+    if (!formData.status) {
+        return "Select the policy status.";
+    }
+
+    if (
+        elements.premiumInput.value !== "" &&
+        formData.premiumAmount <= 0
+    ) {
+        return "Enter a premium greater than zero, or leave the premium blank.";
+    }
+
+    if (draftBenefits.length === 0) {
+        return "Add at least one benefit to the policy.";
+    }
+
+    return "";
+}
+
+
+function createPolicyObject(formData) {
+    return {
+        id:
+            createId(),
+
+        policyName:
+            formData.policyName,
+
+        policyType:
+            formData.policyType,
+
+        insurer:
+            formData.insurer,
+
+        policyNumber:
+            formData.policyNumber,
+
+        policyOwner:
+            formData.policyOwner,
+
+        status:
+            formData.status,
+
+        premium: {
+            amount:
+                formData.premiumAmount,
+
+            frequency:
+                formData.premiumFrequency,
+        },
+
+        benefits:
+            cloneBenefits(draftBenefits),
+    };
+}
+
+
+function cloneBenefits(benefits) {
+    return benefits.map(function (benefit) {
+        return {
+            ...benefit,
+        };
+    });
+}
+
+
+function showPolicyFormMessage(message) {
+    elements.policyFormMessage.textContent =
+        message;
+
+    elements.policyFormMessage.scrollIntoView({
+        behavior:
+            "smooth",
+
+        block:
+            "nearest",
+    });
+}
+
+
+function clearPolicyFormMessage() {
+    elements.policyFormMessage.textContent =
+        "";
+}
 
 /* ========================================
    BENEFIT EDITOR
@@ -1021,15 +1280,66 @@ function createPolicyElement(policy) {
         document.createElement("article");
 
     item.className =
-        "planning-item";
+        "planning-item policy-item";
 
     const policyName =
         policy.policyName ||
         "Unnamed Policy";
 
+    const policyType =
+        POLICY_TYPE_LABELS[
+        policy.policyType
+        ] ||
+        "Other";
+
     const insurer =
         policy.insurer ||
         "Insurer not specified";
+
+    const status =
+        POLICY_STATUS_LABELS[
+        policy.status
+        ] ||
+        "Status not specified";
+
+    const premiumDescription =
+        getPremiumDescription(
+            policy.premium,
+        );
+
+    const benefitCount =
+        Array.isArray(policy.benefits)
+            ? policy.benefits.length
+            : 0;
+
+    const benefitText =
+        benefitCount === 1
+            ? "1 benefit"
+            : `${benefitCount} benefits`;
+
+    const policyNumberText =
+        policy.policyNumber
+            ? `
+                <span>
+                    Policy No:
+                    ${escapeHtml(
+                policy.policyNumber,
+            )}
+                </span>
+            `
+            : "";
+
+    const policyOwnerText =
+        policy.policyOwner
+            ? `
+                <span>
+                    Owner:
+                    ${escapeHtml(
+                policy.policyOwner,
+            )}
+                </span>
+            `
+            : "";
 
     item.innerHTML = `
         <div class="planning-item-main">
@@ -1046,7 +1356,33 @@ function createPolicyElement(policy) {
 
                 <p>
                     ${escapeHtml(insurer)}
+                    ·
+                    ${escapeHtml(policyType)}
                 </p>
+
+                <div class="benefit-item-meta">
+
+                    <span>
+                        ${escapeHtml(status)}
+                    </span>
+
+                    <span>
+                        ${escapeHtml(
+        premiumDescription,
+    )}
+                    </span>
+
+                    <span>
+                        ${escapeHtml(
+        benefitText,
+    )}
+                    </span>
+
+                    ${policyNumberText}
+
+                    ${policyOwnerText}
+
+                </div>
 
             </div>
 
@@ -1060,6 +1396,29 @@ function createPolicyElement(policy) {
 /* ========================================
    HELPERS
 ======================================== */
+
+function getPremiumDescription(premium) {
+    if (
+        !premium ||
+        premium.amount <= 0
+    ) {
+        return "Premium not provided";
+    }
+
+    const frequencyLabel =
+        PREMIUM_FREQUENCY_LABELS[
+        premium.frequency
+        ] ||
+        "Premium";
+
+    return [
+        formatCurrency(
+            premium.amount,
+        ),
+
+        frequencyLabel,
+    ].join(" · ");
+}
 
 function createId() {
     if (
