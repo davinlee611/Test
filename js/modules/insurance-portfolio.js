@@ -2137,9 +2137,23 @@ function handlePolicyListClick(event) {
     }
 
     if (action === "delete") {
-        deletePolicy(
-            policyId,
+
+        const policy = clientPlan.priorities.policies.find(
+            function (savedPolicy) {
+                return savedPolicy.id === policyId;
+            },
         );
+
+        const confirmed = window.confirm(
+            `Delete "${policy?.policyName || "this policy"}"?`
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        deletePolicy(policyId);
+        return;
     }
 }
 
