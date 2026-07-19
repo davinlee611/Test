@@ -981,6 +981,12 @@ body {
   color: var(--primary-color);
 }
 
+.planning-item-editing {
+  border-color: var(--primary-color);
+  box-shadow:
+    0 0 0 3px rgba(91, 78, 245, .12);
+}
+
 .planning-item-button.delete i {
   color: #dc2626;
 }

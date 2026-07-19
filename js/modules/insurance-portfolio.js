@@ -1294,6 +1294,11 @@ function openAddBenefitEditor() {
 
     elements.benefitEditor.hidden = false;
 
+    elements.benefitEditor.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+    });
+
     elements.benefitTypeSelect.focus();
 }
 
@@ -1338,6 +1343,11 @@ function openEditBenefitEditor(benefitId) {
 
     elements.benefitEditor.hidden = false;
 
+    elements.benefitEditor.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+    });
+
     elements.benefitTypeSelect.focus();
 }
 
@@ -1350,6 +1360,12 @@ function closeBenefitEditor() {
     elements.benefitEditor.hidden = true;
 
     editingBenefitId = null;
+
+    elements.benefitEditorTitle.textContent =
+        "Add Benefit";
+
+    elements.saveBenefitButton.textContent =
+        "Add Benefit";
 
     resetBenefitForm();
 }
@@ -1588,29 +1604,28 @@ function updateDraftBenefit(formData) {
 ======================================== */
 
 function handleBenefitListClick(event) {
-    const actionButton =
-        event.target.closest(
-            "[data-benefit-action]",
-        );
+    const actionButton = event.target.closest("[data-benefit-action]");
 
     if (!actionButton) {
         return;
     }
 
-    const benefitId =
-        actionButton.dataset.benefitId;
-
-    const action =
-        actionButton.dataset.benefitAction;
+    const benefitId = actionButton.dataset.benefitId;
+    const action = actionButton.dataset.benefitAction;
 
     if (action === "edit") {
         openEditBenefitEditor(benefitId);
-
         return;
     }
 
     if (action === "delete") {
+
+        if (!window.confirm("Delete this benefit?")) {
+            return;
+        }
+
         deleteDraftBenefit(benefitId);
+        return;
     }
 }
 
