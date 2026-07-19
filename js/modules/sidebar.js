@@ -38,6 +38,16 @@ const prioritiesNextButton =
         "prioritiesNextButton",
     );
 
+const insuranceBackButton =
+    document.getElementById(
+        "insuranceBackButton",
+    );
+
+const insuranceNextButton =
+    document.getElementById(
+        "insuranceNextButton",
+    );
+
 
 /* ========================================
    MODULE CONFIGURATION
@@ -110,7 +120,31 @@ function attachSectionNavigationListeners() {
         prioritiesNextButton.addEventListener(
             "click",
             function () {
-                navigateToSection("cost");
+                navigateToSection(
+                    "insurance",
+                );
+            },
+        );
+    }
+
+    if (insuranceBackButton) {
+        insuranceBackButton.addEventListener(
+            "click",
+            function () {
+                openSection(
+                    "priorities",
+                );
+            },
+        );
+    }
+
+    if (insuranceNextButton) {
+        insuranceNextButton.addEventListener(
+            "click",
+            function () {
+                navigateToSection(
+                    "cost",
+                );
             },
         );
     }
