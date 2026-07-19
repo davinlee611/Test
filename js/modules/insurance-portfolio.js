@@ -1604,28 +1604,45 @@ function updateDraftBenefit(formData) {
 ======================================== */
 
 function handleBenefitListClick(event) {
-    const actionButton = event.target.closest("[data-benefit-action]");
+    const actionButton =
+        event.target.closest(
+            "[data-benefit-action]",
+        );
 
     if (!actionButton) {
         return;
     }
 
-    const benefitId = actionButton.dataset.benefitId;
-    const action = actionButton.dataset.benefitAction;
+    const benefitId =
+        actionButton.dataset.benefitId;
+
+    const action =
+        actionButton.dataset.benefitAction;
+
+    if (!benefitId) {
+        return;
+    }
 
     if (action === "edit") {
-        openEditBenefitEditor(benefitId);
+        openEditBenefitEditor(
+            benefitId,
+        );
+
         return;
     }
 
     if (action === "delete") {
-
-        if (!window.confirm("Delete this benefit?")) {
+        if (
+            !window.confirm(
+                "Delete this benefit?",
+            )
+        ) {
             return;
         }
 
-        deleteDraftBenefit(benefitId);
-        return;
+        deleteDraftBenefit(
+            benefitId,
+        );
     }
 }
 
@@ -1767,33 +1784,36 @@ function createBenefitElement(benefit) {
         <div class="planning-item-actions">
 
     <button
-        type="button"
-        class="planning-item-button"
-        data-action="edit"
-        aria-label="Edit Benefit"
-        title="Edit Benefit"
-    >
-        <i
-            class="fa-solid fa-pen"
-            aria-hidden="true"
-        ></i>
-    </button>
+    type="button"
+    class="planning-item-button"
+    data-benefit-action="edit"
+    data-benefit-id="${escapeHtml(
+        benefit.id,
+    )}"
+    aria-label="Edit Benefit"
+    title="Edit Benefit"
+>
+    <i
+        class="fa-solid fa-pen"
+        aria-hidden="true"
+    ></i>
+</button>
 
-    <button
-        type="button"
-        class="
-            planning-item-button
-            delete
-        "
-        data-action="delete"
-        aria-label="Delete Benefit"
-        title="Delete Benefit"
-    >
-        <i
-            class="fa-solid fa-trash"
-            aria-hidden="true"
-        ></i>
-    </button>
+<button
+    type="button"
+    class="planning-item-button delete"
+    data-benefit-action="delete"
+    data-benefit-id="${escapeHtml(
+        benefit.id,
+    )}"
+    aria-label="Delete Benefit"
+    title="Delete Benefit"
+>
+    <i
+        class="fa-solid fa-trash"
+        aria-hidden="true"
+    ></i>
+</button>
 
 </div>
     `;
@@ -2071,15 +2091,13 @@ function createPolicyElement(policy) {
         </button>
 
         <button
-            type="button"
-            class="planning-item-button delete"
-            data-policy-action="delete"
-            data-policy-id="${escapeHtml(
-        policy.id,
-    )}"
-            aria-label="Delete policy"
-            title="Delete policy"
-        >
+    type="button"
+    class="planning-item-button delete"
+    data-benefit-action="delete"
+    data-benefit-id="${benefit.id}"
+    aria-label="Delete Benefit"
+    title="Delete Benefit"
+>
             <i
                 class="fa-solid fa-trash"
                 aria-hidden="true"
