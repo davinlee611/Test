@@ -32,9 +32,15 @@ export function createEmptyClientPlan() {
 
         income: {
 
+            // User Inputs
+
             monthlyEmployment: 0,
             annualBonus: 0,
             otherMonthly: 0,
+
+
+
+            // Calculated
 
             monthlyEmploymentIncome: 0,
             annualEmploymentIncome: 0,
@@ -45,6 +51,12 @@ export function createEmptyClientPlan() {
             monthlyTakeHomeIncome: 0,
             annualTakeHomeIncome: 0,
 
+
+
+            // Employer CPF
+
+            employeeCpf: 0,
+            employerCpf: 0
         },
 
         cpf: {
@@ -64,11 +76,49 @@ export function createEmptyClientPlan() {
 
     liabilities: [],
 
-    policies: [],
+            policies: {
+
+                id: "",
+
+                type: "",
+
+                policyName: "",
+
+                insurer: "",
+
+                policyOwner: "",
+
+                lifeAssured: "",
+
+                coverageAmount: 0,
+
+                premium: 0,
+
+                premiumFrequency: "",
+
+                status: "",
+
+            },
 
 },
 
-        costOfWants: {},
+        costOfWants: {
+
+            education: [],
+
+            retirement: {},
+
+            legacy: {},
+
+            emergencyFund: {},
+
+            debtClearance: {},
+
+            customGoals: []
+
+        },
+
+        summary: {},
     };
 }
 
