@@ -1576,7 +1576,7 @@ function createBenefitElement(benefit) {
         type="button"
         class="
             planning-item-button
-            planning-item-button-danger
+            delete
         "
         data-action="delete"
         aria-label="Delete Benefit"
