@@ -1559,31 +1559,36 @@ function createBenefitElement(benefit) {
 
         <div class="planning-item-actions">
 
-            <button
-                type="button"
-                class="planning-item-button"
-                data-benefit-action="edit"
-                data-benefit-id="${escapeHtml(
-        benefit.id,
-    )}"
-            >
-                <i class="fa-solid fa-pen"></i>
-                Edit
-            </button>
+    <button
+        type="button"
+        class="planning-item-button"
+        data-action="edit"
+        aria-label="Edit Benefit"
+        title="Edit Benefit"
+    >
+        <i
+            class="fa-solid fa-pen"
+            aria-hidden="true"
+        ></i>
+    </button>
 
-            <button
-                type="button"
-                class="planning-item-button planning-item-button-danger"
-                data-benefit-action="delete"
-                data-benefit-id="${escapeHtml(
-        benefit.id,
-    )}"
-            >
-                <i class="fa-solid fa-trash"></i>
-                Delete
-            </button>
+    <button
+        type="button"
+        class="
+            planning-item-button
+            planning-item-button-danger
+        "
+        data-action="delete"
+        aria-label="Delete Benefit"
+        title="Delete Benefit"
+    >
+        <i
+            class="fa-solid fa-trash"
+            aria-hidden="true"
+        ></i>
+    </button>
 
-        </div>
+</div>
     `;
 
     return item;

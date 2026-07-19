@@ -966,13 +966,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+
   width: 38px;
   height: 38px;
-  color: #475569;
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 9px;
-  cursor: pointer;
+
+  padding: 0;
+
+  border-radius: 10px;
 }
 
 .planning-item-button:hover {
