@@ -1493,7 +1493,7 @@ body.liability-modal-open {
     width: 100%;
   }
 
-  .header-button {
+  .client-header-actions .header-button {
     flex: 1;
   }
 
