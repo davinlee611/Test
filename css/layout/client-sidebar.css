@@ -26,22 +26,46 @@
 }
 
 .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+    min-height: 60px;
+    padding: 14px 16px;
+
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
     border-radius: var(--radius-lg);
+
     font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-align: left;
+
+    cursor: pointer;
+    box-shadow: none;
+
+    transition:
+        color var(--transition-base),
+        background-color var(--transition-base);
 }
 
 .sidebar-item i {
     width: 18px;
+    flex-shrink: 0;
     text-align: center;
 }
 
 .sidebar-item:hover {
-    color: var(--text-primary);
+    color: var(--primary-color);
     background: var(--primary-surface);
     transform: none;
+    box-shadow: none;
 }
 
 .sidebar-item.active {
     color: var(--primary-color);
     background: var(--primary-soft);
+    box-shadow: none;
 }
