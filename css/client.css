@@ -971,23 +971,26 @@ body {
   height: 38px;
   padding: 0;
 
-  color: var(--text-secondary);
   background: transparent;
   border: 1px solid var(--border-color);
   border-radius: 10px;
   box-shadow: none;
 }
 
-.planning-item-button:hover {
+.planning-item-button i {
   color: var(--primary-color);
+}
+
+.planning-item-button.delete i {
+  color: #dc2626;
+}
+
+.planning-item-button:hover {
   background: #f8fafc;
   border-color: var(--border-color);
-  box-shadow: none;
-  transform: none;
 }
 
 .planning-item-button.delete:hover {
-  color: #dc2626;
   background: #fef2f2;
   border-color: #fecaca;
 }
