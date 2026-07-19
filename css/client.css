@@ -1643,6 +1643,68 @@ body.liability-modal-open {
 }
 
 /* ========================================
+   BENEFIT BADGES
+======================================== */
+
+.benefit-title-row {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 12px;
+
+}
+
+.benefit-badge {
+
+  padding: 4px 10px;
+
+  border-radius: 999px;
+
+  font-size: .75rem;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+
+}
+
+.badge-accelerated {
+
+  background: #dff6e7;
+
+  color: #1f7a3d;
+
+}
+
+.badge-additional {
+
+  background: #e8f2ff;
+
+  color: #0d62c9;
+
+}
+
+.badge-standalone {
+
+  background: #ece8ff;
+
+  color: #6546d2;
+
+}
+
+.badge-eci {
+
+  background: #fff2dc;
+
+  color: #9d6500;
+
+}
+
+/* ========================================
    BENEFIT EDITOR
 ======================================== */
 

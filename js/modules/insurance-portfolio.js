@@ -1219,6 +1219,61 @@ function getBenefitAmountDescription(benefit) {
     }
 }
 
+function createBenefitBadge(
+    benefit,
+) {
+
+    if (
+        benefit.type ===
+        "critical_illness"
+    ) {
+
+        if (
+            benefit.payoutType ===
+            "accelerated"
+        ) {
+
+            return `
+                <span class="benefit-badge badge-accelerated">
+                    Accelerated
+                </span>
+            `;
+        }
+
+        if (
+            benefit.payoutType ===
+            "additional"
+        ) {
+
+            return `
+                <span class="benefit-badge badge-additional">
+                    Additional
+                </span>
+            `;
+        }
+
+        return `
+            <span class="benefit-badge badge-standalone">
+                Standalone
+            </span>
+        `;
+    }
+
+    if (
+        benefit.type ===
+        "early_critical_illness"
+    ) {
+
+        return `
+            <span class="benefit-badge badge-eci">
+                Early CI
+            </span>
+        `;
+    }
+
+    return "";
+}
+
 
 /* ========================================
    POLICY LIST RENDERING
