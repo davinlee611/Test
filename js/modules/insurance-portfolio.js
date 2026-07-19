@@ -2105,11 +2105,6 @@ function createPolicyElement(policy) {
         aria-hidden="true"
     ></i>
 </button>
-            <i
-                class="fa-solid fa-trash"
-                aria-hidden="true"
-            ></i>
-        </button>
 
     </div>
 `;
