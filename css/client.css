@@ -589,10 +589,7 @@ body {
   gap: 24px;
 }
 
-/* ========================================
-   FINANCIAL INPUTS
-======================================== */
-
+/* Financial Inputs */
 .financial-category-total {
   min-width: 190px;
   text-align: right;
@@ -652,10 +649,7 @@ body {
   -moz-appearance: textfield;
 }
 
-/* ========================================
-   CURRENCY INPUT
-======================================== */
-
+/* Currency Input */
 .currency-input {
   position: relative;
 }
@@ -673,10 +667,7 @@ body {
   padding-left: 34px;
 }
 
-/* ========================================
-   INCOME SUMMARY
-======================================== */
-
+/* Income Summary */
 .income-summary {
   margin-top: 26px;
   overflow: hidden;
@@ -741,10 +732,7 @@ body {
   font-size: 24px;
 }
 
-/* ========================================
-   CPF DETAILS
-======================================== */
-
+/* CPF Details */
 .cpf-details {
   margin-top: 16px;
   overflow: hidden;
@@ -834,10 +822,7 @@ body {
   display: none;
 }
 
-/* ========================================
-   INCOME RESPONSIVE
-======================================== */
-
+/* Responsive */
 @media (max-width: 600px) {
   .income-summary-row {
     align-items: flex-start;
@@ -1105,6 +1090,265 @@ body.validation-modal-open {
 }
 
 /* ========================================
+   PROPERTY
+======================================== */
+
+.property-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.property-modal[hidden] {
+  display: none;
+}
+
+.property-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.property-modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 30px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+}
+
+.property-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.property-modal-eyebrow {
+  margin: 0 0 5px;
+  color: var(--primary-color);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.property-modal-header h2 {
+  margin: 0;
+}
+
+.property-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+  cursor: pointer;
+}
+
+.property-modal-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.property-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.percentage-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.percentage-input input {
+  padding-right: 44px;
+}
+
+.percentage-input span {
+  position: absolute;
+  right: 16px;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.property-form-message {
+  min-height: 20px;
+  margin: 16px 0 0;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.property-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+body.property-modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .property-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .property-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .property-modal-actions button {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   GOALS
+======================================== */
+
+.goal-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.goal-modal[hidden] {
+  display: none;
+}
+
+.goal-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.goal-modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 30px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.24);
+}
+
+.goal-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.goal-modal-eyebrow {
+  margin: 0 0 5px;
+  color: var(--primary-color);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.goal-modal-header h2 {
+  margin: 0;
+}
+
+.goal-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+  cursor: pointer;
+}
+
+.goal-modal-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.goal-form-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.goal-form-message {
+  min-height: 20px;
+  margin: 16px 0 0;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.goal-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+body.goal-modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .goal-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .goal-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .goal-modal-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .goal-modal {
+    padding: 12px;
+  }
+
+  .goal-modal-dialog {
+    padding: 22px;
+  }
+}
+
+/* ========================================
    TABLET
 ======================================== */
 
@@ -1255,276 +1499,5 @@ body.validation-modal-open {
 
   .financial-input-grid {
     grid-template-columns: 1fr;
-  }
-}
-
-/* ========================================
-   PROPERTY
-======================================== */
-
-.property-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-
-.property-modal[hidden] {
-  display: none;
-}
-
-.property-modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(3px);
-}
-
-.property-modal-dialog {
-  position: relative;
-  width: 100%;
-  max-width: 620px;
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
-  padding: 30px;
-  border-radius: 18px;
-  background: #ffffff;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
-}
-
-.property-modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 26px;
-}
-
-.property-modal-eyebrow {
-  margin: 0 0 5px;
-  color: var(--primary-color);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.property-modal-header h2 {
-  margin: 0;
-}
-
-.property-modal-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 40px;
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 10px;
-  background: #f1f5f9;
-  color: #475569;
-  cursor: pointer;
-}
-
-.property-modal-close:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-
-.property-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.percentage-input {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.percentage-input input {
-  padding-right: 44px;
-}
-
-.percentage-input span {
-  position: absolute;
-  right: 16px;
-  color: #64748b;
-  pointer-events: none;
-}
-
-.property-form-message {
-  min-height: 20px;
-  margin: 16px 0 0;
-  color: #dc2626;
-  font-size: 14px;
-}
-
-.property-modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-}
-
-body.property-modal-open {
-  overflow: hidden;
-}
-
-@media (max-width: 640px) {
-  .property-form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .property-modal-actions {
-    flex-direction: column-reverse;
-  }
-
-  .property-modal-actions button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 640px) {
-  .planning-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .planning-item-actions {
-    justify-content: flex-end;
-    width: 100%;
-  }
-}
-
-/* ========================================
-   GOALS
-======================================== */
-
-.goal-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-
-.goal-modal[hidden] {
-  display: none;
-}
-
-.goal-modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(3px);
-}
-
-.goal-modal-dialog {
-  position: relative;
-  width: 100%;
-  max-width: 620px;
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
-  padding: 30px;
-  border-radius: 18px;
-  background: #ffffff;
-  box-shadow:
-    0 24px 60px rgba(15, 23, 42, 0.24);
-}
-
-.goal-modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 26px;
-}
-
-.goal-modal-eyebrow {
-  margin: 0 0 5px;
-  color: var(--primary-color);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.goal-modal-header h2 {
-  margin: 0;
-}
-
-.goal-modal-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 40px;
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 10px;
-  background: #f1f5f9;
-  color: #475569;
-  cursor: pointer;
-}
-
-.goal-modal-close:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-
-.goal-form-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.goal-form-message {
-  min-height: 20px;
-  margin: 16px 0 0;
-  color: #dc2626;
-  font-size: 14px;
-}
-
-.goal-modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-}
-
-body.goal-modal-open {
-  overflow: hidden;
-}
-
-@media (max-width: 768px) {
-  .goal-form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .goal-modal-actions {
-    flex-direction: column-reverse;
-  }
-
-  .goal-modal-actions button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 520px) {
-  .goal-modal {
-    padding: 12px;
-  }
-
-  .goal-modal-dialog {
-    padding: 22px;
   }
 }
