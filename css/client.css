@@ -2,8 +2,10 @@
 @import url("./layout/client-header.css");
 @import url("./layout/client-sidebar.css");
 
+@import url("./modules/client-profile.css");
+
 /* ========================================
-   CLIENT PROFILE FORM
+   SHARED FORMS
 ======================================== */
 
 .planning-form {
@@ -11,36 +13,6 @@
   background: #f8fafc;
   border: 1px solid var(--border-color);
   border-radius: 16px;
-}
-
-.profile-form-heading {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.profile-form-icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  width: 46px;
-  height: 46px;
-  color: var(--primary-color);
-  background: rgba(91, 78, 245, 0.1);
-  border-radius: 12px;
-}
-
-.profile-form-heading h3 {
-  color: var(--text-primary);
-  font-size: 18px;
-}
-
-.profile-form-heading p {
-  margin-top: 4px;
-  color: var(--text-secondary);
-  font-size: 13px;
 }
 
 .form-grid {
