@@ -1,8 +1,7 @@
 "use strict";
 
 import {
-    clientPlan,
-    resetClientPlan,
+  resetClientPlan,
 } from "./state/client-plan.js";
 
 import {

@@ -2,6 +2,8 @@
 
 import { clientPlan } from "../state/client-plan.js";
 
+let moduleInitialized = false;
+
 const POLICY_TYPES = [
     "life",
     "critical_illness",
@@ -15,12 +17,17 @@ const emptyMessages = {};
 
 export function initializeInsurancePortfolio() {
     cacheInsuranceElements();
-    bindInsuranceEvents();
+
+    if (!moduleInitialized) {
+        bindInsuranceEvents();
+        moduleInitialized = true;
+    }
+
     renderInsurancePortfolio();
 }
 
 export function resetInsurancePortfolio() {
-    clientPlan.priorities.policies.length = 0;
+    clientPlan.priorities.policies = [];
     renderInsurancePortfolio();
 }
 
