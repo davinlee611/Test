@@ -153,6 +153,11 @@ function cacheInsuranceElements() {
                 "policyNameInput",
             ),
 
+        policyTypeSelect:
+            document.getElementById(
+                "policyTypeSelect",
+            ),
+
         insurerSelect:
             document.getElementById(
                 "insurerSelect",
@@ -378,6 +383,8 @@ function closePolicyModal() {
 
 function resetPolicyForm() {
     elements.policyNameInput.value = "";
+
+    elements.policyTypeSelect.value = "";
 
     elements.insurerSelect.value = "";
 
