@@ -15,44 +15,37 @@ export function createEmptyClientPlan() {
         },
 
         priorities: {
-    wealthTypes: [],
+            wealthTypes: [],
 
-    liquidAssets: {
-        cash: 0,
-        fixedDeposits: 0,
-        savings: 0,
-    },
+            assets: {
+                liquidAssets: {
+                    cashInBank: 0,
+                    fixedDeposits: 0,
+                    tBills: 0,
+                    investments: 0,
+                    others: 0,
+                },
 
-    investments: {
-        unitTrust: 0,
-        stocks: 0,
-        bonds: 0,
-        crypto: 0,
-    },
+                income: {
+                    monthlyEmployment: 0,
+                    annualBonus: 0,
+                    otherMonthly: 0,
+                },
 
-    income: {
-        monthlyEmploymentIncome: 0,
-        annualEmploymentIncome: 0,
+                cpf: {
+                    oa: 0,
+                    sa: 0,
+                    ma: 0,
+                    ra: 0,
+                },
 
-        monthlyOtherIncome: 0,
-        annualOtherIncome: 0,
+                properties: [],
+            },
 
-        monthlyTakeHomeIncome: 0,
-        annualTakeHomeIncome: 0,
-    },
-
-    cpf: {
-        oa: 0,
-        sa: 0,
-        ma: 0,
-        ra: 0,
-    },
-
-    properties: [],
-    goals: [],
-    liabilities: [],
-    policies: [],
-},
+            goals: [],
+            liabilities: [],
+            policies: [],
+        },
 
         costOfWants: {},
     };
@@ -61,5 +54,8 @@ export function createEmptyClientPlan() {
 export const clientPlan = createEmptyClientPlan();
 
 export function resetClientPlan() {
-    Object.assign(clientPlan, createEmptyClientPlan());
+    Object.assign(
+        clientPlan,
+        createEmptyClientPlan(),
+    );
 }
