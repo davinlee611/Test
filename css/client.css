@@ -3,39 +3,6 @@
 @import url("./layout/client-sidebar.css");
 
 /* ========================================
-   WORKSPACE CONTENT
-======================================== */
-
-.workspace-content {
-  min-width: 0;
-  padding: 38px;
-}
-
-.workspace-section {
-  display: none;
-}
-
-.workspace-section.active {
-  display: block;
-}
-
-.section-header {
-  margin-bottom: 28px;
-}
-
-.section-header h2 {
-  color: var(--text-primary);
-  font-size: 26px;
-}
-
-.section-header p:not(.section-label) {
-  max-width: 650px;
-  margin-top: 8px;
-  color: var(--text-secondary);
-  font-size: 14px;
-}
-
-/* ========================================
    CLIENT PROFILE FORM
 ======================================== */
 
