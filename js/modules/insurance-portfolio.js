@@ -12,10 +12,13 @@ import {
 let moduleInitialized = false;
 let elements = {};
 
-const POLICY_TYPES = [
-    "life",
+const BENEFIT_TYPES = [
+    "death",
+    "tpd",
     "critical_illness",
+    "early_critical_illness",
     "hospitalisation",
+    "hospital_cash",
     "personal_accident",
     "disability_income",
 ];
@@ -95,16 +98,15 @@ function cacheInsuranceElements() {
 }
 
 function bindInsuranceEvents() {
-    document
-        .querySelectorAll("[data-policy-type]")
-        .forEach((button) => {
-            button.addEventListener("click", () => {
-                const policyType =
-                    button.dataset.policyType;
 
-                openPolicyModal(policyType);
-            });
-        });
+    elements.addPolicyButton?.addEventListener(
+        "click",
+        () => {
+
+            openPolicyModal();
+
+        },
+    );
 
     elements.closePolicyModalButton?.addEventListener(
         "click",
@@ -116,38 +118,20 @@ function bindInsuranceEvents() {
         closePolicyModal,
     );
 
-    closeModalOnOverlayClick(elements.policyModal);
-    closeModalOnEscape(elements.policyModal);
+    closeModalOnOverlayClick(
+        elements.policyModal,
+    );
+
+    closeModalOnEscape(
+        elements.policyModal,
+    );
+
 }
 
 function renderInsurancePortfolio() {
-    POLICY_TYPES.forEach((policyType) => {
-        renderPolicyType(policyType);
-    });
-}
 
-function renderPolicyType(policyType) {
-    const list = policyLists[policyType];
-    const emptyMessage = emptyMessages[policyType];
+    renderPolicies();
 
-    if (!list || !emptyMessage) {
-        return;
-    }
-
-    const policies =
-        clientPlan.priorities.policies.filter(
-            (policy) => policy.type === policyType
-        );
-
-    list
-        .querySelectorAll(".planning-item")
-        .forEach((item) => item.remove());
-
-    emptyMessage.hidden = policies.length > 0;
-
-    policies.forEach((policy) => {
-        list.appendChild(createPolicyElement(policy));
-    });
 }
 
 function createPolicyElement(policy) {
@@ -169,18 +153,15 @@ function createPolicyElement(policy) {
     return item;
 }
 
-function openPolicyModal(policyType) {
-    if (!POLICY_TYPES.includes(policyType)) {
-        return;
-    }
-
-    elements.policyModal.dataset.policyType =
-        policyType;
+function openPolicyModal() {
 
     elements.policyModalTitle.textContent =
-        `Add ${getPolicyTypeLabel(policyType)} Policy`;
+        "Add Policy";
 
-    openModal(elements.policyModal);
+    openModal(
+        elements.policyModal,
+    );
+
 }
 
 function closePolicyModal() {

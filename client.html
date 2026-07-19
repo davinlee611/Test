@@ -906,160 +906,63 @@
           </section>
 
                     <!-- Insurance Portfolio -->
-                    <section class="workspace-section" data-content="insurance">
-                      <div class="section-header">
-                        <div>
-                          <p class="section-label">
-                            Existing Coverage
-                          </p>
+                    <section id="insurancePortfolioSection" class="content-section" hidden>
                     
-                          <h2>Insurance Portfolio</h2>
+                      <div class="content-card">
                     
-                          <p>
-                            Record the client's existing insurance policies to build a
-                            complete picture of their current insurance portfolio.
-                          </p>
+                        <div class="section-header">
+                    
+                          <div>
+                    
+                            <h2>Insurance Portfolio</h2>
+                    
+                            <p>
+                              Record every insurance policy together with its
+                              benefits.
+                            </p>
+                    
+                          </div>
+                    
                         </div>
+                    
+                        <div class="planning-section-card">
+                    
+                          <div class="planning-section-header">
+                    
+                            <div>
+                    
+                              <h3>Policies</h3>
+                    
+                              <p>
+                                Add all insurance policies owned by the client.
+                              </p>
+                    
+                            </div>
+                    
+                          </div>
+                    
+                          <div id="policyList" class="planning-item-list">
+                    
+                            <p id="emptyPolicyMessage" class="empty-state-message">
+                    
+                              No policies added yet.
+                    
+                            </p>
+                    
+                          </div>
+                    
+                          <button id="addPolicyButton" type="button" class="add-planning-item-button">
+                    
+                            <i class="fa-solid fa-plus"></i>
+                    
+                            Add Policy
+                    
+                          </button>
+                    
+                        </div>
+                    
                       </div>
                     
-                      <div class="insurance-portfolio-grid">
-                        <!-- Life Insurance -->
-                        <section class="planning-section-card">
-                          <div class="planning-section-header">
-                            <div>
-                              <h3>Life Insurance</h3>
-                    
-                              <p>
-                                Record the client's existing life insurance policies.
-                              </p>
-                            </div>
-                          </div>
-                    
-                          <div id="lifePolicyList" class="planning-item-list">
-                            <p id="emptyLifePolicyMessage" class="empty-state-message">
-                              No life insurance policies added.
-                            </p>
-                          </div>
-                    
-                          <button class="add-planning-item-button" type="button" data-policy-type="life">
-                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                    
-                            Add Life Insurance
-                          </button>
-                        </section>
-                    
-                        <!-- Critical Illness -->
-                        <section class="planning-section-card">
-                          <div class="planning-section-header">
-                            <div>
-                              <h3>Critical Illness</h3>
-                    
-                              <p>
-                                Record the client's existing critical illness policies.
-                              </p>
-                            </div>
-                          </div>
-                    
-                          <div id="criticalIllnessPolicyList" class="planning-item-list">
-                            <p id="emptyCriticalIllnessPolicyMessage" class="empty-state-message">
-                              No critical illness policies added.
-                            </p>
-                          </div>
-                    
-                          <button class="add-planning-item-button" type="button" data-policy-type="critical_illness">
-                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                    
-                            Add Critical Illness
-                          </button>
-                        </section>
-                    
-                        <!-- Hospitalisation -->
-                        <section class="planning-section-card">
-                          <div class="planning-section-header">
-                            <div>
-                              <h3>Hospitalisation</h3>
-                    
-                              <p>
-                                Record the client's existing hospitalisation policies.
-                              </p>
-                            </div>
-                          </div>
-                    
-                          <div id="hospitalisationPolicyList" class="planning-item-list">
-                            <p id="emptyHospitalisationPolicyMessage" class="empty-state-message">
-                              No hospitalisation policies added.
-                            </p>
-                          </div>
-                    
-                          <button class="add-planning-item-button" type="button" data-policy-type="hospitalisation">
-                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                    
-                            Add Hospitalisation
-                          </button>
-                        </section>
-                    
-                        <!-- Personal Accident -->
-                        <section class="planning-section-card">
-                          <div class="planning-section-header">
-                            <div>
-                              <h3>Personal Accident</h3>
-                    
-                              <p>
-                                Record the client's existing personal accident policies.
-                              </p>
-                            </div>
-                          </div>
-                    
-                          <div id="personalAccidentPolicyList" class="planning-item-list">
-                            <p id="emptyPersonalAccidentPolicyMessage" class="empty-state-message">
-                              No personal accident policies added.
-                            </p>
-                          </div>
-                    
-                          <button class="add-planning-item-button" type="button" data-policy-type="personal_accident">
-                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                    
-                            Add Personal Accident
-                          </button>
-                        </section>
-                    
-                        <!-- Disability Income -->
-                        <section class="planning-section-card">
-                          <div class="planning-section-header">
-                            <div>
-                              <h3>Disability Income</h3>
-                    
-                              <p>
-                                Record the client's existing disability income policies.
-                              </p>
-                            </div>
-                          </div>
-                    
-                          <div id="disabilityIncomePolicyList" class="planning-item-list">
-                            <p id="emptyDisabilityIncomePolicyMessage" class="empty-state-message">
-                              No disability income policies added.
-                            </p>
-                          </div>
-                    
-                          <button class="add-planning-item-button" type="button" data-policy-type="disability_income">
-                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                    
-                            Add Disability Income
-                          </button>
-                        </section>
-                      </div>
-                    
-                      <div class="form-actions form-actions--between">
-                        <button id="insuranceBackButton" class="header-button header-button-secondary" type="button">
-                          <i class="fa-solid fa-arrow-left"></i>
-                          Back
-                        </button>
-                    
-                        <button id="insuranceNextButton" class="next-button" type="button">
-                          Next
-                          <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                      </div>
                     </section>
 
           <!-- Cost of Wants -->
