@@ -1,6 +1,6 @@
 "use strict";
 
-import { clientPlan } from "../state/client-state.js";
+import { clientPlan } from "../state/client-plan.js";
 import { emit } from "../events/event-bus.js";
 import { EVENTS } from "../events/events.js";
 

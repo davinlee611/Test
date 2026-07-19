@@ -6,10 +6,6 @@ import {
 } from "./state/client-plan.js";
 
 import {
-    resetClientPlan,
-} from "./state/client-state.js";
-
-import {
     initializeProfile,
     resetProfile,
 } from "./modules/client-profile.js";
