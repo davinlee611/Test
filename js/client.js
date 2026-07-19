@@ -34,6 +34,11 @@ import {
     resetProperties,
 } from "./modules/properties.js";
 
+import {
+    initializeLiabilities,
+    resetLiabilities,
+} from "./modules/liabilities.js";
+
 const supabaseClient =
     window.supabaseClient;
 
@@ -56,6 +61,7 @@ const clearPlanButton = document.getElementById("clearPlanButton");
 initializeProfile();
 initializeSidebar();
 initializeProperties();
+initializeLiabilities();
 initializeWealthType();
 initializeGoals();
 initializeAssetsIncome();
@@ -130,6 +136,11 @@ function clearFinancialPlan() {
      * Reset the property interface.
      */
     resetProperties();
+
+    /*
+    * Reset liabilities.
+    */
+    resetLiabilities();
 
     /*
      * Return to the Client Profile section.

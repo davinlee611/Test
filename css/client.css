@@ -1349,6 +1349,124 @@ body.goal-modal-open {
 }
 
 /* ========================================
+   LIABILITIES
+======================================== */
+
+.liability-modal {
+  position: fixed;
+  z-index: 1300;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.liability-modal[hidden] {
+  display: none;
+}
+
+.liability-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(4px);
+}
+
+.liability-modal-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(720px, 100%);
+  max-height: calc(100vh - 48px);
+  padding: 28px;
+  overflow-y: auto;
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+}
+
+.liability-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.liability-modal-eyebrow {
+  margin: 0 0 6px;
+  color: var(--primary-color);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.liability-modal-header h2 {
+  margin: 0;
+}
+
+.liability-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  color: var(--text-secondary);
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.liability-modal-close:hover {
+  color: var(--text-primary);
+  background: #f1f5f9;
+}
+
+.liability-form-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.liability-form-message {
+  min-height: 20px;
+  margin: 16px 0 0;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.liability-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+body.liability-modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .liability-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .liability-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .liability-modal-actions button {
+    width: 100%;
+  }
+}
+
+/* ========================================
    TABLET
 ======================================== */
 
