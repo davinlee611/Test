@@ -5,11 +5,26 @@ import {
 } from "../state/client-plan.js";
 
 import {
+    createUniqueId,
+    escapeHtml,
+    formatCurrency,
+    getWholeNumber,
+} from "../utils/client-utils.js";
+
+import {
     openModal,
     closeModal,
     closeModalOnOverlayClick,
     closeModalOnEscape,
 } from "../utils/modal.js";
+
+import {
+    BENEFIT_LABELS,
+    PAYOUT_TYPE_LABELS,
+    POLICY_STATUS_LABELS,
+    POLICY_TYPE_LABELS,
+    PREMIUM_FREQUENCY_LABELS,
+} from "../constants/insurance.js";
 
 
 /* ========================================
@@ -30,107 +45,6 @@ let editingPolicyId = null;
 /* ========================================
    BENEFIT CONFIGURATION
 ======================================== */
-
-const POLICY_TYPE_LABELS = {
-    whole_life:
-        "Whole Life",
-
-    term:
-        "Term",
-
-    endowment:
-        "Endowment",
-
-    investment_linked:
-        "Investment-Linked (ILP)",
-
-    integrated_shield:
-        "Integrated Shield Plan",
-
-    critical_illness:
-        "Standalone Critical Illness",
-
-    personal_accident:
-        "Personal Accident",
-
-    disability_income:
-        "Disability Income",
-
-    long_term_care:
-        "Long-Term Care",
-
-    annuity:
-        "Annuity",
-
-    other:
-        "Other",
-};
-
-
-const POLICY_STATUS_LABELS = {
-    active:
-        "Active",
-
-    paid_up:
-        "Paid-Up",
-};
-
-
-const PREMIUM_FREQUENCY_LABELS = {
-    annual:
-        "Annual",
-
-    half_yearly:
-        "Half-Yearly",
-
-    quarterly:
-        "Quarterly",
-
-    monthly:
-        "Monthly",
-
-    single:
-        "Single Premium",
-};
-
-const BENEFIT_LABELS = {
-    death:
-        "Death",
-
-    tpd:
-        "Total and Permanent Disability",
-
-    critical_illness:
-        "Critical Illness",
-
-    early_critical_illness:
-        "Early Critical Illness",
-
-    hospitalisation:
-        "Hospitalisation",
-
-    hospital_cash:
-        "Hospital Cash",
-
-    personal_accident:
-        "Personal Accident",
-
-    disability_income:
-        "Disability Income",
-};
-
-
-const PAYOUT_TYPE_LABELS = {
-    accelerated:
-        "Accelerated",
-
-    additional:
-        "Additional",
-
-    standalone:
-        "Standalone",
-};
-
 
 /* ========================================
    INITIALIZATION
@@ -781,7 +695,7 @@ function getPolicyFormData() {
             elements.policyStatusSelect.value,
 
         premiumAmount:
-            parseWholeNumber(
+            getWholeNumber(
                 elements.premiumInput.value,
             ),
 
@@ -1219,7 +1133,7 @@ function getPolicyValidationItems() {
 function createPolicyObject(formData) {
     return {
         id:
-            createId(),
+            createUniqueId(),
 
         policyName:
             formData.policyName,
@@ -1543,7 +1457,7 @@ function getBenefitFormData() {
                 .trim(),
 
         amount:
-            parseWholeNumber(
+            getWholeNumber(
                 elements.benefitAmountInput
                     .value,
             ),
@@ -1594,7 +1508,7 @@ function validateBenefit(formData) {
 function addDraftBenefit(formData) {
     draftBenefits.push({
         id:
-            createId(),
+            createUniqueId(),
 
         type:
             formData.type,
@@ -2249,58 +2163,4 @@ function getPremiumDescription(premium) {
 
         frequencyLabel,
     ].join(" · ");
-}
-
-function createId() {
-    if (
-        typeof crypto !== "undefined" &&
-        typeof crypto.randomUUID ===
-        "function"
-    ) {
-        return crypto.randomUUID();
-    }
-
-    return [
-        Date.now(),
-        Math.random()
-            .toString(16)
-            .slice(2),
-    ].join("-");
-}
-
-
-function parseWholeNumber(value) {
-    const parsedValue =
-        Number.parseInt(value, 10);
-
-    if (
-        !Number.isFinite(parsedValue) ||
-        parsedValue < 0
-    ) {
-        return 0;
-    }
-
-    return parsedValue;
-}
-
-
-function formatCurrency(value) {
-    return new Intl.NumberFormat(
-        "en-SG",
-        {
-            style: "currency",
-            currency: "SGD",
-            maximumFractionDigits: 0,
-        },
-    ).format(value ?? 0);
-}
-
-
-function escapeHtml(value) {
-    return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
 }
