@@ -2093,11 +2093,18 @@ function createPolicyElement(policy) {
         <button
     type="button"
     class="planning-item-button delete"
-    data-benefit-action="delete"
-    data-benefit-id="${benefit.id}"
-    aria-label="Delete Benefit"
-    title="Delete Benefit"
+    data-policy-action="delete"
+    data-policy-id="${escapeHtml(
+        policy.id,
+    )}"
+    aria-label="Delete policy"
+    title="Delete policy"
 >
+    <i
+        class="fa-solid fa-trash"
+        aria-hidden="true"
+    ></i>
+</button>
             <i
                 class="fa-solid fa-trash"
                 aria-hidden="true"
