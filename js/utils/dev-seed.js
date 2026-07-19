@@ -21,7 +21,7 @@ export function seedClientProfile() {
 
         occupation: "Engineer",
 
-        employmentStatus: "employed",
+        employmentStatus: "Full-time Employed",
 
         phoneNumber: "91234567",
 
