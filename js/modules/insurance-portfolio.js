@@ -24,6 +24,8 @@ let draftBenefits = [];
 
 let editingBenefitId = null;
 
+let editingPolicyId = null;
+
 
 /* ========================================
    BENEFIT CONFIGURATION
@@ -160,6 +162,7 @@ export function resetInsurancePortfolio() {
     draftBenefits = [];
 
     editingBenefitId = null;
+    editingPolicyId = null;
 
     closePolicyModal();
 
@@ -426,6 +429,11 @@ function bindInsuranceEvents() {
         handleBenefitListClick,
     );
 
+    elements.policyList?.addEventListener(
+        "click",
+        handlePolicyListClick,
+    );
+
     closeModalOnOverlayClick(
         elements.policyModal,
     );
@@ -441,12 +449,17 @@ function bindInsuranceEvents() {
 ======================================== */
 
 function openAddPolicyModal() {
+    editingPolicyId = null;
+
     resetPolicyForm();
 
     handleInsurerChange();
 
     elements.policyModalTitle.textContent =
         "Add Policy";
+
+    elements.savePolicyButton.textContent =
+        "Save Policy";
 
     elements.policyOwnerInput.value =
         clientPlan.profile.fullName || "";
@@ -456,9 +469,70 @@ function openAddPolicyModal() {
     );
 }
 
+function openEditPolicyModal(policyId) {
+    const policy =
+        clientPlan.priorities.policies.find(
+            function (savedPolicy) {
+                return savedPolicy.id === policyId;
+            },
+        );
+
+    if (!policy) {
+        return;
+    }
+
+    editingPolicyId = policy.id;
+
+    resetPolicyForm();
+
+    elements.policyModalTitle.textContent =
+        "Edit Policy";
+
+    elements.savePolicyButton.textContent =
+        "Save Changes";
+
+    elements.policyNameInput.value =
+        policy.policyName || "";
+
+    elements.policyTypeSelect.value =
+        policy.policyType || "";
+
+    populateInsurerFields(
+        policy.insurer,
+    );
+
+    elements.policyNumberInput.value =
+        policy.policyNumber || "";
+
+    elements.policyOwnerInput.value =
+        policy.policyOwner || "";
+
+    elements.policyStatusSelect.value =
+        policy.status || "";
+
+    elements.premiumInput.value =
+        policy.premium?.amount || "";
+
+    elements.premiumFrequencySelect.value =
+        policy.premium?.frequency ||
+        "annual";
+
+    draftBenefits =
+        cloneBenefits(
+            policy.benefits || [],
+        );
+
+    renderDraftBenefits();
+
+    openModal(
+        elements.policyModal,
+    );
+}
 
 function closePolicyModal() {
     closeBenefitEditor();
+
+    editingPolicyId = null;
 
     closeModal(
         elements.policyModal,
@@ -515,6 +589,56 @@ function handleInsurerChange() {
     }
 }
 
+function populateInsurerFields(insurer) {
+    const savedInsurer =
+        insurer || "";
+
+    const insurerOptionExists =
+        Array.from(
+            elements.insurerSelect.options,
+        ).some(
+            function (option) {
+                return (
+                    option.value ===
+                    savedInsurer
+                );
+            },
+        );
+
+    if (
+        savedInsurer &&
+        insurerOptionExists &&
+        savedInsurer !== "other"
+    ) {
+        elements.insurerSelect.value =
+            savedInsurer;
+
+        elements.otherInsurerInput.value =
+            "";
+    } else if (savedInsurer) {
+        elements.insurerSelect.value =
+            "other";
+
+        elements.otherInsurerInput.value =
+            savedInsurer;
+    } else {
+        elements.insurerSelect.value = "";
+
+        elements.otherInsurerInput.value =
+            "";
+    }
+
+    handleInsurerChange();
+
+    if (
+        elements.insurerSelect.value ===
+        "other"
+    ) {
+        elements.otherInsurerInput.value =
+            savedInsurer;
+    }
+}
+
 /* ========================================
    SAVE POLICY
 ======================================== */
@@ -536,18 +660,83 @@ function savePolicy() {
         return;
     }
 
-    const policy =
-        createPolicyObject(formData);
+    if (editingPolicyId) {
+        updateExistingPolicy(
+            editingPolicyId,
+            formData,
+        );
+    } else {
+        const policy =
+            createPolicyObject(formData);
 
-    clientPlan.priorities.policies.push(
-        policy,
-    );
+        clientPlan.priorities.policies.push(
+            policy,
+        );
+    }
 
     renderInsurancePortfolio();
 
     closePolicyModal();
 }
 
+function updateExistingPolicy(
+    policyId,
+    formData,
+) {
+    const policyIndex =
+        clientPlan.priorities.policies
+            .findIndex(
+                function (policy) {
+                    return (
+                        policy.id ===
+                        policyId
+                    );
+                },
+            );
+
+    if (policyIndex === -1) {
+        return;
+    }
+
+    clientPlan.priorities.policies[
+        policyIndex
+    ] = {
+        ...clientPlan.priorities.policies[
+        policyIndex
+        ],
+
+        policyName:
+            formData.policyName,
+
+        policyType:
+            formData.policyType,
+
+        insurer:
+            formData.insurer,
+
+        policyNumber:
+            formData.policyNumber,
+
+        policyOwner:
+            formData.policyOwner,
+
+        status:
+            formData.status,
+
+        premium: {
+            amount:
+                formData.premiumAmount,
+
+            frequency:
+                formData.premiumFrequency,
+        },
+
+        benefits:
+            cloneBenefits(
+                draftBenefits,
+            ),
+    };
+}
 
 function getPolicyFormData() {
     const selectedInsurer =
@@ -1093,6 +1282,9 @@ function openAddBenefitEditor() {
     editingBenefitId = null;
 
     resetBenefitForm();
+
+    elements.benefitLifeAssuredInput.value =
+        clientPlan.profile.fullName || "";
 
     elements.benefitEditorTitle.textContent =
         "Add Benefit";
@@ -1796,54 +1988,139 @@ function createPolicyElement(policy) {
             : "";
 
     item.innerHTML = `
-        <div class="planning-item-main">
+    <div class="planning-item-main">
 
-            <div class="planning-item-icon">
-                <i class="fa-solid fa-shield-halved"></i>
-            </div>
+        <div class="planning-item-icon">
+            <i
+                class="fa-solid fa-shield-halved"
+                aria-hidden="true"
+            ></i>
+        </div>
 
-            <div class="planning-item-details">
+        <div class="planning-item-details">
 
-                <h4>
-                    ${escapeHtml(policyName)}
-                </h4>
+            <h4>
+                ${escapeHtml(policyName)}
+            </h4>
 
-                <p>
-                    ${escapeHtml(insurer)}
-                    ·
-                    ${escapeHtml(policyType)}
-                </p>
+            <p>
+                ${escapeHtml(insurer)}
+                ·
+                ${escapeHtml(policyType)}
+            </p>
 
-                <div class="benefit-item-meta">
+            <div class="benefit-item-meta">
 
-                    <span>
-                        ${escapeHtml(status)}
-                    </span>
+                <span>
+                    ${escapeHtml(status)}
+                </span>
 
-                    <span>
-                        ${escapeHtml(
+                <span>
+                    ${escapeHtml(
         premiumDescription,
     )}
-                    </span>
+                </span>
 
-                    <span>
-                        ${escapeHtml(
+                <span>
+                    ${escapeHtml(
         benefitText,
     )}
-                    </span>
+                </span>
 
-                    ${policyNumberText}
+                ${policyNumberText}
 
-                    ${policyOwnerText}
-
-                </div>
+                ${policyOwnerText}
 
             </div>
 
         </div>
-    `;
+
+    </div>
+
+    <div class="planning-item-actions">
+
+        <button
+            type="button"
+            class="planning-item-button"
+            data-policy-action="edit"
+            data-policy-id="${escapeHtml(
+        policy.id,
+    )}"
+            aria-label="Edit policy"
+            title="Edit policy"
+        >
+            <i
+                class="fa-solid fa-pen"
+                aria-hidden="true"
+            ></i>
+        </button>
+
+        <button
+            type="button"
+            class="planning-item-button delete"
+            data-policy-action="delete"
+            data-policy-id="${escapeHtml(
+        policy.id,
+    )}"
+            aria-label="Delete policy"
+            title="Delete policy"
+        >
+            <i
+                class="fa-solid fa-trash"
+                aria-hidden="true"
+            ></i>
+        </button>
+
+    </div>
+`;
 
     return item;
+}
+
+function handlePolicyListClick(event) {
+    const actionButton =
+        event.target.closest(
+            "[data-policy-action]",
+        );
+
+    if (!actionButton) {
+        return;
+    }
+
+    const policyId =
+        actionButton.dataset.policyId;
+
+    const action =
+        actionButton.dataset.policyAction;
+
+    if (action === "edit") {
+        openEditPolicyModal(
+            policyId,
+        );
+
+        return;
+    }
+
+    if (action === "delete") {
+        deletePolicy(
+            policyId,
+        );
+    }
+}
+
+function deletePolicy(policyId) {
+    clientPlan.priorities.policies =
+        clientPlan.priorities.policies
+            .filter(
+                function (policy) {
+                    return (
+                        policy.id !==
+                        policyId
+                    );
+                },
+            );
+
+    renderInsurancePortfolio();
 }
 
 
