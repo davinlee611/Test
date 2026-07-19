@@ -1467,6 +1467,16 @@ body.liability-modal-open {
 }
 
 /* ========================================
+   INSURANCE PORTFOLIO
+======================================== */
+
+.insurance-portfolio-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ========================================
    TABLET
 ======================================== */
 

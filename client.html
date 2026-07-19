@@ -95,6 +95,12 @@
               <span>Priorities &amp; Situation</span>
             </button>
 
+            <button class="sidebar-nav-item" data-page="insurancePortfolio" type="button">
+              <i class="fa-solid fa-shield-heart" aria-hidden="true"></i>
+            
+              <span>Insurance Portfolio</span>
+            </button>
+
             <button class="sidebar-item" type="button" data-section="cost">
               <i class="fa-solid fa-coins"></i>
               <span>Cost of Wants</span>
@@ -331,19 +337,15 @@
               <div class="subsection-heading">
                 <div>
                   <h3>4 Types of Wealth</h3>
-
                   <p>
                     Rank all four wealth priorities by selecting them in order of
                     importance. Select a chosen priority again to remove and reorder it.
                   </p>
-
                   <p id="wealthTypeProgress" class="wealth-type-progress" aria-live="polite">
                     0 of 4 ranked
                   </p>
-
                 </div>
               </div>
-
               <div class="wealth-type-grid">
                 <button
                   class="wealth-type-card"
@@ -354,19 +356,15 @@
                   <div class="wealth-type-icon">
                     <i class="fa-solid fa-chart-line"></i>
                   </div>
-
                   <div>
                     <h4>Accumulation</h4>
-
                     <p>
                       Growing wealth through savings, investments and long-term
                       financial planning.
                     </p>
                   </div>
-
                   <span class="selection-indicator" aria-hidden="true"></span>
                 </button>
-
                 <button
                   class="wealth-type-card"
                   type="button"
@@ -376,19 +374,15 @@
                   <div class="wealth-type-icon">
                     <i class="fa-solid fa-hand-holding-dollar"></i>
                   </div>
-
                   <div>
                     <h4>Distribution</h4>
-
                     <p>
                       Creating income and using wealth to support the client's
                       lifestyle and financial goals.
                     </p>
                   </div>
-
                   <span class="selection-indicator" aria-hidden="true"></span>
                 </button>
-
                 <button
                   class="wealth-type-card"
                   type="button"
@@ -398,10 +392,8 @@
                   <div class="wealth-type-icon">
                     <i class="fa-solid fa-shield-halved"></i>
                   </div>
-
                   <div>
                     <h4>Protection</h4>
-
                     <p>
                       Protecting income, family responsibilities and financial
                       commitments from unexpected events.
@@ -409,7 +401,6 @@
                   </div>
                   <span class="selection-indicator" aria-hidden="true"></span>
                 </button>
-
                 <button
                   class="wealth-type-card"
                   type="button"
@@ -419,10 +410,8 @@
                   <div class="wealth-type-icon">
                     <i class="fa-solid fa-vault"></i>
                   </div>
-
                   <div>
                     <h4>Preservation</h4>
-
                     <p>
                       Preserving wealth for future generations, legacy planning
                       and long-term financial security.
@@ -438,14 +427,12 @@
               <div class="planning-category-heading">
                 <div>
                   <h3>Assets &amp; Income</h3>
-
                   <p>
                     Enter the client's current assets, income, CPF balances and
                     property details.
                   </p>
                 </div>
               </div>
-
               <div class="assets-income-section">
                 <!-- Withdrawable Assets -->
                 <div class="planning-section-card">
@@ -462,14 +449,12 @@
                       <strong id="totalLiquidAssets"> $0 </strong>
                     </div>
                   </div>
-
                   <div class="financial-input-list">
                     <div class="financial-input-row">
                       <label for="cashInBank"> Cash in Bank </label>
 
                       <div class="currency-input">
                         <span>$</span>
-
                         <input
                           id="cashInBank"
                           class="form-control financial-amount-input"
@@ -481,13 +466,10 @@
                         />
                       </div>
                     </div>
-
                     <div class="financial-input-row">
                       <label for="fixedDeposits"> Fixed Deposits </label>
-
                       <div class="currency-input">
                         <span>$</span>
-
                         <input
                           id="fixedDeposits"
                           class="form-control financial-amount-input"
@@ -499,13 +481,10 @@
                         />
                       </div>
                     </div>
-
                     <div class="financial-input-row">
                       <label for="tBills"> T-Bills </label>
-
                       <div class="currency-input">
                         <span>$</span>
-
                         <input
                           id="tBills"
                           class="form-control financial-amount-input"
@@ -517,13 +496,10 @@
                         />
                       </div>
                     </div>
-
                     <div class="financial-input-row">
                       <label for="investments"> Investments </label>
-
                       <div class="currency-input">
                         <span>$</span>
-
                         <input
                           id="investments"
                           class="form-control financial-amount-input"
@@ -535,13 +511,10 @@
                         />
                       </div>
                     </div>
-
                     <div class="financial-input-row">
                       <label for="otherLiquidAssets"> Others </label>
-
                       <div class="currency-input">
                         <span>$</span>
-
                         <input
                           id="otherLiquidAssets"
                           class="form-control financial-amount-input"
@@ -564,52 +537,41 @@
                   <div class="planning-section-header">
                     <div>
                       <h3>Income</h3>
-                
                       <p>
                         Enter the client's monthly gross salary,
                         annual bonus and other monthly income.
                       </p>
                     </div>
                   </div>
-                
                   <div class="financial-input-list">
                     <div class="financial-input-row">
                       <label for="monthlyEmploymentIncome">
                         Monthly Gross Salary
                       </label>
-                
                       <div class="currency-input">
                         <span>$</span>
-                
                         <input id="monthlyEmploymentIncome" class="form-control financial-amount-input" type="number" min="0" step="1"
                           inputmode="numeric" placeholder="0" />
                       </div>
                     </div>
-                
                     <div class="financial-input-row">
                       <label for="annualBonus">
                         Annual Bonus
                       </label>
-                
                       <div class="currency-input">
                         <span>$</span>
-                
                         <input id="annualBonus" class="form-control financial-amount-input" type="number" min="0" step="1"
                           inputmode="numeric" placeholder="0" />
                       </div>
                     </div>
-                
                     <div class="financial-input-row">
                       <label for="otherMonthlyIncome">
                         Other Monthly Income
                       </label>
-                
                       <div class="currency-input">
                         <span>$</span>
-                
                         <input id="otherMonthlyIncome" class="form-control financial-amount-input" type="number" min="0" step="1"
                           inputmode="numeric" placeholder="0" />
-
                       </div>
                     </div>
                   </div>
@@ -624,33 +586,27 @@
                         <span class="income-summary-label">
                           Employee CPF Contribution
                         </span>
-                
                         <span id="employeeCpfContributionNote" class="income-summary-note">
                           Select employment status and date of birth
                         </span>
                       </div>
-                
                       <strong id="employeeCpfContribution" class="income-summary-value income-deduction">
                         $0
                       </strong>
                     </div>
-                
                     <div class="income-summary-row">
                       <div class="income-summary-content">
                         <span class="income-summary-label">
                           Monthly Take-home Income
                         </span>
-                
                         <span class="income-summary-note">
                           Including other monthly income
                         </span>
                       </div>
-                
                       <strong id="monthlyTakeHomeIncome" class="income-summary-value">
                         $0
                       </strong>
                     </div>
-                
                     <div class="income-summary-row">
                       <div class="income-summary-content">
                         <span class="income-summary-label">
