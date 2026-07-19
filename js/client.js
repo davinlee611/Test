@@ -40,6 +40,11 @@ import {
     resetLiabilities,
 } from "./modules/liabilities.js";
 
+import {
+    initializeInsurancePortfolio,
+    resetInsurancePortfolio,
+} from "./modules/insurance-portfolio.js";
+
 const supabaseClient =
     window.supabaseClient;
 
@@ -66,6 +71,7 @@ initializeLiabilities();
 initializeWealthType();
 initializeGoals();
 initializeAssetsIncome();
+initializeInsurancePortfolio();
 initializePage();
 
 async function initializePage() {
@@ -142,6 +148,11 @@ function clearFinancialPlan() {
     * Reset liabilities.
     */
     resetLiabilities();
+
+    /*
+    * Reset insurance portfolio.
+    */
+    resetInsurancePortfolio();
 
     /*
      * Return to the Client Profile section.
