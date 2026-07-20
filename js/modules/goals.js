@@ -1,8 +1,11 @@
 "use strict";
 
 import {
-    clientPlan,
-} from "../state/client-plan.js";
+    getAllGoals,
+    addGoal,
+    updateGoal,
+    deleteGoal,
+} from "../services/goal-service.js";
 
 import {
     emit,
@@ -128,7 +131,7 @@ export function initializeGoals() {
 ======================================== */
 
 export function resetGoals() {
-    clientPlan.priorities.goals = [];
+    getAllGoals() = [];
 
     closeGoalModal();
     renderGoals();
@@ -506,7 +509,7 @@ function addGoal({
     targetAmount,
     targetDate,
 }) {
-    clientPlan.priorities.goals.push({
+    addGoal.push({
         id: createUniqueId(),
         type: goalType,
         name: goalName,
@@ -559,7 +562,7 @@ function deleteGoal(goalId) {
         return;
     }
 
-    clientPlan.priorities.goals =
+    getAllGoals() =
         clientPlan.priorities.goals.filter(
             function (goal) {
                 return goal.id !== goalId;
@@ -581,7 +584,7 @@ export function renderGoals() {
     }
 
     const goals =
-        clientPlan.priorities.goals;
+        getAllGoals();
 
     goalsList.innerHTML = "";
 
