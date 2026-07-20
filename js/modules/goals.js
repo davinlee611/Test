@@ -22,6 +22,14 @@ import {
     getWholeNumber,
 } from "../utils/client-utils.js";
 
+import {
+    createPlanningCard,
+    createPlanningCardIcon,
+    createPlanningCardDetails,
+    createPlanningCardActions,
+    renderPlanningEmptyState,
+} from "../components/planning-card.js";
+
 
 /* ========================================
    DOM REFERENCES
@@ -529,106 +537,101 @@ export function renderGoals() {
 
     goalsList.innerHTML = "";
 
-    goals.forEach(function (goal) {
-        const goalItem =
-            createGoalItem(goal);
-
-        goalsList.appendChild(
-            goalItem,
-        );
-    });
-
-    if (
-        goals.length === 0 &&
-        emptyGoalMessage
-    ) {
-        goalsList.appendChild(
+    if (goals.length === 0) {
+        renderPlanningEmptyState(
+            goalsList,
+            "No goals added yet.",
             emptyGoalMessage,
         );
+
+        return;
     }
+
+    goals.forEach(function (goal) {
+        goalsList.appendChild(
+            createGoalItem(goal),
+        );
+    });
 }
 
+
 function createGoalItem(goal) {
-    const goalItem =
-        document.createElement("div");
-
-    goalItem.className =
-        "planning-card-item";
-
-    const goalMain =
-        document.createElement("div");
-
-    goalMain.className =
-        "planning-card-content";
-
     const goalIcon =
-        document.createElement("div");
-
-    goalIcon.className =
-        "planning-card-icon";
-
-    goalIcon.innerHTML =
-        getGoalIcon(goal.type);
+        createPlanningCardIcon(
+            getGoalIconClass(
+                goal.type,
+            ),
+        );
 
     const goalDetails =
-        document.createElement("div");
-
-    goalDetails.className =
-        "planning-card-details";
-
-    const goalTitle =
-        document.createElement("h4");
-
-    goalTitle.textContent =
-        goal.name;
-
-    const goalDescription =
-        document.createElement("p");
-
-    goalDescription.textContent =
-        `${getGoalTypeLabel(
-            goal.type,
-        )} · ` +
-        `${formatCurrency(
-            goal.targetAmount,
-        )} target amount · ` +
-        `${formatGoalDate(
-            getSavedGoalDate(goal),
-        )} target date`;
-
-    goalDetails.append(
-        goalTitle,
-        goalDescription,
-    );
-
-    goalMain.append(
-        goalIcon,
-        goalDetails,
-    );
+        createGoalDetails(goal);
 
     const goalActions =
-        document.createElement("div");
+        createGoalActions(goal);
 
-    goalActions.className =
-        "planning-card-actions";
+    return createPlanningCard({
+        itemClass:
+            "goal-item",
 
-    const editButton =
-        createEditButton(goal);
+        icon:
+            goalIcon,
 
-    const deleteButton =
-        createDeleteButton(goal);
+        details:
+            goalDetails,
 
-    goalActions.append(
-        editButton,
-        deleteButton,
+        actions:
+            goalActions,
+    });
+}
+
+
+function createGoalDetails(goal) {
+    const details =
+        createPlanningCardDetails();
+
+    const title =
+        document.createElement("h4");
+
+    title.textContent =
+        goal.name ||
+        "Unnamed Goal";
+
+    const description =
+        document.createElement("p");
+
+    description.textContent = [
+        getGoalTypeLabel(
+            goal.type,
+        ),
+
+        `${formatCurrency(
+            goal.targetAmount,
+        )} target amount`,
+
+        `${formatGoalDate(
+            getSavedGoalDate(goal),
+        )} target date`,
+    ].join(" · ");
+
+    details.append(
+        title,
+        description,
     );
 
-    goalItem.append(
-        goalMain,
-        goalActions,
+    return details;
+}
+
+
+function createGoalActions(goal) {
+    const actions =
+        createPlanningCardActions();
+
+    actions.append(
+        createEditButton(goal),
+        createDeleteButton(goal),
     );
 
-    return goalItem;
+    return actions;
 }
 
 
@@ -825,7 +828,9 @@ function getGoalTypeLabel(goalType) {
 }
 
 
-function getGoalIcon(goalType) {
+function getGoalIconClass(
+    goalType,
+) {
     const icons = {
         retirement:
             "fa-solid fa-umbrella-beach",
@@ -852,16 +857,10 @@ function getGoalIcon(goalType) {
             "fa-solid fa-bullseye",
     };
 
-    const iconClass =
+    return (
         icons[goalType] ||
-        icons.other;
-
-    return `
-        <i
-            class="${iconClass}"
-            aria-hidden="true"
-        ></i>
-    `;
+        icons.other
+    );
 }
 
 

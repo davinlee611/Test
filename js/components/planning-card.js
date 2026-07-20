@@ -6,9 +6,9 @@
 
 export function createPlanningCard({
     itemClass = "",
-    iconClass = "",
-    content,
-    actions = [],
+    icon,
+    details,
+    actions,
 }) {
     const article =
         document.createElement("article");
@@ -20,209 +20,81 @@ export function createPlanningCard({
         .filter(Boolean)
         .join(" ");
 
-    const cardContent =
+    const content =
         document.createElement("div");
 
-    cardContent.className =
+    content.className =
         "planning-card-content";
 
-    if (iconClass) {
-        cardContent.appendChild(
-            createPlanningCardIcon(
-                iconClass,
-            ),
-        );
+    if (icon) {
+        content.appendChild(icon);
     }
 
+    if (details) {
+        content.appendChild(details);
+    }
+
+    article.appendChild(content);
+
+    if (actions) {
+        article.appendChild(actions);
+    }
+
+    return article;
+}
+
+export function createPlanningCardIcon(
+    iconClass,
+) {
+    const container =
+        document.createElement("div");
+
+    container.className =
+        "planning-card-icon";
+
+    container.innerHTML = `
+        <i
+            class="${iconClass}"
+            aria-hidden="true"
+        ></i>
+    `;
+
+    return container;
+}
+
+export function createPlanningCardDetails() {
     const details =
         document.createElement("div");
 
     details.className =
         "planning-card-details";
 
-    appendCardContent(
-        details,
-        content,
-    );
-
-    cardContent.appendChild(details);
-
-    article.appendChild(cardContent);
-
-    if (actions.length > 0) {
-        article.appendChild(
-            createPlanningCardActions(
-                actions,
-            ),
-        );
-    }
-
-    return article;
+    return details;
 }
 
-
-/* ========================================
-   CARD ICON
-======================================== */
-
-function createPlanningCardIcon(
-    iconClass,
-) {
-    const iconContainer =
+export function createPlanningCardActions() {
+    const actions =
         document.createElement("div");
 
-    iconContainer.className =
-        "planning-card-icon";
-
-    const icon =
-        document.createElement("i");
-
-    icon.className = iconClass;
-    icon.setAttribute(
-        "aria-hidden",
-        "true",
-    );
-
-    iconContainer.appendChild(icon);
-
-    return iconContainer;
-}
-
-
-/* ========================================
-   CARD CONTENT
-======================================== */
-
-function appendCardContent(
-    container,
-    content,
-) {
-    if (content instanceof Node) {
-        container.appendChild(content);
-
-        return;
-    }
-
-    if (Array.isArray(content)) {
-        content.forEach(function (item) {
-            if (item instanceof Node) {
-                container.appendChild(item);
-            }
-        });
-
-        return;
-    }
-
-    if (typeof content === "string") {
-        container.innerHTML = content;
-    }
-}
-
-
-/* ========================================
-   CARD ACTIONS
-======================================== */
-
-function createPlanningCardActions(
-    actions,
-) {
-    const actionsContainer =
-        document.createElement("div");
-
-    actionsContainer.className =
+    actions.className =
         "planning-card-actions";
 
-    actions.forEach(function (action) {
-        actionsContainer.appendChild(
-            createPlanningCardAction(
-                action,
-            ),
-        );
-    });
-
-    return actionsContainer;
+    return actions;
 }
 
-
-export function createPlanningCardAction({
-    action,
-    itemId,
-    dataPrefix,
-    iconClass,
-    label,
-    variant = "",
-}) {
-    const button =
-        document.createElement("button");
-
-    button.type = "button";
-
-    button.className = [
-        "planning-card-action",
-        variant,
-    ]
-        .filter(Boolean)
-        .join(" ");
-
-    button.dataset[
-        `${dataPrefix}Action`
-    ] = action;
-
-    button.dataset[
-        `${dataPrefix}Id`
-    ] = itemId;
-
-    button.setAttribute(
-        "aria-label",
-        label,
-    );
-
-    button.title = label;
-
-    const icon =
-        document.createElement("i");
-
-    icon.className = iconClass;
-    icon.setAttribute(
-        "aria-hidden",
-        "true",
-    );
-
-    button.appendChild(icon);
-
-    return button;
-}
-
-
-/* ========================================
-   EMPTY STATE
-======================================== */
-
-export function renderPlanningEmptyState({
-    container,
+export function renderPlanningEmptyState(
+    list,
     message,
-    id = "",
-}) {
-    if (!container) {
-        return null;
+    existingElement,
+) {
+    if (!existingElement) {
+        return;
     }
 
-    const emptyMessage =
-        document.createElement("p");
-
-    if (id) {
-        emptyMessage.id = id;
-    }
-
-    emptyMessage.className =
-        "empty-state-message";
-
-    emptyMessage.textContent =
+    existingElement.textContent =
         message;
 
-    container.appendChild(
-        emptyMessage,
+    list.appendChild(
+        existingElement,
     );
-
-    return emptyMessage;
 }
