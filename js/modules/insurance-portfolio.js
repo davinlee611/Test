@@ -392,7 +392,7 @@ function openAddPolicyModal() {
         "Save Policy";
 
     elements.policyOwnerInput.value =
-        clientPlan.profile.fullName || "";
+        getClientProfile().fullName || "";
 
     openModal(
         elements.policyModal,
@@ -1180,7 +1180,7 @@ function openAddBenefitEditor() {
     resetBenefitForm();
 
     elements.benefitLifeAssuredInput.value =
-        clientPlan.profile.fullName || "";
+        getClientProfile().fullName || "";
 
     elements.benefitEditorTitle.textContent =
         "Add Benefit";
