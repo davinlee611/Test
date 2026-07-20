@@ -586,39 +586,25 @@ function createGoalItem(goal) {
 
 
 function createGoalDetails(goal) {
-    const details =
-        createPlanningCardDetails();
+    return createPlanningCardDetails({
+        title:
+            goal.name ||
+            "Unnamed Goal",
 
-    const title =
-        document.createElement("h4");
+        description: [
+            getGoalTypeLabel(
+                goal.type,
+            ),
 
-    title.textContent =
-        goal.name ||
-        "Unnamed Goal";
+            `${formatCurrency(
+                goal.targetAmount,
+            )} target amount`,
 
-    const description =
-        document.createElement("p");
-
-    description.textContent = [
-        getGoalTypeLabel(
-            goal.type,
-        ),
-
-        `${formatCurrency(
-            goal.targetAmount,
-        )} target amount`,
-
-        `${formatGoalDate(
-            getSavedGoalDate(goal),
-        )} target date`,
-    ].join(" · ");
-
-    details.append(
-        title,
-        description,
-    );
-
-    return details;
+            `${formatGoalDate(
+                getSavedGoalDate(goal),
+            )} target date`,
+        ].join(" · "),
+    });
 }
 
 
