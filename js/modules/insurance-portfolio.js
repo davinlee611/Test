@@ -1766,7 +1766,7 @@ function createBenefitElement(benefit) {
 
 <button
     type="button"
-    class="planning-card-action"
+    class="planning-card-action delete"
     data-benefit-action="delete"
     data-benefit-id="${escapeHtml(
         benefit.id,
@@ -2057,7 +2057,7 @@ function createPolicyElement(policy) {
 
         <button
     type="button"
-    class="planning-card-action"
+    class="planning-card-action delete"
     data-policy-action="delete"
     data-policy-id="${escapeHtml(
         policy.id,
