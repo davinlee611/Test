@@ -545,19 +545,19 @@ function createPropertyItem(property) {
         document.createElement("div");
 
     propertyItem.className =
-        "planning-item";
+        "planning-card-item";
 
     const propertyMain =
         document.createElement("div");
 
     propertyMain.className =
-        "planning-item-main";
+        "planning-card-content";
 
     const propertyIcon =
         document.createElement("div");
 
     propertyIcon.className =
-        "planning-item-icon";
+        "planning-card-icon";
 
     propertyIcon.innerHTML = '<i class="fa-solid fa-house"></i>';
 
@@ -565,7 +565,7 @@ function createPropertyItem(property) {
         document.createElement("div");
 
     propertyDetails.className =
-        "planning-item-details";
+        "planning-card-details";
 
     const propertyTitle =
         document.createElement("h4");
@@ -599,7 +599,7 @@ function createPropertyItem(property) {
         document.createElement("div");
 
     propertyActions.className =
-        "planning-item-actions";
+        "planning-card-actions";
 
     const editButton =
         createEditButton(property);
@@ -628,7 +628,7 @@ function createEditButton(property) {
     editButton.type = "button";
 
     editButton.className =
-        "planning-item-button";
+        "planning-card-action";
 
     editButton.setAttribute(
         "aria-label",
@@ -657,7 +657,7 @@ function createDeleteButton(property) {
     deleteButton.type = "button";
 
     deleteButton.className =
-        "planning-item-button delete";
+        "planning-card-item";
 
     deleteButton.setAttribute(
         "aria-label",

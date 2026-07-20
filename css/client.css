@@ -1784,14 +1784,6 @@ body.liability-modal-open {
     width: 100%;
   }
 
-  .planning-section-card {
-    padding: 20px;
-  }
-
-  .planning-section-header {
-    flex-direction: column;
-  }
-
   .financial-category-total {
     min-width: 0;
     text-align: left;

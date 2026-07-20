@@ -1687,7 +1687,7 @@ function createBenefitElement(benefit) {
         document.createElement("article");
 
     item.className =
-        "planning-item benefit-item";
+        "planning-card-item benefit-item";
 
     const benefitLabel =
         BENEFIT_LABELS[benefit.type] ??
@@ -1711,13 +1711,13 @@ function createBenefitElement(benefit) {
             : "";
 
     item.innerHTML = `
-        <div class="planning-item-main">
+        <div class="planning-card-content">
 
-            <div class="planning-item-icon">
+            <div class="planning-card-icon">
                 <i class="fa-solid fa-shield-heart"></i>
             </div>
 
-            <div class="planning-item-details">
+            <div class="planning-card-details">
 
     <div class="benefit-title-row">
 
@@ -1746,11 +1746,11 @@ function createBenefitElement(benefit) {
 
         </div>
 
-        <div class="planning-item-actions">
+        <div class="planning-card-actions">
 
     <button
     type="button"
-    class="planning-item-button"
+    class="planning-card-action"
     data-benefit-action="edit"
     data-benefit-id="${escapeHtml(
         benefit.id,
@@ -1766,7 +1766,7 @@ function createBenefitElement(benefit) {
 
 <button
     type="button"
-    class="planning-item-button delete"
+    class="planning-card-action"
     data-benefit-action="delete"
     data-benefit-id="${escapeHtml(
         benefit.id,
@@ -1926,7 +1926,7 @@ function createPolicyElement(policy) {
         document.createElement("article");
 
     item.className =
-        "planning-item policy-item";
+        "planning-card-item policy-item";
 
     const policyName =
         policy.policyName ||
@@ -1988,16 +1988,16 @@ function createPolicyElement(policy) {
             : "";
 
     item.innerHTML = `
-    <div class="planning-item-main">
+    <div class="planning-card-content">
 
-        <div class="planning-item-icon">
+        <div class="planning-card-icon">
             <i
                 class="fa-solid fa-shield-halved"
                 aria-hidden="true"
             ></i>
         </div>
 
-        <div class="planning-item-details">
+        <div class="planning-card-details">
 
             <h4>
                 ${escapeHtml(policyName)}
@@ -2037,11 +2037,11 @@ function createPolicyElement(policy) {
 
     </div>
 
-    <div class="planning-item-actions">
+    <div class="planning-card-actions">
 
         <button
             type="button"
-            class="planning-item-button"
+            class="planning-card-action"
             data-policy-action="edit"
             data-policy-id="${escapeHtml(
         policy.id,
@@ -2057,7 +2057,7 @@ function createPolicyElement(policy) {
 
         <button
     type="button"
-    class="planning-item-button delete"
+    class="planning-card-action"
     data-policy-action="delete"
     data-policy-id="${escapeHtml(
         policy.id,

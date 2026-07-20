@@ -591,19 +591,19 @@ function createLiabilityItem(liability) {
         document.createElement("div");
 
     liabilityItem.className =
-        "planning-item";
+        "planning-card-item";
 
     const liabilityMain =
         document.createElement("div");
 
     liabilityMain.className =
-        "planning-item-main";
+        "planning-card-content";
 
     const liabilityIcon =
         document.createElement("div");
 
     liabilityIcon.className =
-        "planning-item-icon";
+        "planning-card-icon";
 
     liabilityIcon.innerHTML =
         getLiabilityIcon(
@@ -614,7 +614,7 @@ function createLiabilityItem(liability) {
         document.createElement("div");
 
     liabilityDetails.className =
-        "planning-item-details";
+        "planning-card-details";
 
     const liabilityTitle =
         document.createElement("h4");
@@ -644,7 +644,7 @@ function createLiabilityItem(liability) {
         document.createElement("div");
 
     liabilityActions.className =
-        "planning-item-actions";
+        "planning-card-actions";
 
     liabilityActions.append(
         createEditButton(liability),
@@ -667,7 +667,7 @@ function createEditButton(liability) {
     editButton.type = "button";
 
     editButton.className =
-        "planning-item-button";
+        "planning-card-action";
 
     editButton.setAttribute(
         "aria-label",
@@ -697,7 +697,7 @@ function createDeleteButton(liability) {
     deleteButton.type = "button";
 
     deleteButton.className =
-        "planning-item-button delete";
+        "planning-card-action";
 
     deleteButton.setAttribute(
         "aria-label",
