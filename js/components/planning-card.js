@@ -163,6 +163,59 @@ export function createPlanningCardActions() {
 
 
 /* ========================================
+   PLANNING CARD BUTTON
+======================================== */
+
+export function createPlanningCardButton({
+    iconClass,
+    label,
+    variant = "",
+    onClick,
+}) {
+    const button =
+        document.createElement("button");
+
+    button.type = "button";
+
+    button.className = [
+        "planning-card-action",
+        variant,
+    ]
+        .filter(Boolean)
+        .join(" ");
+
+    button.setAttribute(
+        "aria-label",
+        label,
+    );
+
+    button.title = label;
+
+    const icon =
+        document.createElement("i");
+
+    icon.className =
+        iconClass;
+
+    icon.setAttribute(
+        "aria-hidden",
+        "true",
+    );
+
+    button.appendChild(icon);
+
+    if (typeof onClick === "function") {
+        button.addEventListener(
+            "click",
+            onClick,
+        );
+    }
+
+    return button;
+}
+
+
+/* ========================================
    EMPTY STATE
 ======================================== */
 

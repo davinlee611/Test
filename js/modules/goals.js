@@ -27,6 +27,7 @@ import {
     createPlanningCardIcon,
     createPlanningCardDetails,
     createPlanningCardActions,
+    createPlanningCardButton,
     renderPlanningEmptyState,
 } from "../components/planning-card.js";
 
@@ -622,58 +623,39 @@ function createGoalActions(goal) {
 
 
 function createEditButton(goal) {
-    const editButton =
-        document.createElement("button");
+    return createPlanningCardButton({
+        iconClass:
+            "fa-solid fa-pen",
 
-    editButton.type = "button";
+        label:
+            `Edit ${goal.name}`,
 
-    editButton.className =
-        "planning-card-action";
-
-    editButton.setAttribute(
-        "aria-label",
-        `Edit ${goal.name}`,
-    );
-
-    editButton.innerHTML =
-        '<i class="fa-solid fa-pen"></i>';
-
-    editButton.addEventListener(
-        "click",
-        function () {
-            openEditGoalModal(goal.id);
+        onClick() {
+            openEditGoalModal(
+                goal.id,
+            );
         },
-    );
-
-    return editButton;
+    });
 }
 
 
 function createDeleteButton(goal) {
-    const deleteButton =
-        document.createElement("button");
+    return createPlanningCardButton({
+        iconClass:
+            "fa-solid fa-trash",
 
-    deleteButton.type = "button";
+        variant:
+            "delete",
 
-    deleteButton.className =
-        "planning-card-action delete";
+        label:
+            `Delete ${goal.name}`,
 
-    deleteButton.setAttribute(
-        "aria-label",
-        `Delete ${goal.name}`,
-    );
-
-    deleteButton.innerHTML =
-        '<i class="fa-solid fa-trash"></i>';
-
-    deleteButton.addEventListener(
-        "click",
-        function () {
-            handleDeleteGoal(goal.id);
+        onClick() {
+            handleDeleteGoal(
+                goal.id,
+            );
         },
-    );
-
-    return deleteButton;
+    });
 }
 
 
