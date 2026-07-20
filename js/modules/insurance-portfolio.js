@@ -1,10 +1,6 @@
 "use strict";
 
 import {
-    clientPlan,
-} from "../state/client-plan.js";
-
-import {
     createUniqueId,
     escapeHtml,
     formatCurrency,
@@ -25,6 +21,19 @@ import {
     POLICY_TYPE_LABELS,
     PREMIUM_FREQUENCY_LABELS,
 } from "../constants/insurance.js";
+
+import {
+    getClientProfile,
+} from "../state/client-plan.js";
+
+import {
+    getAllPolicies,
+    getPolicyById,
+    createPolicy,
+    updatePolicy,
+    removePolicy,
+    clearPolicies,
+} from "../services/policy-service.js";
 
 
 /* ========================================
@@ -68,7 +77,7 @@ export function initializeInsurancePortfolio() {
 ======================================== */
 
 export function resetInsurancePortfolio() {
-    clientPlan.priorities.policies = [];
+    clearPolicies();
 
     draftBenefits = [];
 
@@ -391,12 +400,9 @@ function openAddPolicyModal() {
 }
 
 function openEditPolicyModal(policyId) {
+
     const policy =
-        clientPlan.priorities.policies.find(
-            function (savedPolicy) {
-                return savedPolicy.id === policyId;
-            },
-        );
+        getPolicyById(policyId);
 
     if (!policy) {
         return;
@@ -582,50 +588,9 @@ function savePolicy() {
     }
 
     if (editingPolicyId) {
-        updateExistingPolicy(
-            editingPolicyId,
-            formData,
-        );
-    } else {
-        const policy =
-            createPolicyObject(formData);
-
-        clientPlan.priorities.policies.push(
-            policy,
-        );
-    }
-
-    renderInsurancePortfolio();
-
-    closePolicyModal();
-}
-
-function updateExistingPolicy(
-    policyId,
-    formData,
-) {
-    const policyIndex =
-        clientPlan.priorities.policies
-            .findIndex(
-                function (policy) {
-                    return (
-                        policy.id ===
-                        policyId
-                    );
-                },
-            );
-
-    if (policyIndex === -1) {
-        return;
-    }
-
-    clientPlan.priorities.policies[
-        policyIndex
-    ] = {
-        ...clientPlan.priorities.policies[
-        policyIndex
-        ],
-
+        updatePolicy(
+    editingPolicyId,
+    {
         policyName:
             formData.policyName,
 
@@ -656,7 +621,17 @@ function updateExistingPolicy(
             cloneBenefits(
                 draftBenefits,
             ),
-    };
+    },
+);
+    } else {
+        createPolicy(
+    createPolicyObject(formData),
+);
+    }
+
+    renderInsurancePortfolio();
+
+    closePolicyModal();
 }
 
 function getPolicyFormData() {
@@ -1881,7 +1856,7 @@ function renderPolicies() {
     }
 
     const policies =
-        clientPlan.priorities.policies;
+        getAllPolicies();
 
     elements.policyList.innerHTML = "";
 
@@ -2103,11 +2078,8 @@ function handlePolicyListClick(event) {
 
     if (action === "delete") {
 
-        const policy = clientPlan.priorities.policies.find(
-            function (savedPolicy) {
-                return savedPolicy.id === policyId;
-            },
-        );
+        const policy =
+            getPolicyById(policyId);
 
         const confirmed = window.confirm(
             `Delete "${policy?.policyName || "this policy"}"?`
@@ -2117,22 +2089,23 @@ function handlePolicyListClick(event) {
             return;
         }
 
-        deletePolicy(policyId);
+        handleDeletePolicy(policyId);
         return;
     }
 }
 
-function deletePolicy(policyId) {
-    clientPlan.priorities.policies =
-        clientPlan.priorities.policies
-            .filter(
-                function (policy) {
-                    return (
-                        policy.id !==
-                        policyId
-                    );
-                },
-            );
+function handleDeletePolicy(
+    policyId,
+) {
+
+    const removed =
+        removePolicy(
+            policyId,
+        );
+
+    if (!removed) {
+        return;
+    }
 
     renderInsurancePortfolio();
 }
