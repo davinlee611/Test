@@ -46,10 +46,10 @@
 }
 
 /* ========================================
-   PLANNING SECTION CARD
+   PLANNING CARD
 ======================================== */
 
-.planning-section-card {
+.planning-card {
     padding: 26px;
 
     background: var(--surface-color);
@@ -57,7 +57,7 @@
     border-radius: 18px;
 }
 
-.planning-section-header {
+.planning-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -69,14 +69,14 @@
     border-bottom: 1px solid var(--border-color);
 }
 
-.planning-section-header h3 {
+.planning-card-header h3 {
     margin: 0;
 
     color: var(--text-primary);
     font-size: 20px;
 }
 
-.planning-section-header p {
+.planning-card-header p {
     max-width: 560px;
     margin-top: 6px;
 
@@ -86,15 +86,15 @@
 }
 
 /* ========================================
-   PLANNING ITEM LIST
+   PLANNING CARD LIST
 ======================================== */
 
-.planning-item-list {
+.planning-card-list {
     display: grid;
     gap: 14px;
 }
 
-.planning-item {
+.planning-card-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -107,7 +107,7 @@
     border-radius: 14px;
 }
 
-.planning-item-main {
+.planning-card-content {
     display: flex;
     align-items: center;
     gap: 14px;
@@ -115,7 +115,7 @@
     min-width: 0;
 }
 
-.planning-item-icon {
+.planning-card-icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -129,17 +129,17 @@
     border-radius: var(--radius-lg);
 }
 
-.planning-item-details {
+.planning-card-details {
     min-width: 0;
 }
 
-.planning-item-details h4 {
+.planning-card-details h4 {
     margin: 0 0 5px;
 
     color: var(--text-primary);
 }
 
-.planning-item-details p {
+.planning-card-details p {
     margin: 0;
 
     color: var(--text-secondary);
@@ -148,16 +148,16 @@
 }
 
 /* ========================================
-   PLANNING ITEM ACTIONS
+   PLANNING CARD ACTIONS
 ======================================== */
 
-.planning-item-actions {
+.planning-card-actions {
     display: flex;
     flex-shrink: 0;
     gap: var(--space-2);
 }
 
-.planning-item-button {
+.planning-card-action {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -179,27 +179,27 @@
         box-shadow var(--transition-base);
 }
 
-.planning-item-button i {
+.planning-card-action i {
     color: var(--primary-color);
 }
 
-.planning-item-button:hover {
+.planning-card-action:hover {
     background: var(--surface-muted);
     border-color: var(--border-color);
     box-shadow: none;
     transform: none;
 }
 
-.planning-item-button.delete i {
+.planning-card-action.delete i {
     color: var(--danger-color);
 }
 
-.planning-item-button.delete:hover {
+.planning-card-action.delete:hover {
     background: var(--danger-background);
     border-color: var(--danger-border);
 }
 
-.planning-item-editing {
+.planning-card-editing {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px var(--primary-soft);
 }
@@ -309,12 +309,12 @@
 @media (max-width: 720px) {
 
     .planning-category-section,
-    .planning-section-card {
+        .planning-card {
         padding: var(--space-5);
     }
 
-    .planning-category-heading,
-    .planning-section-header {
+        .planning-category-heading,
+        .planning-card-header {
         flex-direction: column;
     }
 
@@ -322,12 +322,12 @@
         width: 100%;
     }
 
-    .planning-item {
+    .planning-card-item {
         align-items: flex-start;
         flex-direction: column;
     }
 
-    .planning-item-actions {
+    .planning-card-actions {
         align-self: flex-end;
     }
 }
