@@ -657,14 +657,15 @@ function createDeleteButton(property) {
     deleteButton.type = "button";
 
     deleteButton.className =
-        "planning-card-item";
+        "planning-card-action delete";
 
     deleteButton.setAttribute(
         "aria-label",
         `Delete ${property.type}`,
     );
 
-    deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
+    deleteButton.innerHTML =
+        '<i class="fa-solid fa-trash"></i>';
 
     deleteButton.addEventListener(
         "click",
