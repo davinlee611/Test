@@ -2,9 +2,11 @@
 
 import {
     getAllGoals,
-    addGoal,
+    getGoalById,
+    createGoal,
     updateGoal,
-    deleteGoal,
+    removeGoal,
+    clearGoals,
 } from "../services/goal-service.js";
 
 import {
@@ -16,7 +18,6 @@ import {
 } from "../events/events.js";
 
 import {
-    createUniqueId,
     formatCurrency,
     getWholeNumber,
 } from "../utils/client-utils.js";
@@ -131,7 +132,7 @@ export function initializeGoals() {
 ======================================== */
 
 export function resetGoals() {
-    getAllGoals() = [];
+    clearGoals();
 
     closeGoalModal();
     renderGoals();
@@ -233,13 +234,7 @@ function openAddGoalModal() {
 
 function openEditGoalModal(goalId) {
     const goal =
-        clientPlan.priorities.goals.find(
-            function (savedGoal) {
-                return (
-                    savedGoal.id === goalId
-                );
-            },
-        );
+        getGoalById(goalId);
 
     if (!goal || !goalModal) {
         return;
@@ -356,15 +351,17 @@ function handleGoalSubmit(event) {
     }
 
     if (editingGoalId) {
-        updateGoal({
-            goalId: editingGoalId,
-            goalType,
-            goalName,
-            targetAmount,
-            targetDate,
-        });
+        updateGoal(
+            editingGoalId,
+            {
+                goalType,
+                goalName,
+                targetAmount,
+                targetDate,
+            },
+        );
     } else {
-        addGoal({
+        createGoal({
             goalType,
             goalName,
             targetAmount,
@@ -446,14 +443,7 @@ function validateGoal({
     }
 
     const existingGoal =
-        clientPlan.priorities.goals.find(
-            function (goal) {
-                return (
-                    goal.id ===
-                    editingGoalId
-                );
-            },
-        );
+        getGoalById(editingGoalId);
 
     const existingTargetDate =
         existingGoal
@@ -500,59 +490,10 @@ function showGoalFormMessage(message) {
 
 
 /* ========================================
-   GOAL DATA
+   GOAL DELETION
 ======================================== */
 
-function addGoal({
-    goalType,
-    goalName,
-    targetAmount,
-    targetDate,
-}) {
-    addGoal.push({
-        id: createUniqueId(),
-        type: goalType,
-        name: goalName,
-        targetAmount,
-        targetDate,
-    });
-}
-
-
-function updateGoal({
-    goalId,
-    goalType,
-    goalName,
-    targetAmount,
-    targetDate,
-}) {
-    const goal =
-        clientPlan.priorities.goals.find(
-            function (savedGoal) {
-                return (
-                    savedGoal.id === goalId
-                );
-            },
-        );
-
-    if (!goal) {
-        return;
-    }
-
-    goal.type = goalType;
-    goal.name = goalName;
-    goal.targetAmount = targetAmount;
-    goal.targetDate = targetDate;
-
-    /*
-     * Remove the old property after converting
-     * an older goal that used targetYear.
-     */
-    delete goal.targetYear;
-}
-
-
-function deleteGoal(goalId) {
+function handleDeleteGoal(goalId) {
     const shouldDelete =
         window.confirm(
             "Delete this goal?",
@@ -562,12 +503,12 @@ function deleteGoal(goalId) {
         return;
     }
 
-    getAllGoals() =
-        clientPlan.priorities.goals.filter(
-            function (goal) {
-                return goal.id !== goalId;
-            },
-        );
+    const wasRemoved =
+        removeGoal(goalId);
+
+    if (!wasRemoved) {
+        return;
+    }
 
     renderGoals();
     emitGoalsChanged();
@@ -612,19 +553,19 @@ function createGoalItem(goal) {
         document.createElement("div");
 
     goalItem.className =
-        "planning-item";
+        "planning-card-item";
 
     const goalMain =
         document.createElement("div");
 
     goalMain.className =
-        "planning-item-main";
+        "planning-card-content";
 
     const goalIcon =
         document.createElement("div");
 
     goalIcon.className =
-        "planning-item-icon";
+        "planning-card-icon";
 
     goalIcon.innerHTML =
         getGoalIcon(goal.type);
@@ -633,7 +574,7 @@ function createGoalItem(goal) {
         document.createElement("div");
 
     goalDetails.className =
-        "planning-item-details";
+        "planning-card-details";
 
     const goalTitle =
         document.createElement("h4");
@@ -669,7 +610,7 @@ function createGoalItem(goal) {
         document.createElement("div");
 
     goalActions.className =
-        "planning-item-actions";
+        "planning-card-actions";
 
     const editButton =
         createEditButton(goal);
@@ -698,7 +639,7 @@ function createEditButton(goal) {
     editButton.type = "button";
 
     editButton.className =
-        "planning-item-button";
+        "planning-card-action";
 
     editButton.setAttribute(
         "aria-label",
@@ -726,7 +667,7 @@ function createDeleteButton(goal) {
     deleteButton.type = "button";
 
     deleteButton.className =
-    "planning-item-button delete";
+        "planning-card-action delete";
 
     deleteButton.setAttribute(
         "aria-label",
@@ -739,7 +680,7 @@ function createDeleteButton(goal) {
     deleteButton.addEventListener(
         "click",
         function () {
-            deleteGoal(goal.id);
+            handleDeleteGoal(goal.id);
         },
     );
 
@@ -933,8 +874,7 @@ function emitGoalsChanged() {
         EVENTS.GOALS_CHANGED,
         {
             goals: [
-                ...clientPlan.priorities
-                    .goals,
+                ...getAllGoals(),
             ],
         },
     );
