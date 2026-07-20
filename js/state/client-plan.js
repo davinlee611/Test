@@ -171,9 +171,10 @@ export function updateAssets(updates) {
 }
 
 export function setGoals(goals) {
-    clientPlan.priorities.goals = [
-        ...goals,
-    ];
+    clientPlan.priorities.goals =
+        Array.isArray(goals)
+            ? [...goals]
+            : [];
 
     touchClientPlan();
 
@@ -181,9 +182,10 @@ export function setGoals(goals) {
 }
 
 export function setProperties(properties) {
-    clientPlan.priorities.assets.properties = [
-        ...properties,
-    ];
+    clientPlan.priorities.assets.properties =
+        Array.isArray(properties)
+            ? [...properties]
+            : [];
 
     touchClientPlan();
 
@@ -191,9 +193,10 @@ export function setProperties(properties) {
 }
 
 export function setLiabilities(liabilities) {
-    clientPlan.priorities.liabilities = [
-        ...liabilities,
-    ];
+    clientPlan.priorities.liabilities =
+        Array.isArray(liabilities)
+            ? [...liabilities]
+            : [];
 
     touchClientPlan();
 
@@ -201,9 +204,10 @@ export function setLiabilities(liabilities) {
 }
 
 export function setPolicies(policies) {
-    clientPlan.priorities.policies = [
-        ...policies,
-    ];
+    clientPlan.priorities.policies =
+        Array.isArray(policies)
+            ? [...policies]
+            : [];
 
     touchClientPlan();
 

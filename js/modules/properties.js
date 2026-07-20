@@ -1,10 +1,6 @@
 "use strict";
 
 import {
-    clientPlan,
-} from "../state/client-plan.js";
-
-import {
     emit,
 } from "../events/event-bus.js";
 
@@ -13,10 +9,18 @@ import {
 } from "../events/events.js";
 
 import {
-    createUniqueId,
     formatCurrency,
     getWholeNumber,
 } from "../utils/client-utils.js";
+
+import {
+    getAllProperties,
+    getPropertyById,
+    createProperty,
+    updateProperty,
+    removeProperty,
+    clearProperties,
+} from "../services/property-service.js";
 
 
 /* ========================================
@@ -112,6 +116,7 @@ let moduleInitialized = false;
 
 export function initializeProperties() {
     if (moduleInitialized) {
+        renderProperties();
         return;
     }
 
@@ -127,15 +132,7 @@ export function initializeProperties() {
 ======================================== */
 
 export function resetProperties() {
-    /*
-     * resetClientPlan() normally clears this
-     * before this function is called.
-     *
-     * Setting it again keeps this module safe
-     * when reset independently.
-     */
-    clientPlan.priorities.assets.properties =
-        [];
+    clearProperties();
 
     closePropertyModal();
     renderProperties();
@@ -242,14 +239,9 @@ function openAddPropertyModal() {
 
 function openEditPropertyModal(propertyId) {
     const property =
-        clientPlan.priorities.assets
-            .properties
-            .find(function (savedProperty) {
-                return (
-                    savedProperty.id ===
-                    propertyId
-                );
-            });
+    getPropertyById(
+        propertyId,
+    );
 
     if (!property || !propertyModal) {
         return;
@@ -356,19 +348,21 @@ function handlePropertySubmit(event) {
     }
 
     if (editingPropertyId) {
-        updateProperty(
-            editingPropertyId,
+    updateProperty(
+        editingPropertyId,
+        {
             propertyType,
             marketValue,
             ownershipPercentage,
-        );
-    } else {
-        addProperty(
-            propertyType,
-            marketValue,
-            ownershipPercentage,
-        );
-    }
+        },
+    );
+} else {
+    createProperty({
+        propertyType,
+        marketValue,
+        ownershipPercentage,
+    });
+}
 
     renderProperties();
     closePropertyModal();
@@ -428,52 +422,12 @@ function showPropertyFormMessage(message) {
 
 
 /* ========================================
-   PROPERTY DATA
+   PROPERTY DELETION
 ======================================== */
 
-function addProperty(
-    propertyType,
-    marketValue,
-    ownershipPercentage,
-) {
-    clientPlan.priorities.assets.properties
-        .push({
-            id: createUniqueId(),
-            type: propertyType,
-            marketValue,
-            ownershipPercentage,
-        });
-}
-
-
-function updateProperty(
+function handleDeleteProperty(
     propertyId,
-    propertyType,
-    marketValue,
-    ownershipPercentage,
 ) {
-    const property =
-        clientPlan.priorities.assets
-            .properties
-            .find(function (savedProperty) {
-                return (
-                    savedProperty.id ===
-                    propertyId
-                );
-            });
-
-    if (!property) {
-        return;
-    }
-
-    property.type = propertyType;
-    property.marketValue = marketValue;
-    property.ownershipPercentage =
-        ownershipPercentage;
-}
-
-
-function deleteProperty(propertyId) {
     const shouldDelete =
         window.confirm(
             "Delete this property?",
@@ -483,15 +437,14 @@ function deleteProperty(propertyId) {
         return;
     }
 
-    clientPlan.priorities.assets.properties =
-        clientPlan.priorities.assets
-            .properties
-            .filter(function (property) {
-                return (
-                    property.id !==
-                    propertyId
-                );
-            });
+    const wasRemoved =
+        removeProperty(
+            propertyId,
+        );
+
+    if (!wasRemoved) {
+        return;
+    }
 
     renderProperties();
     emitPropertyChanged();
@@ -508,8 +461,7 @@ export function renderProperties() {
     }
 
     const properties =
-        clientPlan.priorities.assets
-            .properties;
+        getAllProperties();
 
     propertyList.innerHTML = "";
 
@@ -670,7 +622,9 @@ function createDeleteButton(property) {
     deleteButton.addEventListener(
         "click",
         function () {
-            deleteProperty(property.id);
+            handleDeleteProperty(
+                property.id,
+            );
         },
     );
 
@@ -688,8 +642,7 @@ function updatePropertyTotal() {
     }
 
     const totalPropertyValue =
-        clientPlan.priorities.assets
-            .properties
+        getAllProperties()
             .reduce(
                 function (
                     total,
@@ -731,9 +684,12 @@ function calculateClientPropertyValue(
 ======================================== */
 
 function emitPropertyChanged() {
-    emit(EVENTS.PROPERTY_CHANGED, {
-        properties:
-            clientPlan.priorities.assets
-                .properties,
-    });
+    emit(
+        EVENTS.PROPERTY_CHANGED,
+        {
+            properties: [
+                ...getAllProperties(),
+            ],
+        },
+    );
 }
