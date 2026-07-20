@@ -689,7 +689,6 @@ function createEditButton(liability) {
     return editButton;
 }
 
-
 function createDeleteButton(liability) {
     const deleteButton =
         document.createElement("button");
@@ -697,7 +696,7 @@ function createDeleteButton(liability) {
     deleteButton.type = "button";
 
     deleteButton.className =
-        "planning-card-action";
+        "planning-card-action delete";
 
     deleteButton.setAttribute(
         "aria-label",
@@ -718,7 +717,6 @@ function createDeleteButton(liability) {
 
     return deleteButton;
 }
-
 
 function renderTotalLiabilities() {
     if (!totalLiabilitiesValueElement) {
