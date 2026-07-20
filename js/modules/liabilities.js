@@ -1,10 +1,6 @@
 "use strict";
 
 import {
-    clientPlan,
-} from "../state/client-plan.js";
-
-import {
     emit,
 } from "../events/event-bus.js";
 
@@ -13,10 +9,18 @@ import {
 } from "../events/events.js";
 
 import {
-    createUniqueId,
     formatCurrency,
     getWholeNumber,
 } from "../utils/client-utils.js";
+
+import {
+    getAllLiabilities,
+    getLiabilityById,
+    createLiability,
+    updateLiability,
+    removeLiability,
+    clearLiabilities,
+} from "../services/liability-service.js";
 
 
 /* ========================================
@@ -138,7 +142,7 @@ export function initializeLiabilities() {
 ======================================== */
 
 export function resetLiabilities() {
-    clientPlan.priorities.liabilities = [];
+    clearLiabilities();
 
     closeLiabilityModal();
     renderLiabilities();
@@ -230,13 +234,9 @@ function openEditLiabilityModal(
     liabilityId,
 ) {
     const liability =
-        clientPlan.priorities.liabilities
-            .find(function (savedLiability) {
-                return (
-                    savedLiability.id ===
-                    liabilityId
-                );
-            });
+    getLiabilityById(
+        liabilityId,
+    );
 
     if (!liability || !liabilityModal) {
         return;
@@ -372,24 +372,25 @@ function handleLiabilitySubmit(event) {
     }
 
     if (editingLiabilityId) {
-        updateLiability({
-            liabilityId:
-                editingLiabilityId,
+    updateLiability(
+        editingLiabilityId,
+        {
             liabilityType,
             liabilityName,
             outstandingBalance,
             monthlyRepayment,
             interestRate,
-        });
-    } else {
-        addLiability({
-            liabilityType,
-            liabilityName,
-            outstandingBalance,
-            monthlyRepayment,
-            interestRate,
-        });
-    }
+        },
+    );
+} else {
+    createLiability({
+        liabilityType,
+        liabilityName,
+        outstandingBalance,
+        monthlyRepayment,
+        interestRate,
+    });
+}
 
     renderLiabilities();
     closeLiabilityModal();
@@ -470,62 +471,12 @@ function showLiabilityFormMessage(message) {
 
 
 /* ========================================
-   LIABILITY DATA
+   LIABILITY DELETION
 ======================================== */
 
-function addLiability({
-    liabilityType,
-    liabilityName,
-    outstandingBalance,
-    monthlyRepayment,
-    interestRate,
-}) {
-    clientPlan.priorities.liabilities.push({
-        id: createUniqueId(),
-        type: liabilityType,
-        name: liabilityName,
-        outstandingBalance,
-        monthlyRepayment,
-        interestRate,
-    });
-}
-
-
-function updateLiability({
+function handleDeleteLiability(
     liabilityId,
-    liabilityType,
-    liabilityName,
-    outstandingBalance,
-    monthlyRepayment,
-    interestRate,
-}) {
-    const liability =
-        clientPlan.priorities.liabilities
-            .find(function (
-                savedLiability,
-            ) {
-                return (
-                    savedLiability.id ===
-                    liabilityId
-                );
-            });
-
-    if (!liability) {
-        return;
-    }
-
-    liability.type = liabilityType;
-    liability.name = liabilityName;
-    liability.outstandingBalance =
-        outstandingBalance;
-    liability.monthlyRepayment =
-        monthlyRepayment;
-    liability.interestRate =
-        interestRate;
-}
-
-
-function deleteLiability(liabilityId) {
+) {
     const shouldDelete =
         window.confirm(
             "Delete this liability?",
@@ -535,14 +486,14 @@ function deleteLiability(liabilityId) {
         return;
     }
 
-    clientPlan.priorities.liabilities =
-        clientPlan.priorities.liabilities
-            .filter(function (liability) {
-                return (
-                    liability.id !==
-                    liabilityId
-                );
-            });
+    const wasRemoved =
+        removeLiability(
+            liabilityId,
+        );
+
+    if (!wasRemoved) {
+        return;
+    }
 
     renderLiabilities();
     emitLiabilitiesChanged();
@@ -559,7 +510,7 @@ export function renderLiabilities() {
     }
 
     const liabilities =
-        clientPlan.priorities.liabilities;
+        getAllLiabilities();
 
     liabilitiesList.innerHTML = "";
 
@@ -709,7 +660,7 @@ function createDeleteButton(liability) {
     deleteButton.addEventListener(
         "click",
         function () {
-            deleteLiability(
+            handleDeleteLiability(
                 liability.id,
             );
         },
@@ -724,19 +675,19 @@ function renderTotalLiabilities() {
     }
 
     const total =
-        clientPlan.priorities.liabilities
-            .reduce(function (
-                runningTotal,
-                liability,
-            ) {
-                return (
-                    runningTotal +
-                    getWholeNumber(
-                        liability
-                            .outstandingBalance,
-                    )
-                );
-            }, 0);
+    getAllLiabilities()
+        .reduce(function (
+            runningTotal,
+            liability,
+        ) {
+            return (
+                runningTotal +
+                getWholeNumber(
+                    liability
+                        .outstandingBalance,
+                )
+            );
+        }, 0);
 
     totalLiabilitiesValueElement
         .textContent =
@@ -834,8 +785,7 @@ function emitLiabilitiesChanged() {
         EVENTS.LIABILITIES_CHANGED,
         {
             liabilities: [
-                ...clientPlan.priorities
-                    .liabilities,
+                ...getAllLiabilities(),
             ],
         },
     );
