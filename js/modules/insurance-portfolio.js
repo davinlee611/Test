@@ -1170,42 +1170,6 @@ function getBenefitAmountDescription(benefit) {
   }
 }
 
-function createBenefitBadge(benefit) {
-  if (benefit.type === "critical_illness") {
-    if (benefit.payoutType === "accelerated") {
-      return `
-                <span class="benefit-badge badge-accelerated">
-                    Accelerated
-                </span>
-            `;
-    }
-
-    if (benefit.payoutType === "additional") {
-      return `
-                <span class="benefit-badge badge-additional">
-                    Additional
-                </span>
-            `;
-    }
-
-    return `
-            <span class="benefit-badge badge-standalone">
-                Standalone
-            </span>
-        `;
-  }
-
-  if (benefit.type === "early_critical_illness") {
-    return `
-            <span class="benefit-badge badge-eci">
-                Early CI
-            </span>
-        `;
-  }
-
-  return "";
-}
-
 function createBenefitEditButton(benefit) {
   return createPlanningCardButton({
     iconClass: "fa-solid fa-pen",
@@ -1234,6 +1198,34 @@ function createBenefitDeleteButton(benefit) {
       deleteDraftBenefit(benefit.id);
     },
   });
+}
+
+function getBenefitSummary(benefit) {
+  const parts = [getBenefitAmountDescription(benefit)];
+
+  if (benefit.lifeAssured) {
+    parts.push(benefit.lifeAssured);
+  }
+
+  return parts.join(" · ");
+}
+
+function createBenefitMetadata(benefit) {
+  const metadata = document.createElement("div");
+
+  metadata.className = "benefit-item-meta";
+
+  appendMetadataItem(metadata, BENEFIT_LABELS[benefit.type] ?? "Benefit");
+
+  if (benefit.payoutType) {
+    appendMetadataItem(metadata, PAYOUT_TYPE_LABELS[benefit.payoutType]);
+  }
+
+  if (benefit.notes) {
+    appendMetadataItem(metadata, benefit.notes);
+  }
+
+  return metadata;
 }
 
 /* ========================================
