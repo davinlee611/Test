@@ -15,6 +15,15 @@ import {
   clearLiabilities,
 } from "../services/liability-service.js";
 
+import {
+  createPlanningCard,
+  createPlanningCardIcon,
+  createPlanningCardDetails,
+  createPlanningCardActions,
+  createPlanningCardButton,
+  renderPlanningEmptyState,
+} from "../components/planning-card.js";
+
 /* ========================================
    DOM REFERENCES
 ======================================== */
@@ -369,96 +378,81 @@ export function renderLiabilities() {
 
   liabilitiesList.innerHTML = "";
 
+  if (liabilities.length === 0) {
+    renderPlanningEmptyState(
+      liabilitiesList,
+      "No liabilities added yet.",
+      emptyLiabilityMessage,
+    );
+
+    renderTotalLiabilities();
+
+    return;
+  }
+
   liabilities.forEach(function (liability) {
     liabilitiesList.appendChild(createLiabilityItem(liability));
   });
-
-  if (liabilities.length === 0 && emptyLiabilityMessage) {
-    liabilitiesList.appendChild(emptyLiabilityMessage);
-  }
 
   renderTotalLiabilities();
 }
 
 function createLiabilityItem(liability) {
-  const liabilityItem = document.createElement("div");
+  return createPlanningCard({
+    itemClass: "liability-item",
 
-  liabilityItem.className = "planning-card-item";
+    icon: createLiabilityIcon(liability),
 
-  const liabilityMain = document.createElement("div");
+    details: createLiabilityDetails(liability),
 
-  liabilityMain.className = "planning-card-content";
+    actions: createLiabilityActions(liability),
+  });
+}
 
-  const liabilityIcon = document.createElement("div");
+function createLiabilityIcon(liability) {
+  return createPlanningCardIcon(getLiabilityIconClass(liability.type));
+}
 
-  liabilityIcon.className = "planning-card-icon";
+function createLiabilityDetails(liability) {
+  return createPlanningCardDetails({
+    title: liability.name,
 
-  liabilityIcon.innerHTML = getLiabilityIcon(liability.type);
+    description: createLiabilityDescription(liability),
+  });
+}
 
-  const liabilityDetails = document.createElement("div");
+function createLiabilityActions(liability) {
+  const actions = createPlanningCardActions();
 
-  liabilityDetails.className = "planning-card-details";
+  actions.append(createEditButton(liability), createDeleteButton(liability));
 
-  const liabilityTitle = document.createElement("h4");
-
-  liabilityTitle.textContent = liability.name;
-
-  const liabilityDescription = document.createElement("p");
-
-  liabilityDescription.textContent = createLiabilityDescription(liability);
-
-  liabilityDetails.append(liabilityTitle, liabilityDescription);
-
-  liabilityMain.append(liabilityIcon, liabilityDetails);
-
-  const liabilityActions = document.createElement("div");
-
-  liabilityActions.className = "planning-card-actions";
-
-  liabilityActions.append(
-    createEditButton(liability),
-    createDeleteButton(liability),
-  );
-
-  liabilityItem.append(liabilityMain, liabilityActions);
-
-  return liabilityItem;
+  return actions;
 }
 
 function createEditButton(liability) {
-  const editButton = document.createElement("button");
+  return createPlanningCardButton({
+    iconClass: "fa-solid fa-pen",
 
-  editButton.type = "button";
+    label: `Edit ${liability.name}`,
 
-  editButton.className = "planning-card-action";
-
-  editButton.setAttribute("aria-label", `Edit ${liability.name}`);
-
-  editButton.innerHTML = '<i class="fa-solid fa-pen"></i>';
-
-  editButton.addEventListener("click", function () {
-    openEditLiabilityModal(liability.id);
+    onClick() {
+      openEditLiabilityModal(liability.id);
+    },
   });
-
-  return editButton;
 }
 
 function createDeleteButton(liability) {
-  const deleteButton = document.createElement("button");
+  return createPlanningCardButton({
+    iconClass: "fa-solid fa-trash",
 
-  deleteButton.type = "button";
+    variant: "delete",
 
-  deleteButton.className = "planning-card-action delete";
+    label: `Delete ${liability.name}`,
 
-  deleteButton.setAttribute("aria-label", `Delete ${liability.name}`);
-
-  deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
-
-  deleteButton.addEventListener("click", function () {
-    handleDeleteLiability(liability.id);
+    onClick() {
+      handleDeleteLiability(liability.id);
+    },
   });
-
-  return deleteButton;
 }
 
 function renderTotalLiabilities() {
@@ -519,14 +513,7 @@ function getLiabilityIcon(type) {
     other: "fa-solid fa-file-invoice-dollar",
   };
 
-  const iconClass = icons[type] || icons.other;
-
-  return `
-        <i
-            class="${iconClass}"
-            aria-hidden="true"
-        ></i>
-    `;
+  return icons[type] || icons.other;
 }
 
 /* ========================================
