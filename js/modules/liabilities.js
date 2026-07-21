@@ -502,7 +502,7 @@ function getLiabilityTypeLabel(type) {
   return labels[type] || "Liability";
 }
 
-function getLiabilityIcon(type) {
+function getLiabilityIconClass(type) {
   const icons = {
     mortgage: "fa-solid fa-house",
     car_loan: "fa-solid fa-car",
