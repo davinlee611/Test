@@ -392,7 +392,7 @@ function updateIncomeSummaryDisplay(summary) {
 
   if (employeeCpfContributionNote) {
     employeeCpfContributionNote.textContent = summary.cpfApplies
-      ? "Based on the Ordinary Wage Ceiling of $8,000"
+      ? `Employee contribution: ${formatPercentage(summary.employeeCpfRate)} (Ordinary Wage Ceiling: ${formatCurrency(CPF_ORDINARY_WAGE_CEILING)}/month)`
       : getCpfSummaryNote(employmentStatus, age, summary);
   }
 

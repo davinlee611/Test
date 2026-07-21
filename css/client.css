@@ -409,6 +409,13 @@
   line-height: 1.5;
 }
 
+.income-summary-period {
+    margin-left: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
 .income-summary-value {
   flex-shrink: 0;
   color: var(--text-primary);
