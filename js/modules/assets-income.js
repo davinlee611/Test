@@ -356,25 +356,25 @@ function updateIncomeSummaryDisplay(summary) {
 
   const age = getClientAge();
 
-  setIncomeSummaryValue({
+  setAmountDisplay({
     element: employeeCpfContributionElement,
     value: summary.monthlyEmployeeCpf,
     deduction: true,
     period: "per month",
   });
 
-  setIncomeSummaryValue({
+  setAmountDisplay({
     element: monthlyTakeHomeIncomeElement,
     value: summary.monthlyTakeHomeIncome,
     period: "per month",
   });
 
-  setIncomeSummaryValue({
+  setAmountDisplay({
     element: annualEmploymentIncomeElement,
     value: summary.annualEmploymentIncome,
   });
 
-  setIncomeSummaryValue({
+  setAmountDisplay({
     element: annualTakeHomeIncomeElement,
     value: summary.annualTakeHomeIncome,
   });
@@ -407,21 +407,27 @@ function updateIncomeSummaryDisplay(summary) {
   }
 
   if (ordinaryWageCeilingElement) {
-    ordinaryWageCeilingElement.textContent = formatCurrency(
-      CPF_ORDINARY_WAGE_CEILING,
-    );
+    setCpfDetailValue({
+      element: ordinaryWageCeilingElement,
+      value: CPF_ORDINARY_WAGE_CEILING,
+      period: "per month",
+    });
   }
 
   if (monthlyWageSubjectToCpfElement) {
-    monthlyWageSubjectToCpfElement.textContent = formatCurrency(
-      summary.monthlyCpfOrdinaryWage,
-    );
+    setCpfDetailValue({
+      element: monthlyWageSubjectToCpfElement,
+      value: summary.monthlyCpfOrdinaryWage,
+      period: "per month",
+    });
   }
 
   if (monthlyIncomeNotSubjectToCpfElement) {
-    monthlyIncomeNotSubjectToCpfElement.textContent = formatCurrency(
-      summary.monthlyIncomeNotSubjectToCpf,
-    );
+    setCpfDetailValue({
+      element: monthlyIncomeNotSubjectToCpfElement,
+      value: summary.monthlyIncomeNotSubjectToCpf,
+      period: "per month",
+    });
   }
 
   if (additionalWageCeilingElement) {
@@ -540,7 +546,7 @@ function updateCpfFields() {
    INTERNAL HELPERS
 ======================================== */
 
-function setIncomeSummaryValue({
+function setAmountDisplay({
   element,
   value,
   deduction = false,
@@ -576,6 +582,27 @@ function setInputValue(inputElement, value) {
   }
 
   inputElement.value = Number(value) > 0 ? String(value) : "";
+}
+
+function setCpfDetailValue({ element, value, period = "" }) {
+  if (!element) {
+    return;
+  }
+
+  element.replaceChildren();
+
+  element.appendChild(document.createTextNode(formatCurrency(value)));
+
+  if (!period) {
+    return;
+  }
+
+  const periodElement = document.createElement("span");
+
+  periodElement.className = "income-summary-period";
+  periodElement.textContent = period;
+
+  element.appendChild(periodElement);
 }
 
 /* ========================================
