@@ -3,25 +3,24 @@
 ======================================== */
 
 body {
-    padding: var(--space-7);
+  padding: var(--space-7);
 }
 
 .client-workspace {
-    width: 100%;
-    max-width: var(--workspace-max-width);
-    margin: 0 auto;
+  width: 100%;
+  max-width: var(--workspace-max-width);
+  margin: 0 auto;
 }
 
 .workspace-layout {
-    display: grid;
-    grid-template-columns:
-        var(--sidebar-width) minmax(0, 1fr);
-    min-height: 650px;
-    overflow: hidden;
-    background: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-lg);
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  min-height: 650px;
+  overflow: hidden;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
 }
 
 /* ========================================
@@ -29,30 +28,30 @@ body {
 ======================================== */
 
 .workspace-content {
-    min-width: 0;
-    padding: 38px;
+  min-width: 0;
+  padding: 38px;
 }
 
 .workspace-section {
-    display: none;
+  display: none;
 }
 
 .workspace-section.active {
-    display: block;
+  display: block;
 }
 
 .section-header {
-    margin-bottom: var(--space-7);
+  margin-bottom: var(--space-7);
 }
 
 .section-header h2 {
-    color: var(--text-primary);
-    font-size: 26px;
+  color: var(--text-primary);
+  font-size: 26px;
 }
 
 .section-header p:not(.section-label) {
-    max-width: 650px;
-    margin-top: var(--space-2);
-    color: var(--text-secondary);
-    font-size: var(--font-size-md);
+  max-width: 650px;
+  margin-top: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--font-size-md);
 }
