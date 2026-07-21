@@ -1,40 +1,37 @@
 "use strict";
 
 import {
-    createUniqueId,
-    escapeHtml,
-    formatCurrency,
-    getWholeNumber,
+  createUniqueId,
+  escapeHtml,
+  formatCurrency,
+  getWholeNumber,
 } from "../utils/client-utils.js";
 
 import {
-    openModal,
-    closeModal,
-    closeModalOnOverlayClick,
-    closeModalOnEscape,
+  openModal,
+  closeModal,
+  closeModalOnOverlayClick,
+  closeModalOnEscape,
 } from "../utils/modal.js";
 
 import {
-    BENEFIT_LABELS,
-    PAYOUT_TYPE_LABELS,
-    POLICY_STATUS_LABELS,
-    POLICY_TYPE_LABELS,
-    PREMIUM_FREQUENCY_LABELS,
+  BENEFIT_LABELS,
+  PAYOUT_TYPE_LABELS,
+  POLICY_STATUS_LABELS,
+  POLICY_TYPE_LABELS,
+  PREMIUM_FREQUENCY_LABELS,
 } from "../constants/insurance.js";
 
-import {
-    getClientProfile,
-} from "../state/client-plan.js";
+import { getClientProfile } from "../state/client-plan.js";
 
 import {
-    getAllPolicies,
-    getPolicyById,
-    createPolicy,
-    updatePolicy,
-    removePolicy,
-    clearPolicies,
+  getAllPolicies,
+  getPolicyById,
+  createPolicy,
+  updatePolicy,
+  removePolicy,
+  clearPolicies,
 } from "../services/policy-service.js";
-
 
 /* ========================================
    MODULE STATE
@@ -50,7 +47,6 @@ let editingBenefitId = null;
 
 let editingPolicyId = null;
 
-
 /* ========================================
    BENEFIT CONFIGURATION
 ======================================== */
@@ -60,510 +56,301 @@ let editingPolicyId = null;
 ======================================== */
 
 export function initializeInsurancePortfolio() {
-    cacheInsuranceElements();
+  cacheInsuranceElements();
 
-    if (!moduleInitialized) {
-        bindInsuranceEvents();
+  if (!moduleInitialized) {
+    bindInsuranceEvents();
 
-        moduleInitialized = true;
-    }
+    moduleInitialized = true;
+  }
 
-    renderInsurancePortfolio();
+  renderInsurancePortfolio();
 }
-
 
 /* ========================================
    RESET
 ======================================== */
 
 export function resetInsurancePortfolio() {
-    clearPolicies();
+  clearPolicies();
 
-    draftBenefits = [];
+  draftBenefits = [];
 
-    editingBenefitId = null;
-    editingPolicyId = null;
+  editingBenefitId = null;
+  editingPolicyId = null;
 
-    closePolicyModal();
+  closePolicyModal();
 
-    renderInsurancePortfolio();
+  renderInsurancePortfolio();
 }
-
 
 /* ========================================
    CACHE ELEMENTS
 ======================================== */
 
 function cacheInsuranceElements() {
-    elements = {
-        policyList:
-            document.getElementById(
-                "policyList",
-            ),
+  elements = {
+    policyList: document.getElementById("policyList"),
 
-        emptyPolicyMessage:
-            document.getElementById(
-                "emptyPolicyMessage",
-            ),
+    emptyPolicyMessage: document.getElementById("emptyPolicyMessage"),
 
-        addPolicyButton:
-            document.getElementById(
-                "addPolicyButton",
-            ),
+    addPolicyButton: document.getElementById("addPolicyButton"),
 
-        policyModal:
-            document.getElementById(
-                "policyModal",
-            ),
+    policyModal: document.getElementById("policyModal"),
 
-        policyModalTitle:
-            document.getElementById(
-                "policyModalTitle",
-            ),
+    policyModalTitle: document.getElementById("policyModalTitle"),
 
-        closePolicyModalButton:
-            document.getElementById(
-                "closePolicyModalButton",
-            ),
+    closePolicyModalButton: document.getElementById("closePolicyModalButton"),
 
-        cancelPolicyButton:
-            document.getElementById(
-                "cancelPolicyButton",
-            ),
+    cancelPolicyButton: document.getElementById("cancelPolicyButton"),
 
-        savePolicyButton:
-            document.getElementById(
-                "savePolicyButton",
-            ),
+    savePolicyButton: document.getElementById("savePolicyButton"),
 
-        policyNameInput:
-            document.getElementById(
-                "policyNameInput",
-            ),
+    policyNameInput: document.getElementById("policyNameInput"),
 
-        policyTypeSelect:
-            document.getElementById(
-                "policyTypeSelect",
-            ),
+    policyTypeSelect: document.getElementById("policyTypeSelect"),
 
-        insurerSelect:
-            document.getElementById(
-                "insurerSelect",
-            ),
+    insurerSelect: document.getElementById("insurerSelect"),
 
-        otherInsurerGroup:
-            document.getElementById(
-                "otherInsurerGroup",
-            ),
+    otherInsurerGroup: document.getElementById("otherInsurerGroup"),
 
-        otherInsurerInput:
-            document.getElementById(
-                "otherInsurerInput",
-            ),
+    otherInsurerInput: document.getElementById("otherInsurerInput"),
 
-        policyNumberInput:
-            document.getElementById(
-                "policyNumberInput",
-            ),
+    policyNumberInput: document.getElementById("policyNumberInput"),
 
-        policyOwnerInput:
-            document.getElementById(
-                "policyOwnerInput",
-            ),
+    policyOwnerInput: document.getElementById("policyOwnerInput"),
 
-        policyStatusSelect:
-            document.getElementById(
-                "policyStatusSelect",
-            ),
+    policyStatusSelect: document.getElementById("policyStatusSelect"),
 
-        premiumInput:
-            document.getElementById(
-                "premiumInput",
-            ),
+    premiumInput: document.getElementById("premiumInput"),
 
-        premiumFrequencySelect:
-            document.getElementById(
-                "premiumFrequencySelect",
-            ),
+    premiumFrequencySelect: document.getElementById("premiumFrequencySelect"),
 
-        policyFormMessage:
-            document.getElementById(
-                "policyFormMessage",
-            ),
+    policyFormMessage: document.getElementById("policyFormMessage"),
 
-        addBenefitButton:
-            document.getElementById(
-                "addBenefitButton",
-            ),
+    addBenefitButton: document.getElementById("addBenefitButton"),
 
-        benefitEditor:
-            document.getElementById(
-                "benefitEditor",
-            ),
+    benefitEditor: document.getElementById("benefitEditor"),
 
-        benefitEditorTitle:
-            document.getElementById(
-                "benefitEditorTitle",
-            ),
+    benefitEditorTitle: document.getElementById("benefitEditorTitle"),
 
-        benefitPayoutInfo:
-            document.getElementById(
-                "benefitPayoutInfo",
-            ),
+    benefitPayoutInfo: document.getElementById("benefitPayoutInfo"),
 
-        closeBenefitEditorButton:
-            document.getElementById(
-                "closeBenefitEditorButton",
-            ),
+    closeBenefitEditorButton: document.getElementById(
+      "closeBenefitEditorButton",
+    ),
 
-        benefitTypeSelect:
-            document.getElementById(
-                "benefitTypeSelect",
-            ),
+    benefitTypeSelect: document.getElementById("benefitTypeSelect"),
 
-        benefitLifeAssuredInput:
-            document.getElementById(
-                "benefitLifeAssuredInput",
-            ),
+    benefitLifeAssuredInput: document.getElementById("benefitLifeAssuredInput"),
 
-        benefitAmountGroup:
-            document.getElementById(
-                "benefitAmountGroup",
-            ),
+    benefitAmountGroup: document.getElementById("benefitAmountGroup"),
 
-        benefitAmountLabel:
-            document.getElementById(
-                "benefitAmountLabel",
-            ),
+    benefitAmountLabel: document.getElementById("benefitAmountLabel"),
 
-        benefitAmountInput:
-            document.getElementById(
-                "benefitAmountInput",
-            ),
+    benefitAmountInput: document.getElementById("benefitAmountInput"),
 
-        benefitPayoutTypeGroup:
-            document.getElementById(
-                "benefitPayoutTypeGroup",
-            ),
+    benefitPayoutTypeGroup: document.getElementById("benefitPayoutTypeGroup"),
 
-        benefitPayoutTypeSelect:
-            document.getElementById(
-                "benefitPayoutTypeSelect",
-            ),
+    benefitPayoutTypeSelect: document.getElementById("benefitPayoutTypeSelect"),
 
-        benefitNotesInput:
-            document.getElementById(
-                "benefitNotesInput",
-            ),
+    benefitNotesInput: document.getElementById("benefitNotesInput"),
 
-        benefitFormMessage:
-            document.getElementById(
-                "benefitFormMessage",
-            ),
+    benefitFormMessage: document.getElementById("benefitFormMessage"),
 
-        cancelBenefitButton:
-            document.getElementById(
-                "cancelBenefitButton",
-            ),
+    cancelBenefitButton: document.getElementById("cancelBenefitButton"),
 
-        saveBenefitButton:
-            document.getElementById(
-                "saveBenefitButton",
-            ),
+    saveBenefitButton: document.getElementById("saveBenefitButton"),
 
-        policyBenefitList:
-            document.getElementById(
-                "policyBenefitList",
-            ),
+    policyBenefitList: document.getElementById("policyBenefitList"),
 
-        emptyPolicyBenefitMessage:
-            document.getElementById(
-                "emptyPolicyBenefitMessage",
-            ),
+    emptyPolicyBenefitMessage: document.getElementById(
+      "emptyPolicyBenefitMessage",
+    ),
 
-        policyValidationSection:
-            document.getElementById(
-                "policyValidationSection",
-            ),
+    policyValidationSection: document.getElementById("policyValidationSection"),
 
-        policyValidationList:
-            document.getElementById(
-                "policyValidationList",
-            ),
-    };
+    policyValidationList: document.getElementById("policyValidationList"),
+  };
 }
-
 
 /* ========================================
    EVENT BINDING
 ======================================== */
 
 function bindInsuranceEvents() {
-    elements.addPolicyButton?.addEventListener(
-        "click",
-        openAddPolicyModal,
-    );
+  elements.addPolicyButton?.addEventListener("click", openAddPolicyModal);
 
-    elements.closePolicyModalButton?.addEventListener(
-        "click",
-        closePolicyModal,
-    );
+  elements.closePolicyModalButton?.addEventListener("click", closePolicyModal);
 
-    elements.cancelPolicyButton?.addEventListener(
-        "click",
-        closePolicyModal,
-    );
+  elements.cancelPolicyButton?.addEventListener("click", closePolicyModal);
 
-    elements.savePolicyButton?.addEventListener(
-        "click",
-        savePolicy,
-    );
+  elements.savePolicyButton?.addEventListener("click", savePolicy);
 
-    elements.insurerSelect?.addEventListener(
-        "change",
-        handleInsurerChange,
-    );
+  elements.insurerSelect?.addEventListener("change", handleInsurerChange);
 
-    elements.addBenefitButton?.addEventListener(
-        "click",
-        openAddBenefitEditor,
-    );
+  elements.addBenefitButton?.addEventListener("click", openAddBenefitEditor);
 
-    elements.closeBenefitEditorButton?.addEventListener(
-        "click",
-        closeBenefitEditor,
-    );
+  elements.closeBenefitEditorButton?.addEventListener(
+    "click",
+    closeBenefitEditor,
+  );
 
-    elements.cancelBenefitButton?.addEventListener(
-        "click",
-        closeBenefitEditor,
-    );
+  elements.cancelBenefitButton?.addEventListener("click", closeBenefitEditor);
 
-    elements.policyTypeSelect?.addEventListener(
-        "change",
-        updateBenefitFields,
-    );
+  elements.policyTypeSelect?.addEventListener("change", updateBenefitFields);
 
-    elements.benefitTypeSelect?.addEventListener(
-        "change",
-        updateBenefitFields,
-    );
+  elements.benefitTypeSelect?.addEventListener("change", updateBenefitFields);
 
-    elements.saveBenefitButton?.addEventListener(
-        "click",
-        saveBenefit,
-    );
+  elements.saveBenefitButton?.addEventListener("click", saveBenefit);
 
-    elements.policyBenefitList?.addEventListener(
-        "click",
-        handleBenefitListClick,
-    );
+  elements.policyBenefitList?.addEventListener("click", handleBenefitListClick);
 
-    elements.policyList?.addEventListener(
-        "click",
-        handlePolicyListClick,
-    );
+  elements.policyList?.addEventListener("click", handlePolicyListClick);
 
-    closeModalOnOverlayClick(
-        elements.policyModal,
-    );
+  closeModalOnOverlayClick(elements.policyModal);
 
-    closeModalOnEscape(
-        elements.policyModal,
-    );
+  closeModalOnEscape(elements.policyModal);
 }
-
 
 /* ========================================
    POLICY MODAL
 ======================================== */
 
 function openAddPolicyModal() {
-    editingPolicyId = null;
+  editingPolicyId = null;
 
-    resetPolicyForm();
+  resetPolicyForm();
 
-    handleInsurerChange();
+  handleInsurerChange();
 
-    elements.policyModalTitle.textContent =
-        "Add Policy";
+  elements.policyModalTitle.textContent = "Add Policy";
 
-    elements.savePolicyButton.textContent =
-        "Save Policy";
+  elements.savePolicyButton.textContent = "Save Policy";
 
-    elements.policyOwnerInput.value =
-        getClientProfile().fullName || "";
+  elements.policyOwnerInput.value = getClientProfile().fullName || "";
 
-    openModal(
-        elements.policyModal,
-    );
+  openModal(elements.policyModal);
 }
 
 function openEditPolicyModal(policyId) {
+  const policy = getPolicyById(policyId);
 
-    const policy =
-        getPolicyById(policyId);
+  if (!policy) {
+    return;
+  }
 
-    if (!policy) {
-        return;
-    }
+  editingPolicyId = policy.id;
 
-    editingPolicyId = policy.id;
+  resetPolicyForm();
 
-    resetPolicyForm();
+  elements.policyModalTitle.textContent = "Edit Policy";
 
-    elements.policyModalTitle.textContent =
-        "Edit Policy";
+  elements.savePolicyButton.textContent = "Save Changes";
 
-    elements.savePolicyButton.textContent =
-        "Save Changes";
+  elements.policyNameInput.value = policy.policyName || "";
 
-    elements.policyNameInput.value =
-        policy.policyName || "";
+  elements.policyTypeSelect.value = policy.policyType || "";
 
-    elements.policyTypeSelect.value =
-        policy.policyType || "";
+  populateInsurerFields(policy.insurer);
 
-    populateInsurerFields(
-        policy.insurer,
-    );
+  elements.policyNumberInput.value = policy.policyNumber || "";
 
-    elements.policyNumberInput.value =
-        policy.policyNumber || "";
+  elements.policyOwnerInput.value = policy.policyOwner || "";
 
-    elements.policyOwnerInput.value =
-        policy.policyOwner || "";
+  elements.policyStatusSelect.value = policy.status || "";
 
-    elements.policyStatusSelect.value =
-        policy.status || "";
+  elements.premiumInput.value = policy.premium?.amount || "";
 
-    elements.premiumInput.value =
-        policy.premium?.amount || "";
+  elements.premiumFrequencySelect.value = policy.premium?.frequency || "annual";
 
-    elements.premiumFrequencySelect.value =
-        policy.premium?.frequency ||
-        "annual";
+  draftBenefits = cloneBenefits(policy.benefits || []);
 
-    draftBenefits =
-        cloneBenefits(
-            policy.benefits || [],
-        );
+  renderDraftBenefits();
 
-    renderDraftBenefits();
-
-    openModal(
-        elements.policyModal,
-    );
+  openModal(elements.policyModal);
 }
 
 function closePolicyModal() {
-    closeBenefitEditor();
+  closeBenefitEditor();
 
-    editingPolicyId = null;
+  editingPolicyId = null;
 
-    closeModal(
-        elements.policyModal,
-    );
+  closeModal(elements.policyModal);
 }
-
 
 function resetPolicyForm() {
-    elements.policyNameInput.value = "";
+  elements.policyNameInput.value = "";
 
-    elements.policyTypeSelect.value = "";
+  elements.policyTypeSelect.value = "";
 
-    elements.insurerSelect.value = "";
+  elements.insurerSelect.value = "";
 
-    elements.otherInsurerInput.value = "";
+  elements.otherInsurerInput.value = "";
 
-    elements.otherInsurerGroup.hidden = true;
+  elements.otherInsurerGroup.hidden = true;
 
-    elements.policyNumberInput.value = "";
+  elements.policyNumberInput.value = "";
 
-    elements.policyOwnerInput.value = "";
+  elements.policyOwnerInput.value = "";
 
-    elements.policyStatusSelect.value = "";
+  elements.policyStatusSelect.value = "";
 
-    elements.premiumInput.value = "";
+  elements.premiumInput.value = "";
 
-    elements.premiumFrequencySelect.value =
-        "annual";
+  elements.premiumFrequencySelect.value = "annual";
 
-    elements.policyFormMessage.textContent = "";
+  elements.policyFormMessage.textContent = "";
 
-    draftBenefits = [];
+  draftBenefits = [];
 
-    editingBenefitId = null;
+  editingBenefitId = null;
 
-    closeBenefitEditor();
+  closeBenefitEditor();
 
-    renderDraftBenefits();
+  renderDraftBenefits();
 }
 
-
 function handleInsurerChange() {
-    const isOtherSelected =
-        elements.insurerSelect.value === "other";
+  const isOtherSelected = elements.insurerSelect.value === "other";
 
-    elements.otherInsurerGroup.hidden =
-        !isOtherSelected;
+  elements.otherInsurerGroup.hidden = !isOtherSelected;
 
-    elements.otherInsurerInput.required =
-        isOtherSelected;
+  elements.otherInsurerInput.required = isOtherSelected;
 
-    if (!isOtherSelected) {
-        elements.otherInsurerInput.value = "";
-    }
+  if (!isOtherSelected) {
+    elements.otherInsurerInput.value = "";
+  }
 }
 
 function populateInsurerFields(insurer) {
-    const savedInsurer =
-        insurer || "";
+  const savedInsurer = insurer || "";
 
-    const insurerOptionExists =
-        Array.from(
-            elements.insurerSelect.options,
-        ).some(
-            function (option) {
-                return (
-                    option.value ===
-                    savedInsurer
-                );
-            },
-        );
+  const insurerOptionExists = Array.from(elements.insurerSelect.options).some(
+    function (option) {
+      return option.value === savedInsurer;
+    },
+  );
 
-    if (
-        savedInsurer &&
-        insurerOptionExists &&
-        savedInsurer !== "other"
-    ) {
-        elements.insurerSelect.value =
-            savedInsurer;
+  if (savedInsurer && insurerOptionExists && savedInsurer !== "other") {
+    elements.insurerSelect.value = savedInsurer;
 
-        elements.otherInsurerInput.value =
-            "";
-    } else if (savedInsurer) {
-        elements.insurerSelect.value =
-            "other";
+    elements.otherInsurerInput.value = "";
+  } else if (savedInsurer) {
+    elements.insurerSelect.value = "other";
 
-        elements.otherInsurerInput.value =
-            savedInsurer;
-    } else {
-        elements.insurerSelect.value = "";
+    elements.otherInsurerInput.value = savedInsurer;
+  } else {
+    elements.insurerSelect.value = "";
 
-        elements.otherInsurerInput.value =
-            "";
-    }
+    elements.otherInsurerInput.value = "";
+  }
 
-    handleInsurerChange();
+  handleInsurerChange();
 
-    if (
-        elements.insurerSelect.value ===
-        "other"
-    ) {
-        elements.otherInsurerInput.value =
-            savedInsurer;
-    }
+  if (elements.insurerSelect.value === "other") {
+    elements.otherInsurerInput.value = savedInsurer;
+  }
 }
 
 /* ========================================
@@ -571,348 +358,237 @@ function populateInsurerFields(insurer) {
 ======================================== */
 
 function savePolicy() {
-    clearPolicyFormMessage();
+  clearPolicyFormMessage();
 
-    const formData =
-        getPolicyFormData();
+  const formData = getPolicyFormData();
 
-    const validationMessage =
-        validatePolicyForm(formData);
+  const validationMessage = validatePolicyForm(formData);
 
-    if (validationMessage) {
-        showPolicyFormMessage(
-            validationMessage,
-        );
+  if (validationMessage) {
+    showPolicyFormMessage(validationMessage);
 
-        return;
-    }
+    return;
+  }
 
-    if (editingPolicyId) {
-        updatePolicy(
-    editingPolicyId,
-    {
-        policyName:
-            formData.policyName,
+  if (editingPolicyId) {
+    updatePolicy(editingPolicyId, {
+      policyName: formData.policyName,
 
-        policyType:
-            formData.policyType,
+      policyType: formData.policyType,
 
-        insurer:
-            formData.insurer,
+      insurer: formData.insurer,
 
-        policyNumber:
-            formData.policyNumber,
+      policyNumber: formData.policyNumber,
 
-        policyOwner:
-            formData.policyOwner,
+      policyOwner: formData.policyOwner,
 
-        status:
-            formData.status,
+      status: formData.status,
 
-        premium: {
-            amount:
-                formData.premiumAmount,
+      premium: {
+        amount: formData.premiumAmount,
 
-            frequency:
-                formData.premiumFrequency,
-        },
+        frequency: formData.premiumFrequency,
+      },
 
-        benefits:
-            cloneBenefits(
-                draftBenefits,
-            ),
-    },
-);
-    } else {
-        createPolicy(
-    createPolicyObject(formData),
-);
-    }
+      benefits: cloneBenefits(draftBenefits),
+    });
+  } else {
+    createPolicy(createPolicyObject(formData));
+  }
 
-    renderInsurancePortfolio();
+  renderInsurancePortfolio();
 
-    closePolicyModal();
+  closePolicyModal();
 }
 
 function getPolicyFormData() {
-    const selectedInsurer =
-        elements.insurerSelect.value;
+  const selectedInsurer = elements.insurerSelect.value;
 
-    const insurer =
-        selectedInsurer === "other"
-            ? elements.otherInsurerInput
-                .value
-                .trim()
-            : selectedInsurer;
+  const insurer =
+    selectedInsurer === "other"
+      ? elements.otherInsurerInput.value.trim()
+      : selectedInsurer;
 
-    return {
-        policyName:
-            elements.policyNameInput
-                .value
-                .trim(),
+  return {
+    policyName: elements.policyNameInput.value.trim(),
 
-        policyType:
-            elements.policyTypeSelect.value,
+    policyType: elements.policyTypeSelect.value,
 
-        insurer,
+    insurer,
 
-        policyNumber:
-            elements.policyNumberInput
-                .value
-                .trim(),
+    policyNumber: elements.policyNumberInput.value.trim(),
 
-        policyOwner:
-            elements.policyOwnerInput
-                .value
-                .trim(),
+    policyOwner: elements.policyOwnerInput.value.trim(),
 
-        status:
-            elements.policyStatusSelect.value,
+    status: elements.policyStatusSelect.value,
 
-        premiumAmount:
-            getWholeNumber(
-                elements.premiumInput.value,
-            ),
+    premiumAmount: getWholeNumber(elements.premiumInput.value),
 
-        premiumFrequency:
-            elements
-                .premiumFrequencySelect
-                .value,
-    };
+    premiumFrequency: elements.premiumFrequencySelect.value,
+  };
 }
 
-
 function validatePolicyForm(formData) {
-    if (!formData.policyName) {
-        return "Enter the policy name.";
-    }
+  if (!formData.policyName) {
+    return "Enter the policy name.";
+  }
 
-    if (!formData.policyType) {
-        return "Select a policy type.";
-    }
+  if (!formData.policyType) {
+    return "Select a policy type.";
+  }
 
-    if (!elements.insurerSelect.value) {
-        return "Select an insurer.";
-    }
+  if (!elements.insurerSelect.value) {
+    return "Select an insurer.";
+  }
 
-    if (
-        elements.insurerSelect.value ===
-        "other" &&
-        !formData.insurer
-    ) {
-        return "Enter the insurer name.";
-    }
+  if (elements.insurerSelect.value === "other" && !formData.insurer) {
+    return "Enter the insurer name.";
+  }
 
-    if (!formData.status) {
-        return "Select the policy status.";
-    }
+  if (!formData.status) {
+    return "Select the policy status.";
+  }
 
-    if (
-        elements.premiumInput.value !== "" &&
-        formData.premiumAmount <= 0
-    ) {
-        return "Enter a premium greater than zero, or leave the premium blank.";
-    }
+  if (elements.premiumInput.value !== "" && formData.premiumAmount <= 0) {
+    return "Enter a premium greater than zero, or leave the premium blank.";
+  }
 
-    if (draftBenefits.length === 0) {
-        return "Add at least one benefit to the policy.";
-    }
+  if (draftBenefits.length === 0) {
+    return "Add at least one benefit to the policy.";
+  }
 
-    const benefitErrors =
-        validatePolicyBenefits(
-            draftBenefits,
-        );
+  const benefitErrors = validatePolicyBenefits(draftBenefits);
 
-    if (benefitErrors.length > 0) {
-        return benefitErrors[0];
-    }
+  if (benefitErrors.length > 0) {
+    return benefitErrors[0];
+  }
 
-    return "";
+  return "";
 }
 
 function validatePolicyBenefits(benefits) {
-    const errors = [];
+  const errors = [];
 
-    const deathBenefits =
-        benefits.filter(function (benefit) {
-            return benefit.type === "death";
-        });
+  const deathBenefits = benefits.filter(function (benefit) {
+    return benefit.type === "death";
+  });
 
-    const deathBenefit =
-        deathBenefits[0] ?? null;
+  const deathBenefit = deathBenefits[0] ?? null;
 
-    const criticalIllnessBenefits =
-        benefits.filter(function (benefit) {
-            return (
-                benefit.type ===
-                "critical_illness"
-            );
-        });
+  const criticalIllnessBenefits = benefits.filter(function (benefit) {
+    return benefit.type === "critical_illness";
+  });
 
-    const acceleratedCiBenefits =
-        criticalIllnessBenefits.filter(
-            function (benefit) {
-                return (
-                    benefit.payoutType ===
-                    "accelerated"
-                );
-            },
-        );
+  const acceleratedCiBenefits = criticalIllnessBenefits.filter(
+    function (benefit) {
+      return benefit.payoutType === "accelerated";
+    },
+  );
 
-    const earlyCiBenefits =
-        benefits.filter(function (benefit) {
-            return (
-                benefit.type ===
-                "early_critical_illness"
-            );
-        });
+  const earlyCiBenefits = benefits.filter(function (benefit) {
+    return benefit.type === "early_critical_illness";
+  });
 
+  if (deathBenefits.length > 1) {
+    errors.push("A policy can only contain one Death benefit.");
+  }
 
-    if (deathBenefits.length > 1) {
-        errors.push(
-            "A policy can only contain one Death benefit.",
-        );
+  acceleratedCiBenefits.forEach(function (ciBenefit) {
+    if (!deathBenefit) {
+      errors.push(
+        "Accelerated Critical Illness requires a Death benefit in the same policy.",
+      );
+
+      return;
     }
 
+    if (ciBenefit.amount > deathBenefit.amount) {
+      errors.push(
+        `Accelerated Critical Illness cannot exceed the Death sum assured of ${formatCurrency(
+          deathBenefit.amount,
+        )}.`,
+      );
+    }
+  });
 
-    acceleratedCiBenefits.forEach(
-        function (ciBenefit) {
-            if (!deathBenefit) {
-                errors.push(
-                    "Accelerated Critical Illness requires a Death benefit in the same policy.",
-                );
-
-                return;
-            }
-
-            if (
-                ciBenefit.amount >
-                deathBenefit.amount
-            ) {
-                errors.push(
-                    `Accelerated Critical Illness cannot exceed the Death sum assured of ${formatCurrency(
-                        deathBenefit.amount,
-                    )}.`,
-                );
-            }
-        },
+  earlyCiBenefits.forEach(function (earlyCiBenefit) {
+    const relatedCiBenefit = findRelatedCriticalIllnessBenefit(
+      criticalIllnessBenefits,
     );
 
+    if (!deathBenefit) {
+      errors.push(
+        "Early Critical Illness requires a Death benefit in the same policy.",
+      );
+    }
 
-    earlyCiBenefits.forEach(
-        function (earlyCiBenefit) {
-            const relatedCiBenefit =
-                findRelatedCriticalIllnessBenefit(
-                    criticalIllnessBenefits,
-                );
+    if (!relatedCiBenefit) {
+      errors.push(
+        "Early Critical Illness requires a Critical Illness benefit in the same policy.",
+      );
+    }
 
-            if (!deathBenefit) {
-                errors.push(
-                    "Early Critical Illness requires a Death benefit in the same policy.",
-                );
-            }
+    if (deathBenefit && earlyCiBenefit.amount > deathBenefit.amount) {
+      errors.push(
+        `Early Critical Illness cannot exceed the Death sum assured of ${formatCurrency(
+          deathBenefit.amount,
+        )}.`,
+      );
+    }
 
-            if (!relatedCiBenefit) {
-                errors.push(
-                    "Early Critical Illness requires a Critical Illness benefit in the same policy.",
-                );
-            }
+    if (relatedCiBenefit && earlyCiBenefit.amount > relatedCiBenefit.amount) {
+      errors.push(
+        `Early Critical Illness cannot exceed the Critical Illness sum assured of ${formatCurrency(
+          relatedCiBenefit.amount,
+        )}.`,
+      );
+    }
+  });
 
-            if (
-                deathBenefit &&
-                earlyCiBenefit.amount >
-                deathBenefit.amount
-            ) {
-                errors.push(
-                    `Early Critical Illness cannot exceed the Death sum assured of ${formatCurrency(
-                        deathBenefit.amount,
-                    )}.`,
-                );
-            }
-
-            if (
-                relatedCiBenefit &&
-                earlyCiBenefit.amount >
-                relatedCiBenefit.amount
-            ) {
-                errors.push(
-                    `Early Critical Illness cannot exceed the Critical Illness sum assured of ${formatCurrency(
-                        relatedCiBenefit.amount,
-                    )}.`,
-                );
-            }
-        },
-    );
-
-    return [...new Set(errors)];
+  return [...new Set(errors)];
 }
 
+function findRelatedCriticalIllnessBenefit(criticalIllnessBenefits) {
+  if (criticalIllnessBenefits.length === 0) {
+    return null;
+  }
 
-function findRelatedCriticalIllnessBenefit(
-    criticalIllnessBenefits,
-) {
-    if (
-        criticalIllnessBenefits.length === 0
-    ) {
-        return null;
-    }
+  const acceleratedCiBenefit = criticalIllnessBenefits.find(function (benefit) {
+    return benefit.payoutType === "accelerated";
+  });
 
-    const acceleratedCiBenefit =
-        criticalIllnessBenefits.find(
-            function (benefit) {
-                return (
-                    benefit.payoutType ===
-                    "accelerated"
-                );
-            },
-        );
-
-    return (
-        acceleratedCiBenefit ??
-        criticalIllnessBenefits[0]
-    );
+  return acceleratedCiBenefit ?? criticalIllnessBenefits[0];
 }
 
 function renderPolicyValidation() {
-    if (
-        !elements.policyValidationSection ||
-        !elements.policyValidationList
-    ) {
-        return;
-    }
+  if (!elements.policyValidationSection || !elements.policyValidationList) {
+    return;
+  }
 
-    elements.policyValidationList.innerHTML =
-        "";
+  elements.policyValidationList.innerHTML = "";
 
-    if (draftBenefits.length === 0) {
-        elements.policyValidationSection.hidden =
-            true;
+  if (draftBenefits.length === 0) {
+    elements.policyValidationSection.hidden = true;
 
-        return;
-    }
+    return;
+  }
 
-    elements.policyValidationSection.hidden =
-        false;
+  elements.policyValidationSection.hidden = false;
 
-    const validationItems =
-        getPolicyValidationItems();
+  const validationItems = getPolicyValidationItems();
 
-    validationItems.forEach(
-        function (item) {
-            const validationItem =
-                document.createElement("div");
+  validationItems.forEach(function (item) {
+    const validationItem = document.createElement("div");
 
-            validationItem.className =
-                item.valid
-                    ? "policy-validation-item policy-validation-item--valid"
-                    : "policy-validation-item policy-validation-item--invalid";
+    validationItem.className = item.valid
+      ? "policy-validation-item policy-validation-item--valid"
+      : "policy-validation-item policy-validation-item--invalid";
 
-            const iconClass =
-                item.valid
-                    ? "fa-solid fa-circle-check"
-                    : "fa-solid fa-circle-exclamation";
+    const iconClass = item.valid
+      ? "fa-solid fa-circle-check"
+      : "fa-solid fa-circle-exclamation";
 
-            validationItem.innerHTML = `
+    validationItem.innerHTML = `
                 <i
                     class="${iconClass}"
                     aria-hidden="true"
@@ -923,251 +599,179 @@ function renderPolicyValidation() {
                 </span>
             `;
 
-            elements.policyValidationList
-                .appendChild(
-                    validationItem,
-                );
-        },
-    );
+    elements.policyValidationList.appendChild(validationItem);
+  });
 }
 
-
 function getPolicyValidationItems() {
-    const items = [];
+  const items = [];
 
-    const deathBenefits =
-        draftBenefits.filter(
-            function (benefit) {
-                return benefit.type === "death";
-            },
-        );
+  const deathBenefits = draftBenefits.filter(function (benefit) {
+    return benefit.type === "death";
+  });
 
-    const deathBenefit =
-        deathBenefits[0] ?? null;
+  const deathBenefit = deathBenefits[0] ?? null;
 
-    const criticalIllnessBenefits =
-        draftBenefits.filter(
-            function (benefit) {
-                return (
-                    benefit.type ===
-                    "critical_illness"
-                );
-            },
-        );
+  const criticalIllnessBenefits = draftBenefits.filter(function (benefit) {
+    return benefit.type === "critical_illness";
+  });
 
-    const acceleratedCiBenefits =
-        criticalIllnessBenefits.filter(
-            function (benefit) {
-                return (
-                    benefit.payoutType ===
-                    "accelerated"
-                );
-            },
-        );
+  const acceleratedCiBenefits = criticalIllnessBenefits.filter(
+    function (benefit) {
+      return benefit.payoutType === "accelerated";
+    },
+  );
 
-    const earlyCiBenefits =
-        draftBenefits.filter(
-            function (benefit) {
-                return (
-                    benefit.type ===
-                    "early_critical_illness"
-                );
-            },
-        );
+  const earlyCiBenefits = draftBenefits.filter(function (benefit) {
+    return benefit.type === "early_critical_illness";
+  });
 
+  if (deathBenefits.length > 0) {
+    items.push({
+      valid: deathBenefits.length === 1,
 
-    if (deathBenefits.length > 0) {
-        items.push({
-            valid:
-                deathBenefits.length === 1,
+      message:
+        deathBenefits.length === 1
+          ? "One Death benefit recorded."
+          : "A policy can only contain one Death benefit.",
+    });
+  }
 
-            message:
-                deathBenefits.length === 1
-                    ? "One Death benefit recorded."
-                    : "A policy can only contain one Death benefit.",
-        });
+  acceleratedCiBenefits.forEach(function (ciBenefit) {
+    if (!deathBenefit) {
+      items.push({
+        valid: false,
+
+        message: "Accelerated CI requires a Death benefit.",
+      });
+
+      return;
     }
 
+    const amountIsValid = ciBenefit.amount <= deathBenefit.amount;
 
-    acceleratedCiBenefits.forEach(
-        function (ciBenefit) {
-            if (!deathBenefit) {
-                items.push({
-                    valid:
-                        false,
+    items.push({
+      valid: amountIsValid,
 
-                    message:
-                        "Accelerated CI requires a Death benefit.",
-                });
+      message: amountIsValid
+        ? "Accelerated CI does not exceed the Death sum assured."
+        : `Accelerated CI exceeds the Death sum assured of ${formatCurrency(
+            deathBenefit.amount,
+          )}.`,
+    });
+  });
 
-                return;
-            }
-
-            const amountIsValid =
-                ciBenefit.amount <=
-                deathBenefit.amount;
-
-            items.push({
-                valid:
-                    amountIsValid,
-
-                message:
-                    amountIsValid
-                        ? "Accelerated CI does not exceed the Death sum assured."
-                        : `Accelerated CI exceeds the Death sum assured of ${formatCurrency(
-                            deathBenefit.amount,
-                        )}.`,
-            });
-        },
+  earlyCiBenefits.forEach(function (earlyCiBenefit) {
+    const relatedCiBenefit = findRelatedCriticalIllnessBenefit(
+      criticalIllnessBenefits,
     );
 
+    if (!deathBenefit) {
+      items.push({
+        valid: false,
 
-    earlyCiBenefits.forEach(
-        function (earlyCiBenefit) {
-            const relatedCiBenefit =
-                findRelatedCriticalIllnessBenefit(
-                    criticalIllnessBenefits,
-                );
-
-            if (!deathBenefit) {
-                items.push({
-                    valid:
-                        false,
-
-                    message:
-                        "Early CI requires a Death benefit.",
-                });
-            }
-
-            if (!relatedCiBenefit) {
-                items.push({
-                    valid:
-                        false,
-
-                    message:
-                        "Early CI requires a Critical Illness benefit.",
-                });
-            }
-
-            if (deathBenefit) {
-                const belowDeath =
-                    earlyCiBenefit.amount <=
-                    deathBenefit.amount;
-
-                items.push({
-                    valid:
-                        belowDeath,
-
-                    message:
-                        belowDeath
-                            ? "Early CI does not exceed the Death sum assured."
-                            : `Early CI exceeds the Death sum assured of ${formatCurrency(
-                                deathBenefit.amount,
-                            )}.`,
-                });
-            }
-
-            if (relatedCiBenefit) {
-                const belowCi =
-                    earlyCiBenefit.amount <=
-                    relatedCiBenefit.amount;
-
-                items.push({
-                    valid:
-                        belowCi,
-
-                    message:
-                        belowCi
-                            ? "Early CI does not exceed the Critical Illness sum assured."
-                            : `Early CI exceeds the Critical Illness sum assured of ${formatCurrency(
-                                relatedCiBenefit.amount,
-                            )}.`,
-                });
-            }
-        },
-    );
-
-
-    if (
-        acceleratedCiBenefits.length === 0 &&
-        earlyCiBenefits.length === 0 &&
-        deathBenefits.length <= 1
-    ) {
-        items.push({
-            valid:
-                true,
-
-            message:
-                "No CI or Early CI conflicts detected.",
-        });
+        message: "Early CI requires a Death benefit.",
+      });
     }
 
-    return items;
+    if (!relatedCiBenefit) {
+      items.push({
+        valid: false,
+
+        message: "Early CI requires a Critical Illness benefit.",
+      });
+    }
+
+    if (deathBenefit) {
+      const belowDeath = earlyCiBenefit.amount <= deathBenefit.amount;
+
+      items.push({
+        valid: belowDeath,
+
+        message: belowDeath
+          ? "Early CI does not exceed the Death sum assured."
+          : `Early CI exceeds the Death sum assured of ${formatCurrency(
+              deathBenefit.amount,
+            )}.`,
+      });
+    }
+
+    if (relatedCiBenefit) {
+      const belowCi = earlyCiBenefit.amount <= relatedCiBenefit.amount;
+
+      items.push({
+        valid: belowCi,
+
+        message: belowCi
+          ? "Early CI does not exceed the Critical Illness sum assured."
+          : `Early CI exceeds the Critical Illness sum assured of ${formatCurrency(
+              relatedCiBenefit.amount,
+            )}.`,
+      });
+    }
+  });
+
+  if (
+    acceleratedCiBenefits.length === 0 &&
+    earlyCiBenefits.length === 0 &&
+    deathBenefits.length <= 1
+  ) {
+    items.push({
+      valid: true,
+
+      message: "No CI or Early CI conflicts detected.",
+    });
+  }
+
+  return items;
 }
 
 function createPolicyObject(formData) {
-    return {
-        id:
-            createUniqueId(),
+  return {
+    id: createUniqueId(),
 
-        policyName:
-            formData.policyName,
+    policyName: formData.policyName,
 
-        policyType:
-            formData.policyType,
+    policyType: formData.policyType,
 
-        insurer:
-            formData.insurer,
+    insurer: formData.insurer,
 
-        policyNumber:
-            formData.policyNumber,
+    policyNumber: formData.policyNumber,
 
-        policyOwner:
-            formData.policyOwner,
+    policyOwner: formData.policyOwner,
 
-        status:
-            formData.status,
+    status: formData.status,
 
-        premium: {
-            amount:
-                formData.premiumAmount,
+    premium: {
+      amount: formData.premiumAmount,
 
-            frequency:
-                formData.premiumFrequency,
-        },
+      frequency: formData.premiumFrequency,
+    },
 
-        benefits:
-            cloneBenefits(draftBenefits),
-    };
+    benefits: cloneBenefits(draftBenefits),
+  };
 }
-
 
 function cloneBenefits(benefits) {
-    return benefits.map(function (benefit) {
-        return {
-            ...benefit,
-        };
-    });
+  return benefits.map(function (benefit) {
+    return {
+      ...benefit,
+    };
+  });
 }
-
 
 function showPolicyFormMessage(message) {
-    elements.policyFormMessage.textContent =
-        message;
+  elements.policyFormMessage.textContent = message;
 
-    elements.policyFormMessage.scrollIntoView({
-        behavior:
-            "smooth",
+  elements.policyFormMessage.scrollIntoView({
+    behavior: "smooth",
 
-        block:
-            "nearest",
-    });
+    block: "nearest",
+  });
 }
 
-
 function clearPolicyFormMessage() {
-    elements.policyFormMessage.textContent =
-        "";
+  elements.policyFormMessage.textContent = "";
 }
 
 /* ========================================
@@ -1175,517 +779,385 @@ function clearPolicyFormMessage() {
 ======================================== */
 
 function openAddBenefitEditor() {
-    editingBenefitId = null;
+  editingBenefitId = null;
 
-    resetBenefitForm();
+  resetBenefitForm();
 
-    elements.benefitLifeAssuredInput.value =
-        getClientProfile().fullName || "";
+  elements.benefitLifeAssuredInput.value = getClientProfile().fullName || "";
 
-    elements.benefitEditorTitle.textContent =
-        "Add Benefit";
+  elements.benefitEditorTitle.textContent = "Add Benefit";
 
-    elements.saveBenefitButton.textContent =
-        "Add Benefit";
+  elements.saveBenefitButton.textContent = "Add Benefit";
 
-    elements.benefitEditor.hidden = false;
+  elements.benefitEditor.hidden = false;
 
-    elements.benefitEditor.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-    });
+  elements.benefitEditor.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
 
-    elements.benefitTypeSelect.focus();
+  elements.benefitTypeSelect.focus();
 }
-
 
 function openEditBenefitEditor(benefitId) {
-    const benefit =
-        draftBenefits.find(function (item) {
-            return item.id === benefitId;
-        });
+  const benefit = draftBenefits.find(function (item) {
+    return item.id === benefitId;
+  });
 
-    if (!benefit) {
-        return;
-    }
+  if (!benefit) {
+    return;
+  }
 
-    editingBenefitId = benefit.id;
+  editingBenefitId = benefit.id;
 
-    elements.benefitEditorTitle.textContent =
-        "Edit Benefit";
+  elements.benefitEditorTitle.textContent = "Edit Benefit";
 
-    elements.saveBenefitButton.textContent =
-        "Save Changes";
+  elements.saveBenefitButton.textContent = "Save Changes";
 
-    elements.benefitTypeSelect.value =
-        benefit.type;
+  elements.benefitTypeSelect.value = benefit.type;
 
-    elements.benefitLifeAssuredInput.value =
-        benefit.lifeAssured;
+  elements.benefitLifeAssuredInput.value = benefit.lifeAssured;
 
-    elements.benefitAmountInput.value =
-        benefit.amount;
+  elements.benefitAmountInput.value = benefit.amount;
 
-    elements.benefitPayoutTypeSelect.value =
-        benefit.payoutType ?? "";
+  elements.benefitPayoutTypeSelect.value = benefit.payoutType ?? "";
 
-    elements.benefitNotesInput.value =
-        benefit.notes;
+  elements.benefitNotesInput.value = benefit.notes;
 
-    elements.benefitFormMessage.textContent =
-        "";
+  elements.benefitFormMessage.textContent = "";
 
-    updateBenefitFields();
+  updateBenefitFields();
 
-    elements.benefitEditor.hidden = false;
+  elements.benefitEditor.hidden = false;
 
-    elements.benefitEditor.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-    });
+  elements.benefitEditor.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
 
-    elements.benefitTypeSelect.focus();
+  elements.benefitTypeSelect.focus();
 }
-
 
 function closeBenefitEditor() {
-    if (!elements.benefitEditor) {
-        return;
-    }
+  if (!elements.benefitEditor) {
+    return;
+  }
 
-    elements.benefitEditor.hidden = true;
+  elements.benefitEditor.hidden = true;
 
-    editingBenefitId = null;
+  editingBenefitId = null;
 
-    elements.benefitEditorTitle.textContent =
-        "Add Benefit";
+  elements.benefitEditorTitle.textContent = "Add Benefit";
 
-    elements.saveBenefitButton.textContent =
-        "Add Benefit";
+  elements.saveBenefitButton.textContent = "Add Benefit";
 
-    resetBenefitForm();
+  resetBenefitForm();
 }
-
 
 function resetBenefitForm() {
-    if (!elements.benefitTypeSelect) {
-        return;
-    }
+  if (!elements.benefitTypeSelect) {
+    return;
+  }
 
-    elements.benefitTypeSelect.value = "";
+  elements.benefitTypeSelect.value = "";
 
-    elements.benefitLifeAssuredInput.value =
-        "";
+  elements.benefitLifeAssuredInput.value = "";
 
-    elements.benefitAmountInput.value = "";
+  elements.benefitAmountInput.value = "";
 
-    elements.benefitPayoutTypeSelect.value =
-        "";
+  elements.benefitPayoutTypeSelect.value = "";
 
-    elements.benefitNotesInput.value = "";
+  elements.benefitNotesInput.value = "";
 
-    elements.benefitFormMessage.textContent =
-        "";
+  elements.benefitFormMessage.textContent = "";
 
-    updateBenefitFields();
+  updateBenefitFields();
 }
-
 
 function updateBenefitFields() {
-    const benefitType =
-        elements.benefitTypeSelect.value;
+  const benefitType = elements.benefitTypeSelect.value;
 
-    const policyType =
-        elements.policyTypeSelect.value;
+  const policyType = elements.policyTypeSelect.value;
 
-    const isWholeLifeTpd =
-        policyType === "whole_life" &&
-        benefitType === "tpd";
+  const isWholeLifeTpd = policyType === "whole_life" && benefitType === "tpd";
 
-    const requiresPayoutType =
-        benefitType ===
-        "critical_illness" ||
-        benefitType ===
-        "early_critical_illness";
+  const requiresPayoutType =
+    benefitType === "critical_illness" ||
+    benefitType === "early_critical_illness";
 
-    /*
-     * CI and ECI:
-     * Show the payout type dropdown.
-     *
-     * Whole Life TPD:
-     * Hide the dropdown because it is
-     * always accelerated.
-     */
-    elements.benefitPayoutTypeGroup.hidden =
-        !requiresPayoutType ||
-        isWholeLifeTpd;
+  /*
+   * CI and ECI:
+   * Show the payout type dropdown.
+   *
+   * Whole Life TPD:
+   * Hide the dropdown because it is
+   * always accelerated.
+   */
+  elements.benefitPayoutTypeGroup.hidden =
+    !requiresPayoutType || isWholeLifeTpd;
 
-    /*
-     * Only show the information message
-     * for Whole Life TPD.
-     */
-    elements.benefitPayoutInfo.hidden =
-        !isWholeLifeTpd;
+  /*
+   * Only show the information message
+   * for Whole Life TPD.
+   */
+  elements.benefitPayoutInfo.hidden = !isWholeLifeTpd;
 
-    if (isWholeLifeTpd) {
-        elements.benefitPayoutTypeSelect.value =
-            "accelerated";
-    } else if (!requiresPayoutType) {
-        elements.benefitPayoutTypeSelect.value =
-            "";
-    }
+  if (isWholeLifeTpd) {
+    elements.benefitPayoutTypeSelect.value = "accelerated";
+  } else if (!requiresPayoutType) {
+    elements.benefitPayoutTypeSelect.value = "";
+  }
 
-    elements.benefitAmountLabel.innerHTML =
-        getBenefitAmountLabel(
-            benefitType,
-        );
+  elements.benefitAmountLabel.innerHTML = getBenefitAmountLabel(benefitType);
 }
 
-
 function getBenefitAmountLabel(benefitType) {
-    switch (benefitType) {
-        case "hospital_cash":
-            return `
+  switch (benefitType) {
+    case "hospital_cash":
+      return `
                 Daily Cash Benefit
                 <span class="required-label">*</span>
             `;
 
-        case "disability_income":
-            return `
+    case "disability_income":
+      return `
                 Monthly Benefit
                 <span class="required-label">*</span>
             `;
 
-        case "hospitalisation":
-            return `
+    case "hospitalisation":
+      return `
                 Coverage Amount
                 <span class="optional-label">
                     (Optional)
                 </span>
             `;
 
-        default:
-            return `
+    default:
+      return `
                 Coverage Amount
                 <span class="required-label">*</span>
             `;
-    }
+  }
 }
-
 
 /* ========================================
    SAVE BENEFIT
 ======================================== */
 
 function saveBenefit() {
-    const formData =
-        getBenefitFormData();
+  const formData = getBenefitFormData();
 
-    const validationMessage =
-        validateBenefit(formData);
+  const validationMessage = validateBenefit(formData);
 
-    if (validationMessage) {
-        elements.benefitFormMessage.textContent =
-            validationMessage;
+  if (validationMessage) {
+    elements.benefitFormMessage.textContent = validationMessage;
 
-        return;
-    }
+    return;
+  }
 
-    if (editingBenefitId) {
-        updateDraftBenefit(formData);
-    } else {
-        addDraftBenefit(formData);
-    }
+  if (editingBenefitId) {
+    updateDraftBenefit(formData);
+  } else {
+    addDraftBenefit(formData);
+  }
 
-    renderDraftBenefits();
+  renderDraftBenefits();
 
-    closeBenefitEditor();
+  closeBenefitEditor();
 }
-
 
 function getBenefitFormData() {
-    const benefitType =
-        elements.benefitTypeSelect.value;
+  const benefitType = elements.benefitTypeSelect.value;
 
-    const policyType =
-        elements.policyTypeSelect.value;
+  const policyType = elements.policyTypeSelect.value;
 
-    let payoutType =
-        elements.benefitPayoutTypeSelect
-            .value || null;
+  let payoutType = elements.benefitPayoutTypeSelect.value || null;
 
-    if (
-        policyType === "whole_life" &&
-        benefitType === "tpd"
-    ) {
-        payoutType =
-            "accelerated";
-    }
+  if (policyType === "whole_life" && benefitType === "tpd") {
+    payoutType = "accelerated";
+  }
 
-    return {
-        type:
-            benefitType,
+  return {
+    type: benefitType,
 
-        lifeAssured:
-            elements.benefitLifeAssuredInput
-                .value
-                .trim(),
+    lifeAssured: elements.benefitLifeAssuredInput.value.trim(),
 
-        amount:
-            getWholeNumber(
-                elements.benefitAmountInput
-                    .value,
-            ),
+    amount: getWholeNumber(elements.benefitAmountInput.value),
 
-        payoutType,
+    payoutType,
 
-        notes:
-            elements.benefitNotesInput
-                .value
-                .trim(),
-    };
+    notes: elements.benefitNotesInput.value.trim(),
+  };
 }
-
 
 function validateBenefit(formData) {
-    if (!formData.type) {
-        return "Select a benefit type.";
-    }
+  if (!formData.type) {
+    return "Select a benefit type.";
+  }
 
-    const amountIsOptional =
-        formData.type ===
-        "hospitalisation";
+  const amountIsOptional = formData.type === "hospitalisation";
 
-    if (
-        !amountIsOptional &&
-        formData.amount <= 0
-    ) {
-        return "Enter a coverage amount greater than zero.";
-    }
+  if (!amountIsOptional && formData.amount <= 0) {
+    return "Enter a coverage amount greater than zero.";
+  }
 
-    const requiresPayoutType =
-        formData.type ===
-        "critical_illness" ||
-        formData.type ===
-        "early_critical_illness";
+  const requiresPayoutType =
+    formData.type === "critical_illness" ||
+    formData.type === "early_critical_illness";
 
-    if (
-        requiresPayoutType &&
-        !formData.payoutType
-    ) {
-        return "Select whether the payout is accelerated, additional or standalone.";
-    }
+  if (requiresPayoutType && !formData.payoutType) {
+    return "Select whether the payout is accelerated, additional or standalone.";
+  }
 
-    return "";
+  return "";
 }
-
 
 function addDraftBenefit(formData) {
-    draftBenefits.push({
-        id:
-            createUniqueId(),
+  draftBenefits.push({
+    id: createUniqueId(),
 
-        type:
-            formData.type,
+    type: formData.type,
 
-        lifeAssured:
-            formData.lifeAssured,
+    lifeAssured: formData.lifeAssured,
 
-        amount:
-            formData.amount,
+    amount: formData.amount,
 
-        payoutType:
-            formData.payoutType,
+    payoutType: formData.payoutType,
 
-        notes:
-            formData.notes,
-    });
+    notes: formData.notes,
+  });
 }
-
 
 function updateDraftBenefit(formData) {
-    const benefitIndex =
-        draftBenefits.findIndex(
-            function (benefit) {
-                return (
-                    benefit.id ===
-                    editingBenefitId
-                );
-            },
-        );
+  const benefitIndex = draftBenefits.findIndex(function (benefit) {
+    return benefit.id === editingBenefitId;
+  });
 
-    if (benefitIndex === -1) {
-        return;
-    }
+  if (benefitIndex === -1) {
+    return;
+  }
 
-    draftBenefits[benefitIndex] = {
-        ...draftBenefits[benefitIndex],
+  draftBenefits[benefitIndex] = {
+    ...draftBenefits[benefitIndex],
 
-        type:
-            formData.type,
+    type: formData.type,
 
-        lifeAssured:
-            formData.lifeAssured,
+    lifeAssured: formData.lifeAssured,
 
-        amount:
-            formData.amount,
+    amount: formData.amount,
 
-        payoutType:
-            formData.payoutType,
+    payoutType: formData.payoutType,
 
-        notes:
-            formData.notes,
-    };
+    notes: formData.notes,
+  };
 }
-
 
 /* ========================================
    BENEFIT ACTIONS
 ======================================== */
 
 function handleBenefitListClick(event) {
-    const actionButton =
-        event.target.closest(
-            "[data-benefit-action]",
-        );
+  const actionButton = event.target.closest("[data-benefit-action]");
 
-    if (!actionButton) {
-        return;
+  if (!actionButton) {
+    return;
+  }
+
+  const benefitId = actionButton.dataset.benefitId;
+
+  const action = actionButton.dataset.benefitAction;
+
+  if (!benefitId) {
+    return;
+  }
+
+  if (action === "edit") {
+    openEditBenefitEditor(benefitId);
+
+    return;
+  }
+
+  if (action === "delete") {
+    if (!window.confirm("Delete this benefit?")) {
+      return;
     }
 
-    const benefitId =
-        actionButton.dataset.benefitId;
-
-    const action =
-        actionButton.dataset.benefitAction;
-
-    if (!benefitId) {
-        return;
-    }
-
-    if (action === "edit") {
-        openEditBenefitEditor(
-            benefitId,
-        );
-
-        return;
-    }
-
-    if (action === "delete") {
-        if (
-            !window.confirm(
-                "Delete this benefit?",
-            )
-        ) {
-            return;
-        }
-
-        deleteDraftBenefit(
-            benefitId,
-        );
-    }
+    deleteDraftBenefit(benefitId);
+  }
 }
-
 
 function deleteDraftBenefit(benefitId) {
-    draftBenefits =
-        draftBenefits.filter(
-            function (benefit) {
-                return (
-                    benefit.id !== benefitId
-                );
-            },
-        );
+  draftBenefits = draftBenefits.filter(function (benefit) {
+    return benefit.id !== benefitId;
+  });
 
-    if (editingBenefitId === benefitId) {
-        closeBenefitEditor();
-    }
+  if (editingBenefitId === benefitId) {
+    closeBenefitEditor();
+  }
 
-    renderDraftBenefits();
+  renderDraftBenefits();
 }
-
 
 /* ========================================
    DRAFT BENEFIT RENDERING
 ======================================== */
 
 function renderDraftBenefits() {
-    if (!elements.policyBenefitList) {
-        return;
-    }
+  if (!elements.policyBenefitList) {
+    return;
+  }
 
-    elements.policyBenefitList.innerHTML =
-        "";
+  elements.policyBenefitList.innerHTML = "";
 
-    if (draftBenefits.length === 0) {
-        renderEmptyBenefitMessage();
-
-        renderPolicyValidation();
-
-        return;
-    }
-
-    draftBenefits.forEach(function (benefit) {
-        elements.policyBenefitList.appendChild(
-            createBenefitElement(benefit),
-        );
-    });
+  if (draftBenefits.length === 0) {
+    renderEmptyBenefitMessage();
 
     renderPolicyValidation();
-}
 
+    return;
+  }
+
+  draftBenefits.forEach(function (benefit) {
+    elements.policyBenefitList.appendChild(createBenefitElement(benefit));
+  });
+
+  renderPolicyValidation();
+}
 
 function renderEmptyBenefitMessage() {
-    const message =
-        document.createElement("p");
+  const message = document.createElement("p");
 
-    message.id =
-        "emptyPolicyBenefitMessage";
+  message.id = "emptyPolicyBenefitMessage";
 
-    message.className =
-        "empty-state-message";
+  message.className = "empty-state-message";
 
-    message.textContent =
-        "No benefits added yet.";
+  message.textContent = "No benefits added yet.";
 
-    elements.emptyPolicyBenefitMessage =
-        message;
+  elements.emptyPolicyBenefitMessage = message;
 
-    elements.policyBenefitList.appendChild(
-        message,
-    );
+  elements.policyBenefitList.appendChild(message);
 }
 
-
 function createBenefitElement(benefit) {
-    const item =
-        document.createElement("article");
+  const item = document.createElement("article");
 
-    item.className =
-        "planning-card-item benefit-item";
+  item.className = "planning-card-item benefit-item";
 
-    const benefitLabel =
-        BENEFIT_LABELS[benefit.type] ??
-        "Insurance Benefit";
+  const benefitLabel = BENEFIT_LABELS[benefit.type] ?? "Insurance Benefit";
 
-    const amountLabel =
-        getBenefitAmountDescription(
-            benefit,
-        );
+  const amountLabel = getBenefitAmountDescription(benefit);
 
-    const lifeAssuredText =
-        benefit.lifeAssured
-            ? `
+  const lifeAssuredText = benefit.lifeAssured
+    ? `
                 <span>
                     Life Assured:
-                    ${escapeHtml(
-                benefit.lifeAssured,
-            )}
+                    ${escapeHtml(benefit.lifeAssured)}
                 </span>
             `
-            : "";
+    : "";
 
-    item.innerHTML = `
+  item.innerHTML = `
         <div class="planning-card-content">
 
             <div class="planning-card-icon">
@@ -1708,13 +1180,14 @@ function createBenefitElement(benefit) {
         ${escapeHtml(amountLabel)}
     </p>
 
-    ${lifeAssuredText
-            ? `
+    ${
+      lifeAssuredText
+        ? `
                 <div class="benefit-item-meta">
                     ${lifeAssuredText}
                 </div>
             `
-            : ""
+        : ""
     }
 
 </div>
@@ -1727,9 +1200,7 @@ function createBenefitElement(benefit) {
     type="button"
     class="planning-card-action"
     data-benefit-action="edit"
-    data-benefit-id="${escapeHtml(
-        benefit.id,
-    )}"
+    data-benefit-id="${escapeHtml(benefit.id)}"
     aria-label="Edit Benefit"
     title="Edit Benefit"
 >
@@ -1743,9 +1214,7 @@ function createBenefitElement(benefit) {
     type="button"
     class="planning-card-action delete"
     data-benefit-action="delete"
-    data-benefit-id="${escapeHtml(
-        benefit.id,
-    )}"
+    data-benefit-id="${escapeHtml(benefit.id)}"
     aria-label="Delete Benefit"
     title="Delete Benefit"
 >
@@ -1758,211 +1227,147 @@ function createBenefitElement(benefit) {
 </div>
     `;
 
-    return item;
+  return item;
 }
-
 
 function getBenefitAmountDescription(benefit) {
-    if (
-        benefit.type === "hospitalisation" &&
-        benefit.amount <= 0
-    ) {
-        return "Hospitalisation coverage";
-    }
+  if (benefit.type === "hospitalisation" && benefit.amount <= 0) {
+    return "Hospitalisation coverage";
+  }
 
-    const formattedAmount =
-        formatCurrency(benefit.amount);
+  const formattedAmount = formatCurrency(benefit.amount);
 
-    switch (benefit.type) {
-        case "hospital_cash":
-            return `${formattedAmount} per day`;
+  switch (benefit.type) {
+    case "hospital_cash":
+      return `${formattedAmount} per day`;
 
-        case "disability_income":
-            return `${formattedAmount} per month`;
+    case "disability_income":
+      return `${formattedAmount} per month`;
 
-        default:
-            return formattedAmount;
-    }
+    default:
+      return formattedAmount;
+  }
 }
 
-function createBenefitBadge(
-    benefit,
-) {
-
-    if (
-        benefit.type ===
-        "critical_illness"
-    ) {
-
-        if (
-            benefit.payoutType ===
-            "accelerated"
-        ) {
-
-            return `
+function createBenefitBadge(benefit) {
+  if (benefit.type === "critical_illness") {
+    if (benefit.payoutType === "accelerated") {
+      return `
                 <span class="benefit-badge badge-accelerated">
                     Accelerated
                 </span>
             `;
-        }
+    }
 
-        if (
-            benefit.payoutType ===
-            "additional"
-        ) {
-
-            return `
+    if (benefit.payoutType === "additional") {
+      return `
                 <span class="benefit-badge badge-additional">
                     Additional
                 </span>
             `;
-        }
+    }
 
-        return `
+    return `
             <span class="benefit-badge badge-standalone">
                 Standalone
             </span>
         `;
-    }
+  }
 
-    if (
-        benefit.type ===
-        "early_critical_illness"
-    ) {
-
-        return `
+  if (benefit.type === "early_critical_illness") {
+    return `
             <span class="benefit-badge badge-eci">
                 Early CI
             </span>
         `;
-    }
+  }
 
-    return "";
+  return "";
 }
-
 
 /* ========================================
    POLICY LIST RENDERING
 ======================================== */
 
 function renderInsurancePortfolio() {
-    renderPolicies();
+  renderPolicies();
 }
-
 
 function renderPolicies() {
-    if (!elements.policyList) {
-        return;
-    }
+  if (!elements.policyList) {
+    return;
+  }
 
-    const policies =
-        getAllPolicies();
+  const policies = getAllPolicies();
 
-    elements.policyList.innerHTML = "";
+  elements.policyList.innerHTML = "";
 
-    if (policies.length === 0) {
-        renderEmptyPolicyMessage();
+  if (policies.length === 0) {
+    renderEmptyPolicyMessage();
 
-        return;
-    }
+    return;
+  }
 
-    policies.forEach(function (policy) {
-        elements.policyList.appendChild(
-            createPolicyElement(policy),
-        );
-    });
+  policies.forEach(function (policy) {
+    elements.policyList.appendChild(createPolicyElement(policy));
+  });
 }
-
 
 function renderEmptyPolicyMessage() {
-    const message =
-        document.createElement("p");
+  const message = document.createElement("p");
 
-    message.id =
-        "emptyPolicyMessage";
+  message.id = "emptyPolicyMessage";
 
-    message.className =
-        "empty-state-message";
+  message.className = "empty-state-message";
 
-    message.textContent =
-        "No policies added yet.";
+  message.textContent = "No policies added yet.";
 
-    elements.emptyPolicyMessage =
-        message;
+  elements.emptyPolicyMessage = message;
 
-    elements.policyList.appendChild(
-        message,
-    );
+  elements.policyList.appendChild(message);
 }
 
-
 function createPolicyElement(policy) {
-    const item =
-        document.createElement("article");
+  const item = document.createElement("article");
 
-    item.className =
-        "planning-card-item policy-item";
+  item.className = "planning-card-item policy-item";
 
-    const policyName =
-        policy.policyName ||
-        "Unnamed Policy";
+  const policyName = policy.policyName || "Unnamed Policy";
 
-    const policyType =
-        POLICY_TYPE_LABELS[
-        policy.policyType
-        ] ||
-        "Other";
+  const policyType = POLICY_TYPE_LABELS[policy.policyType] || "Other";
 
-    const insurer =
-        policy.insurer ||
-        "Insurer not specified";
+  const insurer = policy.insurer || "Insurer not specified";
 
-    const status =
-        POLICY_STATUS_LABELS[
-        policy.status
-        ] ||
-        "Status not specified";
+  const status = POLICY_STATUS_LABELS[policy.status] || "Status not specified";
 
-    const premiumDescription =
-        getPremiumDescription(
-            policy.premium,
-        );
+  const premiumDescription = getPremiumDescription(policy.premium);
 
-    const benefitCount =
-        Array.isArray(policy.benefits)
-            ? policy.benefits.length
-            : 0;
+  const benefitCount = Array.isArray(policy.benefits)
+    ? policy.benefits.length
+    : 0;
 
-    const benefitText =
-        benefitCount === 1
-            ? "1 benefit"
-            : `${benefitCount} benefits`;
+  const benefitText =
+    benefitCount === 1 ? "1 benefit" : `${benefitCount} benefits`;
 
-    const policyNumberText =
-        policy.policyNumber
-            ? `
+  const policyNumberText = policy.policyNumber
+    ? `
                 <span>
                     Policy No:
-                    ${escapeHtml(
-                policy.policyNumber,
-            )}
+                    ${escapeHtml(policy.policyNumber)}
                 </span>
             `
-            : "";
+    : "";
 
-    const policyOwnerText =
-        policy.policyOwner
-            ? `
+  const policyOwnerText = policy.policyOwner
+    ? `
                 <span>
                     Owner:
-                    ${escapeHtml(
-                policy.policyOwner,
-            )}
+                    ${escapeHtml(policy.policyOwner)}
                 </span>
             `
-            : "";
+    : "";
 
-    item.innerHTML = `
+  item.innerHTML = `
     <div class="planning-card-content">
 
         <div class="planning-card-icon">
@@ -1991,15 +1396,11 @@ function createPolicyElement(policy) {
                 </span>
 
                 <span>
-                    ${escapeHtml(
-        premiumDescription,
-    )}
+                    ${escapeHtml(premiumDescription)}
                 </span>
 
                 <span>
-                    ${escapeHtml(
-        benefitText,
-    )}
+                    ${escapeHtml(benefitText)}
                 </span>
 
                 ${policyNumberText}
@@ -2018,9 +1419,7 @@ function createPolicyElement(policy) {
             type="button"
             class="planning-card-action"
             data-policy-action="edit"
-            data-policy-id="${escapeHtml(
-        policy.id,
-    )}"
+            data-policy-id="${escapeHtml(policy.id)}"
             aria-label="Edit policy"
             title="Edit policy"
         >
@@ -2034,9 +1433,7 @@ function createPolicyElement(policy) {
     type="button"
     class="planning-card-action delete"
     data-policy-action="delete"
-    data-policy-id="${escapeHtml(
-        policy.id,
-    )}"
+    data-policy-id="${escapeHtml(policy.id)}"
     aria-label="Delete policy"
     title="Delete policy"
 >
@@ -2049,91 +1446,63 @@ function createPolicyElement(policy) {
     </div>
 `;
 
-    return item;
+  return item;
 }
 
 function handlePolicyListClick(event) {
-    const actionButton =
-        event.target.closest(
-            "[data-policy-action]",
-        );
+  const actionButton = event.target.closest("[data-policy-action]");
 
-    if (!actionButton) {
-        return;
+  if (!actionButton) {
+    return;
+  }
+
+  const policyId = actionButton.dataset.policyId;
+
+  const action = actionButton.dataset.policyAction;
+
+  if (action === "edit") {
+    openEditPolicyModal(policyId);
+
+    return;
+  }
+
+  if (action === "delete") {
+    const policy = getPolicyById(policyId);
+
+    const confirmed = window.confirm(
+      `Delete "${policy?.policyName || "this policy"}"?`,
+    );
+
+    if (!confirmed) {
+      return;
     }
 
-    const policyId =
-        actionButton.dataset.policyId;
-
-    const action =
-        actionButton.dataset.policyAction;
-
-    if (action === "edit") {
-        openEditPolicyModal(
-            policyId,
-        );
-
-        return;
-    }
-
-    if (action === "delete") {
-
-        const policy =
-            getPolicyById(policyId);
-
-        const confirmed = window.confirm(
-            `Delete "${policy?.policyName || "this policy"}"?`
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
-        handleDeletePolicy(policyId);
-        return;
-    }
+    handleDeletePolicy(policyId);
+    return;
+  }
 }
 
-function handleDeletePolicy(
-    policyId,
-) {
+function handleDeletePolicy(policyId) {
+  const removed = removePolicy(policyId);
 
-    const removed =
-        removePolicy(
-            policyId,
-        );
+  if (!removed) {
+    return;
+  }
 
-    if (!removed) {
-        return;
-    }
-
-    renderInsurancePortfolio();
+  renderInsurancePortfolio();
 }
-
 
 /* ========================================
    HELPERS
 ======================================== */
 
 function getPremiumDescription(premium) {
-    if (
-        !premium ||
-        premium.amount <= 0
-    ) {
-        return "Premium not provided";
-    }
+  if (!premium || premium.amount <= 0) {
+    return "Premium not provided";
+  }
 
-    const frequencyLabel =
-        PREMIUM_FREQUENCY_LABELS[
-        premium.frequency
-        ] ||
-        "Premium";
+  const frequencyLabel =
+    PREMIUM_FREQUENCY_LABELS[premium.frequency] || "Premium";
 
-    return [
-        formatCurrency(
-            premium.amount,
-        ),
-
-        frequencyLabel,
-    ].join(" · ");
+  return [formatCurrency(premium.amount), frequencyLabel].join(" · ");
 }

@@ -6,27 +6,27 @@
 export const DEV_MODE = true;
 
 export function seedClientProfile() {
-    if (!DEV_MODE) {
-        return;
-    }
+  if (!DEV_MODE) {
+    return;
+  }
 
-    return {
-        fullName: "John Tan",
+  return {
+    fullName: "John Tan",
 
-        dateOfBirth: "1989-06-15",
+    dateOfBirth: "1989-06-15",
 
-        gender: "male",
+    gender: "male",
 
-        maritalStatus: "married",
+    maritalStatus: "married",
 
-        occupation: "Engineer",
+    occupation: "Engineer",
 
-        employmentStatus: "full_time_employed",
+    employmentStatus: "full_time_employed",
 
-        phoneNumber: "91234567",
+    phoneNumber: "91234567",
 
-        email: "john.tan@email.com",
+    email: "john.tan@email.com",
 
-        dependants: 2,
-    };
+    dependants: 2,
+  };
 }

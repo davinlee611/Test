@@ -4,21 +4,13 @@ import { clientPlan } from "../state/client-plan.js";
 import { emit } from "../events/event-bus.js";
 import { EVENTS } from "../events/events.js";
 
-
 /* ========================================
    DOM REFERENCES
 ======================================== */
 
-const wealthTypeCards =
-    document.querySelectorAll(
-        ".wealth-type-card",
-    );
+const wealthTypeCards = document.querySelectorAll(".wealth-type-card");
 
-const wealthTypeProgress =
-    document.getElementById(
-        "wealthTypeProgress",
-    );
-
+const wealthTypeProgress = document.getElementById("wealthTypeProgress");
 
 /* ========================================
    MODULE STATE
@@ -26,88 +18,67 @@ const wealthTypeProgress =
 
 let moduleInitialized = false;
 
-
 /* ========================================
    INITIALIZATION
 ======================================== */
 
 export function initializeWealthType() {
-    if (moduleInitialized) {
-        return;
-    }
+  if (moduleInitialized) {
+    return;
+  }
 
-    attachWealthTypeListeners();
-    renderWealthTypeSelections();
+  attachWealthTypeListeners();
+  renderWealthTypeSelections();
 
-    moduleInitialized = true;
+  moduleInitialized = true;
 }
-
 
 /* ========================================
    RESET
 ======================================== */
 
 export function resetWealthType() {
-    clientPlan.priorities.selectedWealthTypes =
-        [];
+  clientPlan.priorities.selectedWealthTypes = [];
 
-    renderWealthTypeSelections();
-    emitWealthTypeChanged();
+  renderWealthTypeSelections();
+  emitWealthTypeChanged();
 }
-
 
 /* ========================================
    EVENT LISTENERS
 ======================================== */
 
 function attachWealthTypeListeners() {
-    wealthTypeCards.forEach(function (card) {
-        card.addEventListener(
-            "click",
-            function () {
-                handleWealthTypeClick(card);
-            },
-        );
+  wealthTypeCards.forEach(function (card) {
+    card.addEventListener("click", function () {
+      handleWealthTypeClick(card);
     });
+  });
 }
 
-
 function handleWealthTypeClick(card) {
-    const wealthType =
-        card.dataset.wealthType;
+  const wealthType = card.dataset.wealthType;
 
-    if (!wealthType) {
-        return;
-    }
+  if (!wealthType) {
+    return;
+  }
 
-    const selectedWealthTypes =
-        clientPlan.priorities
-            .selectedWealthTypes;
+  const selectedWealthTypes = clientPlan.priorities.selectedWealthTypes;
 
-    const isAlreadySelected =
-        selectedWealthTypes.includes(
-            wealthType,
-        );
+  const isAlreadySelected = selectedWealthTypes.includes(wealthType);
 
-    if (isAlreadySelected) {
-        clientPlan.priorities
-            .selectedWealthTypes =
-            selectedWealthTypes.filter(
-                function (selectedType) {
-                    return (
-                        selectedType !==
-                        wealthType
-                    );
-                },
-            );
-    } else {
-        selectedWealthTypes.push(
-            wealthType,
-        );
-    }
+  if (isAlreadySelected) {
+    clientPlan.priorities.selectedWealthTypes = selectedWealthTypes.filter(
+      function (selectedType) {
+        return selectedType !== wealthType;
+      },
+    );
+  } else {
+    selectedWealthTypes.push(wealthType);
+  }
 
-    renderWealthTypeSelections();
-    emitWealthTypeChanged();
+  renderWealthTypeSelections();
+  emitWealthTypeChanged();
 }
 
 /* ========================================
@@ -115,93 +86,49 @@ function handleWealthTypeClick(card) {
 ======================================== */
 
 function renderWealthTypeSelections() {
-    const selectedWealthTypes =
-        clientPlan.priorities
-            .selectedWealthTypes;
+  const selectedWealthTypes = clientPlan.priorities.selectedWealthTypes;
 
-    wealthTypeCards.forEach(function (card) {
-        const wealthType =
-            card.dataset.wealthType;
+  wealthTypeCards.forEach(function (card) {
+    const wealthType = card.dataset.wealthType;
 
-        const selectedIndex =
-            selectedWealthTypes.indexOf(
-                wealthType,
-            );
+    const selectedIndex = selectedWealthTypes.indexOf(wealthType);
 
-        const isSelected =
-            selectedIndex !== -1;
+    const isSelected = selectedIndex !== -1;
 
-        const ranking =
-            isSelected
-                ? selectedIndex + 1
-                : "";
+    const ranking = isSelected ? selectedIndex + 1 : "";
 
-        card.classList.toggle(
-            "selected",
-            isSelected,
-        );
+    card.classList.toggle("selected", isSelected);
 
-        card.setAttribute(
-            "aria-pressed",
-            String(isSelected),
-        );
+    card.setAttribute("aria-pressed", String(isSelected));
 
-        card.setAttribute(
-            "aria-label",
-            createWealthTypeAriaLabel(
-                card,
-                ranking,
-            ),
-        );
+    card.setAttribute("aria-label", createWealthTypeAriaLabel(card, ranking));
 
-        const selectionIndicator =
-            card.querySelector(
-                ".selection-indicator",
-            );
+    const selectionIndicator = card.querySelector(".selection-indicator");
 
-        if (selectionIndicator) {
-            selectionIndicator.textContent =
-                ranking;
-        }
-    });
-
-    if (wealthTypeProgress) {
-        const selectedCount =
-            selectedWealthTypes.length;
-
-        wealthTypeProgress.textContent =
-            `${selectedCount} of 4 ranked`;
-
-        wealthTypeProgress.classList.toggle(
-            "complete",
-            selectedCount === 4,
-        );
+    if (selectionIndicator) {
+      selectionIndicator.textContent = ranking;
     }
+  });
 
+  if (wealthTypeProgress) {
+    const selectedCount = selectedWealthTypes.length;
+
+    wealthTypeProgress.textContent = `${selectedCount} of 4 ranked`;
+
+    wealthTypeProgress.classList.toggle("complete", selectedCount === 4);
+  }
 }
 
-function createWealthTypeAriaLabel(
-    card,
-    ranking,
-) {
-    const heading =
-        card.querySelector("h4");
+function createWealthTypeAriaLabel(card, ranking) {
+  const heading = card.querySelector("h4");
 
-    const wealthTypeName =
-        heading?.textContent?.trim() ||
-        "Wealth priority";
+  const wealthTypeName = heading?.textContent?.trim() || "Wealth priority";
 
-    if (!ranking) {
-        return (
-            `${wealthTypeName}. ` +
-            "Not currently ranked."
-        );
-    }
+  if (!ranking) {
+    return `${wealthTypeName}. ` + "Not currently ranked.";
+  }
 
-    return (
-        `${wealthTypeName}. ` +
-        `Ranked number ${ranking}.`
-    );
+  return `${wealthTypeName}. ` + `Ranked number ${ranking}.`;
 }
 
 /* ========================================
@@ -209,14 +136,7 @@ function createWealthTypeAriaLabel(
 ======================================== */
 
 function emitWealthTypeChanged() {
-    emit(
-        EVENTS.WEALTH_TYPE_CHANGED,
-        {
-            selectedWealthTypes:
-                [
-                    ...clientPlan.priorities
-                        .selectedWealthTypes,
-                ],
-        },
-    );
+  emit(EVENTS.WEALTH_TYPE_CHANGED, {
+    selectedWealthTypes: [...clientPlan.priorities.selectedWealthTypes],
+  });
 }

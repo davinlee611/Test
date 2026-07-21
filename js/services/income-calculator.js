@@ -1,218 +1,146 @@
 "use strict";
 
 import {
-    CPF_ORDINARY_WAGE_CEILING,
-    CPF_ANNUAL_WAGE_CEILING,
-    getCpfContributionRates,
+  CPF_ORDINARY_WAGE_CEILING,
+  CPF_ANNUAL_WAGE_CEILING,
+  getCpfContributionRates,
 } from "./cpf-service.js";
-
 
 /* ========================================
    INCOME CALCULATION SERVICE
 ======================================== */
 
 export function calculateIncomeSummary({
-    monthlyEmploymentIncome = 0,
-    annualBonus = 0,
-    monthlyOtherIncome = 0,
-    employmentStatus = "",
-    age = null,
+  monthlyEmploymentIncome = 0,
+  annualBonus = 0,
+  monthlyOtherIncome = 0,
+  employmentStatus = "",
+  age = null,
 }) {
-    const safeMonthlyEmploymentIncome =
-        toNonNegativeNumber(
-            monthlyEmploymentIncome,
-        );
+  const safeMonthlyEmploymentIncome = toNonNegativeNumber(
+    monthlyEmploymentIncome,
+  );
 
-    const safeAnnualBonus =
-        toNonNegativeNumber(
-            annualBonus,
-        );
+  const safeAnnualBonus = toNonNegativeNumber(annualBonus);
 
-    const safeMonthlyOtherIncome =
-        toNonNegativeNumber(
-            monthlyOtherIncome,
-        );
+  const safeMonthlyOtherIncome = toNonNegativeNumber(monthlyOtherIncome);
 
-    const cpfApplies =
-        employmentStatus ===
-            "full_time_employed" &&
-        age !== null;
+  const cpfApplies = employmentStatus === "full_time_employed" && age !== null;
 
-    const cpfRates =
-        getCpfContributionRates(age);
+  const cpfRates = getCpfContributionRates(age);
 
-    const employeeCpfRate =
-        cpfApplies
-            ? cpfRates.employeeRate
-            : 0;
+  const employeeCpfRate = cpfApplies ? cpfRates.employeeRate : 0;
 
-    const employerCpfRate =
-        cpfApplies
-            ? cpfRates.employerRate
-            : 0;
+  const employerCpfRate = cpfApplies ? cpfRates.employerRate : 0;
 
-    const monthlyCpfOrdinaryWage =
-        cpfApplies
-            ? Math.min(
-                  safeMonthlyEmploymentIncome,
-                  CPF_ORDINARY_WAGE_CEILING,
-              )
-            : 0;
+  const monthlyCpfOrdinaryWage = cpfApplies
+    ? Math.min(safeMonthlyEmploymentIncome, CPF_ORDINARY_WAGE_CEILING)
+    : 0;
 
-    const annualCpfOrdinaryWage =
-        monthlyCpfOrdinaryWage * 12;
+  const annualCpfOrdinaryWage = monthlyCpfOrdinaryWage * 12;
 
-    const additionalWageCeiling =
-        cpfApplies
-            ? Math.max(
-                  0,
-                  CPF_ANNUAL_WAGE_CEILING -
-                      annualCpfOrdinaryWage,
-              )
-            : 0;
+  const additionalWageCeiling = cpfApplies
+    ? Math.max(0, CPF_ANNUAL_WAGE_CEILING - annualCpfOrdinaryWage)
+    : 0;
 
-    const cpfAdditionalWage =
-        cpfApplies
-            ? Math.min(
-                  safeAnnualBonus,
-                  additionalWageCeiling,
-              )
-            : 0;
+  const cpfAdditionalWage = cpfApplies
+    ? Math.min(safeAnnualBonus, additionalWageCeiling)
+    : 0;
 
-    const bonusNotSubjectToCpf =
-        cpfApplies
-            ? Math.max(
-                  0,
-                  safeAnnualBonus -
-                      cpfAdditionalWage,
-              )
-            : safeAnnualBonus;
+  const bonusNotSubjectToCpf = cpfApplies
+    ? Math.max(0, safeAnnualBonus - cpfAdditionalWage)
+    : safeAnnualBonus;
 
-    const monthlyEmployeeCpf =
-        cpfApplies
-            ? Math.round(
-                  monthlyCpfOrdinaryWage *
-                      employeeCpfRate,
-              )
-            : 0;
+  const monthlyEmployeeCpf = cpfApplies
+    ? Math.round(monthlyCpfOrdinaryWage * employeeCpfRate)
+    : 0;
 
-    const monthlyEmployerCpf =
-        cpfApplies
-            ? Math.round(
-                  monthlyCpfOrdinaryWage *
-                      employerCpfRate,
-              )
-            : 0;
+  const monthlyEmployerCpf = cpfApplies
+    ? Math.round(monthlyCpfOrdinaryWage * employerCpfRate)
+    : 0;
 
-    const annualOrdinaryWageEmployeeCpf =
-        monthlyEmployeeCpf * 12;
+  const annualOrdinaryWageEmployeeCpf = monthlyEmployeeCpf * 12;
 
-    const annualOrdinaryWageEmployerCpf =
-        monthlyEmployerCpf * 12;
+  const annualOrdinaryWageEmployerCpf = monthlyEmployerCpf * 12;
 
-    const annualAdditionalWageEmployeeCpf =
-        cpfApplies
-            ? Math.round(
-                  cpfAdditionalWage *
-                      employeeCpfRate,
-              )
-            : 0;
+  const annualAdditionalWageEmployeeCpf = cpfApplies
+    ? Math.round(cpfAdditionalWage * employeeCpfRate)
+    : 0;
 
-    const annualAdditionalWageEmployerCpf =
-        cpfApplies
-            ? Math.round(
-                  cpfAdditionalWage *
-                      employerCpfRate,
-              )
-            : 0;
+  const annualAdditionalWageEmployerCpf = cpfApplies
+    ? Math.round(cpfAdditionalWage * employerCpfRate)
+    : 0;
 
-    const annualEmployeeCpf =
-        annualOrdinaryWageEmployeeCpf +
-        annualAdditionalWageEmployeeCpf;
+  const annualEmployeeCpf =
+    annualOrdinaryWageEmployeeCpf + annualAdditionalWageEmployeeCpf;
 
-    const annualEmployerCpf =
-        annualOrdinaryWageEmployerCpf +
-        annualAdditionalWageEmployerCpf;
+  const annualEmployerCpf =
+    annualOrdinaryWageEmployerCpf + annualAdditionalWageEmployerCpf;
 
-    const annualEmploymentIncome =
-        safeMonthlyEmploymentIncome * 12 +
-        safeAnnualBonus;
+  const annualEmploymentIncome =
+    safeMonthlyEmploymentIncome * 12 + safeAnnualBonus;
 
-    const annualOtherIncome =
-        safeMonthlyOtherIncome * 12;
+  const annualOtherIncome = safeMonthlyOtherIncome * 12;
 
-    const totalMonthlyIncome =
-        safeMonthlyEmploymentIncome +
-        safeMonthlyOtherIncome;
+  const totalMonthlyIncome =
+    safeMonthlyEmploymentIncome + safeMonthlyOtherIncome;
 
-    const totalAnnualIncome =
-        annualEmploymentIncome +
-        annualOtherIncome;
+  const totalAnnualIncome = annualEmploymentIncome + annualOtherIncome;
 
-    const monthlyTakeHomeIncome =
-        safeMonthlyEmploymentIncome -
-        monthlyEmployeeCpf +
-        safeMonthlyOtherIncome;
+  const monthlyTakeHomeIncome =
+    safeMonthlyEmploymentIncome - monthlyEmployeeCpf + safeMonthlyOtherIncome;
 
-    const annualTakeHomeIncome =
-        annualEmploymentIncome -
-        annualEmployeeCpf +
-        annualOtherIncome;
+  const annualTakeHomeIncome =
+    annualEmploymentIncome - annualEmployeeCpf + annualOtherIncome;
 
-    return {
-        cpfApplies,
+  return {
+    cpfApplies,
 
-        employeeCpfRate,
-        employerCpfRate,
+    employeeCpfRate,
+    employerCpfRate,
 
-        monthlyCpfOrdinaryWage,
-        annualCpfOrdinaryWage,
-        additionalWageCeiling,
-        cpfAdditionalWage,
-        bonusNotSubjectToCpf,
+    monthlyCpfOrdinaryWage,
+    annualCpfOrdinaryWage,
+    additionalWageCeiling,
+    cpfAdditionalWage,
+    bonusNotSubjectToCpf,
 
-        monthlyEmployeeCpf,
-        monthlyEmployerCpf,
+    monthlyEmployeeCpf,
+    monthlyEmployerCpf,
 
-        annualOrdinaryWageEmployeeCpf,
-        annualOrdinaryWageEmployerCpf,
+    annualOrdinaryWageEmployeeCpf,
+    annualOrdinaryWageEmployerCpf,
 
-        annualAdditionalWageEmployeeCpf,
-        annualAdditionalWageEmployerCpf,
+    annualAdditionalWageEmployeeCpf,
+    annualAdditionalWageEmployerCpf,
 
-        annualEmployeeCpf,
-        annualEmployerCpf,
+    annualEmployeeCpf,
+    annualEmployerCpf,
 
-        monthlyEmploymentIncome:
-            safeMonthlyEmploymentIncome,
+    monthlyEmploymentIncome: safeMonthlyEmploymentIncome,
 
-        annualEmploymentIncome,
-        monthlyOtherIncome:
-            safeMonthlyOtherIncome,
-        annualOtherIncome,
+    annualEmploymentIncome,
+    monthlyOtherIncome: safeMonthlyOtherIncome,
+    annualOtherIncome,
 
-        totalMonthlyIncome,
-        totalAnnualIncome,
+    totalMonthlyIncome,
+    totalAnnualIncome,
 
-        monthlyTakeHomeIncome,
-        annualTakeHomeIncome,
-    };
+    monthlyTakeHomeIncome,
+    annualTakeHomeIncome,
+  };
 }
-
 
 /* ========================================
    INTERNAL HELPERS
 ======================================== */
 
 function toNonNegativeNumber(value) {
-    const number = Number(value);
+  const number = Number(value);
 
-    if (
-        !Number.isFinite(number) ||
-        number < 0
-    ) {
-        return 0;
-    }
+  if (!Number.isFinite(number) || number < 0) {
+    return 0;
+  }
 
-    return number;
+  return number;
 }

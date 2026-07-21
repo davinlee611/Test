@@ -1,240 +1,170 @@
 "use strict";
 
-
 /* ========================================
    PLANNING CARD
 ======================================== */
 
-export function createPlanningCard({
-    itemClass = "",
-    icon,
-    details,
-    actions,
-}) {
-    const article =
-        document.createElement("article");
+export function createPlanningCard({ itemClass = "", icon, details, actions }) {
+  const article = document.createElement("article");
 
-    article.className = [
-        "planning-card-item",
-        itemClass,
-    ]
-        .filter(Boolean)
-        .join(" ");
+  article.className = ["planning-card-item", itemClass]
+    .filter(Boolean)
+    .join(" ");
 
-    const content =
-        document.createElement("div");
+  const content = document.createElement("div");
 
-    content.className =
-        "planning-card-content";
+  content.className = "planning-card-content";
 
-    if (icon) {
-        content.appendChild(icon);
-    }
+  if (icon) {
+    content.appendChild(icon);
+  }
 
-    if (details) {
-        content.appendChild(details);
-    }
+  if (details) {
+    content.appendChild(details);
+  }
 
-    article.appendChild(content);
+  article.appendChild(content);
 
-    if (actions) {
-        article.appendChild(actions);
-    }
+  if (actions) {
+    article.appendChild(actions);
+  }
 
-    return article;
+  return article;
 }
-
 
 /* ========================================
    PLANNING CARD ICON
 ======================================== */
 
-export function createPlanningCardIcon(
-    iconClass,
-) {
-    const container =
-        document.createElement("div");
+export function createPlanningCardIcon(iconClass) {
+  const container = document.createElement("div");
 
-    container.className =
-        "planning-card-icon";
+  container.className = "planning-card-icon";
 
-    const icon =
-        document.createElement("i");
+  const icon = document.createElement("i");
 
-    icon.className =
-        iconClass;
+  icon.className = iconClass;
 
-    icon.setAttribute(
-        "aria-hidden",
-        "true",
-    );
+  icon.setAttribute("aria-hidden", "true");
 
-    container.appendChild(icon);
+  container.appendChild(icon);
 
-    return container;
+  return container;
 }
-
 
 /* ========================================
    PLANNING CARD DETAILS
 ======================================== */
 
 export function createPlanningCardDetails({
-    title = "",
-    description = "",
-    content = null,
+  title = "",
+  description = "",
+  content = null,
 } = {}) {
-    const details =
-        document.createElement("div");
+  const details = document.createElement("div");
 
-    details.className =
-        "planning-card-details";
+  details.className = "planning-card-details";
 
-    if (title) {
-        const heading =
-            document.createElement("h4");
+  if (title) {
+    const heading = document.createElement("h4");
 
-        heading.textContent =
-            title;
+    heading.textContent = title;
 
-        details.appendChild(
-            heading,
-        );
-    }
+    details.appendChild(heading);
+  }
 
-    if (description) {
-        const paragraph =
-            document.createElement("p");
+  if (description) {
+    const paragraph = document.createElement("p");
 
-        paragraph.textContent =
-            description;
+    paragraph.textContent = description;
 
-        details.appendChild(
-            paragraph,
-        );
-    }
+    details.appendChild(paragraph);
+  }
 
-    appendPlanningCardContent(
-        details,
-        content,
-    );
+  appendPlanningCardContent(details, content);
 
-    return details;
+  return details;
 }
 
+function appendPlanningCardContent(details, content) {
+  if (!content) {
+    return;
+  }
 
-function appendPlanningCardContent(
-    details,
-    content,
-) {
-    if (!content) {
-        return;
-    }
+  if (Array.isArray(content)) {
+    content.forEach(function (node) {
+      if (node instanceof Node) {
+        details.appendChild(node);
+      }
+    });
 
-    if (Array.isArray(content)) {
-        content.forEach(function (node) {
-            if (node instanceof Node) {
-                details.appendChild(node);
-            }
-        });
+    return;
+  }
 
-        return;
-    }
-
-    if (content instanceof Node) {
-        details.appendChild(content);
-    }
+  if (content instanceof Node) {
+    details.appendChild(content);
+  }
 }
-
 
 /* ========================================
    PLANNING CARD ACTIONS
 ======================================== */
 
 export function createPlanningCardActions() {
-    const actions =
-        document.createElement("div");
+  const actions = document.createElement("div");
 
-    actions.className =
-        "planning-card-actions";
+  actions.className = "planning-card-actions";
 
-    return actions;
+  return actions;
 }
-
 
 /* ========================================
    PLANNING CARD BUTTON
 ======================================== */
 
 export function createPlanningCardButton({
-    iconClass,
-    label,
-    variant = "",
-    onClick,
+  iconClass,
+  label,
+  variant = "",
+  onClick,
 }) {
-    const button =
-        document.createElement("button");
+  const button = document.createElement("button");
 
-    button.type = "button";
+  button.type = "button";
 
-    button.className = [
-        "planning-card-action",
-        variant,
-    ]
-        .filter(Boolean)
-        .join(" ");
+  button.className = ["planning-card-action", variant]
+    .filter(Boolean)
+    .join(" ");
 
-    button.setAttribute(
-        "aria-label",
-        label,
-    );
+  button.setAttribute("aria-label", label);
 
-    button.title = label;
+  button.title = label;
 
-    const icon =
-        document.createElement("i");
+  const icon = document.createElement("i");
 
-    icon.className =
-        iconClass;
+  icon.className = iconClass;
 
-    icon.setAttribute(
-        "aria-hidden",
-        "true",
-    );
+  icon.setAttribute("aria-hidden", "true");
 
-    button.appendChild(icon);
+  button.appendChild(icon);
 
-    if (typeof onClick === "function") {
-        button.addEventListener(
-            "click",
-            onClick,
-        );
-    }
+  if (typeof onClick === "function") {
+    button.addEventListener("click", onClick);
+  }
 
-    return button;
+  return button;
 }
-
 
 /* ========================================
    EMPTY STATE
 ======================================== */
 
-export function renderPlanningEmptyState(
-    list,
-    message,
-    existingElement,
-) {
-    if (
-        !list ||
-        !existingElement
-    ) {
-        return;
-    }
+export function renderPlanningEmptyState(list, message, existingElement) {
+  if (!list || !existingElement) {
+    return;
+  }
 
-    existingElement.textContent =
-        message;
+  existingElement.textContent = message;
 
-    list.appendChild(
-        existingElement,
-    );
+  list.appendChild(existingElement);
 }

@@ -1,107 +1,57 @@
 "use strict";
 
-import {
-    emit,
-} from "../events/event-bus.js";
+import { emit } from "../events/event-bus.js";
+
+import { EVENTS } from "../events/events.js";
+
+import { formatCurrency, getWholeNumber } from "../utils/client-utils.js";
 
 import {
-    EVENTS,
-} from "../events/events.js";
-
-import {
-    formatCurrency,
-    getWholeNumber,
-} from "../utils/client-utils.js";
-
-import {
-    getAllProperties,
-    getPropertyById,
-    createProperty,
-    updateProperty,
-    removeProperty,
-    clearProperties,
+  getAllProperties,
+  getPropertyById,
+  createProperty,
+  updateProperty,
+  removeProperty,
+  clearProperties,
 } from "../services/property-service.js";
-
 
 /* ========================================
    DOM REFERENCES
 ======================================== */
 
-const addPropertyButton =
-    document.getElementById(
-        "addPropertyButton",
-    );
+const addPropertyButton = document.getElementById("addPropertyButton");
 
-const emptyPropertyMessage =
-    document.getElementById(
-        "emptyPropertyMessage",
-    );
+const emptyPropertyMessage = document.getElementById("emptyPropertyMessage");
 
-const totalPropertyValueElement =
-    document.getElementById(
-        "totalPropertyValue",
-    );
+const totalPropertyValueElement = document.getElementById("totalPropertyValue");
 
-const propertyModal =
-    document.getElementById(
-        "propertyModal",
-    );
+const propertyModal = document.getElementById("propertyModal");
 
-const propertyForm =
-    document.getElementById(
-        "propertyForm",
-    );
+const propertyForm = document.getElementById("propertyForm");
 
-const propertyList =
-    document.getElementById(
-        "propertyList",
-    );
+const propertyList = document.getElementById("propertyList");
 
-const propertyModalTitle =
-    document.getElementById(
-        "propertyModalTitle",
-    );
+const propertyModalTitle = document.getElementById("propertyModalTitle");
 
-const editingPropertyIdInput =
-    document.getElementById(
-        "editingPropertyId",
-    );
+const editingPropertyIdInput = document.getElementById("editingPropertyId");
 
-const propertyTypeInput =
-    document.getElementById(
-        "propertyType",
-    );
+const propertyTypeInput = document.getElementById("propertyType");
 
-const propertyMarketValueInput =
-    document.getElementById(
-        "propertyMarketValue",
-    );
+const propertyMarketValueInput = document.getElementById("propertyMarketValue");
 
-const propertyOwnershipInput =
-    document.getElementById(
-        "propertyOwnership",
-    );
+const propertyOwnershipInput = document.getElementById("propertyOwnership");
 
-const propertyFormMessage =
-    document.getElementById(
-        "propertyFormMessage",
-    );
+const propertyFormMessage = document.getElementById("propertyFormMessage");
 
-const closePropertyModalButton =
-    document.getElementById(
-        "closePropertyModalButton",
-    );
+const closePropertyModalButton = document.getElementById(
+  "closePropertyModalButton",
+);
 
-const cancelPropertyButton =
-    document.getElementById(
-        "cancelPropertyButton",
-    );
+const cancelPropertyButton = document.getElementById("cancelPropertyButton");
 
-const propertyModalBackdrop =
-    document.querySelector(
-        "[data-close-property-modal]",
-    );
-
+const propertyModalBackdrop = document.querySelector(
+  "[data-close-property-modal]",
+);
 
 /* ========================================
    MODULE STATE
@@ -109,587 +59,405 @@ const propertyModalBackdrop =
 
 let moduleInitialized = false;
 
-
 /* ========================================
    INITIALIZATION
 ======================================== */
 
 export function initializeProperties() {
-    if (moduleInitialized) {
-        renderProperties();
-        return;
-    }
-
-    attachPropertyListeners();
+  if (moduleInitialized) {
     renderProperties();
+    return;
+  }
 
-    moduleInitialized = true;
+  attachPropertyListeners();
+  renderProperties();
+
+  moduleInitialized = true;
 }
-
 
 /* ========================================
    RESET
 ======================================== */
 
 export function resetProperties() {
-    clearProperties();
+  clearProperties();
 
-    closePropertyModal();
-    renderProperties();
+  closePropertyModal();
+  renderProperties();
 
-    emitPropertyChanged();
+  emitPropertyChanged();
 }
-
 
 /* ========================================
    EVENT LISTENERS
 ======================================== */
 
 function attachPropertyListeners() {
-    if (addPropertyButton) {
-        addPropertyButton.addEventListener(
-            "click",
-            openAddPropertyModal,
-        );
-    }
+  if (addPropertyButton) {
+    addPropertyButton.addEventListener("click", openAddPropertyModal);
+  }
 
-    if (propertyForm) {
-        propertyForm.addEventListener(
-            "submit",
-            handlePropertySubmit,
-        );
-    }
+  if (propertyForm) {
+    propertyForm.addEventListener("submit", handlePropertySubmit);
+  }
 
-    if (closePropertyModalButton) {
-        closePropertyModalButton
-            .addEventListener(
-                "click",
-                closePropertyModal,
-            );
-    }
+  if (closePropertyModalButton) {
+    closePropertyModalButton.addEventListener("click", closePropertyModal);
+  }
 
-    if (cancelPropertyButton) {
-        cancelPropertyButton.addEventListener(
-            "click",
-            closePropertyModal,
-        );
-    }
+  if (cancelPropertyButton) {
+    cancelPropertyButton.addEventListener("click", closePropertyModal);
+  }
 
-    if (propertyModalBackdrop) {
-        propertyModalBackdrop.addEventListener(
-            "click",
-            closePropertyModal,
-        );
-    }
+  if (propertyModalBackdrop) {
+    propertyModalBackdrop.addEventListener("click", closePropertyModal);
+  }
 
-    document.addEventListener(
-        "keydown",
-        handleDocumentKeydown,
-    );
+  document.addEventListener("keydown", handleDocumentKeydown);
 }
-
 
 function handleDocumentKeydown(event) {
-    if (
-        event.key === "Escape" &&
-        propertyModal &&
-        !propertyModal.hidden
-    ) {
-        closePropertyModal();
-    }
+  if (event.key === "Escape" && propertyModal && !propertyModal.hidden) {
+    closePropertyModal();
+  }
 }
-
 
 /* ========================================
    MODAL
 ======================================== */
 
 function openAddPropertyModal() {
-    if (!propertyModal || !propertyForm) {
-        return;
-    }
+  if (!propertyModal || !propertyForm) {
+    return;
+  }
 
-    propertyForm.reset();
+  propertyForm.reset();
 
-    if (editingPropertyIdInput) {
-        editingPropertyIdInput.value = "";
-    }
+  if (editingPropertyIdInput) {
+    editingPropertyIdInput.value = "";
+  }
 
-    if (propertyOwnershipInput) {
-        propertyOwnershipInput.value =
-            "100";
-    }
+  if (propertyOwnershipInput) {
+    propertyOwnershipInput.value = "100";
+  }
 
-    clearPropertyFormMessage();
+  clearPropertyFormMessage();
 
-    if (propertyModalTitle) {
-        propertyModalTitle.textContent =
-            "Add Property";
-    }
+  if (propertyModalTitle) {
+    propertyModalTitle.textContent = "Add Property";
+  }
 
-    propertyModal.hidden = false;
+  propertyModal.hidden = false;
 
-    document.body.classList.add(
-        "property-modal-open",
-    );
+  document.body.classList.add("property-modal-open");
 
-    propertyTypeInput?.focus();
+  propertyTypeInput?.focus();
 }
-
 
 function openEditPropertyModal(propertyId) {
-    const property =
-    getPropertyById(
-        propertyId,
-    );
+  const property = getPropertyById(propertyId);
 
-    if (!property || !propertyModal) {
-        return;
-    }
+  if (!property || !propertyModal) {
+    return;
+  }
 
-    if (editingPropertyIdInput) {
-        editingPropertyIdInput.value =
-            property.id;
-    }
+  if (editingPropertyIdInput) {
+    editingPropertyIdInput.value = property.id;
+  }
 
-    if (propertyTypeInput) {
-        propertyTypeInput.value =
-            property.type;
-    }
+  if (propertyTypeInput) {
+    propertyTypeInput.value = property.type;
+  }
 
-    if (propertyMarketValueInput) {
-        propertyMarketValueInput.value =
-            property.marketValue;
-    }
+  if (propertyMarketValueInput) {
+    propertyMarketValueInput.value = property.marketValue;
+  }
 
-    if (propertyOwnershipInput) {
-        propertyOwnershipInput.value =
-            property.ownershipPercentage;
-    }
+  if (propertyOwnershipInput) {
+    propertyOwnershipInput.value = property.ownershipPercentage;
+  }
 
-    clearPropertyFormMessage();
+  clearPropertyFormMessage();
 
-    if (propertyModalTitle) {
-        propertyModalTitle.textContent =
-            "Edit Property";
-    }
+  if (propertyModalTitle) {
+    propertyModalTitle.textContent = "Edit Property";
+  }
 
-    propertyModal.hidden = false;
+  propertyModal.hidden = false;
 
-    document.body.classList.add(
-        "property-modal-open",
-    );
+  document.body.classList.add("property-modal-open");
 
-    propertyTypeInput?.focus();
+  propertyTypeInput?.focus();
 }
-
 
 function closePropertyModal() {
-    if (!propertyModal) {
-        return;
-    }
+  if (!propertyModal) {
+    return;
+  }
 
-    propertyModal.hidden = true;
+  propertyModal.hidden = true;
 
-    document.body.classList.remove(
-        "property-modal-open",
-    );
+  document.body.classList.remove("property-modal-open");
 
-    clearPropertyFormMessage();
+  clearPropertyFormMessage();
 }
-
 
 function clearPropertyFormMessage() {
-    if (propertyFormMessage) {
-        propertyFormMessage.textContent = "";
-    }
+  if (propertyFormMessage) {
+    propertyFormMessage.textContent = "";
+  }
 }
-
 
 /* ========================================
    FORM SUBMISSION
 ======================================== */
 
 function handlePropertySubmit(event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    const propertyType =
-        propertyTypeInput?.value || "";
+  const propertyType = propertyTypeInput?.value || "";
 
-    const marketValue =
-        getWholeNumber(
-            propertyMarketValueInput?.value,
-        );
+  const marketValue = getWholeNumber(propertyMarketValueInput?.value);
 
-    const ownershipPercentage =
-        getWholeNumber(
-            propertyOwnershipInput?.value,
-        );
+  const ownershipPercentage = getWholeNumber(propertyOwnershipInput?.value);
 
-    const editingPropertyId =
-        editingPropertyIdInput?.value || "";
+  const editingPropertyId = editingPropertyIdInput?.value || "";
 
-    clearPropertyFormMessage();
+  clearPropertyFormMessage();
 
-    const validationResult =
-        validateProperty(
-            propertyType,
-            marketValue,
-            ownershipPercentage,
-        );
-
-    if (!validationResult.isValid) {
-        showPropertyFormMessage(
-            validationResult.message,
-        );
-
-        validationResult.element?.focus();
-        return;
-    }
-
-    if (editingPropertyId) {
-    updateProperty(
-        editingPropertyId,
-        {
-            propertyType,
-            marketValue,
-            ownershipPercentage,
-        },
-    );
-} else {
-    createProperty({
-        propertyType,
-        marketValue,
-        ownershipPercentage,
-    });
-}
-
-    renderProperties();
-    closePropertyModal();
-    emitPropertyChanged();
-}
-
-
-function validateProperty(
+  const validationResult = validateProperty(
     propertyType,
     marketValue,
     ownershipPercentage,
-) {
-    if (!propertyType) {
-        return {
-            isValid: false,
-            message:
-                "Please select a property type.",
-            element: propertyTypeInput,
-        };
-    }
+  );
 
-    if (marketValue <= 0) {
-        return {
-            isValid: false,
-            message:
-                "Please enter the property's market value.",
-            element:
-                propertyMarketValueInput,
-        };
-    }
+  if (!validationResult.isValid) {
+    showPropertyFormMessage(validationResult.message);
 
-    if (
-        ownershipPercentage < 1 ||
-        ownershipPercentage > 100
-    ) {
-        return {
-            isValid: false,
-            message:
-                "Ownership percentage must be between 1% and 100%.",
-            element:
-                propertyOwnershipInput,
-        };
-    }
+    validationResult.element?.focus();
+    return;
+  }
 
-    return {
-        isValid: true,
-    };
+  if (editingPropertyId) {
+    updateProperty(editingPropertyId, {
+      propertyType,
+      marketValue,
+      ownershipPercentage,
+    });
+  } else {
+    createProperty({
+      propertyType,
+      marketValue,
+      ownershipPercentage,
+    });
+  }
+
+  renderProperties();
+  closePropertyModal();
+  emitPropertyChanged();
 }
 
+function validateProperty(propertyType, marketValue, ownershipPercentage) {
+  if (!propertyType) {
+    return {
+      isValid: false,
+      message: "Please select a property type.",
+      element: propertyTypeInput,
+    };
+  }
+
+  if (marketValue <= 0) {
+    return {
+      isValid: false,
+      message: "Please enter the property's market value.",
+      element: propertyMarketValueInput,
+    };
+  }
+
+  if (ownershipPercentage < 1 || ownershipPercentage > 100) {
+    return {
+      isValid: false,
+      message: "Ownership percentage must be between 1% and 100%.",
+      element: propertyOwnershipInput,
+    };
+  }
+
+  return {
+    isValid: true,
+  };
+}
 
 function showPropertyFormMessage(message) {
-    if (propertyFormMessage) {
-        propertyFormMessage.textContent =
-            message;
-    }
+  if (propertyFormMessage) {
+    propertyFormMessage.textContent = message;
+  }
 }
-
 
 /* ========================================
    PROPERTY DELETION
 ======================================== */
 
-function handleDeleteProperty(
-    propertyId,
-) {
-    const shouldDelete =
-        window.confirm(
-            "Delete this property?",
-        );
+function handleDeleteProperty(propertyId) {
+  const shouldDelete = window.confirm("Delete this property?");
 
-    if (!shouldDelete) {
-        return;
-    }
+  if (!shouldDelete) {
+    return;
+  }
 
-    const wasRemoved =
-        removeProperty(
-            propertyId,
-        );
+  const wasRemoved = removeProperty(propertyId);
 
-    if (!wasRemoved) {
-        return;
-    }
+  if (!wasRemoved) {
+    return;
+  }
 
-    renderProperties();
-    emitPropertyChanged();
+  renderProperties();
+  emitPropertyChanged();
 }
-
 
 /* ========================================
    RENDERING
 ======================================== */
 
 export function renderProperties() {
-    if (!propertyList) {
-        return;
-    }
+  if (!propertyList) {
+    return;
+  }
 
-    const properties =
-        getAllProperties();
+  const properties = getAllProperties();
 
-    propertyList.innerHTML = "";
+  propertyList.innerHTML = "";
 
-    properties.forEach(function (property) {
-        const propertyItem =
-            createPropertyItem(property);
+  properties.forEach(function (property) {
+    const propertyItem = createPropertyItem(property);
 
-        propertyList.appendChild(
-            propertyItem,
-        );
-    });
+    propertyList.appendChild(propertyItem);
+  });
 
-    if (
-        properties.length === 0 &&
-        emptyPropertyMessage
-    ) {
-        propertyList.appendChild(
-            emptyPropertyMessage,
-        );
-    }
+  if (properties.length === 0 && emptyPropertyMessage) {
+    propertyList.appendChild(emptyPropertyMessage);
+  }
 
-    updatePropertyTotal();
+  updatePropertyTotal();
 }
-
 
 function createPropertyItem(property) {
-    const clientPropertyValue =
-        calculateClientPropertyValue(
-            property,
-        );
+  const clientPropertyValue = calculateClientPropertyValue(property);
 
-    const propertyItem =
-        document.createElement("div");
+  const propertyItem = document.createElement("div");
 
-    propertyItem.className =
-        "planning-card-item";
+  propertyItem.className = "planning-card-item";
 
-    const propertyMain =
-        document.createElement("div");
+  const propertyMain = document.createElement("div");
 
-    propertyMain.className =
-        "planning-card-content";
+  propertyMain.className = "planning-card-content";
 
-    const propertyIcon =
-        document.createElement("div");
+  const propertyIcon = document.createElement("div");
 
-    propertyIcon.className =
-        "planning-card-icon";
+  propertyIcon.className = "planning-card-icon";
 
-    propertyIcon.innerHTML = '<i class="fa-solid fa-house"></i>';
+  propertyIcon.innerHTML = '<i class="fa-solid fa-house"></i>';
 
-    const propertyDetails =
-        document.createElement("div");
+  const propertyDetails = document.createElement("div");
 
-    propertyDetails.className =
-        "planning-card-details";
+  propertyDetails.className = "planning-card-details";
 
-    const propertyTitle =
-        document.createElement("h4");
+  const propertyTitle = document.createElement("h4");
 
-    propertyTitle.textContent =
-        property.type;
+  propertyTitle.textContent = property.type;
 
-    const propertyDescription =
-        document.createElement("p");
+  const propertyDescription = document.createElement("p");
 
-    propertyDescription.textContent =
-        `${formatCurrency(
-            property.marketValue,
-        )} market value · ` +
-        `${property.ownershipPercentage}% ownership · ` +
-        `${formatCurrency(
-            clientPropertyValue,
-        )} client value`;
+  propertyDescription.textContent =
+    `${formatCurrency(property.marketValue)} market value · ` +
+    `${property.ownershipPercentage}% ownership · ` +
+    `${formatCurrency(clientPropertyValue)} client value`;
 
-    propertyDetails.append(
-        propertyTitle,
-        propertyDescription,
-    );
+  propertyDetails.append(propertyTitle, propertyDescription);
 
-    propertyMain.append(
-        propertyIcon,
-        propertyDetails,
-    );
+  propertyMain.append(propertyIcon, propertyDetails);
 
-    const propertyActions =
-        document.createElement("div");
+  const propertyActions = document.createElement("div");
 
-    propertyActions.className =
-        "planning-card-actions";
+  propertyActions.className = "planning-card-actions";
 
-    const editButton =
-        createEditButton(property);
+  const editButton = createEditButton(property);
 
-    const deleteButton =
-        createDeleteButton(property);
+  const deleteButton = createDeleteButton(property);
 
-    propertyActions.append(
-        editButton,
-        deleteButton,
-    );
+  propertyActions.append(editButton, deleteButton);
 
-    propertyItem.append(
-        propertyMain,
-        propertyActions,
-    );
+  propertyItem.append(propertyMain, propertyActions);
 
-    return propertyItem;
+  return propertyItem;
 }
-
 
 function createEditButton(property) {
-    const editButton =
-        document.createElement("button");
+  const editButton = document.createElement("button");
 
-    editButton.type = "button";
+  editButton.type = "button";
 
-    editButton.className =
-        "planning-card-action";
+  editButton.className = "planning-card-action";
 
-    editButton.setAttribute(
-        "aria-label",
-        `Edit ${property.type}`,
-    );
+  editButton.setAttribute("aria-label", `Edit ${property.type}`);
 
-    editButton.innerHTML = '<i class="fa-solid fa-pen"></i>';
+  editButton.innerHTML = '<i class="fa-solid fa-pen"></i>';
 
-    editButton.addEventListener(
-        "click",
-        function () {
-            openEditPropertyModal(
-                property.id,
-            );
-        },
-    );
+  editButton.addEventListener("click", function () {
+    openEditPropertyModal(property.id);
+  });
 
-    return editButton;
+  return editButton;
 }
-
 
 function createDeleteButton(property) {
-    const deleteButton =
-        document.createElement("button");
+  const deleteButton = document.createElement("button");
 
-    deleteButton.type = "button";
+  deleteButton.type = "button";
 
-    deleteButton.className =
-        "planning-card-action delete";
+  deleteButton.className = "planning-card-action delete";
 
-    deleteButton.setAttribute(
-        "aria-label",
-        `Delete ${property.type}`,
-    );
+  deleteButton.setAttribute("aria-label", `Delete ${property.type}`);
 
-    deleteButton.innerHTML =
-        '<i class="fa-solid fa-trash"></i>';
+  deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
 
-    deleteButton.addEventListener(
-        "click",
-        function () {
-            handleDeleteProperty(
-                property.id,
-            );
-        },
-    );
+  deleteButton.addEventListener("click", function () {
+    handleDeleteProperty(property.id);
+  });
 
-    return deleteButton;
+  return deleteButton;
 }
-
 
 /* ========================================
    PROPERTY TOTAL
 ======================================== */
 
 function updatePropertyTotal() {
-    if (!totalPropertyValueElement) {
-        return;
-    }
+  if (!totalPropertyValueElement) {
+    return;
+  }
 
-    const totalPropertyValue =
-        getAllProperties()
-            .reduce(
-                function (
-                    total,
-                    property,
-                ) {
-                    return (
-                        total +
-                        calculateClientPropertyValue(
-                            property,
-                        )
-                    );
-                },
-                0,
-            );
-
-    totalPropertyValueElement.textContent =
-        formatCurrency(
-            totalPropertyValue,
-        );
-}
-
-
-function calculateClientPropertyValue(
+  const totalPropertyValue = getAllProperties().reduce(function (
+    total,
     property,
-) {
-    return Math.round(
-        property.marketValue *
-        (
-            property
-                .ownershipPercentage /
-            100
-        ),
-    );
+  ) {
+    return total + calculateClientPropertyValue(property);
+  }, 0);
+
+  totalPropertyValueElement.textContent = formatCurrency(totalPropertyValue);
 }
 
+function calculateClientPropertyValue(property) {
+  return Math.round(
+    property.marketValue * (property.ownershipPercentage / 100),
+  );
+}
 
 /* ========================================
    EVENTS
 ======================================== */
 
 function emitPropertyChanged() {
-    emit(
-        EVENTS.PROPERTY_CHANGED,
-        {
-            properties: [
-                ...getAllProperties(),
-            ],
-        },
-    );
+  emit(EVENTS.PROPERTY_CHANGED, {
+    properties: [...getAllProperties()],
+  });
 }

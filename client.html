@@ -194,7 +194,6 @@
                     <option value="male">Male</option>
 
                     <option value="female">Female</option>
-
                   </select>
                 </div>
 
@@ -244,7 +243,9 @@
                   >
                     <option value="">Select employment status</option>
 
-                    <option value="full_time_employed">Full-time Employed</option>
+                    <option value="full_time_employed">
+                      Full-time Employed
+                    </option>
 
                     <option value="self_employed">Self-employed</option>
 
@@ -337,10 +338,15 @@
                 <div>
                   <h3>4 Types of Wealth</h3>
                   <p>
-                    Rank all four wealth priorities by selecting them in order of
-                    importance. Select a chosen priority again to remove and reorder it.
+                    Rank all four wealth priorities by selecting them in order
+                    of importance. Select a chosen priority again to remove and
+                    reorder it.
                   </p>
-                  <p id="wealthTypeProgress" class="wealth-type-progress" aria-live="polite">
+                  <p
+                    id="wealthTypeProgress"
+                    class="wealth-type-progress"
+                    aria-live="polite"
+                  >
                     0 of 4 ranked
                   </p>
                 </div>
@@ -439,8 +445,8 @@
                     <div>
                       <h3>Withdrawable Assets</h3>
                       <p>
-                        Enter cash and investments that can be withdrawn, accessed or converted
-                        relatively easily.
+                        Enter cash and investments that can be withdrawn,
+                        accessed or converted relatively easily.
                       </p>
                     </div>
                     <div class="financial-category-total">
@@ -534,8 +540,8 @@
                     <div>
                       <h3>Income</h3>
                       <p>
-                        Enter the client's monthly gross salary,
-                        annual bonus and other monthly income.
+                        Enter the client's monthly gross salary, annual bonus
+                        and other monthly income.
                       </p>
                     </div>
                   </div>
@@ -546,18 +552,30 @@
                       </label>
                       <div class="currency-input">
                         <span>$</span>
-                        <input id="monthlyEmploymentIncome" class="form-control financial-amount-input" type="number" min="0" step="1"
-                          inputmode="numeric" placeholder="0" />
+                        <input
+                          id="monthlyEmploymentIncome"
+                          class="form-control financial-amount-input"
+                          type="number"
+                          min="0"
+                          step="1"
+                          inputmode="numeric"
+                          placeholder="0"
+                        />
                       </div>
                     </div>
                     <div class="financial-input-row">
-                      <label for="annualBonus">
-                        Annual Bonus
-                      </label>
+                      <label for="annualBonus"> Annual Bonus </label>
                       <div class="currency-input">
                         <span>$</span>
-                        <input id="annualBonus" class="form-control financial-amount-input" type="number" min="0" step="1"
-                          inputmode="numeric" placeholder="0" />
+                        <input
+                          id="annualBonus"
+                          class="form-control financial-amount-input"
+                          type="number"
+                          min="0"
+                          step="1"
+                          inputmode="numeric"
+                          placeholder="0"
+                        />
                       </div>
                     </div>
                     <div class="financial-input-row">
@@ -566,12 +584,19 @@
                       </label>
                       <div class="currency-input">
                         <span>$</span>
-                        <input id="otherMonthlyIncome" class="form-control financial-amount-input" type="number" min="0" step="1"
-                          inputmode="numeric" placeholder="0" />
+                        <input
+                          id="otherMonthlyIncome"
+                          class="form-control financial-amount-input"
+                          type="number"
+                          min="0"
+                          step="1"
+                          inputmode="numeric"
+                          placeholder="0"
+                        />
                       </div>
                     </div>
                   </div>
-                
+
                   <!-- Income Summary -->
                   <div class="income-summary">
                     <div class="income-summary-row">
@@ -579,11 +604,17 @@
                         <span class="income-summary-label">
                           Employee CPF Contribution
                         </span>
-                        <span id="employeeCpfContributionNote" class="income-summary-note">
+                        <span
+                          id="employeeCpfContributionNote"
+                          class="income-summary-note"
+                        >
                           Select employment status and date of birth
                         </span>
                       </div>
-                      <strong id="employeeCpfContribution" class="income-summary-value income-deduction">
+                      <strong
+                        id="employeeCpfContribution"
+                        class="income-summary-value income-deduction"
+                      >
                         $0
                       </strong>
                     </div>
@@ -596,7 +627,10 @@
                           Including other monthly income
                         </span>
                       </div>
-                      <strong id="monthlyTakeHomeIncome" class="income-summary-value">
+                      <strong
+                        id="monthlyTakeHomeIncome"
+                        class="income-summary-value"
+                      >
                         $0
                       </strong>
                     </div>
@@ -605,107 +639,124 @@
                         <span class="income-summary-label">
                           Annual Employee CPF
                         </span>
-                
-                        <span id="annualEmployeeCpfNote" class="income-summary-note">
+
+                        <span
+                          id="annualEmployeeCpfNote"
+                          class="income-summary-note"
+                        >
                           Includes CPF on ordinary and additional wages
                         </span>
                       </div>
-                
-                      <strong id="annualEmployeeCpf" class="income-summary-value income-deduction">
+
+                      <strong
+                        id="annualEmployeeCpf"
+                        class="income-summary-value income-deduction"
+                      >
                         $0
                       </strong>
                     </div>
-                
+
                     <div class="income-summary-row">
                       <div class="income-summary-content">
                         <span class="income-summary-label">
                           Annual Gross Employment Income
                         </span>
-                
+
                         <span class="income-summary-note">
                           Including Annual Bonus
                         </span>
                       </div>
-                
-                      <strong id="annualGrossIncome" class="income-summary-value">
+
+                      <strong
+                        id="annualGrossIncome"
+                        class="income-summary-value"
+                      >
                         $0
                       </strong>
                     </div>
-                
+
                     <div class="income-summary-row income-summary-featured">
                       <div class="income-summary-content">
                         <span class="income-summary-label">
                           Annual Take-home Income
                         </span>
-                
+
                         <span class="income-summary-note">
                           Including Annual Bonus
                         </span>
                       </div>
-                
-                      <strong id="annualTakeHomeIncome" class="income-summary-value">
+
+                      <strong
+                        id="annualTakeHomeIncome"
+                        class="income-summary-value"
+                      >
                         $0
                       </strong>
                     </div>
                   </div>
-                
+
                   <!-- CPF Details -->
                   <details class="cpf-details">
                     <summary>
                       <span>CPF Details</span>
-                
-                      <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+
+                      <i
+                        class="fa-solid fa-chevron-down"
+                        aria-hidden="true"
+                      ></i>
                     </summary>
-                
+
                     <div class="cpf-details-content">
-                      <div id="cpfNotApplicableMessage" class="cpf-not-applicable-message" hidden></div>
-                
+                      <div
+                        id="cpfNotApplicableMessage"
+                        class="cpf-not-applicable-message"
+                        hidden
+                      ></div>
+
                       <div id="cpfDetailsRows" class="cpf-details-rows">
                         <div class="cpf-detail-row">
                           <span>Employee CPF Rate</span>
                           <strong id="employeeCpfRate">0%</strong>
                         </div>
-                
+
                         <div class="cpf-detail-row">
                           <span>Ordinary Wage Ceiling</span>
                           <strong id="ordinaryWageCeiling">$8,000</strong>
                         </div>
-                
+
                         <div class="cpf-detail-row">
                           <span>Monthly Wage Subject to CPF</span>
                           <strong id="monthlyWageSubjectToCpf">$0</strong>
                         </div>
-                
+
                         <div class="cpf-detail-row">
-                          <span>
-                            Annual Ordinary Wages Subject to CPF
-                          </span>
-                
+                          <span> Annual Ordinary Wages Subject to CPF </span>
+
                           <strong id="annualOrdinaryWagesSubjectToCpf">
                             $0
                           </strong>
                         </div>
-                
+
                         <div class="cpf-detail-row">
                           <span>Additional Wage Ceiling</span>
                           <strong id="additionalWageCeiling">$0</strong>
                         </div>
-                
+
                         <div class="cpf-detail-row">
                           <span>Annual Bonus Subject to CPF</span>
                           <strong id="bonusSubjectToCpf">$0</strong>
                         </div>
-                
+
                         <div class="cpf-detail-row">
                           <span>Annual Bonus Not Subject to CPF</span>
                           <strong id="bonusNotSubjectToCpf">$0</strong>
                         </div>
-                
+
                         <div class="cpf-detail-row">
                           <span>CPF on Ordinary Wages</span>
                           <strong id="cpfOnOrdinaryWages">$0</strong>
                         </div>
-                
+
                         <div class="cpf-detail-row">
                           <span>CPF on Additional Wages</span>
                           <strong id="cpfOnAdditionalWages">$0</strong>
@@ -823,7 +874,11 @@
                       No properties added.
                     </p>
                   </div>
-                  <button id="addPropertyButton" class="add-planning-item-button" type="button">
+                  <button
+                    id="addPropertyButton"
+                    class="add-planning-item-button"
+                    type="button"
+                  >
                     <i class="fa-solid fa-plus"></i>
                     Add Property
                   </button>
@@ -837,9 +892,7 @@
                 <div class="planning-card-header">
                   <div>
                     <h3>Goals</h3>
-                    <p>
-                      Record what the client wants to achieve.
-                    </p>
+                    <p>Record what the client wants to achieve.</p>
                   </div>
                 </div>
                 <div id="goalsList" class="planning-card-list">
@@ -847,7 +900,11 @@
                     No goals added.
                   </p>
                 </div>
-                <button id="addGoalButton" class="add-planning-item-button" type="button">
+                <button
+                  id="addGoalButton"
+                  class="add-planning-item-button"
+                  type="button"
+                >
                   <i class="fa-solid fa-plus" aria-hidden="true"></i>
                   Add Goal
                 </button>
@@ -861,23 +918,25 @@
                   <div>
                     <h3>Liabilities</h3>
                     <p>
-                      Record mortgages, loans, credit cards and other outstanding
-                      liabilities.
+                      Record mortgages, loans, credit cards and other
+                      outstanding liabilities.
                     </p>
                   </div>
                   <div class="financial-category-total">
                     <span>Total Liabilities</span>
-                    <strong id="totalLiabilitiesValue">
-                      $0
-                    </strong>
+                    <strong id="totalLiabilitiesValue"> $0 </strong>
                   </div>
                 </div>
                 <div id="liabilitiesList" class="planning-card-list">
                   <p id="emptyLiabilityMessage" class="empty-state-message">
                     No liabilities added.
                   </p>
-                </div> 
-                <button id="addLiabilityButton" class="add-planning-item-button" type="button">
+                </div>
+                <button
+                  id="addLiabilityButton"
+                  class="add-planning-item-button"
+                  type="button"
+                >
                   <i class="fa-solid fa-plus" aria-hidden="true"></i>
                   Add Liability
                 </button>
@@ -905,78 +964,70 @@
             </div>
           </section>
 
-                    <!-- Insurance Portfolio -->
-                    <section id="insurancePortfolioSection" class="workspace-section" data-content="insurance">
-                    
-                      <div class="section-header">
-                    
-                        <div>
-                          <p class="section-label">
-                            Protection Planning
-                          </p>
-                    
-                          <h2>
-                            Insurance Portfolio
-                          </h2>
-                    
-                          <p>
-                            Record every insurance policy together with its benefits.
-                          </p>
-                        </div>
-                    
-                      </div>
-                    
-                    
-                      <section class="planning-category-section">
-                    
-                        <div class="planning-card">
-                    
-                          <div class="planning-card-header">
-                    
-                            <div>
-                              <h3>
-                                Policies
-                              </h3>
-                    
-                              <p>
-                                Add all insurance policies owned by the client.
-                              </p>
-                            </div>
-                    
-                          </div>
-                    
-                          <div id="policyList" class="planning-card-list">
-                            <p id="emptyPolicyMessage" class="empty-state-message">
-                              No policies added yet.
-                            </p>
-                          </div>
-                    
-                          <button id="addPolicyButton" type="button" class="add-planning-item-button">
-                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                    
-                            Add Policy
-                          </button>
-                    
-                        </div>
-                    
-                      </section>
-                    
-                    
-                      <div class="form-actions form-actions--between">
-                    
-                        <button id="insuranceBackButton" class="header-button header-button-secondary" type="button">
-                          <i class="fa-solid fa-arrow-left"></i>
-                          Back
-                        </button>
-                    
-                        <button id="insuranceNextButton" class="next-button" type="button">
-                          Next
-                          <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    
-                      </div>
-                    
-                    </section>
+          <!-- Insurance Portfolio -->
+          <section
+            id="insurancePortfolioSection"
+            class="workspace-section"
+            data-content="insurance"
+          >
+            <div class="section-header">
+              <div>
+                <p class="section-label">Protection Planning</p>
+
+                <h2>Insurance Portfolio</h2>
+
+                <p>Record every insurance policy together with its benefits.</p>
+              </div>
+            </div>
+
+            <section class="planning-category-section">
+              <div class="planning-card">
+                <div class="planning-card-header">
+                  <div>
+                    <h3>Policies</h3>
+
+                    <p>Add all insurance policies owned by the client.</p>
+                  </div>
+                </div>
+
+                <div id="policyList" class="planning-card-list">
+                  <p id="emptyPolicyMessage" class="empty-state-message">
+                    No policies added yet.
+                  </p>
+                </div>
+
+                <button
+                  id="addPolicyButton"
+                  type="button"
+                  class="add-planning-item-button"
+                >
+                  <i class="fa-solid fa-plus" aria-hidden="true"></i>
+
+                  Add Policy
+                </button>
+              </div>
+            </section>
+
+            <div class="form-actions form-actions--between">
+              <button
+                id="insuranceBackButton"
+                class="header-button header-button-secondary"
+                type="button"
+              >
+                <i class="fa-solid fa-arrow-left"></i>
+                Back
+              </button>
+
+              <button
+                id="insuranceNextButton"
+                class="next-button"
+                type="button"
+              >
+                Next
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </section>
 
           <!-- Cost of Wants -->
           <section class="workspace-section" data-content="cost">
@@ -1220,113 +1271,120 @@
     <!-- ========================================
          GOAL MODAL
     ======================================== -->
-    
+
     <div id="goalModal" class="goal-modal" hidden>
       <div class="goal-modal-backdrop" data-close-goal-modal></div>
-    
-      <div class="goal-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+
+      <div
+        class="goal-modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="goalModalTitle"
+      >
         <div class="goal-modal-header">
           <div>
-            <p class="goal-modal-eyebrow">
-              Priorities & Situation
-            </p>
-    
-            <h2 id="goalModalTitle">
-              Add Goal
-            </h2>
+            <p class="goal-modal-eyebrow">Priorities & Situation</p>
+
+            <h2 id="goalModalTitle">Add Goal</h2>
           </div>
-    
-          <button id="closeGoalModalButton" class="goal-modal-close" type="button" aria-label="Close goal form">
+
+          <button
+            id="closeGoalModalButton"
+            class="goal-modal-close"
+            type="button"
+            aria-label="Close goal form"
+          >
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
-    
+
         <form id="goalForm">
           <input id="editingGoalId" type="hidden" />
-    
+
           <div class="goal-form-grid">
             <div class="form-group">
-              <label for="goalType">
-                Goal Type
-              </label>
-    
+              <label for="goalType"> Goal Type </label>
+
               <select id="goalType" class="form-control" required>
-                <option value="">
-                  Select goal type
-                </option>
-    
-                <option value="retirement">
-                  Retirement
-                </option>
-    
-                <option value="education">
-                  Children’s Education
-                </option>
-    
-                <option value="property">
-                  Property Purchase
-                </option>
-    
-                <option value="emergency_fund">
-                  Emergency Fund
-                </option>
-    
-                <option value="wedding">
-                  Wedding
-                </option>
-    
-                <option value="travel">
-                  Travel
-                </option>
-    
-                <option value="legacy">
-                  Legacy
-                </option>
-    
-                <option value="other">
-                  Others
-                </option>
+                <option value="">Select goal type</option>
+
+                <option value="retirement">Retirement</option>
+
+                <option value="education">Children’s Education</option>
+
+                <option value="property">Property Purchase</option>
+
+                <option value="emergency_fund">Emergency Fund</option>
+
+                <option value="wedding">Wedding</option>
+
+                <option value="travel">Travel</option>
+
+                <option value="legacy">Legacy</option>
+
+                <option value="other">Others</option>
               </select>
             </div>
-    
+
             <div class="form-group">
-              <label for="goalName">
-                Goal Name
-              </label>
-    
-              <input id="goalName" class="form-control" type="text" placeholder="For example, Wedding" maxlength="100"
-                required />
+              <label for="goalName"> Goal Name </label>
+
+              <input
+                id="goalName"
+                class="form-control"
+                type="text"
+                placeholder="For example, Wedding"
+                maxlength="100"
+                required
+              />
             </div>
-    
+
             <div class="form-group">
-              <label for="goalTargetAmount">
-                Target Amount
-              </label>
-    
+              <label for="goalTargetAmount"> Target Amount </label>
+
               <div class="currency-input">
                 <span>$</span>
-    
-                <input id="goalTargetAmount" class="form-control" type="number" min="1" step="1" inputmode="numeric"
-                  placeholder="0" required />
+
+                <input
+                  id="goalTargetAmount"
+                  class="form-control"
+                  type="number"
+                  min="1"
+                  step="1"
+                  inputmode="numeric"
+                  placeholder="0"
+                  required
+                />
               </div>
             </div>
-    
+
             <div class="form-group">
-              <label for="goalTargetDate">
-                Target Month
-              </label>
-    
-              <input id="goalTargetDate" class="form-control" type="month" required />
+              <label for="goalTargetDate"> Target Month </label>
+
+              <input
+                id="goalTargetDate"
+                class="form-control"
+                type="month"
+                required
+              />
             </div>
           </div>
-    
-          <p id="goalFormMessage" class="goal-form-message" aria-live="polite"></p>
-    
+
+          <p
+            id="goalFormMessage"
+            class="goal-form-message"
+            aria-live="polite"
+          ></p>
+
           <div class="goal-modal-actions">
-            <button id="cancelGoalButton" class="secondary-button" type="button">
+            <button
+              id="cancelGoalButton"
+              class="secondary-button"
+              type="button"
+            >
               Cancel
             </button>
-    
+
             <button id="saveGoalButton" class="primary-button" type="submit">
               Save Goal
             </button>
@@ -1338,129 +1396,151 @@
     <!-- ========================================
          LIABILITY MODAL
     ======================================== -->
-    
+
     <div id="liabilityModal" class="liability-modal" hidden>
       <div class="liability-modal-backdrop" data-close-liability-modal></div>
-    
-      <div class="liability-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="liabilityModalTitle">
+
+      <div
+        class="liability-modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="liabilityModalTitle"
+      >
         <div class="liability-modal-header">
           <div>
-            <p class="liability-modal-eyebrow">
-              Priorities & Situation
-            </p>
-    
-            <h2 id="liabilityModalTitle">
-              Add Liability
-            </h2>
+            <p class="liability-modal-eyebrow">Priorities & Situation</p>
+
+            <h2 id="liabilityModalTitle">Add Liability</h2>
           </div>
-    
-          <button id="closeLiabilityModalButton" class="liability-modal-close" type="button"
-            aria-label="Close liability form">
+
+          <button
+            id="closeLiabilityModalButton"
+            class="liability-modal-close"
+            type="button"
+            aria-label="Close liability form"
+          >
             <i class="fa-solid fa-xmark" aria-hidden="true"></i>
           </button>
         </div>
-    
+
         <form id="liabilityForm">
           <input id="editingLiabilityId" type="hidden" />
-    
+
           <div class="liability-form-grid">
             <div class="form-group">
-              <label for="liabilityType">
-                Liability Type
-              </label>
-    
+              <label for="liabilityType"> Liability Type </label>
+
               <select id="liabilityType" class="form-control" required>
-                <option value="">
-                  Select liability type
-                </option>
-    
-                <option value="mortgage">
-                  Mortgage
-                </option>
-    
-                <option value="car_loan">
-                  Car Loan
-                </option>
-    
-                <option value="personal_loan">
-                  Personal Loan
-                </option>
-    
-                <option value="education_loan">
-                  Education Loan
-                </option>
-    
-                <option value="credit_card">
-                  Credit Card
-                </option>
-    
-                <option value="business_loan">
-                  Business Loan
-                </option>
-    
-                <option value="other">
-                  Other
-                </option>
+                <option value="">Select liability type</option>
+
+                <option value="mortgage">Mortgage</option>
+
+                <option value="car_loan">Car Loan</option>
+
+                <option value="personal_loan">Personal Loan</option>
+
+                <option value="education_loan">Education Loan</option>
+
+                <option value="credit_card">Credit Card</option>
+
+                <option value="business_loan">Business Loan</option>
+
+                <option value="other">Other</option>
               </select>
             </div>
-    
+
             <div class="form-group">
-              <label for="liabilityName">
-                Liability Name
-              </label>
-    
-              <input id="liabilityName" class="form-control" type="text" maxlength="100"
-                placeholder="For example, DBS Home Loan" required />
+              <label for="liabilityName"> Liability Name </label>
+
+              <input
+                id="liabilityName"
+                class="form-control"
+                type="text"
+                maxlength="100"
+                placeholder="For example, DBS Home Loan"
+                required
+              />
             </div>
-    
+
             <div class="form-group">
               <label for="liabilityOutstandingBalance">
                 Outstanding Balance
               </label>
-    
+
               <div class="currency-input">
                 <span>$</span>
-    
-                <input id="liabilityOutstandingBalance" class="form-control" type="number" min="1" step="1"
-                  inputmode="numeric" placeholder="0" required />
+
+                <input
+                  id="liabilityOutstandingBalance"
+                  class="form-control"
+                  type="number"
+                  min="1"
+                  step="1"
+                  inputmode="numeric"
+                  placeholder="0"
+                  required
+                />
               </div>
             </div>
-    
+
             <div class="form-group">
-              <label for="liabilityMonthlyRepayment">
-                Monthly Repayment
-              </label>
-    
+              <label for="liabilityMonthlyRepayment"> Monthly Repayment </label>
+
               <div class="currency-input">
                 <span>$</span>
-    
-                <input id="liabilityMonthlyRepayment" class="form-control" type="number" min="0" step="1"
-                  inputmode="numeric" placeholder="0" />
+
+                <input
+                  id="liabilityMonthlyRepayment"
+                  class="form-control"
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  placeholder="0"
+                />
               </div>
             </div>
-    
+
             <div class="form-group">
-              <label for="liabilityInterestRate">
-                Interest Rate
-              </label>
-    
+              <label for="liabilityInterestRate"> Interest Rate </label>
+
               <div class="percentage-input">
-                <input id="liabilityInterestRate" class="form-control" type="number" min="0" max="100" step="0.01"
-                  inputmode="decimal" placeholder="0" />
-    
+                <input
+                  id="liabilityInterestRate"
+                  class="form-control"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  inputmode="decimal"
+                  placeholder="0"
+                />
+
                 <span>%</span>
               </div>
             </div>
           </div>
-    
-          <p id="liabilityFormMessage" class="liability-form-message" aria-live="polite"></p>
-    
+
+          <p
+            id="liabilityFormMessage"
+            class="liability-form-message"
+            aria-live="polite"
+          ></p>
+
           <div class="liability-modal-actions">
-            <button id="cancelLiabilityButton" class="secondary-button" type="button">
+            <button
+              id="cancelLiabilityButton"
+              class="secondary-button"
+              type="button"
+            >
               Cancel
             </button>
-    
-            <button id="saveLiabilityButton" class="primary-button" type="submit">
+
+            <button
+              id="saveLiabilityButton"
+              class="primary-button"
+              type="submit"
+            >
               Save Liability
             </button>
           </div>
@@ -1469,584 +1549,493 @@
     </div>
 
     <div id="policyModal" class="modal-overlay" hidden>
-    
-      <div class="modal policy-modal" role="dialog" aria-modal="true" aria-labelledby="policyModalTitle">
-    
+      <div
+        class="modal policy-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="policyModalTitle"
+      >
         <div class="modal-header policy-modal-header">
-    
           <div>
-    
-            <p class="policy-modal-eyebrow">
-              Protection Planning
-            </p>
-    
-            <h2 id="policyModalTitle">
-              Add Policy
-            </h2>
-    
-            <p class="policy-modal-description">
-              Record the policy information and benefits attached to this policy.
-            </p>
-    
-          </div>
-    
-          <button id="closePolicyModalButton" type="button" class="modal-close-button" aria-label="Close policy form">
-    
-            <i class="fa-solid fa-xmark"></i>
-    
-          </button>
-    
-        </div>
-    
-      <div class="modal-body policy-modal-body">
+            <p class="policy-modal-eyebrow">Protection Planning</p>
 
-  <!-- ========================================
+            <h2 id="policyModalTitle">Add Policy</h2>
+
+            <p class="policy-modal-description">
+              Record the policy information and benefits attached to this
+              policy.
+            </p>
+          </div>
+
+          <button
+            id="closePolicyModalButton"
+            type="button"
+            class="modal-close-button"
+            aria-label="Close policy form"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="modal-body policy-modal-body">
+          <!-- ========================================
        POLICY INFORMATION
   ========================================= -->
 
-  <section class="policy-modal-section">
+          <section class="policy-modal-section">
+            <div class="policy-modal-section-header">
+              <div>
+                <h3>Policy Information</h3>
+                <p>Enter the main details shown on the policy schedule.</p>
+              </div>
+            </div>
 
-    <div class="policy-modal-section-header">
-      <div>
-        <h3>Policy Information</h3>
-        <p>Enter the main details shown on the policy schedule.</p>
-      </div>
-    </div>
+            <div class="form-grid">
+              <!-- Policy Name -->
+              <div class="form-group">
+                <label for="policyNameInput">
+                  Policy Name
+                  <span class="required-label">*</span>
+                </label>
 
-    <div class="form-grid">
+                <input
+                  id="policyNameInput"
+                  class="form-control"
+                  type="text"
+                  placeholder="For example, Whole Life Supreme"
+                  autocomplete="off"
+                />
+              </div>
 
-      <!-- Policy Name -->
-      <div class="form-group">
+              <!-- Policy Type -->
+              <div class="form-group">
+                <label for="policyTypeSelect">
+                  Policy Type
+                  <span class="required-label">*</span>
+                </label>
 
-        <label for="policyNameInput">
-          Policy Name
-          <span class="required-label">*</span>
-        </label>
+                <select id="policyTypeSelect" class="form-control">
+                  <option value="">Select Policy Type</option>
 
-        <input id="policyNameInput" class="form-control" type="text" placeholder="For example, Whole Life Supreme"
-          autocomplete="off">
+                  <option value="whole_life">Whole Life</option>
 
-      </div>
+                  <option value="term">Term</option>
 
-      <!-- Policy Type -->
-      <div class="form-group">
-      
-        <label for="policyTypeSelect">
-          Policy Type
-          <span class="required-label">*</span>
-        </label>
-      
-        <select id="policyTypeSelect" class="form-control">
-      
-          <option value="">
-            Select Policy Type
-          </option>
-      
-          <option value="whole_life">
-            Whole Life
-          </option>
-      
-          <option value="term">
-            Term
-          </option>
-      
-          <option value="endowment">
-            Endowment
-          </option>
-      
-          <option value="investment_linked">
-            Investment-Linked (ILP)
-          </option>
-      
-          <option value="integrated_shield">
-            Integrated Shield Plan
-          </option>
-      
-          <option value="critical_illness">
-            Standalone Critical Illness
-          </option>
-      
-          <option value="personal_accident">
-            Personal Accident
-          </option>
-      
-          <option value="disability_income">
-            Disability Income
-          </option>
-      
-          <option value="long_term_care">
-            Long-Term Care
-          </option>
-      
-          <option value="annuity">
-            Annuity
-          </option>
-      
-          <option value="other">
-            Other
-          </option>
-      
-        </select>
-      
-      </div>
+                  <option value="endowment">Endowment</option>
 
-      <!-- Insurer -->
-      <div class="form-group">
+                  <option value="investment_linked">
+                    Investment-Linked (ILP)
+                  </option>
 
-        <label for="insurerSelect">
-          Insurer
-          <span class="required-label">*</span>
-        </label>
+                  <option value="integrated_shield">
+                    Integrated Shield Plan
+                  </option>
 
-        <select id="insurerSelect" class="form-control">
+                  <option value="critical_illness">
+                    Standalone Critical Illness
+                  </option>
 
-          <option value="">
-            Select insurer
-          </option>
+                  <option value="personal_accident">Personal Accident</option>
 
-          <option value="AIA">AIA</option>
+                  <option value="disability_income">Disability Income</option>
 
-          <option value="Great Eastern">
-            Great Eastern
-          </option>
+                  <option value="long_term_care">Long-Term Care</option>
 
-          <option value="Prudential">
-            Prudential
-          </option>
+                  <option value="annuity">Annuity</option>
 
-          <option value="Income Insurance">
-            Income Insurance
-          </option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
 
-          <option value="Singlife">
-            Singlife
-          </option>
+              <!-- Insurer -->
+              <div class="form-group">
+                <label for="insurerSelect">
+                  Insurer
+                  <span class="required-label">*</span>
+                </label>
 
-          <option value="HSBC Life">
-            HSBC Life
-          </option>
+                <select id="insurerSelect" class="form-control">
+                  <option value="">Select insurer</option>
 
-          <option value="Manulife">
-            Manulife
-          </option>
+                  <option value="AIA">AIA</option>
 
-          <option value="Tokio Marine">
-            Tokio Marine
-          </option>
+                  <option value="Great Eastern">Great Eastern</option>
 
-          <option value="Etiqa">
-            Etiqa
-          </option>
+                  <option value="Prudential">Prudential</option>
 
-          <option value="FWD">
-            FWD
-          </option>
+                  <option value="Income Insurance">Income Insurance</option>
 
-          <option value="China Taiping">
-            China Taiping
-          </option>
+                  <option value="Singlife">Singlife</option>
 
-          <option value="other">
-            Other...
-          </option>
+                  <option value="HSBC Life">HSBC Life</option>
 
-        </select>
+                  <option value="Manulife">Manulife</option>
 
-      </div>
+                  <option value="Tokio Marine">Tokio Marine</option>
 
-      <!-- Other Insurer -->
-      <div id="otherInsurerGroup" class="form-group" hidden>
+                  <option value="Etiqa">Etiqa</option>
 
-        <label for="otherInsurerInput">
-          Other Insurer
-          <span class="required-label">*</span>
-        </label>
+                  <option value="FWD">FWD</option>
 
-        <input id="otherInsurerInput" class="form-control" type="text"
-          placeholder="Enter insurer name"
-          autocomplete="off"
-        >
+                  <option value="China Taiping">China Taiping</option>
 
-      </div>
+                  <option value="other">Other...</option>
+                </select>
+              </div>
 
-      <!-- Policy Number -->
-      <div class="form-group">
+              <!-- Other Insurer -->
+              <div id="otherInsurerGroup" class="form-group" hidden>
+                <label for="otherInsurerInput">
+                  Other Insurer
+                  <span class="required-label">*</span>
+                </label>
 
-        <label for="policyNumberInput">
-          Policy Number
-          <span class="optional-label">(Optional)</span>
-        </label>
+                <input
+                  id="otherInsurerInput"
+                  class="form-control"
+                  type="text"
+                  placeholder="Enter insurer name"
+                  autocomplete="off"
+                />
+              </div>
 
-        <input id="policyNumberInput" class="form-control" type="text"
-          placeholder="e.g. L123456789"
-          autocomplete="off"
-        >
+              <!-- Policy Number -->
+              <div class="form-group">
+                <label for="policyNumberInput">
+                  Policy Number
+                  <span class="optional-label">(Optional)</span>
+                </label>
 
-      </div>
+                <input
+                  id="policyNumberInput"
+                  class="form-control"
+                  type="text"
+                  placeholder="e.g. L123456789"
+                  autocomplete="off"
+                />
+              </div>
 
-      <!-- Policy Owner -->
-      <div class="form-group">
+              <!-- Policy Owner -->
+              <div class="form-group">
+                <label for="policyOwnerInput">
+                  Policy Owner
+                  <span class="optional-label">(Optional)</span>
+                </label>
 
-        <label for="policyOwnerInput">
-          Policy Owner
-          <span class="optional-label">(Optional)</span>
-        </label>
+                <input
+                  id="policyOwnerInput"
+                  class="form-control"
+                  type="text"
+                  placeholder="e.g. Client"
+                  autocomplete="off"
+                />
+              </div>
 
-        <input id="policyOwnerInput" class="form-control" type="text"
-          placeholder="e.g. Client"
-          autocomplete="off"
-        >
+              <!-- Status -->
+              <div class="form-group">
+                <label for="policyStatusSelect">
+                  Status
+                  <span class="required-label">*</span>
+                </label>
 
-      </div>
+                <select id="policyStatusSelect" class="form-control">
+                  <option value="">Select status</option>
 
-      <!-- Status -->
-      <div class="form-group">
+                  <option value="active">Active</option>
 
-        <label for="policyStatusSelect">
-          Status
-          <span class="required-label">*</span>
-        </label>
+                  <option value="paid_up">Paid-Up</option>
+                </select>
+              </div>
 
-        <select id="policyStatusSelect" class="form-control">
+              <!-- Premium -->
+              <div class="form-group">
+                <label for="premiumInput">
+                  Premium
+                  <span class="optional-label">(Optional)</span>
+                </label>
 
-          <option value="">
-            Select status
-          </option>
+                <div class="currency-input">
+                  <span>$</span>
 
-          <option value="active">
-            Active
-          </option>
+                  <input
+                    id="premiumInput"
+                    class="form-control"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
 
-          <option value="paid_up">
-            Paid-Up
-          </option>
+              <!-- Premium Frequency -->
+              <div class="form-group">
+                <label for="premiumFrequencySelect"> Premium Frequency </label>
 
-        </select>
+                <select id="premiumFrequencySelect" class="form-control">
+                  <option value="annual">Annual</option>
 
-      </div>
+                  <option value="half_yearly">Half-Yearly</option>
 
-      <!-- Premium -->
-      <div class="form-group">
-      
-        <label for="premiumInput">
-          Premium
-          <span class="optional-label">(Optional)</span>
-        </label>
-      
-        <div class="currency-input">
-      
-          <span>$</span>
-      
-          <input id="premiumInput" class="form-control" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
-      
-        </div>
-      
-      </div>
+                  <option value="quarterly">Quarterly</option>
 
-      <!-- Premium Frequency -->
-      <div class="form-group">
+                  <option value="monthly">Monthly</option>
 
-        <label for="premiumFrequencySelect">
-          Premium Frequency
-        </label>
+                  <option value="single">Single Premium</option>
+                </select>
+              </div>
+            </div>
+          </section>
 
-        <select id="premiumFrequencySelect" class="form-control">
-
-          <option value="annual">
-            Annual
-          </option>
-
-          <option value="half_yearly">
-            Half-Yearly
-          </option>
-
-          <option value="quarterly">
-            Quarterly
-          </option>
-
-          <option value="monthly">
-            Monthly
-          </option>
-
-          <option value="single">
-            Single Premium
-          </option>
-
-        </select>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- ========================================
+          <!-- ========================================
        POLICY BENEFITS
   ======================================== -->
-  
-  <section class="policy-modal-section">
-  
-    <div class="policy-modal-section-header policy-modal-section-header--actions">
-  
-      <div>
-        <h3>Benefits</h3>
-  
-        <p>
-          Add the insurance benefits provided by this policy.
-        </p>
-      </div>
-  
-    </div>
-  
-  
-    <!-- Benefit editor -->
-    <div id="benefitEditor" class="benefit-editor" hidden>
-  
-      <div class="benefit-editor-header">
-  
-        <div>
-          <h4 id="benefitEditorTitle">
-            Add Benefit
-          </h4>
-  
-          <p>
-            Enter the coverage details for this benefit.
-          </p>
-        </div>
-  
-        <button id="closeBenefitEditorButton" type="button" class="modal-close-button" aria-label="Close benefit form">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-  
-      </div>
-  
-  
-      <div class="form-grid">
-  
-        <!-- Benefit Type -->
-        <div class="form-group">
-  
-          <label for="benefitTypeSelect">
-            Benefit Type
-            <span class="required-label">*</span>
-          </label>
-  
-          <select id="benefitTypeSelect" class="form-control">
-  
-            <option value="">
-              Select benefit type
-            </option>
-  
-            <option value="death">
-              Death
-            </option>
-  
-            <option value="tpd">
-              Total and Permanent Disability
-            </option>
-  
-            <option value="critical_illness">
-              Critical Illness
-            </option>
-  
-            <option value="early_critical_illness">
-              Early Critical Illness
-            </option>
-  
-            <option value="hospitalisation">
-              Hospitalisation
-            </option>
-  
-            <option value="hospital_cash">
-              Hospital Cash
-            </option>
-  
-            <option value="personal_accident">
-              Personal Accident
-            </option>
-  
-            <option value="disability_income">
-              Disability Income
-            </option>
-  
-          </select>
-  
-        </div>
-  
-  
-        <!-- Life Assured -->
-        <div class="form-group">
-  
-          <label for="benefitLifeAssuredInput">
-            Life Assured
-            <span class="optional-label">(Optional)</span>
-          </label>
-  
-          <input id="benefitLifeAssuredInput" class="form-control" type="text" placeholder="e.g. Client" autocomplete="off">
-  
-        </div>
-  
-  
-        <!-- Coverage Amount -->
-        <div id="benefitAmountGroup" class="form-group">
-  
-          <label id="benefitAmountLabel" for="benefitAmountInput">
-            Coverage Amount
-            <span class="required-label">*</span>
-          </label>
-  
-          <div class="currency-input">
-  
-            <span>$</span>
-  
-            <input id="benefitAmountInput" class="form-control" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
-  
-          </div>
-  
-        </div>
-  
-  
-        <!-- Payout Type -->
-        <div id="benefitPayoutTypeGroup" class="form-group" hidden>
-  
-          <label for="benefitPayoutTypeSelect">
-            Payout Type
-            <span class="required-label">*</span>
-          </label>
-  
-          <select id="benefitPayoutTypeSelect" class="form-control">
-  
-            <option value="">
-              Select payout type
-            </option>
-  
-            <option value="accelerated">
-              Accelerated
-            </option>
-  
-            <option value="additional">
-              Additional
-            </option>
-  
-            <option value="standalone">
-              Standalone
-            </option>
-  
-          </select>
-  
-        </div>
 
-        <div id="benefitPayoutInfo" class="policy-benefit-info" hidden>
-          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-        
-          <span>
-            Whole Life Total Permanent Disability is always treated as an
-            <strong>Accelerated Benefit</strong>.
-          </span>
-        </div>
-  
-  
-        <!-- Benefit Notes -->
-        <div class="form-group form-group--full">
-  
-          <label for="benefitNotesInput">
-            Notes
-            <span class="optional-label">(Optional)</span>
-          </label>
-  
-          <textarea id="benefitNotesInput" class="form-control" rows="3" placeholder="Add any relevant benefit details"></textarea>
-  
-        </div>
-  
-      </div>
-  
-  
-      <p id="benefitFormMessage" class="policy-form-message" aria-live="polite"></p>
-  
-  
-      <div class="benefit-editor-actions">
-  
-        <button id="cancelBenefitButton" type="button" class="secondary-button">
-          Cancel
-        </button>
-  
-        <button id="saveBenefitButton" type="button" class="primary-button">
-          Add Benefit
-        </button>
-  
-      </div>
-  
-    </div>
-  
-  
-        <!-- Saved benefits -->
-        <div id="policyBenefitList" class="planning-card-list policy-benefit-list">
-        
-          <p id="emptyPolicyBenefitMessage" class="empty-state-message">
-            No benefits added yet.
-          </p>
-        
-        </div>
+          <section class="policy-modal-section">
+            <div
+              class="policy-modal-section-header policy-modal-section-header--actions"
+            >
+              <div>
+                <h3>Benefits</h3>
 
-        <button id="addBenefitButton" type="button" class="add-planning-item-button policy-add-benefit-button">
-          <i class="fa-solid fa-plus" aria-hidden="true"></i>
-        
-          Add Benefit
-        </button>
-        
-        </section>
-        
-        
-        <!-- ========================================
+                <p>Add the insurance benefits provided by this policy.</p>
+              </div>
+            </div>
+
+            <!-- Benefit editor -->
+            <div id="benefitEditor" class="benefit-editor" hidden>
+              <div class="benefit-editor-header">
+                <div>
+                  <h4 id="benefitEditorTitle">Add Benefit</h4>
+
+                  <p>Enter the coverage details for this benefit.</p>
+                </div>
+
+                <button
+                  id="closeBenefitEditorButton"
+                  type="button"
+                  class="modal-close-button"
+                  aria-label="Close benefit form"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <div class="form-grid">
+                <!-- Benefit Type -->
+                <div class="form-group">
+                  <label for="benefitTypeSelect">
+                    Benefit Type
+                    <span class="required-label">*</span>
+                  </label>
+
+                  <select id="benefitTypeSelect" class="form-control">
+                    <option value="">Select benefit type</option>
+
+                    <option value="death">Death</option>
+
+                    <option value="tpd">Total and Permanent Disability</option>
+
+                    <option value="critical_illness">Critical Illness</option>
+
+                    <option value="early_critical_illness">
+                      Early Critical Illness
+                    </option>
+
+                    <option value="hospitalisation">Hospitalisation</option>
+
+                    <option value="hospital_cash">Hospital Cash</option>
+
+                    <option value="personal_accident">Personal Accident</option>
+
+                    <option value="disability_income">Disability Income</option>
+                  </select>
+                </div>
+
+                <!-- Life Assured -->
+                <div class="form-group">
+                  <label for="benefitLifeAssuredInput">
+                    Life Assured
+                    <span class="optional-label">(Optional)</span>
+                  </label>
+
+                  <input
+                    id="benefitLifeAssuredInput"
+                    class="form-control"
+                    type="text"
+                    placeholder="e.g. Client"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <!-- Coverage Amount -->
+                <div id="benefitAmountGroup" class="form-group">
+                  <label id="benefitAmountLabel" for="benefitAmountInput">
+                    Coverage Amount
+                    <span class="required-label">*</span>
+                  </label>
+
+                  <div class="currency-input">
+                    <span>$</span>
+
+                    <input
+                      id="benefitAmountInput"
+                      class="form-control"
+                      type="number"
+                      min="0"
+                      step="1"
+                      inputmode="numeric"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                <!-- Payout Type -->
+                <div id="benefitPayoutTypeGroup" class="form-group" hidden>
+                  <label for="benefitPayoutTypeSelect">
+                    Payout Type
+                    <span class="required-label">*</span>
+                  </label>
+
+                  <select id="benefitPayoutTypeSelect" class="form-control">
+                    <option value="">Select payout type</option>
+
+                    <option value="accelerated">Accelerated</option>
+
+                    <option value="additional">Additional</option>
+
+                    <option value="standalone">Standalone</option>
+                  </select>
+                </div>
+
+                <div id="benefitPayoutInfo" class="policy-benefit-info" hidden>
+                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+
+                  <span>
+                    Whole Life Total Permanent Disability is always treated as
+                    an
+                    <strong>Accelerated Benefit</strong>.
+                  </span>
+                </div>
+
+                <!-- Benefit Notes -->
+                <div class="form-group form-group--full">
+                  <label for="benefitNotesInput">
+                    Notes
+                    <span class="optional-label">(Optional)</span>
+                  </label>
+
+                  <textarea
+                    id="benefitNotesInput"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Add any relevant benefit details"
+                  ></textarea>
+                </div>
+              </div>
+
+              <p
+                id="benefitFormMessage"
+                class="policy-form-message"
+                aria-live="polite"
+              ></p>
+
+              <div class="benefit-editor-actions">
+                <button
+                  id="cancelBenefitButton"
+                  type="button"
+                  class="secondary-button"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  id="saveBenefitButton"
+                  type="button"
+                  class="primary-button"
+                >
+                  Add Benefit
+                </button>
+              </div>
+            </div>
+
+            <!-- Saved benefits -->
+            <div
+              id="policyBenefitList"
+              class="planning-card-list policy-benefit-list"
+            >
+              <p id="emptyPolicyBenefitMessage" class="empty-state-message">
+                No benefits added yet.
+              </p>
+            </div>
+
+            <button
+              id="addBenefitButton"
+              type="button"
+              class="add-planning-item-button policy-add-benefit-button"
+            >
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>
+
+              Add Benefit
+            </button>
+          </section>
+
+          <!-- ========================================
                POLICY VALIDATION
           ======================================== -->
-        
-        <section id="policyValidationSection" class="policy-validation-panel" hidden>
-        
-          <div class="policy-validation-header">
-        
-            <div class="policy-validation-icon">
-              <i class="fa-solid fa-shield-halved"></i>
+
+          <section
+            id="policyValidationSection"
+            class="policy-validation-panel"
+            hidden
+          >
+            <div class="policy-validation-header">
+              <div class="policy-validation-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+
+              <div>
+                <h3>Benefit Checks</h3>
+
+                <p>
+                  These checks only apply to benefits attached to this policy.
+                </p>
+              </div>
             </div>
-        
-            <div>
-        
-              <h3>
-                Benefit Checks
-              </h3>
-        
-              <p>
-                These checks only apply to benefits attached to this policy.
-              </p>
-        
-            </div>
-        
+
+            <div
+              id="policyValidationList"
+              class="policy-validation-list"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <p
+            id="policyFormMessage"
+            class="policy-form-message"
+            aria-live="polite"
+          ></p>
+
+          <div class="modal-footer policy-modal-footer">
+            <button
+              id="cancelPolicyButton"
+              type="button"
+              class="secondary-button"
+            >
+              Cancel
+            </button>
+
+            <button id="savePolicyButton" type="button" class="primary-button">
+              Save Policy
+            </button>
           </div>
-        
-          <div id="policyValidationList" class="policy-validation-list" aria-live="polite"></div>
-        
-        </section>
-
-  <p id="policyFormMessage" class="policy-form-message" aria-live="polite"></p>
-  
-  <div class="modal-footer policy-modal-footer">
-  
-    <button id="cancelPolicyButton" type="button" class="secondary-button">
-      Cancel
-    </button>
-    
-    <button id="savePolicyButton" type="button" class="primary-button">
-      Save Policy
-    </button>
-  
-  </div>
-  
-  </div> <!-- closes .policy-modal-body -->
-
-  </div> <!-- closes .policy-modal-->
-
-</div> <!-- closes #policyModal -->
+        </div>
+        <!-- closes .policy-modal-body -->
+      </div>
+      <!-- closes .policy-modal-->
+    </div>
+    <!-- closes #policyModal -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>

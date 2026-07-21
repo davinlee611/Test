@@ -1,51 +1,36 @@
 "use strict";
 
-import {
-  resetClientPlan,
-} from "./state/client-plan.js";
+import { resetClientPlan } from "./state/client-plan.js";
+
+import { initializeProfile, resetProfile } from "./modules/client-profile.js";
+
+import { initializeSidebar, openSection } from "./modules/sidebar.js";
 
 import {
-    initializeProfile,
-    resetProfile,
-} from "./modules/client-profile.js";
-
-import {
-    initializeSidebar,
-    openSection,
-} from "./modules/sidebar.js";
-
-import {
-    initializeWealthType,
-    resetWealthType,
+  initializeWealthType,
+  resetWealthType,
 } from "./modules/wealth-type.js";
 
-import {
-    initializeGoals,
-    resetGoals,
-} from "./modules/goals.js";
+import { initializeGoals, resetGoals } from "./modules/goals.js";
 
 import {
-    initializeAssetsIncome,
-    resetAssetsIncome,
+  initializeAssetsIncome,
+  resetAssetsIncome,
 } from "./modules/assets-income.js";
 
-import {
-    initializeProperties,
-    resetProperties,
-} from "./modules/properties.js";
+import { initializeProperties, resetProperties } from "./modules/properties.js";
 
 import {
-    initializeLiabilities,
-    resetLiabilities,
+  initializeLiabilities,
+  resetLiabilities,
 } from "./modules/liabilities.js";
 
 import {
-    initializeInsurancePortfolio,
-    resetInsurancePortfolio,
+  initializeInsurancePortfolio,
+  resetInsurancePortfolio,
 } from "./modules/insurance-portfolio.js";
 
-const supabaseClient =
-    window.supabaseClient;
+const supabaseClient = window.supabaseClient;
 
 /* ========================================
    PAGE ELEMENTS
@@ -87,7 +72,6 @@ async function initializePage() {
 
     loadingMessage.hidden = true;
     clientWorkspace.hidden = false;
-
   } catch (error) {
     console.error("Financial planner error:", error);
 
@@ -105,58 +89,58 @@ if (clearPlanButton) {
 }
 
 function clearFinancialPlan() {
-    const shouldClear = window.confirm(
-        "Clear all information entered in this financial plan?",
-    );
+  const shouldClear = window.confirm(
+    "Clear all information entered in this financial plan?",
+  );
 
-    if (!shouldClear) {
-        return;
-    }
+  if (!shouldClear) {
+    return;
+  }
 
-    /*
-     * Reset the shared JavaScript state.
-     */
-    resetClientPlan();
+  /*
+   * Reset the shared JavaScript state.
+   */
+  resetClientPlan();
 
-    /*
-     * Reset the profile form fields.
-     */
-    resetProfile();
+  /*
+   * Reset the profile form fields.
+   */
+  resetProfile();
 
-    /*
-     * Reset the Wealth Type selections.
-    */
-    resetWealthType();
+  /*
+   * Reset the Wealth Type selections.
+   */
+  resetWealthType();
 
-    /*
-    * Reset financial goals.
-    */
-    resetGoals();
+  /*
+   * Reset financial goals.
+   */
+  resetGoals();
 
-    /*
-    * Reset Withdrawable Assets, Income and CPF.
-    */
-    resetAssetsIncome();
+  /*
+   * Reset Withdrawable Assets, Income and CPF.
+   */
+  resetAssetsIncome();
 
-    /*
-     * Reset the property interface.
-     */
-    resetProperties();
+  /*
+   * Reset the property interface.
+   */
+  resetProperties();
 
-    /*
-    * Reset liabilities.
-    */
-    resetLiabilities();
+  /*
+   * Reset liabilities.
+   */
+  resetLiabilities();
 
-    /*
-    * Reset insurance portfolio.
-    */
-    resetInsurancePortfolio();
+  /*
+   * Reset insurance portfolio.
+   */
+  resetInsurancePortfolio();
 
-    /*
-     * Return to the Client Profile section.
-     */
-    openSection("profile");
+  /*
+   * Return to the Client Profile section.
+   */
+  openSection("profile");
 }
 
 /* ========================================
