@@ -391,11 +391,9 @@ function updateIncomeSummaryDisplay(summary) {
   }
 
   if (employeeCpfContributionNote) {
-    employeeCpfContributionNote.textContent = getCpfSummaryNote(
-      employmentStatus,
-      age,
-      summary,
-    );
+    employeeCpfContributionNote.textContent = summary.cpfApplies
+      ? "Based on the Ordinary Wage Ceiling of $8,000"
+      : getCpfSummaryNote(employmentStatus, age, summary);
   }
 
   if (annualEmployeeCpfNote) {
