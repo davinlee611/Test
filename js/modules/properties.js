@@ -15,6 +15,15 @@ import {
   clearProperties,
 } from "../services/property-service.js";
 
+import {
+  createPlanningCard,
+  createPlanningCardIcon,
+  createPlanningCardDetails,
+  createPlanningCardActions,
+  createPlanningCardButton,
+  renderPlanningEmptyState,
+} from "../components/planning-card.js";
+
 /* ========================================
    DOM REFERENCES
 ======================================== */
@@ -85,7 +94,7 @@ export function resetProperties() {
   closePropertyModal();
   renderProperties();
 
-  emitPropertyChanged();
+  emitPropertiesChanged();
 }
 
 /* ========================================
@@ -254,7 +263,7 @@ function handlePropertySubmit(event) {
 
   renderProperties();
   closePropertyModal();
-  emitPropertyChanged();
+  emitPropertiesChanged();
 }
 
 function validateProperty(propertyType, marketValue, ownershipPercentage) {
@@ -311,7 +320,7 @@ function handleDeleteProperty(propertyId) {
   }
 
   renderProperties();
-  emitPropertyChanged();
+  emitPropertiesChanged();
 }
 
 /* ========================================
@@ -327,104 +336,89 @@ export function renderProperties() {
 
   propertyList.innerHTML = "";
 
-  properties.forEach(function (property) {
-    const propertyItem = createPropertyItem(property);
+  if (properties.length === 0) {
+    renderPlanningEmptyState(
+      propertyList,
+      "No properties added yet.",
+      emptyPropertyMessage,
+    );
 
-    propertyList.appendChild(propertyItem);
-  });
+    updatePropertyTotal();
 
-  if (properties.length === 0 && emptyPropertyMessage) {
-    propertyList.appendChild(emptyPropertyMessage);
+    return;
   }
+
+  properties.forEach(function (property) {
+    propertyList.appendChild(createPropertyItem(property));
+  });
 
   updatePropertyTotal();
 }
 
 function createPropertyItem(property) {
+  return createPlanningCard({
+    itemClass: "property-item",
+
+    icon: createPropertyIcon(),
+
+    details: createPropertyDetails(property),
+
+    actions: createPropertyActions(property),
+  });
+}
+
+function createPropertyIcon() {
+  return createPlanningCardIcon("fa-solid fa-house");
+}
+
+function createPropertyDetails(property) {
   const clientPropertyValue = calculateClientPropertyValue(property);
 
-  const propertyItem = document.createElement("div");
+  return createPlanningCardDetails({
+    title: property.type,
 
-  propertyItem.className = "planning-card-item";
+    description: [
+      `${formatCurrency(property.marketValue)} market value`,
 
-  const propertyMain = document.createElement("div");
+      `${property.ownershipPercentage}% ownership`,
 
-  propertyMain.className = "planning-card-content";
+      `${formatCurrency(clientPropertyValue)} client value`,
+    ].join(" · "),
+  });
+}
 
-  const propertyIcon = document.createElement("div");
+function createPropertyActions(property) {
+  const actions = createPlanningCardActions();
 
-  propertyIcon.className = "planning-card-icon";
+  actions.append(createEditButton(property), createDeleteButton(property));
 
-  propertyIcon.innerHTML = '<i class="fa-solid fa-house"></i>';
-
-  const propertyDetails = document.createElement("div");
-
-  propertyDetails.className = "planning-card-details";
-
-  const propertyTitle = document.createElement("h4");
-
-  propertyTitle.textContent = property.type;
-
-  const propertyDescription = document.createElement("p");
-
-  propertyDescription.textContent =
-    `${formatCurrency(property.marketValue)} market value · ` +
-    `${property.ownershipPercentage}% ownership · ` +
-    `${formatCurrency(clientPropertyValue)} client value`;
-
-  propertyDetails.append(propertyTitle, propertyDescription);
-
-  propertyMain.append(propertyIcon, propertyDetails);
-
-  const propertyActions = document.createElement("div");
-
-  propertyActions.className = "planning-card-actions";
-
-  const editButton = createEditButton(property);
-
-  const deleteButton = createDeleteButton(property);
-
-  propertyActions.append(editButton, deleteButton);
-
-  propertyItem.append(propertyMain, propertyActions);
-
-  return propertyItem;
+  return actions;
 }
 
 function createEditButton(property) {
-  const editButton = document.createElement("button");
+  return createPlanningCardButton({
+    iconClass: "fa-solid fa-pen",
 
-  editButton.type = "button";
+    label: `Edit ${property.type}`,
 
-  editButton.className = "planning-card-action";
-
-  editButton.setAttribute("aria-label", `Edit ${property.type}`);
-
-  editButton.innerHTML = '<i class="fa-solid fa-pen"></i>';
-
-  editButton.addEventListener("click", function () {
-    openEditPropertyModal(property.id);
+    onClick() {
+      openEditPropertyModal(property.id);
+    },
   });
-
-  return editButton;
 }
 
 function createDeleteButton(property) {
-  const deleteButton = document.createElement("button");
+  return createPlanningCardButton({
+    iconClass: "fa-solid fa-trash",
 
-  deleteButton.type = "button";
+    variant: "delete",
 
-  deleteButton.className = "planning-card-action delete";
+    label: `Delete ${property.type}`,
 
-  deleteButton.setAttribute("aria-label", `Delete ${property.type}`);
-
-  deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
-
-  deleteButton.addEventListener("click", function () {
-    handleDeleteProperty(property.id);
+    onClick() {
+      handleDeleteProperty(property.id);
+    },
   });
-
-  return deleteButton;
 }
 
 /* ========================================
@@ -456,7 +450,7 @@ function calculateClientPropertyValue(property) {
    EVENTS
 ======================================== */
 
-function emitPropertyChanged() {
+function emitPropertiesChanged() {
   emit(EVENTS.PROPERTY_CHANGED, {
     properties: [...getAllProperties()],
   });
