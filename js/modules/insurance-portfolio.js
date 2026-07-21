@@ -1146,95 +1146,30 @@ function renderEmptyBenefitMessage() {
   elements.policyBenefitList.appendChild(message);
 }
 
-function createBenefitElement(benefit) {
-  const item = document.createElement("article");
+function createBenefitElement(policy, benefit) {
+  return createPlanningCard({
+    itemClass: "benefit-item",
 
-  item.className = "planning-card-item benefit-item";
+    icon: createBenefitIcon(),
 
-  const benefitLabel = BENEFIT_LABELS[benefit.type] ?? "Insurance Benefit";
+    details: createBenefitDetails(benefit),
 
-  const amountLabel = getBenefitAmountDescription(benefit);
+    actions: createBenefitActions(policy, benefit),
+  });
+}
 
-  const lifeAssuredText = benefit.lifeAssured
-    ? `
-                <span>
-                    Life Assured:
-                    ${escapeHtml(benefit.lifeAssured)}
-                </span>
-            `
-    : "";
+function createBenefitIcon() {
+  return createPlanningCardIcon("fa-solid fa-shield-heart");
+}
 
-  item.innerHTML = `
-        <div class="planning-card-content">
+function createBenefitDetails(benefit) {
+  return createPlanningCardDetails({
+    title: benefit.benefitName,
 
-            <div class="planning-card-icon">
-                <i class="fa-solid fa-shield-heart"></i>
-            </div>
+    description: getBenefitSummary(benefit),
 
-            <div class="planning-card-details">
-
-    <div class="benefit-title-row">
-
-        <h4>
-            ${escapeHtml(benefitLabel)}
-        </h4>
-
-        ${createBenefitBadge(benefit)}
-
-    </div>
-
-    <p>
-        ${escapeHtml(amountLabel)}
-    </p>
-
-    ${
-      lifeAssuredText
-        ? `
-                <div class="benefit-item-meta">
-                    ${lifeAssuredText}
-                </div>
-            `
-        : ""
-    }
-
-</div>
-
-        </div>
-
-        <div class="planning-card-actions">
-
-    <button
-    type="button"
-    class="planning-card-action"
-    data-benefit-action="edit"
-    data-benefit-id="${escapeHtml(benefit.id)}"
-    aria-label="Edit Benefit"
-    title="Edit Benefit"
->
-    <i
-        class="fa-solid fa-pen"
-        aria-hidden="true"
-    ></i>
-</button>
-
-<button
-    type="button"
-    class="planning-card-action delete"
-    data-benefit-action="delete"
-    data-benefit-id="${escapeHtml(benefit.id)}"
-    aria-label="Delete Benefit"
-    title="Delete Benefit"
->
-    <i
-        class="fa-solid fa-trash"
-        aria-hidden="true"
-    ></i>
-</button>
-
-</div>
-    `;
-
-  return item;
+    content: createBenefitMetadata(benefit),
+  });
 }
 
 function getBenefitAmountDescription(benefit) {
