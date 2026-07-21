@@ -63,10 +63,6 @@ const monthlyTakeHomeIncomeElement = document.getElementById(
   "monthlyTakeHomeIncome",
 );
 
-const annualEmployeeCpfElement = document.getElementById("annualEmployeeCpf");
-
-const annualEmployeeCpfNote = document.getElementById("annualEmployeeCpfNote");
-
 const annualEmploymentIncomeElement =
   document.getElementById("annualGrossIncome");
 
@@ -360,46 +356,33 @@ function updateIncomeSummaryDisplay(summary) {
 
   const age = getClientAge();
 
-  if (employeeCpfContributionElement) {
-    employeeCpfContributionElement.textContent = formatDeduction(
-      summary.monthlyEmployeeCpf,
-    );
-  }
+  setIncomeSummaryValue({
+    element: employeeCpfContributionElement,
+    value: summary.monthlyEmployeeCpf,
+    deduction: true,
+    period: "per month",
+  });
 
-  if (monthlyTakeHomeIncomeElement) {
-    monthlyTakeHomeIncomeElement.textContent = formatCurrency(
-      summary.monthlyTakeHomeIncome,
-    );
-  }
+  setIncomeSummaryValue({
+    element: monthlyTakeHomeIncomeElement,
+    value: summary.monthlyTakeHomeIncome,
+    period: "per month",
+  });
 
-  if (annualEmployeeCpfElement) {
-    annualEmployeeCpfElement.textContent = formatDeduction(
-      summary.annualEmployeeCpf,
-    );
-  }
+  setIncomeSummaryValue({
+    element: annualEmploymentIncomeElement,
+    value: summary.annualEmploymentIncome,
+  });
 
-  if (annualEmploymentIncomeElement) {
-    annualEmploymentIncomeElement.textContent = formatCurrency(
-      summary.annualEmploymentIncome,
-    );
-  }
-
-  if (annualTakeHomeIncomeElement) {
-    annualTakeHomeIncomeElement.textContent = formatCurrency(
-      summary.annualTakeHomeIncome,
-    );
-  }
+  setIncomeSummaryValue({
+    element: annualTakeHomeIncomeElement,
+    value: summary.annualTakeHomeIncome,
+  });
 
   if (employeeCpfContributionNote) {
     employeeCpfContributionNote.textContent = summary.cpfApplies
       ? `Employee contribution: ${formatPercentage(summary.employeeCpfRate)} (Ordinary Wage Ceiling: ${formatCurrency(CPF_ORDINARY_WAGE_CEILING)}/month)`
       : getCpfSummaryNote(employmentStatus, age, summary);
-  }
-
-  if (annualEmployeeCpfNote) {
-    annualEmployeeCpfNote.textContent = summary.cpfApplies
-      ? "Includes CPF on ordinary and additional wages"
-      : "No employee CPF deduction applied";
   }
 
   if (cpfNotApplicableMessage) {
@@ -556,6 +539,36 @@ function updateCpfFields() {
 /* ========================================
    INTERNAL HELPERS
 ======================================== */
+
+function setIncomeSummaryValue({
+  element,
+  value,
+  deduction = false,
+  period = "",
+}) {
+  if (!element) {
+    return;
+  }
+
+  element.replaceChildren();
+
+  const amountText = document.createTextNode(
+    deduction ? formatDeduction(value) : formatCurrency(value),
+  );
+
+  element.appendChild(amountText);
+
+  if (!period) {
+    return;
+  }
+
+  const periodElement = document.createElement("span");
+
+  periodElement.className = "income-summary-period";
+  periodElement.textContent = period;
+
+  element.appendChild(periodElement);
+}
 
 function setInputValue(inputElement, value) {
   if (!inputElement) {
