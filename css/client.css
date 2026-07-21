@@ -100,6 +100,22 @@
 }
 
 /* ========================================
+   FORM HELPERS
+======================================== */
+
+.form-helper-text {
+    display: block;
+
+    margin-top: 4px;
+    margin-bottom: 8px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* ========================================
    EMPTY ENTRY LISTS
 ======================================== */
 
