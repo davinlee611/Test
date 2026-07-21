@@ -213,8 +213,6 @@ function bindInsuranceEvents() {
 
   elements.saveBenefitButton?.addEventListener("click", saveBenefit);
 
-  elements.policyBenefitList?.addEventListener("click", handleBenefitListClick);
-
   closeModalOnOverlayClick(elements.policyModal);
 
   closeModalOnEscape(elements.policyModal);
@@ -1064,36 +1062,6 @@ function updateDraftBenefit(formData) {
    BENEFIT ACTIONS
 ======================================== */
 
-function handleBenefitListClick(event) {
-  const actionButton = event.target.closest("[data-benefit-action]");
-
-  if (!actionButton) {
-    return;
-  }
-
-  const benefitId = actionButton.dataset.benefitId;
-
-  const action = actionButton.dataset.benefitAction;
-
-  if (!benefitId) {
-    return;
-  }
-
-  if (action === "edit") {
-    openEditBenefitEditor(benefitId);
-
-    return;
-  }
-
-  if (action === "delete") {
-    if (!window.confirm("Delete this benefit?")) {
-      return;
-    }
-
-    deleteDraftBenefit(benefitId);
-  }
-}
-
 function deleteDraftBenefit(benefitId) {
   draftBenefits = draftBenefits.filter(function (benefit) {
     return benefit.id !== benefitId;
@@ -1146,7 +1114,7 @@ function renderEmptyBenefitMessage() {
   elements.policyBenefitList.appendChild(message);
 }
 
-function createBenefitElement(policy, benefit) {
+function createBenefitElement(benefit) {
   return createPlanningCard({
     itemClass: "benefit-item",
 
@@ -1154,8 +1122,19 @@ function createBenefitElement(policy, benefit) {
 
     details: createBenefitDetails(benefit),
 
-    actions: createBenefitActions(policy, benefit),
+    actions: createBenefitActions(benefit),
   });
+}
+
+function createBenefitActions(benefit) {
+  const actions = createPlanningCardActions();
+
+  actions.append(
+    createBenefitEditButton(benefit),
+    createBenefitDeleteButton(benefit),
+  );
+
+  return actions;
 }
 
 function createBenefitIcon() {
@@ -1225,6 +1204,36 @@ function createBenefitBadge(benefit) {
   }
 
   return "";
+}
+
+function createBenefitEditButton(benefit) {
+  return createPlanningCardButton({
+    iconClass: "fa-solid fa-pen",
+
+    label: `Edit ${BENEFIT_LABELS[benefit.type]}`,
+
+    onClick() {
+      openEditBenefitEditor(benefit.id);
+    },
+  });
+}
+
+function createBenefitDeleteButton(benefit) {
+  return createPlanningCardButton({
+    iconClass: "fa-solid fa-trash",
+
+    variant: "delete",
+
+    label: `Delete ${BENEFIT_LABELS[benefit.type]}`,
+
+    onClick() {
+      if (!window.confirm("Delete this benefit?")) {
+        return;
+      }
+
+      deleteDraftBenefit(benefit.id);
+    },
+  });
 }
 
 /* ========================================
