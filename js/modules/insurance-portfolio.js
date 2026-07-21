@@ -33,6 +33,15 @@ import {
   clearPolicies,
 } from "../services/policy-service.js";
 
+import {
+  createPlanningCard,
+  createPlanningCardIcon,
+  createPlanningCardDetails,
+  createPlanningCardActions,
+  createPlanningCardButton,
+  renderPlanningEmptyState,
+} from "../components/planning-card.js";
+
 /* ========================================
    MODULE STATE
 ======================================== */
@@ -205,8 +214,6 @@ function bindInsuranceEvents() {
   elements.saveBenefitButton?.addEventListener("click", saveBenefit);
 
   elements.policyBenefitList?.addEventListener("click", handleBenefitListClick);
-
-  elements.policyList?.addEventListener("click", handlePolicyListClick);
 
   closeModalOnOverlayClick(elements.policyModal);
 
@@ -1303,7 +1310,11 @@ function renderPolicies() {
   elements.policyList.innerHTML = "";
 
   if (policies.length === 0) {
-    renderEmptyPolicyMessage();
+    renderPlanningEmptyState(
+      elements.policyList,
+      "No policies added yet.",
+      elements.emptyPolicyMessage,
+    );
 
     return;
   }
@@ -1313,173 +1324,117 @@ function renderPolicies() {
   });
 }
 
-function renderEmptyPolicyMessage() {
-  const message = document.createElement("p");
+function createPolicyElement(policy) {
+  return createPlanningCard({
+    itemClass: "policy-item",
 
-  message.id = "emptyPolicyMessage";
+    icon: createPolicyIcon(),
 
-  message.className = "empty-state-message";
+    details: createPolicyDetails(policy),
 
-  message.textContent = "No policies added yet.";
-
-  elements.emptyPolicyMessage = message;
-
-  elements.policyList.appendChild(message);
+    actions: createPolicyActions(policy),
+  });
 }
 
-function createPolicyElement(policy) {
-  const item = document.createElement("article");
+function createPolicyIcon() {
+  return createPlanningCardIcon("fa-solid fa-shield-halved");
+}
 
-  item.className = "planning-card-item policy-item";
-
+function createPolicyDetails(policy) {
   const policyName = policy.policyName || "Unnamed Policy";
 
   const policyType = POLICY_TYPE_LABELS[policy.policyType] || "Other";
 
   const insurer = policy.insurer || "Insurer not specified";
 
-  const status = POLICY_STATUS_LABELS[policy.status] || "Status not specified";
+  return createPlanningCardDetails({
+    title: policyName,
 
-  const premiumDescription = getPremiumDescription(policy.premium);
+    description: `${insurer} · ${policyType}`,
+
+    content: createPolicyMetadata(policy),
+  });
+}
+
+function createPolicyMetadata(policy) {
+  const metadata = document.createElement("div");
+
+  metadata.className = "benefit-item-meta";
+
+  appendMetadataItem(
+    metadata,
+    POLICY_STATUS_LABELS[policy.status] || "Status not specified",
+  );
+
+  appendMetadataItem(metadata, getPremiumDescription(policy.premium));
 
   const benefitCount = Array.isArray(policy.benefits)
     ? policy.benefits.length
     : 0;
 
-  const benefitText =
-    benefitCount === 1 ? "1 benefit" : `${benefitCount} benefits`;
+  appendMetadataItem(
+    metadata,
+    benefitCount === 1 ? "1 benefit" : `${benefitCount} benefits`,
+  );
 
-  const policyNumberText = policy.policyNumber
-    ? `
-                <span>
-                    Policy No:
-                    ${escapeHtml(policy.policyNumber)}
-                </span>
-            `
-    : "";
+  if (policy.policyNumber) {
+    appendMetadataItem(metadata, `Policy No: ${policy.policyNumber}`);
+  }
 
-  const policyOwnerText = policy.policyOwner
-    ? `
-                <span>
-                    Owner:
-                    ${escapeHtml(policy.policyOwner)}
-                </span>
-            `
-    : "";
+  if (policy.policyOwner) {
+    appendMetadataItem(metadata, `Owner: ${policy.policyOwner}`);
+  }
 
-  item.innerHTML = `
-    <div class="planning-card-content">
-
-        <div class="planning-card-icon">
-            <i
-                class="fa-solid fa-shield-halved"
-                aria-hidden="true"
-            ></i>
-        </div>
-
-        <div class="planning-card-details">
-
-            <h4>
-                ${escapeHtml(policyName)}
-            </h4>
-
-            <p>
-                ${escapeHtml(insurer)}
-                ·
-                ${escapeHtml(policyType)}
-            </p>
-
-            <div class="benefit-item-meta">
-
-                <span>
-                    ${escapeHtml(status)}
-                </span>
-
-                <span>
-                    ${escapeHtml(premiumDescription)}
-                </span>
-
-                <span>
-                    ${escapeHtml(benefitText)}
-                </span>
-
-                ${policyNumberText}
-
-                ${policyOwnerText}
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="planning-card-actions">
-
-        <button
-            type="button"
-            class="planning-card-action"
-            data-policy-action="edit"
-            data-policy-id="${escapeHtml(policy.id)}"
-            aria-label="Edit policy"
-            title="Edit policy"
-        >
-            <i
-                class="fa-solid fa-pen"
-                aria-hidden="true"
-            ></i>
-        </button>
-
-        <button
-    type="button"
-    class="planning-card-action delete"
-    data-policy-action="delete"
-    data-policy-id="${escapeHtml(policy.id)}"
-    aria-label="Delete policy"
-    title="Delete policy"
->
-    <i
-        class="fa-solid fa-trash"
-        aria-hidden="true"
-    ></i>
-</button>
-
-    </div>
-`;
-
-  return item;
+  return metadata;
 }
 
-function handlePolicyListClick(event) {
-  const actionButton = event.target.closest("[data-policy-action]");
+function createPolicyActions(policy) {
+  const actions = createPlanningCardActions();
 
-  if (!actionButton) {
+  actions.append(
+    createPolicyEditButton(policy),
+    createPolicyDeleteButton(policy),
+  );
+
+  return actions;
+}
+
+function createPolicyEditButton(policy) {
+  return createPlanningCardButton({
+    iconClass: "fa-solid fa-pen",
+
+    label: `Edit ${policy.policyName || "policy"}`,
+
+    onClick() {
+      openEditPolicyModal(policy.id);
+    },
+  });
+}
+
+function createPolicyDeleteButton(policy) {
+  return createPlanningCardButton({
+    iconClass: "fa-solid fa-trash",
+
+    variant: "delete",
+
+    label: `Delete ${policy.policyName || "policy"}`,
+
+    onClick() {
+      confirmDeletePolicy(policy);
+    },
+  });
+}
+
+function confirmDeletePolicy(policy) {
+  const confirmed = window.confirm(
+    `Delete "${policy.policyName || "this policy"}"?`,
+  );
+
+  if (!confirmed) {
     return;
   }
 
-  const policyId = actionButton.dataset.policyId;
-
-  const action = actionButton.dataset.policyAction;
-
-  if (action === "edit") {
-    openEditPolicyModal(policyId);
-
-    return;
-  }
-
-  if (action === "delete") {
-    const policy = getPolicyById(policyId);
-
-    const confirmed = window.confirm(
-      `Delete "${policy?.policyName || "this policy"}"?`,
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    handleDeletePolicy(policyId);
-    return;
-  }
+  handleDeletePolicy(policy.id);
 }
 
 function handleDeletePolicy(policyId) {
@@ -1505,4 +1460,12 @@ function getPremiumDescription(premium) {
     PREMIUM_FREQUENCY_LABELS[premium.frequency] || "Premium";
 
   return [formatCurrency(premium.amount), frequencyLabel].join(" · ");
+}
+
+function appendMetadataItem(container, text) {
+  const item = document.createElement("span");
+
+  item.textContent = text;
+
+  container.appendChild(item);
 }
