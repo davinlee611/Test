@@ -94,10 +94,6 @@ const monthlyIncomeNotSubjectToCpfElement = document.getElementById(
   "monthlyIncomeNotSubjectToCpf",
 );
 
-const annualOrdinaryWagesSubjectToCpfElement = document.getElementById(
-  "annualOrdinaryWagesSubjectToCpf",
-);
-
 const additionalWageCeilingElement = document.getElementById(
   "additionalWageCeiling",
 );
@@ -424,13 +420,7 @@ function updateIncomeSummaryDisplay(summary) {
 
   if (monthlyIncomeNotSubjectToCpfElement) {
     monthlyIncomeNotSubjectToCpfElement.textContent = formatCurrency(
-      Math.max(0, summary.monthlyGrossSalary - summary.monthlyCpfOrdinaryWage),
-    );
-  }
-
-  if (annualOrdinaryWagesSubjectToCpfElement) {
-    annualOrdinaryWagesSubjectToCpfElement.textContent = formatCurrency(
-      summary.annualCpfOrdinaryWage,
+      summary.monthlyIncomeNotSubjectToCpf,
     );
   }
 

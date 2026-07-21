@@ -37,6 +37,10 @@ export function calculateIncomeSummary({
     ? Math.min(safeMonthlyEmploymentIncome, CPF_ORDINARY_WAGE_CEILING)
     : 0;
 
+  const monthlyIncomeNotSubjectToCpf = cpfApplies
+    ? Math.max(0, safeMonthlyEmploymentIncome - monthlyCpfOrdinaryWage)
+    : safeMonthlyEmploymentIncome;
+
   const annualCpfOrdinaryWage = monthlyCpfOrdinaryWage * 12;
 
   const additionalWageCeiling = cpfApplies
@@ -100,6 +104,7 @@ export function calculateIncomeSummary({
     employerCpfRate,
 
     monthlyCpfOrdinaryWage,
+    monthlyIncomeNotSubjectToCpf,
     annualCpfOrdinaryWage,
     additionalWageCeiling,
     cpfAdditionalWage,
