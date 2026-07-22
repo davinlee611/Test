@@ -19,6 +19,7 @@ import {
   HOSPITAL_CLASS_LABELS,
   PAYOUT_TYPE_LABELS,
   POLICY_STATUS_LABELS,
+  POLICY_TYPE_BENEFIT_OPTIONS,
   POLICY_TYPE_DEFAULT_BENEFITS,
   POLICY_TYPE_LABELS,
   PREMIUM_FREQUENCY_LABELS,
@@ -187,14 +188,6 @@ function cacheInsuranceElements() {
 
     benefitHospitalRiderSelect: document.getElementById(
       "benefitHospitalRiderSelect",
-    ),
-
-    benefitMedicalReimbursementGroup: document.getElementById(
-      "benefitMedicalReimbursementGroup",
-    ),
-
-    benefitMedicalReimbursementInput: document.getElementById(
-      "benefitMedicalReimbursementInput",
     ),
 
     benefitNotesInput: document.getElementById("benefitNotesInput"),
@@ -910,39 +903,26 @@ function hasOnlySuggestedBenefits() {
 }
 
 function handlePolicyTypeChange() {
-  updateBenefitFields();
+  const policyType = elements.policyTypeSelect.value;
 
-  /*
-   * Do not automatically alter benefits while editing
-   * an existing saved policy.
-   */
-  if (editingPolicyId) {
-    return;
-  }
+  populateBenefitTypeOptions();
 
-  /*
-   * Only generate defaults when no benefits have
-   * already been added.
-   */
+  closeBenefitEditor();
+
   if (!hasOnlySuggestedBenefits()) {
     const confirmed = window.confirm(
       "Changing the policy type will replace the current benefits. Continue?",
     );
 
     if (!confirmed) {
+      renderDraftBenefits();
       return;
     }
   }
 
   draftBenefits = [];
 
-  const policyType = elements.policyTypeSelect.value;
-
   const defaultBenefitTypes = POLICY_TYPE_DEFAULT_BENEFITS[policyType] ?? [];
-
-  if (defaultBenefitTypes.length === 0) {
-    return;
-  }
 
   const lifeAssured =
     elements.policyLifeAssuredInput.value.trim() ||
@@ -961,22 +941,66 @@ function createEmptyBenefit(benefitType, lifeAssured) {
     id: createUniqueId(),
 
     isSuggested: true,
+
     type: benefitType,
+
     customName: "",
+
     lifeAssured,
+
     amount: 0,
+
     payoutType: null,
+
     hospitalClass: "",
+
     hasRider: null,
-    medicalReimbursementLimit: 0,
+
     notes: "",
   };
+}
+
+function populateBenefitTypeOptions(selectedBenefitType = "") {
+  const policyType = elements.policyTypeSelect.value;
+
+  const allowedBenefitTypes = POLICY_TYPE_BENEFIT_OPTIONS[policyType] ?? [];
+
+  elements.benefitTypeSelect.innerHTML = "";
+
+  const placeholderOption = document.createElement("option");
+
+  placeholderOption.value = "";
+  placeholderOption.textContent = policyType
+    ? "Select benefit type"
+    : "Select a policy type first";
+
+  elements.benefitTypeSelect.appendChild(placeholderOption);
+
+  allowedBenefitTypes.forEach(function (benefitType) {
+    const option = document.createElement("option");
+
+    option.value = benefitType;
+    option.textContent = BENEFIT_LABELS[benefitType] || "Other Benefit";
+
+    elements.benefitTypeSelect.appendChild(option);
+  });
+
+  const selectedTypeIsAllowed =
+    allowedBenefitTypes.includes(selectedBenefitType);
+
+  elements.benefitTypeSelect.value = selectedTypeIsAllowed
+    ? selectedBenefitType
+    : "";
+
+  elements.benefitTypeSelect.disabled = !policyType;
 }
 
 function openAddBenefitEditor() {
   editingBenefitId = null;
 
   resetBenefitForm();
+
+  populateBenefitTypeOptions();
 
   elements.benefitLifeAssuredInput.value =
     elements.policyLifeAssuredInput.value.trim() ||
@@ -1012,6 +1036,8 @@ function openEditBenefitEditor(benefitId) {
 
   elements.saveBenefitButton.textContent = "Save Changes";
 
+  populateBenefitTypeOptions(benefit.type);
+
   elements.benefitTypeSelect.value = benefit.type || "";
 
   elements.benefitLifeAssuredInput.value =
@@ -1027,11 +1053,6 @@ function openEditBenefitEditor(benefitId) {
 
   elements.benefitHospitalRiderSelect.value =
     benefit.hasRider === true ? "yes" : benefit.hasRider === false ? "no" : "";
-
-  elements.benefitMedicalReimbursementInput.value =
-    benefit.medicalReimbursementLimit > 0
-      ? benefit.medicalReimbursementLimit
-      : "";
 
   elements.benefitNotesInput.value = benefit.notes || "";
 
@@ -1070,6 +1091,8 @@ function resetBenefitForm() {
     return;
   }
 
+  populateBenefitTypeOptions();
+
   elements.benefitTypeSelect.value = "";
 
   elements.benefitLifeAssuredInput.value = "";
@@ -1083,8 +1106,6 @@ function resetBenefitForm() {
   elements.benefitHospitalClassSelect.value = "";
 
   elements.benefitHospitalRiderSelect.value = "";
-
-  elements.benefitMedicalReimbursementInput.value = "";
 
   elements.benefitNotesInput.value = "";
 
@@ -1121,18 +1142,14 @@ function updateBenefitFields() {
       showBenefitAmountField("Daily Cash Benefit");
       break;
 
-    case "personal_accident":
-      showBenefitAmountField("Coverage Amount");
-      elements.benefitMedicalReimbursementGroup.hidden = false;
+    case "medical_reimbursement":
+      showBenefitAmountField("Medical Reimbursement per Event");
       break;
 
     case "disability_income":
     case "long_term_care_income":
+    case "monthly_benefit":
       showBenefitAmountField("Monthly Benefit");
-      break;
-
-    case "survival_benefit":
-      showBenefitAmountField("Monthly Payout");
       break;
 
     case "other":
@@ -1154,8 +1171,6 @@ function hideBenefitSpecificFields() {
   elements.benefitHospitalClassGroup.hidden = true;
 
   elements.benefitHospitalRiderGroup.hidden = true;
-
-  elements.benefitMedicalReimbursementGroup.hidden = true;
 }
 
 function showBenefitAmountField(label) {
@@ -1211,10 +1226,6 @@ function getBenefitFormData() {
 
     hasRider: riderValue === "yes" ? true : riderValue === "no" ? false : null,
 
-    medicalReimbursementLimit: getWholeNumber(
-      elements.benefitMedicalReimbursementInput.value,
-    ),
-
     notes: elements.benefitNotesInput.value.trim(),
   };
 }
@@ -1264,12 +1275,13 @@ function getBenefitAmountValidationMessage(benefitType) {
     case "hospital_cash":
       return "Enter the daily cash benefit.";
 
+    case "medical_reimbursement":
+      return "Enter the medical reimbursement amount per event.";
+
     case "disability_income":
     case "long_term_care_income":
+    case "monthly_benefit":
       return "Enter the monthly benefit.";
-
-    case "survival_benefit":
-      return "Enter the monthly payout.";
 
     default:
       return "Enter a coverage amount greater than zero.";
@@ -1414,9 +1426,12 @@ function getBenefitAmountDescription(benefit) {
     case "hospital_cash":
       return `${formattedAmount} per day`;
 
+    case "medical_reimbursement":
+      return `${formattedAmount} per event`;
+
     case "disability_income":
     case "long_term_care_income":
-    case "survival_benefit":
+    case "monthly_benefit":
       return `${formattedAmount} per month`;
 
     default:
@@ -1482,28 +1497,12 @@ function createBenefitMetadata(benefit) {
       : BENEFIT_LABELS[benefit.type] || "Benefit",
   );
 
-  if (benefit.isSuggested) {
-    appendMetadataItem(metadata, "Suggested");
-  }
-
   if (benefit.payoutType) {
     appendMetadataItem(metadata, PAYOUT_TYPE_LABELS[benefit.payoutType]);
   }
 
   if (benefit.type === "hospitalisation") {
     appendMetadataItem(metadata, benefit.hasRider ? "With Rider" : "No Rider");
-  }
-
-  if (
-    benefit.type === "medical_reimbursement" &&
-    benefit.medicalReimbursementLimit > 0
-  ) {
-    appendMetadataItem(
-      metadata,
-      `Medical reimbursement: ${formatCurrency(
-        benefit.medicalReimbursementLimit,
-      )} per event`,
-    );
   }
 
   if (benefit.notes) {

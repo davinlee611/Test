@@ -1605,27 +1605,35 @@
                   <span class="required-label">*</span>
                 </label>
 
-                  <select id="policyTypeSelect" class="form-control">
-                    <option value="">Select policy type</option>
+                <select id="policyTypeSelect" class="form-control">
+                  <option value="">Select policy type</option>
 
-                    <option value="whole_life">Whole Life</option>
+                  <option value="whole_life">Whole Life</option>
 
-                    <option value="term">Term</option>
+                  <option value="term">Term</option>
 
-                    <option value="endowment">Endowment</option>
+                  <option value="endowment">Endowment</option>
 
-                    <option value="investment_linked">Investment-Linked</option>
+                  <option value="retirement">Retirement</option>
 
-                    <option value="hospitalisation">Hospitalisation</option>
+                  <option value="ilp_protection">
+                    Investment-Linked (Protection)
+                  </option>
 
-                    <option value="personal_accident">Personal Accident</option>
+                  <option value="ilp_accumulation">
+                    Investment-Linked (Accumulation)
+                  </option>
 
-                    <option value="disability_income">Disability Income</option>
+                  <option value="hospitalisation">Hospitalisation</option>
 
-                    <option value="long_term_care">Long-Term Care</option>
+                  <option value="personal_accident">Personal Accident</option>
 
-                    <option value="other">Other</option>
-                  </select>
+                  <option value="disability_income">Disability Income</option>
+
+                  <option value="long_term_care">Long-Term Care</option>
+
+                  <option value="other">Others</option>
+                </select>
               </div>
 
               <!-- Life Assured -->
@@ -1814,34 +1822,8 @@
                     <span class="required-label">*</span>
                   </label>
 
-                  <select id="benefitTypeSelect" class="form-control">
-                    <option value="">Select benefit type</option>
-
-                    <option value="death">Death / Terminal Illness</option>
-
-                    <option value="tpd">Total and Permanent Disability</option>
-
-                    <option value="critical_illness">Critical Illness</option>
-
-                    <option value="early_critical_illness">
-                      Early Critical Illness
-                    </option>
-
-                    <option value="hospitalisation">Hospitalisation</option>
-
-                    <option value="hospital_cash">Hospital Cash</option>
-
-                    <option value="personal_accident">Personal Accident</option>
-
-                    <option value="disability_income">Disability Income</option>
-
-                    <option value="long_term_care_income">
-                      Long-Term Care Income
-                    </option>
-
-                    <option value="survival_benefit">Survival Benefit</option>
-
-                    <option value="other">Other</option>
+                  <select id="benefitTypeSelect" class="form-control" disabled>
+                    <option value="">Select a policy type first</option>
                   </select>
                 </div>
 
@@ -1949,32 +1931,6 @@
 
                     <option value="no">No</option>
                   </select>
-                </div>
-
-                <!-- Accident Medical Reimbursement -->
-                <div
-                  id="benefitMedicalReimbursementGroup"
-                  class="form-group"
-                  hidden
-                >
-                  <label for="benefitMedicalReimbursementInput">
-                    Medical Reimbursement Limit per Event
-                    <span class="optional-label">(Optional)</span>
-                  </label>
-
-                  <div class="currency-input">
-                    <span>$</span>
-
-                    <input
-                      id="benefitMedicalReimbursementInput"
-                      class="form-control"
-                      type="number"
-                      min="0"
-                      step="1"
-                      inputmode="numeric"
-                      placeholder="0"
-                    />
-                  </div>
                 </div>
 
                 <!-- Notes -->

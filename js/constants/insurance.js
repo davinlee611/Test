@@ -35,8 +35,8 @@ export const BENEFIT_LABELS = {
   hospital_cash: "Hospital Cash",
   medical_reimbursement: "Medical Reimbursement",
   disability_income: "Disability Income",
-  long_term_care_income: "Long-Term Care Income",
-  survival_benefit: "Survival Benefit",
+  long_term_care_income: "Long-Term Care",
+  monthly_benefit: "Monthly Benefit",
   other: "Other",
 };
 
@@ -52,18 +52,21 @@ export const HOSPITAL_CLASS_LABELS = {
   private: "Private Hospital",
 };
 
+/*
+ * Benefits automatically created when a policy type is selected.
+ */
 export const POLICY_TYPE_DEFAULT_BENEFITS = {
   whole_life: ["death", "tpd"],
 
   term: ["death", "tpd"],
 
-  endowment: ["death", "survival_benefit"],
+  endowment: ["death", "monthly_benefit"],
 
-  retirement: ["survival_benefit"],
+  retirement: ["death", "monthly_benefit"],
 
   ilp_protection: ["death", "tpd"],
 
-  ilp_accumulation: ["survival_benefit"],
+  ilp_accumulation: ["death"],
 
   hospitalisation: ["hospitalisation"],
 
@@ -74,4 +77,43 @@ export const POLICY_TYPE_DEFAULT_BENEFITS = {
   long_term_care: ["long_term_care_income"],
 
   other: [],
+};
+
+/*
+ * Benefit types shown in the Add Benefit dropdown.
+ */
+export const POLICY_TYPE_BENEFIT_OPTIONS = {
+  whole_life: [
+    "death",
+    "tpd",
+    "critical_illness",
+    "early_critical_illness",
+    "other",
+  ],
+
+  term: ["death", "tpd", "critical_illness", "early_critical_illness", "other"],
+
+  endowment: ["death", "monthly_benefit", "other"],
+
+  retirement: ["death", "monthly_benefit", "other"],
+
+  ilp_protection: [
+    "death",
+    "tpd",
+    "critical_illness",
+    "early_critical_illness",
+    "other",
+  ],
+
+  ilp_accumulation: ["death", "other"],
+
+  hospitalisation: ["hospitalisation", "hospital_cash", "other"],
+
+  personal_accident: ["death", "tpd", "medical_reimbursement", "other"],
+
+  disability_income: ["disability_income", "other"],
+
+  long_term_care: ["long_term_care_income", "other"],
+
+  other: Object.keys(BENEFIT_LABELS),
 };
