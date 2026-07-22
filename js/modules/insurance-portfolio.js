@@ -603,7 +603,7 @@ function validatePolicyBenefits(benefits) {
 
   earlyCiBenefits.forEach(function (earlyCiBenefit) {
     /*
-     * Additional and standalone Early CI benefits
+     * Additional Early CI benefits
      * do not depend on Death or Critical Illness.
      */
     if (earlyCiBenefit.payoutType !== "accelerated") {
@@ -760,7 +760,7 @@ function getPolicyValidationItems() {
   });
 
   earlyCiBenefits.forEach(function (earlyCiBenefit) {
-    // Additional and Standalone Early CI have no dependency.
+    // Additional Early CI has no dependency.
     if (earlyCiBenefit.payoutType !== "accelerated") {
       items.push({
         valid: true,
@@ -1289,7 +1289,7 @@ function validateBenefit(formData) {
     formData.type === "early_critical_illness";
 
   if (requiresPayoutType && !formData.payoutType) {
-    return "Select whether the payout is accelerated, additional or standalone.";
+    return "Select whether the payout is accelerated or additional.";
   }
 
   return "";
