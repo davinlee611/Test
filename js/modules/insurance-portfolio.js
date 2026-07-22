@@ -1495,7 +1495,7 @@ function createBenefitMetadata(benefit) {
   }
 
   if (
-    benefit.type === "personal_accident" &&
+    benefit.type === "medical_reimbursement" &&
     benefit.medicalReimbursementLimit > 0
   ) {
     appendMetadataItem(

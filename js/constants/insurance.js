@@ -4,21 +4,14 @@ export const POLICY_TYPE_LABELS = {
   whole_life: "Whole Life",
   term: "Term",
   endowment: "Endowment",
-  investment_linked: "Investment-Linked",
+  retirement: "Retirement",
+  ilp_protection: "Investment-Linked (Protection)",
+  ilp_accumulation: "Investment-Linked (Accumulation)",
   hospitalisation: "Hospitalisation",
   personal_accident: "Personal Accident",
   disability_income: "Disability Income",
   long_term_care: "Long-Term Care",
-  other: "Other",
-
-  /*
-   * Legacy values retained so previously entered
-   * policies can still display correctly.
-   */
-  integrated_shield: "Hospitalisation",
-  integrated_shield_rider: "Integrated Shield Plan Rider",
-  critical_illness: "Standalone Critical Illness",
-  annuity: "Annuity",
+  other: "Others",
 };
 
 export const POLICY_STATUS_LABELS = {
@@ -40,7 +33,7 @@ export const BENEFIT_LABELS = {
   early_critical_illness: "Early Critical Illness",
   hospitalisation: "Hospitalisation",
   hospital_cash: "Hospital Cash",
-  personal_accident: "Personal Accident",
+  medical_reimbursement: "Medical Reimbursement",
   disability_income: "Disability Income",
   long_term_care_income: "Long-Term Care Income",
   survival_benefit: "Survival Benefit",
@@ -61,12 +54,24 @@ export const HOSPITAL_CLASS_LABELS = {
 
 export const POLICY_TYPE_DEFAULT_BENEFITS = {
   whole_life: ["death", "tpd"],
+
   term: ["death", "tpd"],
+
   endowment: ["death", "survival_benefit"],
-  investment_linked: ["death", "tpd"],
+
+  retirement: ["survival_benefit"],
+
+  ilp_protection: ["death", "tpd"],
+
+  ilp_accumulation: ["survival_benefit"],
+
   hospitalisation: ["hospitalisation"],
-  personal_accident: ["personal_accident"],
+
+  personal_accident: ["death", "tpd", "medical_reimbursement"],
+
   disability_income: ["disability_income"],
+
   long_term_care: ["long_term_care_income"],
+
   other: [],
 };
