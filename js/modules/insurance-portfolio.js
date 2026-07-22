@@ -16,8 +16,10 @@ import {
 
 import {
   BENEFIT_LABELS,
+  HOSPITAL_CLASS_LABELS,
   PAYOUT_TYPE_LABELS,
   POLICY_STATUS_LABELS,
+  POLICY_TYPE_DEFAULT_BENEFITS,
   POLICY_TYPE_LABELS,
   PREMIUM_FREQUENCY_LABELS,
 } from "../constants/insurance.js";
@@ -147,8 +149,6 @@ function cacheInsuranceElements() {
 
     benefitEditorTitle: document.getElementById("benefitEditorTitle"),
 
-    benefitPayoutInfo: document.getElementById("benefitPayoutInfo"),
-
     closeBenefitEditorButton: document.getElementById(
       "closeBenefitEditorButton",
     ),
@@ -156,6 +156,12 @@ function cacheInsuranceElements() {
     benefitTypeSelect: document.getElementById("benefitTypeSelect"),
 
     benefitLifeAssuredInput: document.getElementById("benefitLifeAssuredInput"),
+
+    benefitLifeAssuredGroup: document.getElementById("benefitLifeAssuredGroup"),
+
+    benefitCustomNameGroup: document.getElementById("benefitCustomNameGroup"),
+
+    benefitCustomNameInput: document.getElementById("benefitCustomNameInput"),
 
     benefitAmountGroup: document.getElementById("benefitAmountGroup"),
 
@@ -166,6 +172,30 @@ function cacheInsuranceElements() {
     benefitPayoutTypeGroup: document.getElementById("benefitPayoutTypeGroup"),
 
     benefitPayoutTypeSelect: document.getElementById("benefitPayoutTypeSelect"),
+
+    benefitHospitalClassGroup: document.getElementById(
+      "benefitHospitalClassGroup",
+    ),
+
+    benefitHospitalClassSelect: document.getElementById(
+      "benefitHospitalClassSelect",
+    ),
+
+    benefitHospitalRiderGroup: document.getElementById(
+      "benefitHospitalRiderGroup",
+    ),
+
+    benefitHospitalRiderSelect: document.getElementById(
+      "benefitHospitalRiderSelect",
+    ),
+
+    benefitMedicalReimbursementGroup: document.getElementById(
+      "benefitMedicalReimbursementGroup",
+    ),
+
+    benefitMedicalReimbursementInput: document.getElementById(
+      "benefitMedicalReimbursementInput",
+    ),
 
     benefitNotesInput: document.getElementById("benefitNotesInput"),
 
@@ -213,7 +243,7 @@ function bindInsuranceEvents() {
 
   elements.cancelBenefitButton?.addEventListener("click", closeBenefitEditor);
 
-  elements.policyTypeSelect?.addEventListener("change", updateBenefitFields);
+  elements.policyTypeSelect?.addEventListener("change", handlePolicyTypeChange);
 
   elements.benefitTypeSelect?.addEventListener("change", updateBenefitFields);
 
@@ -554,25 +584,33 @@ function validatePolicyBenefits(benefits) {
   });
 
   earlyCiBenefits.forEach(function (earlyCiBenefit) {
+    /*
+     * Additional and standalone Early CI benefits
+     * do not depend on Death or Critical Illness.
+     */
+    if (earlyCiBenefit.payoutType !== "accelerated") {
+      return;
+    }
+
     const relatedCiBenefit = findRelatedCriticalIllnessBenefit(
       criticalIllnessBenefits,
     );
 
     if (!deathBenefit) {
       errors.push(
-        "Early Critical Illness requires a Death benefit in the same policy.",
+        "Accelerated Early Critical Illness requires a Death benefit in the same policy.",
       );
     }
 
     if (!relatedCiBenefit) {
       errors.push(
-        "Early Critical Illness requires a Critical Illness benefit in the same policy.",
+        "Accelerated Early Critical Illness requires a Critical Illness benefit in the same policy.",
       );
     }
 
     if (deathBenefit && earlyCiBenefit.amount > deathBenefit.amount) {
       errors.push(
-        `Early Critical Illness cannot exceed the Death sum assured of ${formatCurrency(
+        `Accelerated Early Critical Illness cannot exceed the Death sum assured of ${formatCurrency(
           deathBenefit.amount,
         )}.`,
       );
@@ -580,7 +618,7 @@ function validatePolicyBenefits(benefits) {
 
     if (relatedCiBenefit && earlyCiBenefit.amount > relatedCiBenefit.amount) {
       errors.push(
-        `Early Critical Illness cannot exceed the Critical Illness sum assured of ${formatCurrency(
+        `Accelerated Early Critical Illness cannot exceed the Critical Illness sum assured of ${formatCurrency(
           relatedCiBenefit.amount,
         )}.`,
       );
@@ -704,6 +742,19 @@ function getPolicyValidationItems() {
   });
 
   earlyCiBenefits.forEach(function (earlyCiBenefit) {
+    // Additional and Standalone Early CI have no dependency.
+    if (earlyCiBenefit.payoutType !== "accelerated") {
+      items.push({
+        valid: true,
+
+        message: `${
+          PAYOUT_TYPE_LABELS[earlyCiBenefit.payoutType]
+        } Early Critical Illness has no Death or Critical Illness dependency.`,
+      });
+
+      return;
+    }
+
     const relatedCiBenefit = findRelatedCriticalIllnessBenefit(
       criticalIllnessBenefits,
     );
@@ -712,7 +763,7 @@ function getPolicyValidationItems() {
       items.push({
         valid: false,
 
-        message: "Early CI requires a Death benefit.",
+        message: "Accelerated Early Critical Illness requires a Death benefit.",
       });
     }
 
@@ -720,7 +771,8 @@ function getPolicyValidationItems() {
       items.push({
         valid: false,
 
-        message: "Early CI requires a Critical Illness benefit.",
+        message:
+          "Accelerated Early Critical Illness requires a Critical Illness benefit.",
       });
     }
 
@@ -731,8 +783,8 @@ function getPolicyValidationItems() {
         valid: belowDeath,
 
         message: belowDeath
-          ? "Early CI does not exceed the Death sum assured."
-          : `Early CI exceeds the Death sum assured of ${formatCurrency(
+          ? "Accelerated Early Critical Illness does not exceed the Death sum assured."
+          : `Accelerated Early Critical Illness exceeds the Death sum assured of ${formatCurrency(
               deathBenefit.amount,
             )}.`,
       });
@@ -745,8 +797,8 @@ function getPolicyValidationItems() {
         valid: belowCi,
 
         message: belowCi
-          ? "Early CI does not exceed the Critical Illness sum assured."
-          : `Early CI exceeds the Critical Illness sum assured of ${formatCurrency(
+          ? "Accelerated Early Critical Illness does not exceed the Critical Illness sum assured."
+          : `Accelerated Early Critical Illness exceeds the Critical Illness sum assured of ${formatCurrency(
               relatedCiBenefit.amount,
             )}.`,
       });
@@ -830,6 +882,60 @@ function clearPolicyFormMessage() {
    BENEFIT EDITOR
 ======================================== */
 
+function handlePolicyTypeChange() {
+  updateBenefitFields();
+
+  /*
+   * Do not automatically alter benefits while editing
+   * an existing saved policy.
+   */
+  if (editingPolicyId) {
+    return;
+  }
+
+  /*
+   * Only generate defaults when no benefits have
+   * already been added.
+   */
+  if (draftBenefits.length > 0) {
+    return;
+  }
+
+  const policyType = elements.policyTypeSelect.value;
+
+  const defaultBenefitTypes = POLICY_TYPE_DEFAULT_BENEFITS[policyType] ?? [];
+
+  if (defaultBenefitTypes.length === 0) {
+    return;
+  }
+
+  const lifeAssured =
+    elements.policyLifeAssuredInput.value.trim() ||
+    getClientProfile().fullName ||
+    "";
+
+  draftBenefits = defaultBenefitTypes.map(function (benefitType) {
+    return createEmptyBenefit(benefitType, lifeAssured);
+  });
+
+  renderDraftBenefits();
+}
+
+function createEmptyBenefit(benefitType, lifeAssured) {
+  return {
+    id: createUniqueId(),
+    type: benefitType,
+    customName: "",
+    lifeAssured,
+    amount: 0,
+    payoutType: null,
+    hospitalClass: "",
+    hasRider: null,
+    medicalReimbursementLimit: 0,
+    notes: "",
+  };
+}
+
 function openAddBenefitEditor() {
   editingBenefitId = null;
 
@@ -869,15 +975,28 @@ function openEditBenefitEditor(benefitId) {
 
   elements.saveBenefitButton.textContent = "Save Changes";
 
-  elements.benefitTypeSelect.value = benefit.type;
+  elements.benefitTypeSelect.value = benefit.type || "";
 
-  elements.benefitLifeAssuredInput.value = benefit.lifeAssured;
+  elements.benefitLifeAssuredInput.value =
+    benefit.lifeAssured || elements.policyLifeAssuredInput.value.trim();
 
-  elements.benefitAmountInput.value = benefit.amount;
+  elements.benefitCustomNameInput.value = benefit.customName || "";
 
-  elements.benefitPayoutTypeSelect.value = benefit.payoutType ?? "";
+  elements.benefitAmountInput.value = benefit.amount > 0 ? benefit.amount : "";
 
-  elements.benefitNotesInput.value = benefit.notes;
+  elements.benefitPayoutTypeSelect.value = benefit.payoutType || "";
+
+  elements.benefitHospitalClassSelect.value = benefit.hospitalClass || "";
+
+  elements.benefitHospitalRiderSelect.value =
+    benefit.hasRider === true ? "yes" : benefit.hasRider === false ? "no" : "";
+
+  elements.benefitMedicalReimbursementInput.value =
+    benefit.medicalReimbursementLimit > 0
+      ? benefit.medicalReimbursementLimit
+      : "";
+
+  elements.benefitNotesInput.value = benefit.notes || "";
 
   elements.benefitFormMessage.textContent = "";
 
@@ -918,9 +1037,17 @@ function resetBenefitForm() {
 
   elements.benefitLifeAssuredInput.value = "";
 
+  elements.benefitCustomNameInput.value = "";
+
   elements.benefitAmountInput.value = "";
 
   elements.benefitPayoutTypeSelect.value = "";
+
+  elements.benefitHospitalClassSelect.value = "";
+
+  elements.benefitHospitalRiderSelect.value = "";
+
+  elements.benefitMedicalReimbursementInput.value = "";
 
   elements.benefitNotesInput.value = "";
 
@@ -932,68 +1059,75 @@ function resetBenefitForm() {
 function updateBenefitFields() {
   const benefitType = elements.benefitTypeSelect.value;
 
-  const policyType = elements.policyTypeSelect.value;
+  hideBenefitSpecificFields();
 
-  const isWholeLifeTpd = policyType === "whole_life" && benefitType === "tpd";
+  elements.benefitLifeAssuredGroup.hidden = !benefitType;
 
-  const requiresPayoutType =
-    benefitType === "critical_illness" ||
-    benefitType === "early_critical_illness";
-
-  /*
-   * CI and ECI:
-   * Show the payout type dropdown.
-   *
-   * Whole Life TPD:
-   * Hide the dropdown because it is
-   * always accelerated.
-   */
-  elements.benefitPayoutTypeGroup.hidden =
-    !requiresPayoutType || isWholeLifeTpd;
-
-  /*
-   * Only show the information message
-   * for Whole Life TPD.
-   */
-  elements.benefitPayoutInfo.hidden = !isWholeLifeTpd;
-
-  if (isWholeLifeTpd) {
-    elements.benefitPayoutTypeSelect.value = "accelerated";
-  } else if (!requiresPayoutType) {
-    elements.benefitPayoutTypeSelect.value = "";
-  }
-
-  elements.benefitAmountLabel.innerHTML = getBenefitAmountLabel(benefitType);
-}
-
-function getBenefitAmountLabel(benefitType) {
   switch (benefitType) {
-    case "hospital_cash":
-      return `
-                Daily Cash Benefit
-                <span class="required-label">*</span>
-            `;
+    case "death":
+    case "tpd":
+      showBenefitAmountField("Coverage Amount");
+      break;
 
-    case "disability_income":
-      return `
-                Monthly Benefit
-                <span class="required-label">*</span>
-            `;
+    case "critical_illness":
+    case "early_critical_illness":
+      showBenefitAmountField("Coverage Amount");
+      elements.benefitPayoutTypeGroup.hidden = false;
+      break;
 
     case "hospitalisation":
-      return `
-                Coverage Amount
-                <span class="optional-label">
-                    (Optional)
-                </span>
-            `;
+      elements.benefitHospitalClassGroup.hidden = false;
+      elements.benefitHospitalRiderGroup.hidden = false;
+      break;
 
-    default:
-      return `
-                Coverage Amount
-                <span class="required-label">*</span>
-            `;
+    case "hospital_cash":
+      showBenefitAmountField("Daily Cash Benefit");
+      break;
+
+    case "personal_accident":
+      showBenefitAmountField("Coverage Amount");
+      elements.benefitMedicalReimbursementGroup.hidden = false;
+      break;
+
+    case "disability_income":
+    case "long_term_care_income":
+      showBenefitAmountField("Monthly Benefit");
+      break;
+
+    case "survival_benefit":
+      showBenefitAmountField("Monthly Payout");
+      break;
+
+    case "other":
+      elements.benefitCustomNameGroup.hidden = false;
+      showBenefitAmountField("Coverage Amount");
+      break;
   }
+}
+
+function hideBenefitSpecificFields() {
+  elements.benefitLifeAssuredGroup.hidden = true;
+
+  elements.benefitCustomNameGroup.hidden = true;
+
+  elements.benefitAmountGroup.hidden = true;
+
+  elements.benefitPayoutTypeGroup.hidden = true;
+
+  elements.benefitHospitalClassGroup.hidden = true;
+
+  elements.benefitHospitalRiderGroup.hidden = true;
+
+  elements.benefitMedicalReimbursementGroup.hidden = true;
+}
+
+function showBenefitAmountField(label) {
+  elements.benefitAmountGroup.hidden = false;
+
+  elements.benefitAmountLabel.innerHTML = `
+    ${escapeHtml(label)}
+    <span class="required-label">*</span>
+  `;
 }
 
 /* ========================================
@@ -1023,24 +1157,26 @@ function saveBenefit() {
 }
 
 function getBenefitFormData() {
-  const benefitType = elements.benefitTypeSelect.value;
-
-  const policyType = elements.policyTypeSelect.value;
-
-  let payoutType = elements.benefitPayoutTypeSelect.value || null;
-
-  if (policyType === "whole_life" && benefitType === "tpd") {
-    payoutType = "accelerated";
-  }
+  const riderValue = elements.benefitHospitalRiderSelect.value;
 
   return {
-    type: benefitType,
+    type: elements.benefitTypeSelect.value,
+
+    customName: elements.benefitCustomNameInput.value.trim(),
 
     lifeAssured: elements.benefitLifeAssuredInput.value.trim(),
 
     amount: getWholeNumber(elements.benefitAmountInput.value),
 
-    payoutType,
+    payoutType: elements.benefitPayoutTypeSelect.value || null,
+
+    hospitalClass: elements.benefitHospitalClassSelect.value,
+
+    hasRider: riderValue === "yes" ? true : riderValue === "no" ? false : null,
+
+    medicalReimbursementLimit: getWholeNumber(
+      elements.benefitMedicalReimbursementInput.value,
+    ),
 
     notes: elements.benefitNotesInput.value.trim(),
   };
@@ -1051,10 +1187,28 @@ function validateBenefit(formData) {
     return "Select a benefit type.";
   }
 
-  const amountIsOptional = formData.type === "hospitalisation";
+  if (!formData.lifeAssured) {
+    return "Enter the life assured.";
+  }
 
-  if (!amountIsOptional && formData.amount <= 0) {
-    return "Enter a coverage amount greater than zero.";
+  if (formData.type === "other" && !formData.customName) {
+    return "Enter the benefit name.";
+  }
+
+  if (formData.type === "hospitalisation") {
+    if (!formData.hospitalClass) {
+      return "Select the hospital class.";
+    }
+
+    if (formData.hasRider === null) {
+      return "Select whether the hospital plan has a rider.";
+    }
+
+    return "";
+  }
+
+  if (formData.amount <= 0) {
+    return getBenefitAmountValidationMessage(formData.type);
   }
 
   const requiresPayoutType =
@@ -1068,19 +1222,27 @@ function validateBenefit(formData) {
   return "";
 }
 
+function getBenefitAmountValidationMessage(benefitType) {
+  switch (benefitType) {
+    case "hospital_cash":
+      return "Enter the daily cash benefit.";
+
+    case "disability_income":
+    case "long_term_care_income":
+      return "Enter the monthly benefit.";
+
+    case "survival_benefit":
+      return "Enter the monthly payout.";
+
+    default:
+      return "Enter a coverage amount greater than zero.";
+  }
+}
+
 function addDraftBenefit(formData) {
   draftBenefits.push({
     id: createUniqueId(),
-
-    type: formData.type,
-
-    lifeAssured: formData.lifeAssured,
-
-    amount: formData.amount,
-
-    payoutType: formData.payoutType,
-
-    notes: formData.notes,
+    ...formData,
   });
 }
 
@@ -1095,16 +1257,7 @@ function updateDraftBenefit(formData) {
 
   draftBenefits[benefitIndex] = {
     ...draftBenefits[benefitIndex],
-
-    type: formData.type,
-
-    lifeAssured: formData.lifeAssured,
-
-    amount: formData.amount,
-
-    payoutType: formData.payoutType,
-
-    notes: formData.notes,
+    ...formData,
   };
 }
 
@@ -1193,7 +1346,10 @@ function createBenefitIcon() {
 
 function createBenefitDetails(benefit) {
   return createPlanningCardDetails({
-    title: benefit.benefitName,
+    title:
+      benefit.type === "other"
+        ? benefit.customName || "Other Benefit"
+        : BENEFIT_LABELS[benefit.type] || "Benefit",
 
     description: getBenefitSummary(benefit),
 
@@ -1202,8 +1358,11 @@ function createBenefitDetails(benefit) {
 }
 
 function getBenefitAmountDescription(benefit) {
-  if (benefit.type === "hospitalisation" && benefit.amount <= 0) {
-    return "Hospitalisation coverage";
+  if (benefit.type === "hospitalisation") {
+    return (
+      HOSPITAL_CLASS_LABELS[benefit.hospitalClass] ||
+      "Hospital class not provided"
+    );
   }
 
   const formattedAmount = formatCurrency(benefit.amount);
@@ -1213,6 +1372,8 @@ function getBenefitAmountDescription(benefit) {
       return `${formattedAmount} per day`;
 
     case "disability_income":
+    case "long_term_care_income":
+    case "survival_benefit":
       return `${formattedAmount} per month`;
 
     default:
@@ -1265,10 +1426,31 @@ function createBenefitMetadata(benefit) {
 
   metadata.className = "benefit-item-meta";
 
-  appendMetadataItem(metadata, BENEFIT_LABELS[benefit.type] ?? "Benefit");
+  appendMetadataItem(
+    metadata,
+    benefit.type === "other"
+      ? benefit.customName || "Other Benefit"
+      : BENEFIT_LABELS[benefit.type] || "Benefit",
+  );
 
   if (benefit.payoutType) {
     appendMetadataItem(metadata, PAYOUT_TYPE_LABELS[benefit.payoutType]);
+  }
+
+  if (benefit.type === "hospitalisation") {
+    appendMetadataItem(metadata, benefit.hasRider ? "With Rider" : "No Rider");
+  }
+
+  if (
+    benefit.type === "personal_accident" &&
+    benefit.medicalReimbursementLimit > 0
+  ) {
+    appendMetadataItem(
+      metadata,
+      `Medical reimbursement: ${formatCurrency(
+        benefit.medicalReimbursementLimit,
+      )} per event`,
+    );
   }
 
   if (benefit.notes) {

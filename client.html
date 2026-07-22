@@ -1606,31 +1606,27 @@
                 </label>
 
                 <select id="policyTypeSelect" class="form-control">
-                  <option value="">Select policy type</option>
+                  <select id="policyTypeSelect" class="form-control">
+                    <option value="">Select policy type</option>
 
-                  <option value="whole_life">Whole Life</option>
+                    <option value="whole_life">Whole Life</option>
 
-                  <option value="term">Term</option>
+                    <option value="term">Term</option>
 
-                  <option value="endowment">Endowment</option>
+                    <option value="endowment">Endowment</option>
 
-                  <option value="investment_linked">Investment-Linked</option>
+                    <option value="investment_linked">Investment-Linked</option>
 
-                  <option value="integrated_shield">
-                    Integrated Shield Plan
-                  </option>
+                    <option value="hospitalisation">Hospitalisation</option>
 
-                  <option value="integrated_shield_rider">
-                    Integrated Shield Plan Rider
-                  </option>
+                    <option value="personal_accident">Personal Accident</option>
 
-                  <option value="personal_accident">Personal Accident</option>
+                    <option value="disability_income">Disability Income</option>
 
-                  <option value="disability_income">Disability Income</option>
+                    <option value="long_term_care">Long-Term Care</option>
 
-                  <option value="long_term_care">Long-Term Care</option>
-
-                  <option value="other">Other</option>
+                    <option value="other">Other</option>
+                  </select>
                 </select>
               </div>
 
@@ -1823,7 +1819,7 @@
                   <select id="benefitTypeSelect" class="form-control">
                     <option value="">Select benefit type</option>
 
-                    <option value="death">Death</option>
+                    <option value="death">Death / Terminal Illness</option>
 
                     <option value="tpd">Total and Permanent Disability</option>
 
@@ -1840,27 +1836,51 @@
                     <option value="personal_accident">Personal Accident</option>
 
                     <option value="disability_income">Disability Income</option>
+
+                    <option value="long_term_care_income">
+                      Long-Term Care Income
+                    </option>
+
+                    <option value="survival_benefit">Survival Benefit</option>
+
+                    <option value="other">Other</option>
                   </select>
                 </div>
 
                 <!-- Life Assured -->
-                <div class="form-group">
+                <div id="benefitLifeAssuredGroup" class="form-group">
                   <label for="benefitLifeAssuredInput">
                     Life Assured
-                    <span class="optional-label">(Optional)</span>
+                    <span class="required-label">*</span>
                   </label>
 
                   <input
                     id="benefitLifeAssuredInput"
                     class="form-control"
                     type="text"
-                    placeholder="e.g. Client"
+                    placeholder="Enter the life assured"
                     autocomplete="off"
                   />
                 </div>
 
-                <!-- Coverage Amount -->
-                <div id="benefitAmountGroup" class="form-group">
+                <!-- Other Benefit Name -->
+                <div id="benefitCustomNameGroup" class="form-group" hidden>
+                  <label for="benefitCustomNameInput">
+                    Benefit Name
+                    <span class="required-label">*</span>
+                  </label>
+
+                  <input
+                    id="benefitCustomNameInput"
+                    class="form-control"
+                    type="text"
+                    placeholder="Enter benefit name"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <!-- Monetary Amount -->
+                <div id="benefitAmountGroup" class="form-group" hidden>
                   <label id="benefitAmountLabel" for="benefitAmountInput">
                     Coverage Amount
                     <span class="required-label">*</span>
@@ -1873,7 +1893,7 @@
                       id="benefitAmountInput"
                       class="form-control"
                       type="number"
-                      min="0"
+                      min="1"
                       step="1"
                       inputmode="numeric"
                       placeholder="0"
@@ -1899,17 +1919,67 @@
                   </select>
                 </div>
 
-                <div id="benefitPayoutInfo" class="policy-benefit-info" hidden>
-                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                <!-- Hospital Class -->
+                <div id="benefitHospitalClassGroup" class="form-group" hidden>
+                  <label for="benefitHospitalClassSelect">
+                    Hospital Class
+                    <span class="required-label">*</span>
+                  </label>
 
-                  <span>
-                    Whole Life Total Permanent Disability is always treated as
-                    an
-                    <strong>Accelerated Benefit</strong>.
-                  </span>
+                  <select id="benefitHospitalClassSelect" class="form-control">
+                    <option value="">Select hospital class</option>
+
+                    <option value="b_ward">B Ward</option>
+
+                    <option value="a_ward">A Ward</option>
+
+                    <option value="private">Private Hospital</option>
+                  </select>
                 </div>
 
-                <!-- Benefit Notes -->
+                <!-- Hospital Rider -->
+                <div id="benefitHospitalRiderGroup" class="form-group" hidden>
+                  <label for="benefitHospitalRiderSelect">
+                    Rider
+                    <span class="required-label">*</span>
+                  </label>
+
+                  <select id="benefitHospitalRiderSelect" class="form-control">
+                    <option value="">Select rider status</option>
+
+                    <option value="yes">Yes</option>
+
+                    <option value="no">No</option>
+                  </select>
+                </div>
+
+                <!-- Accident Medical Reimbursement -->
+                <div
+                  id="benefitMedicalReimbursementGroup"
+                  class="form-group"
+                  hidden
+                >
+                  <label for="benefitMedicalReimbursementInput">
+                    Medical Reimbursement Limit per Event
+                    <span class="optional-label">(Optional)</span>
+                  </label>
+
+                  <div class="currency-input">
+                    <span>$</span>
+
+                    <input
+                      id="benefitMedicalReimbursementInput"
+                      class="form-control"
+                      type="number"
+                      min="0"
+                      step="1"
+                      inputmode="numeric"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                <!-- Notes -->
                 <div class="form-group form-group--full">
                   <label for="benefitNotesInput">
                     Notes
