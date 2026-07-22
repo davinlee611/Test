@@ -190,6 +190,14 @@ function cacheInsuranceElements() {
       "benefitHospitalRiderSelect",
     ),
 
+    benefitAdlRequirementGroup: document.getElementById(
+      "benefitAdlRequirementGroup",
+    ),
+
+    benefitAdlRequirementSelect: document.getElementById(
+      "benefitAdlRequirementSelect",
+    ),
+
     benefitNotesInput: document.getElementById("benefitNotesInput"),
 
     benefitFormMessage: document.getElementById("benefitFormMessage"),
@@ -954,7 +962,9 @@ function createEmptyBenefit(benefitType, lifeAssured) {
 
     hospitalClass: "",
 
-    hasRider: null,
+    riderType: "",
+
+    adlRequirement: null,
 
     notes: "",
   };
@@ -1052,7 +1062,15 @@ function openEditBenefitEditor(benefitId) {
   elements.benefitHospitalClassSelect.value = benefit.hospitalClass || "";
 
   elements.benefitHospitalRiderSelect.value =
-    benefit.hasRider === true ? "yes" : benefit.hasRider === false ? "no" : "";
+    benefit.riderType ||
+    (benefit.hasRider === true
+      ? "yes"
+      : benefit.hasRider === false
+        ? "no"
+        : "");
+
+  elements.benefitAdlRequirementSelect.value =
+    benefit.adlRequirement != null ? String(benefit.adlRequirement) : "";
 
   elements.benefitNotesInput.value = benefit.notes || "";
 
@@ -1107,6 +1125,8 @@ function resetBenefitForm() {
 
   elements.benefitHospitalRiderSelect.value = "";
 
+  elements.benefitAdlRequirementSelect.value = "";
+
   elements.benefitNotesInput.value = "";
 
   elements.benefitFormMessage.textContent = "";
@@ -1147,9 +1167,12 @@ function updateBenefitFields() {
       break;
 
     case "disability_income":
-    case "long_term_care_income":
-    case "monthly_benefit":
       showBenefitAmountField("Monthly Benefit");
+      break;
+
+    case "long_term_care_income":
+      showBenefitAmountField("Monthly Benefit");
+      elements.benefitAdlRequirementGroup.hidden = false;
       break;
 
     case "other":
@@ -1161,16 +1184,12 @@ function updateBenefitFields() {
 
 function hideBenefitSpecificFields() {
   elements.benefitLifeAssuredGroup.hidden = true;
-
   elements.benefitCustomNameGroup.hidden = true;
-
   elements.benefitAmountGroup.hidden = true;
-
   elements.benefitPayoutTypeGroup.hidden = true;
-
   elements.benefitHospitalClassGroup.hidden = true;
-
   elements.benefitHospitalRiderGroup.hidden = true;
+  elements.benefitAdlRequirementGroup.hidden = true;
 }
 
 function showBenefitAmountField(label) {
@@ -1209,8 +1228,6 @@ function saveBenefit() {
 }
 
 function getBenefitFormData() {
-  const riderValue = elements.benefitHospitalRiderSelect.value;
-
   return {
     type: elements.benefitTypeSelect.value,
 
@@ -1224,7 +1241,11 @@ function getBenefitFormData() {
 
     hospitalClass: elements.benefitHospitalClassSelect.value,
 
-    hasRider: riderValue === "yes" ? true : riderValue === "no" ? false : null,
+    riderType: elements.benefitHospitalRiderSelect.value,
+
+    adlRequirement: elements.benefitAdlRequirementSelect.value
+      ? Number(elements.benefitAdlRequirementSelect.value)
+      : null,
 
     notes: elements.benefitNotesInput.value.trim(),
   };
@@ -1248,11 +1269,15 @@ function validateBenefit(formData) {
       return "Select the hospital class.";
     }
 
-    if (formData.hasRider === null) {
-      return "Select whether the hospital plan has a rider.";
+    if (!formData.riderType) {
+      return "Select the rider status.";
     }
 
     return "";
+  }
+
+  if (formData.type === "long_term_care_income" && !formData.adlRequirement) {
+    return "Select the Claim Trigger (ADLs).";
   }
 
   if (formData.amount <= 0) {
@@ -1474,8 +1499,26 @@ function getBenefitSummary(benefit) {
 
   parts.push(getBenefitAmountDescription(benefit));
 
-  if (benefit.type === "hospitalisation" && benefit.hasRider !== null) {
-    parts.push(benefit.hasRider ? "With Rider" : "No Rider");
+  if (benefit.type === "hospitalisation") {
+    const riderLabel = getHospitalRiderLabel(
+      benefit.riderType ||
+        (benefit.hasRider === true
+          ? "yes"
+          : benefit.hasRider === false
+            ? "no"
+            : ""),
+    );
+
+    if (riderLabel) {
+      parts.push(`Rider: ${riderLabel}`);
+    }
+  }
+
+  if (benefit.type === "long_term_care_income" && benefit.adlRequirement) {
+    const adlLabel =
+      benefit.adlRequirement === 1 ? "1 ADL" : `${benefit.adlRequirement} ADLs`;
+
+    parts.push(`Claim Trigger: ${adlLabel}`);
   }
 
   if (benefit.lifeAssured) {
@@ -1502,7 +1545,25 @@ function createBenefitMetadata(benefit) {
   }
 
   if (benefit.type === "hospitalisation") {
-    appendMetadataItem(metadata, benefit.hasRider ? "With Rider" : "No Rider");
+    const riderLabel = getHospitalRiderLabel(
+      benefit.riderType ||
+        (benefit.hasRider === true
+          ? "yes"
+          : benefit.hasRider === false
+            ? "no"
+            : ""),
+    );
+
+    if (riderLabel) {
+      appendMetadataItem(metadata, `Rider: ${riderLabel}`);
+    }
+  }
+
+  if (benefit.type === "long_term_care_income" && benefit.adlRequirement) {
+    const adlLabel =
+      benefit.adlRequirement === 1 ? "1 ADL" : `${benefit.adlRequirement} ADLs`;
+
+    appendMetadataItem(metadata, `Claim Trigger: ${adlLabel}`);
   }
 
   if (benefit.notes) {
@@ -1700,4 +1761,20 @@ function getLifeAssuredFromBenefits(benefits) {
   });
 
   return benefitWithLifeAssured?.lifeAssured || "";
+}
+
+function getHospitalRiderLabel(riderType) {
+  switch (riderType) {
+    case "panel_only":
+      return "Yes (Panel Only)";
+
+    case "yes":
+      return "Yes";
+
+    case "no":
+      return "No";
+
+    default:
+      return "";
+  }
 }

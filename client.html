@@ -1926,10 +1926,24 @@
 
                   <select id="benefitHospitalRiderSelect" class="form-control">
                     <option value="">Select rider status</option>
-
+                    <option value="panel_only">Yes (Panel Only)</option>
                     <option value="yes">Yes</option>
-
                     <option value="no">No</option>
+                  </select>
+                </div>
+
+                <!-- Long-Term Care Claim Trigger -->
+                <div id="benefitAdlRequirementGroup" class="form-group" hidden>
+                  <label for="benefitAdlRequirementSelect">
+                    Claim Trigger (ADLs)
+                    <span class="required-label">*</span>
+                  </label>
+
+                  <select id="benefitAdlRequirementSelect" class="form-control">
+                    <option value="">Select claim trigger</option>
+                    <option value="1">Unable to perform 1 ADL</option>
+                    <option value="2">Unable to perform 2 ADLs</option>
+                    <option value="3">Unable to perform 3 ADLs</option>
                   </select>
                 </div>
 
