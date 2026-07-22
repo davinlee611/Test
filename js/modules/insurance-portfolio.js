@@ -710,6 +710,127 @@ function getPolicyValidationItems() {
 
   const deathBenefit = deathBenefits[0] ?? null;
 
+  if (deathBenefit) {
+    items.push({
+      valid: deathBenefit.amount > 0,
+
+      message:
+        deathBenefit.amount > 0
+          ? "Death sum assured is greater than $0."
+          : "Death sum assured must be greater than $0.",
+    });
+  }
+
+  const tpdBenefits = draftBenefits.filter(function (benefit) {
+    return benefit.type === "tpd";
+  });
+
+  if (tpdBenefits.length > 0) {
+    items.push({
+      valid: tpdBenefits.length === 1,
+
+      message:
+        tpdBenefits.length === 1
+          ? "One TPD benefit recorded."
+          : "A policy can only contain one TPD benefit.",
+    });
+  }
+
+  if (tpdBenefits.length === 1 && deathBenefit) {
+    const belowDeath = tpdBenefits[0].amount <= deathBenefit.amount;
+
+    items.push({
+      valid: belowDeath,
+
+      message: belowDeath
+        ? "TPD does not exceed the Death sum assured."
+        : `TPD exceeds the Death sum assured of ${formatCurrency(
+            deathBenefit.amount,
+          )}.`,
+    });
+  }
+
+  if (tpdBenefits.length > 0 && !deathBenefit) {
+    items.push({
+      valid: true,
+
+      review: true,
+
+      message: "TPD benefit exists without a Death benefit.",
+    });
+  }
+
+  const hospitalisationBenefits = draftBenefits.filter(function (benefit) {
+    return benefit.type === "hospitalisation";
+  });
+
+  if (hospitalisationBenefits.length > 0) {
+    items.push({
+      valid: hospitalisationBenefits.length === 1,
+
+      message:
+        hospitalisationBenefits.length === 1
+          ? "One Hospitalisation benefit recorded."
+          : "A policy can only contain one Hospitalisation benefit.",
+    });
+  }
+
+  const hospitalCashBenefits = draftBenefits.filter(function (benefit) {
+    return benefit.type === "hospital_cash";
+  });
+
+  if (hospitalCashBenefits.length > 1) {
+    items.push({
+      valid: true,
+
+      review: true,
+
+      message: `Multiple Hospital Cash benefits found (${hospitalCashBenefits.length}).`,
+    });
+  }
+
+  const medicalBenefits = draftBenefits.filter(function (benefit) {
+    return benefit.type === "medical_reimbursement";
+  });
+
+  if (medicalBenefits.length > 1) {
+    items.push({
+      valid: true,
+
+      review: true,
+
+      message: `Multiple Medical Reimbursement benefits found (${medicalBenefits.length}).`,
+    });
+  }
+
+  const longTermCareBenefits = draftBenefits.filter(function (benefit) {
+    return benefit.type === "long_term_care_income";
+  });
+
+  if (longTermCareBenefits.length > 1) {
+    items.push({
+      valid: true,
+
+      review: true,
+
+      message: `Multiple Long-Term Care benefits found (${longTermCareBenefits.length}).`,
+    });
+  }
+
+  const monthlyBenefits = draftBenefits.filter(function (benefit) {
+    return benefit.type === "monthly_benefit";
+  });
+
+  if (monthlyBenefits.length > 1) {
+    items.push({
+      valid: true,
+
+      review: true,
+
+      message: `Multiple Monthly Benefits found (${monthlyBenefits.length}).`,
+    });
+  }
+
   const criticalIllnessBenefits = draftBenefits.filter(function (benefit) {
     return benefit.type === "critical_illness";
   });

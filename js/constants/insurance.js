@@ -43,6 +43,7 @@ export const BENEFIT_LABELS = {
 export const PAYOUT_TYPE_LABELS = {
   accelerated: "Accelerated",
   additional: "Additional",
+  standalone: "Standalone",
 };
 
 export const HOSPITAL_CLASS_LABELS = {
