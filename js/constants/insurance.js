@@ -60,7 +60,7 @@ export const POLICY_TYPE_DEFAULT_BENEFITS = {
 
   term: ["death", "tpd"],
 
-  endowment: ["death", "monthly_benefit"],
+  endowment: ["death"],
 
   retirement: ["death", "monthly_benefit"],
 
@@ -93,7 +93,7 @@ export const POLICY_TYPE_BENEFIT_OPTIONS = {
 
   term: ["death", "tpd", "critical_illness", "early_critical_illness", "other"],
 
-  endowment: ["death", "monthly_benefit", "other"],
+  endowment: ["death", "other"],
 
   retirement: ["death", "monthly_benefit", "other"],
 
