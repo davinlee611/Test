@@ -4,19 +4,25 @@ export const POLICY_TYPE_LABELS = {
   whole_life: "Whole Life",
   term: "Term",
   endowment: "Endowment",
-  investment_linked: "Investment-Linked (ILP)",
+  investment_linked: "Investment-Linked",
   integrated_shield: "Integrated Shield Plan",
-  critical_illness: "Standalone Critical Illness",
+  integrated_shield_rider: "Integrated Shield Plan Rider",
   personal_accident: "Personal Accident",
   disability_income: "Disability Income",
   long_term_care: "Long-Term Care",
-  annuity: "Annuity",
   other: "Other",
+
+  /*
+   * Legacy values retained so policies saved using
+   * the previous options can still display correctly.
+   */
+  critical_illness: "Standalone Critical Illness",
+  annuity: "Annuity",
 };
 
 export const POLICY_STATUS_LABELS = {
   active: "Active",
-  paid_up: "Paid-Up",
+  paid_up: "Active (Paid-up)",
 };
 
 export const PREMIUM_FREQUENCY_LABELS = {

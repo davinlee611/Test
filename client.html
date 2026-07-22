@@ -1606,7 +1606,7 @@
                 </label>
 
                 <select id="policyTypeSelect" class="form-control">
-                  <option value="">Select Policy Type</option>
+                  <option value="">Select policy type</option>
 
                   <option value="whole_life">Whole Life</option>
 
@@ -1614,16 +1614,14 @@
 
                   <option value="endowment">Endowment</option>
 
-                  <option value="investment_linked">
-                    Investment-Linked (ILP)
-                  </option>
+                  <option value="investment_linked">Investment-Linked</option>
 
                   <option value="integrated_shield">
                     Integrated Shield Plan
                   </option>
 
-                  <option value="critical_illness">
-                    Standalone Critical Illness
+                  <option value="integrated_shield_rider">
+                    Integrated Shield Plan Rider
                   </option>
 
                   <option value="personal_accident">Personal Accident</option>
@@ -1632,10 +1630,24 @@
 
                   <option value="long_term_care">Long-Term Care</option>
 
-                  <option value="annuity">Annuity</option>
-
                   <option value="other">Other</option>
                 </select>
+              </div>
+
+              <!-- Life Assured -->
+              <div class="form-group">
+                <label for="policyLifeAssuredInput">
+                  Life Assured
+                  <span class="required-label">*</span>
+                </label>
+
+                <input
+                  id="policyLifeAssuredInput"
+                  class="form-control"
+                  type="text"
+                  placeholder="Enter the life assured"
+                  autocomplete="off"
+                />
               </div>
 
               <!-- Insurer -->
@@ -1706,22 +1718,6 @@
                 />
               </div>
 
-              <!-- Policy Owner -->
-              <div class="form-group">
-                <label for="policyOwnerInput">
-                  Policy Owner
-                  <span class="optional-label">(Optional)</span>
-                </label>
-
-                <input
-                  id="policyOwnerInput"
-                  class="form-control"
-                  type="text"
-                  placeholder="e.g. Client"
-                  autocomplete="off"
-                />
-              </div>
-
               <!-- Status -->
               <div class="form-group">
                 <label for="policyStatusSelect">
@@ -1734,15 +1730,15 @@
 
                   <option value="active">Active</option>
 
-                  <option value="paid_up">Paid-Up</option>
+                  <option value="paid_up">Active (Paid-up)</option>
                 </select>
               </div>
 
               <!-- Premium -->
-              <div class="form-group">
+              <div id="premiumAmountGroup" class="form-group">
                 <label for="premiumInput">
                   Premium
-                  <span class="optional-label">(Optional)</span>
+                  <span class="required-label">*</span>
                 </label>
 
                 <div class="currency-input">
@@ -1752,7 +1748,7 @@
                     id="premiumInput"
                     class="form-control"
                     type="number"
-                    min="0"
+                    min="1"
                     step="1"
                     inputmode="numeric"
                     placeholder="0"
@@ -1761,10 +1757,15 @@
               </div>
 
               <!-- Premium Frequency -->
-              <div class="form-group">
-                <label for="premiumFrequencySelect"> Premium Frequency </label>
+              <div id="premiumFrequencyGroup" class="form-group">
+                <label for="premiumFrequencySelect">
+                  Premium Frequency
+                  <span class="required-label">*</span>
+                </label>
 
                 <select id="premiumFrequencySelect" class="form-control">
+                  <option value="">Select frequency</option>
+
                   <option value="annual">Annual</option>
 
                   <option value="half_yearly">Half-Yearly</option>

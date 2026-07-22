@@ -119,6 +119,8 @@ function cacheInsuranceElements() {
 
     policyTypeSelect: document.getElementById("policyTypeSelect"),
 
+    policyLifeAssuredInput: document.getElementById("policyLifeAssuredInput"),
+
     insurerSelect: document.getElementById("insurerSelect"),
 
     otherInsurerGroup: document.getElementById("otherInsurerGroup"),
@@ -127,9 +129,11 @@ function cacheInsuranceElements() {
 
     policyNumberInput: document.getElementById("policyNumberInput"),
 
-    policyOwnerInput: document.getElementById("policyOwnerInput"),
-
     policyStatusSelect: document.getElementById("policyStatusSelect"),
+
+    premiumAmountGroup: document.getElementById("premiumAmountGroup"),
+
+    premiumFrequencyGroup: document.getElementById("premiumFrequencyGroup"),
 
     premiumInput: document.getElementById("premiumInput"),
 
@@ -198,6 +202,8 @@ function bindInsuranceEvents() {
 
   elements.insurerSelect?.addEventListener("change", handleInsurerChange);
 
+  elements.policyStatusSelect?.addEventListener("change", updatePremiumFields);
+
   elements.addBenefitButton?.addEventListener("click", openAddBenefitEditor);
 
   elements.closeBenefitEditorButton?.addEventListener(
@@ -233,7 +239,9 @@ function openAddPolicyModal() {
 
   elements.savePolicyButton.textContent = "Save Policy";
 
-  elements.policyOwnerInput.value = getClientProfile().fullName || "";
+  elements.policyLifeAssuredInput.value = getClientProfile().fullName || "";
+
+  updatePremiumFields();
 
   openModal(elements.policyModal);
 }
@@ -261,7 +269,8 @@ function openEditPolicyModal(policyId) {
 
   elements.policyNumberInput.value = policy.policyNumber || "";
 
-  elements.policyOwnerInput.value = policy.policyOwner || "";
+  elements.policyLifeAssuredInput.value =
+    policy.lifeAssured || getLifeAssuredFromBenefits(policy.benefits) || "";
 
   elements.policyStatusSelect.value = policy.status || "";
 
@@ -270,6 +279,8 @@ function openEditPolicyModal(policyId) {
   elements.premiumFrequencySelect.value = policy.premium?.frequency || "annual";
 
   draftBenefits = cloneBenefits(policy.benefits || []);
+
+  updatePremiumFields();
 
   renderDraftBenefits();
 
@@ -297,19 +308,21 @@ function resetPolicyForm() {
 
   elements.policyNumberInput.value = "";
 
-  elements.policyOwnerInput.value = "";
+  elements.policyLifeAssuredInput.value = "";
 
   elements.policyStatusSelect.value = "";
 
   elements.premiumInput.value = "";
 
-  elements.premiumFrequencySelect.value = "annual";
+  elements.premiumFrequencySelect.value = "";
 
   elements.policyFormMessage.textContent = "";
 
   draftBenefits = [];
 
   editingBenefitId = null;
+
+  updatePremiumFields();
 
   closeBenefitEditor();
 
@@ -325,6 +338,24 @@ function handleInsurerChange() {
 
   if (!isOtherSelected) {
     elements.otherInsurerInput.value = "";
+  }
+}
+
+function updatePremiumFields() {
+  const isPaidUp = elements.policyStatusSelect.value === "paid_up";
+
+  elements.premiumAmountGroup.hidden = isPaidUp;
+
+  elements.premiumFrequencyGroup.hidden = isPaidUp;
+
+  elements.premiumInput.required = !isPaidUp;
+
+  elements.premiumFrequencySelect.required = !isPaidUp;
+
+  if (isPaidUp) {
+    elements.premiumInput.value = "";
+
+    elements.premiumFrequencySelect.value = "";
   }
 }
 
@@ -385,15 +416,11 @@ function savePolicy() {
 
       policyNumber: formData.policyNumber,
 
-      policyOwner: formData.policyOwner,
+      lifeAssured: formData.lifeAssured,
 
       status: formData.status,
 
-      premium: {
-        amount: formData.premiumAmount,
-
-        frequency: formData.premiumFrequency,
-      },
+      premium: getPolicyPremium(formData),
 
       benefits: cloneBenefits(draftBenefits),
     });
@@ -419,11 +446,11 @@ function getPolicyFormData() {
 
     policyType: elements.policyTypeSelect.value,
 
+    lifeAssured: elements.policyLifeAssuredInput.value.trim(),
+
     insurer,
 
     policyNumber: elements.policyNumberInput.value.trim(),
-
-    policyOwner: elements.policyOwnerInput.value.trim(),
 
     status: elements.policyStatusSelect.value,
 
@@ -442,6 +469,10 @@ function validatePolicyForm(formData) {
     return "Select a policy type.";
   }
 
+  if (!formData.lifeAssured) {
+    return "Enter the life assured.";
+  }
+
   if (!elements.insurerSelect.value) {
     return "Select an insurer.";
   }
@@ -454,8 +485,14 @@ function validatePolicyForm(formData) {
     return "Select the policy status.";
   }
 
-  if (elements.premiumInput.value !== "" && formData.premiumAmount <= 0) {
-    return "Enter a premium greater than zero, or leave the premium blank.";
+  if (formData.status === "active") {
+    if (formData.premiumAmount <= 0) {
+      return "Enter the policy premium.";
+    }
+
+    if (!formData.premiumFrequency) {
+      return "Select the premium frequency.";
+    }
   }
 
   if (draftBenefits.length === 0) {
@@ -731,6 +768,20 @@ function getPolicyValidationItems() {
   return items;
 }
 
+function getPolicyPremium(formData) {
+  if (formData.status === "paid_up") {
+    return {
+      amount: 0,
+      frequency: null,
+    };
+  }
+
+  return {
+    amount: formData.premiumAmount,
+    frequency: formData.premiumFrequency,
+  };
+}
+
 function createPolicyObject(formData) {
   return {
     id: createUniqueId(),
@@ -743,15 +794,11 @@ function createPolicyObject(formData) {
 
     policyNumber: formData.policyNumber,
 
-    policyOwner: formData.policyOwner,
+    lifeAssured: formData.lifeAssured,
 
     status: formData.status,
 
-    premium: {
-      amount: formData.premiumAmount,
-
-      frequency: formData.premiumFrequency,
-    },
+    premium: getPolicyPremium(formData),
 
     benefits: cloneBenefits(draftBenefits),
   };
@@ -788,7 +835,10 @@ function openAddBenefitEditor() {
 
   resetBenefitForm();
 
-  elements.benefitLifeAssuredInput.value = getClientProfile().fullName || "";
+  elements.benefitLifeAssuredInput.value =
+    elements.policyLifeAssuredInput.value.trim() ||
+    getClientProfile().fullName ||
+    "";
 
   elements.benefitEditorTitle.textContent = "Add Benefit";
 
@@ -1404,4 +1454,16 @@ function appendMetadataItem(container, text) {
   item.textContent = text;
 
   container.appendChild(item);
+}
+
+function getLifeAssuredFromBenefits(benefits) {
+  if (!Array.isArray(benefits)) {
+    return "";
+  }
+
+  const benefitWithLifeAssured = benefits.find(function (benefit) {
+    return benefit.lifeAssured?.trim();
+  });
+
+  return benefitWithLifeAssured?.lifeAssured || "";
 }
