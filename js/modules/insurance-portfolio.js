@@ -249,9 +249,26 @@ function bindInsuranceEvents() {
 
   elements.saveBenefitButton?.addEventListener("click", saveBenefit);
 
+  elements.policyLifeAssuredInput?.addEventListener(
+    "input",
+    syncSuggestedBenefitLifeAssured,
+  );
+
   closeModalOnOverlayClick(elements.policyModal);
 
   closeModalOnEscape(elements.policyModal);
+}
+
+function syncSuggestedBenefitLifeAssured() {
+  const lifeAssured = elements.policyLifeAssuredInput.value.trim();
+
+  draftBenefits.forEach(function (benefit) {
+    if (benefit.isSuggested) {
+      benefit.lifeAssured = lifeAssured;
+    }
+  });
+
+  renderDraftBenefits();
 }
 
 /* ========================================
@@ -882,6 +899,16 @@ function clearPolicyFormMessage() {
    BENEFIT EDITOR
 ======================================== */
 
+function hasOnlySuggestedBenefits() {
+  if (draftBenefits.length === 0) {
+    return true;
+  }
+
+  return draftBenefits.every(function (benefit) {
+    return benefit.isSuggested;
+  });
+}
+
 function handlePolicyTypeChange() {
   updateBenefitFields();
 
@@ -897,9 +924,17 @@ function handlePolicyTypeChange() {
    * Only generate defaults when no benefits have
    * already been added.
    */
-  if (draftBenefits.length > 0) {
-    return;
+  if (!hasOnlySuggestedBenefits()) {
+    const confirmed = window.confirm(
+      "Changing the policy type will replace the current benefits. Continue?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
   }
+
+  draftBenefits = [];
 
   const policyType = elements.policyTypeSelect.value;
 
@@ -924,6 +959,8 @@ function handlePolicyTypeChange() {
 function createEmptyBenefit(benefitType, lifeAssured) {
   return {
     id: createUniqueId(),
+
+    isSuggested: true,
     type: benefitType,
     customName: "",
     lifeAssured,
@@ -1242,6 +1279,9 @@ function getBenefitAmountValidationMessage(benefitType) {
 function addDraftBenefit(formData) {
   draftBenefits.push({
     id: createUniqueId(),
+
+    isSuggested: false,
+
     ...formData,
   });
 }
@@ -1257,7 +1297,10 @@ function updateDraftBenefit(formData) {
 
   draftBenefits[benefitIndex] = {
     ...draftBenefits[benefitIndex],
+
     ...formData,
+
+    isSuggested: false,
   };
 }
 
@@ -1412,7 +1455,13 @@ function createBenefitDeleteButton(benefit) {
 }
 
 function getBenefitSummary(benefit) {
-  const parts = [getBenefitAmountDescription(benefit)];
+  const parts = [];
+
+  parts.push(getBenefitAmountDescription(benefit));
+
+  if (benefit.type === "hospitalisation" && benefit.hasRider !== null) {
+    parts.push(benefit.hasRider ? "With Rider" : "No Rider");
+  }
 
   if (benefit.lifeAssured) {
     parts.push(benefit.lifeAssured);
@@ -1432,6 +1481,10 @@ function createBenefitMetadata(benefit) {
       ? benefit.customName || "Other Benefit"
       : BENEFIT_LABELS[benefit.type] || "Benefit",
   );
+
+  if (benefit.isSuggested) {
+    appendMetadataItem(metadata, "Suggested");
+  }
 
   if (benefit.payoutType) {
     appendMetadataItem(metadata, PAYOUT_TYPE_LABELS[benefit.payoutType]);
@@ -1549,10 +1602,6 @@ function createPolicyMetadata(policy) {
     appendMetadataItem(metadata, `Policy No: ${policy.policyNumber}`);
   }
 
-  if (policy.policyOwner) {
-    appendMetadataItem(metadata, `Owner: ${policy.policyOwner}`);
-  }
-
   return metadata;
 }
 
@@ -1620,8 +1669,12 @@ function handleDeletePolicy(policyId) {
 ======================================== */
 
 function getPremiumDescription(premium) {
-  if (!premium || premium.amount <= 0) {
+  if (!premium) {
     return "Premium not provided";
+  }
+
+  if (premium.amount <= 0) {
+    return "Paid-up";
   }
 
   const frequencyLabel =
