@@ -1808,7 +1808,7 @@ function createBenefitMetadata(benefit) {
 function renderInsurancePortfolio() {
   const policies = getAllPolicies();
 
-  //renderPortfolioValidationSummary(policies);
+  renderPortfolioValidationSummary(policies);
 
   renderPolicies(policies);
 }
