@@ -2,13 +2,9 @@
 
 import { isProfileComplete, showProfileMessage } from "./client-profile.js";
 
-import { on } from "../events/event-bus.js";
+import { on, emit } from "../events/event-bus.js";
 
 import { EVENTS } from "../events/events.js";
-
-import {
-  initializeInsurancePortfolio,
-} from "./modules/insurance-portfolio.js";
 
 
 /* ========================================
@@ -122,10 +118,6 @@ function navigateToSection(sectionName) {
     return;
   }
 
-  if (sectionName === "insurance") {
-    initializeInsurancePortfolio();
-  }
-
   openSection(sectionName);
 }
 
@@ -172,6 +164,10 @@ export function openSection(sectionName) {
     const isActive = section.dataset.content === sectionName;
 
     section.classList.toggle("active", isActive);
+  });
+
+  emit(EVENTS.SECTION_CHANGED, {
+    section: sectionName,
   });
 
   window.scrollTo({

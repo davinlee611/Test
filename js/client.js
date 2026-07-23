@@ -30,6 +30,9 @@ import {
   resetInsurancePortfolio,
 } from "./modules/insurance-portfolio.js";
 
+import { on } from "./events/event-bus.js";
+import { EVENTS } from "./events/events.js";
+
 const supabaseClient = window.supabaseClient;
 
 /* ========================================
@@ -57,6 +60,12 @@ initializeGoals();
 initializeAssetsIncome();
 initializeInsurancePortfolio();
 initializePage();
+
+on(EVENTS.SECTION_CHANGED, function ({ section }) {
+  if (section === "insurance") {
+    initializeInsurancePortfolio();
+  }
+});
 
 async function initializePage() {
   try {
