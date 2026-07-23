@@ -1479,6 +1479,11 @@ body.liability-modal-open {
   background: #fef2f2;
 }
 
+.policy-validation-item--review {
+  color: #92400e;
+  background: #fffbeb;
+}
+
 /* ========================================
    BENEFIT EDITOR
 ======================================== */

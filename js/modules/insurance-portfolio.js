@@ -547,103 +547,17 @@ function validatePolicyForm(formData) {
     return "Add at least one benefit to the policy.";
   }
 
-  const benefitErrors = validatePolicyBenefits(draftBenefits);
-
-  if (benefitErrors.length > 0) {
-    return benefitErrors[0];
-  }
-
-  return "";
-}
-
-function validatePolicyBenefits(benefits) {
-  const errors = [];
-
-  const deathBenefits = benefits.filter(function (benefit) {
-    return benefit.type === "death";
-  });
-
-  const deathBenefit = deathBenefits[0] ?? null;
-
-  const criticalIllnessBenefits = benefits.filter(function (benefit) {
-    return benefit.type === "critical_illness";
-  });
-
-  const acceleratedCiBenefits = criticalIllnessBenefits.filter(
-    function (benefit) {
-      return benefit.payoutType === "accelerated";
+  const firstError = getPolicyValidationItems(draftBenefits).find(
+    function (item) {
+      return item.severity === "error" && !item.valid;
     },
   );
 
-  const earlyCiBenefits = benefits.filter(function (benefit) {
-    return benefit.type === "early_critical_illness";
-  });
-
-  if (deathBenefits.length > 1) {
-    errors.push("A policy can only contain one Death benefit.");
+  if (firstError) {
+    return firstError.message;
   }
 
-  acceleratedCiBenefits.forEach(function (ciBenefit) {
-    if (!deathBenefit) {
-      errors.push(
-        "Accelerated Critical Illness requires a Death benefit in the same policy.",
-      );
-
-      return;
-    }
-
-    if (ciBenefit.amount > deathBenefit.amount) {
-      errors.push(
-        `Accelerated Critical Illness cannot exceed the Death sum assured of ${formatCurrency(
-          deathBenefit.amount,
-        )}.`,
-      );
-    }
-  });
-
-  earlyCiBenefits.forEach(function (earlyCiBenefit) {
-    /*
-     * Additional Early CI benefits
-     * do not depend on Death or Critical Illness.
-     */
-    if (earlyCiBenefit.payoutType !== "accelerated") {
-      return;
-    }
-
-    const relatedCiBenefit = findRelatedCriticalIllnessBenefit(
-      criticalIllnessBenefits,
-    );
-
-    if (!deathBenefit) {
-      errors.push(
-        "Accelerated Early Critical Illness requires a Death benefit in the same policy.",
-      );
-    }
-
-    if (!relatedCiBenefit) {
-      errors.push(
-        "Accelerated Early Critical Illness requires a Critical Illness benefit in the same policy.",
-      );
-    }
-
-    if (deathBenefit && earlyCiBenefit.amount > deathBenefit.amount) {
-      errors.push(
-        `Accelerated Early Critical Illness cannot exceed the Death sum assured of ${formatCurrency(
-          deathBenefit.amount,
-        )}.`,
-      );
-    }
-
-    if (relatedCiBenefit && earlyCiBenefit.amount > relatedCiBenefit.amount) {
-      errors.push(
-        `Accelerated Early Critical Illness cannot exceed the Critical Illness sum assured of ${formatCurrency(
-          relatedCiBenefit.amount,
-        )}.`,
-      );
-    }
-  });
-
-  return [...new Set(errors)];
+  return "";
 }
 
 function findRelatedCriticalIllnessBenefit(criticalIllnessBenefits) {
@@ -673,66 +587,80 @@ function renderPolicyValidation() {
 
   elements.policyValidationSection.hidden = false;
 
-  const validationItems = getPolicyValidationItems();
+  const validationItems = getPolicyValidationItems(draftBenefits);
 
   validationItems.forEach(function (item) {
     const validationItem = document.createElement("div");
 
-    validationItem.className = item.valid
-      ? "policy-validation-item policy-validation-item--valid"
-      : "policy-validation-item policy-validation-item--invalid";
+    let stateClass = "policy-validation-item--valid";
 
-    const iconClass = item.valid
-      ? "fa-solid fa-circle-check"
-      : "fa-solid fa-circle-exclamation";
+    let iconClass = "fa-solid fa-circle-check";
+
+    if (item.severity === "error") {
+      stateClass = "policy-validation-item--invalid";
+
+      iconClass = "fa-solid fa-circle-exclamation";
+    } else if (item.severity === "review") {
+      stateClass = "policy-validation-item--review";
+
+      iconClass = "fa-solid fa-triangle-exclamation";
+    }
+
+    validationItem.className = `policy-validation-item ${stateClass}`;
 
     validationItem.innerHTML = `
-                <i
-                    class="${iconClass}"
-                    aria-hidden="true"
-                ></i>
+      <i
+        class="${iconClass}"
+        aria-hidden="true"
+      ></i>
 
-                <span>
-                    ${escapeHtml(item.message)}
-                </span>
-            `;
+      <span>
+        ${escapeHtml(item.message)}
+      </span>
+    `;
 
     elements.policyValidationList.appendChild(validationItem);
   });
 }
 
-function getPolicyValidationItems() {
+function getPolicyValidationItems(benefits) {
   const items = [];
 
-  const deathBenefits = draftBenefits.filter(function (benefit) {
+  const deathBenefits = benefits.filter(function (benefit) {
     return benefit.type === "death";
   });
 
   const deathBenefit = deathBenefits[0] ?? null;
 
   if (deathBenefit) {
-    items.push({
-      valid: deathBenefit.amount > 0,
+    const amountIsValid = deathBenefit.amount > 0;
 
-      message:
-        deathBenefit.amount > 0
-          ? "Death sum assured is greater than $0."
-          : "Death sum assured must be greater than $0.",
+    items.push({
+      severity: amountIsValid ? "pass" : "error",
+
+      valid: amountIsValid,
+
+      message: amountIsValid
+        ? "Death sum assured is greater than $0."
+        : "Death sum assured must be greater than $0.",
     });
   }
 
-  const tpdBenefits = draftBenefits.filter(function (benefit) {
+  const tpdBenefits = benefits.filter(function (benefit) {
     return benefit.type === "tpd";
   });
 
   if (tpdBenefits.length > 0) {
-    items.push({
-      valid: tpdBenefits.length === 1,
+    const hasOneTpdBenefit = tpdBenefits.length === 1;
 
-      message:
-        tpdBenefits.length === 1
-          ? "One TPD benefit recorded."
-          : "A policy can only contain one TPD benefit.",
+    items.push({
+      severity: hasOneTpdBenefit ? "pass" : "error",
+
+      valid: hasOneTpdBenefit,
+
+      message: hasOneTpdBenefit
+        ? "One TPD benefit recorded."
+        : "A policy can only contain one TPD benefit.",
     });
   }
 
@@ -740,6 +668,8 @@ function getPolicyValidationItems() {
     const belowDeath = tpdBenefits[0].amount <= deathBenefit.amount;
 
     items.push({
+      severity: belowDeath ? "pass" : "error",
+
       valid: belowDeath,
 
       message: belowDeath
@@ -752,86 +682,89 @@ function getPolicyValidationItems() {
 
   if (tpdBenefits.length > 0 && !deathBenefit) {
     items.push({
-      valid: true,
+      severity: "review",
 
-      review: true,
+      valid: true,
 
       message: "TPD benefit exists without a Death benefit.",
     });
   }
 
-  const hospitalisationBenefits = draftBenefits.filter(function (benefit) {
+  const hospitalisationBenefits = benefits.filter(function (benefit) {
     return benefit.type === "hospitalisation";
   });
 
   if (hospitalisationBenefits.length > 0) {
-    items.push({
-      valid: hospitalisationBenefits.length === 1,
+    const hasOneHospitalisationBenefit = hospitalisationBenefits.length === 1;
 
-      message:
-        hospitalisationBenefits.length === 1
-          ? "One Hospitalisation benefit recorded."
-          : "A policy can only contain one Hospitalisation benefit.",
+    items.push({
+      severity: hasOneHospitalisationBenefit ? "pass" : "error",
+
+      valid: hasOneHospitalisationBenefit,
+
+      message: hasOneHospitalisationBenefit
+        ? "One Hospitalisation benefit recorded."
+        : "A policy can only contain one Hospitalisation benefit.",
     });
   }
 
-  const hospitalCashBenefits = draftBenefits.filter(function (benefit) {
+  const hospitalCashBenefits = benefits.filter(function (benefit) {
     return benefit.type === "hospital_cash";
   });
 
   if (hospitalCashBenefits.length > 1) {
     items.push({
-      valid: true,
+      severity: "review",
 
-      review: true,
+      valid: true,
 
       message: `Multiple Hospital Cash benefits found (${hospitalCashBenefits.length}).`,
     });
   }
 
-  const medicalBenefits = draftBenefits.filter(function (benefit) {
+  const medicalBenefits = benefits.filter(function (benefit) {
     return benefit.type === "medical_reimbursement";
   });
 
   if (medicalBenefits.length > 1) {
     items.push({
-      valid: true,
+      severity: "review",
 
-      review: true,
+      valid: true,
 
       message: `Multiple Medical Reimbursement benefits found (${medicalBenefits.length}).`,
     });
   }
 
-  const longTermCareBenefits = draftBenefits.filter(function (benefit) {
+  const longTermCareBenefits = benefits.filter(function (benefit) {
     return benefit.type === "long_term_care_income";
   });
 
   if (longTermCareBenefits.length > 1) {
     items.push({
-      valid: true,
+      severity: "review",
 
-      review: true,
+      valid: true,
 
       message: `Multiple Long-Term Care benefits found (${longTermCareBenefits.length}).`,
     });
   }
 
-  const monthlyBenefits = draftBenefits.filter(function (benefit) {
+  const monthlyBenefits = benefits.filter(function (benefit) {
     return benefit.type === "monthly_benefit";
   });
 
   if (monthlyBenefits.length > 1) {
     items.push({
-      valid: true,
+      severity: "review",
 
-      review: true,
+      valid: true,
 
       message: `Multiple Monthly Benefits found (${monthlyBenefits.length}).`,
     });
   }
 
-  const criticalIllnessBenefits = draftBenefits.filter(function (benefit) {
+  const criticalIllnessBenefits = benefits.filter(function (benefit) {
     return benefit.type === "critical_illness";
   });
 
@@ -841,24 +774,29 @@ function getPolicyValidationItems() {
     },
   );
 
-  const earlyCiBenefits = draftBenefits.filter(function (benefit) {
+  const earlyCiBenefits = benefits.filter(function (benefit) {
     return benefit.type === "early_critical_illness";
   });
 
   if (deathBenefits.length > 0) {
-    items.push({
-      valid: deathBenefits.length === 1,
+    const hasOneDeathBenefit = deathBenefits.length === 1;
 
-      message:
-        deathBenefits.length === 1
-          ? "One Death benefit recorded."
-          : "A policy can only contain one Death benefit.",
+    items.push({
+      severity: hasOneDeathBenefit ? "pass" : "error",
+
+      valid: hasOneDeathBenefit,
+
+      message: hasOneDeathBenefit
+        ? "One Death benefit recorded."
+        : "A policy can only contain one Death benefit.",
     });
   }
 
   acceleratedCiBenefits.forEach(function (ciBenefit) {
     if (!deathBenefit) {
       items.push({
+        severity: "error",
+
         valid: false,
 
         message: "Accelerated CI requires a Death benefit.",
@@ -870,6 +808,8 @@ function getPolicyValidationItems() {
     const amountIsValid = ciBenefit.amount <= deathBenefit.amount;
 
     items.push({
+      severity: amountIsValid ? "pass" : "error",
+
       valid: amountIsValid,
 
       message: amountIsValid
@@ -881,9 +821,11 @@ function getPolicyValidationItems() {
   });
 
   earlyCiBenefits.forEach(function (earlyCiBenefit) {
-    // Additional Early CI has no dependency.
+    // Additional and Standalone Early CI have no dependency.
     if (earlyCiBenefit.payoutType !== "accelerated") {
       items.push({
+        severity: "pass",
+
         valid: true,
 
         message: `${
@@ -900,6 +842,8 @@ function getPolicyValidationItems() {
 
     if (!deathBenefit) {
       items.push({
+        severity: "error",
+
         valid: false,
 
         message: "Accelerated Early Critical Illness requires a Death benefit.",
@@ -908,6 +852,8 @@ function getPolicyValidationItems() {
 
     if (!relatedCiBenefit) {
       items.push({
+        severity: "error",
+
         valid: false,
 
         message:
@@ -919,6 +865,8 @@ function getPolicyValidationItems() {
       const belowDeath = earlyCiBenefit.amount <= deathBenefit.amount;
 
       items.push({
+        severity: belowDeath ? "pass" : "error",
+
         valid: belowDeath,
 
         message: belowDeath
@@ -933,6 +881,8 @@ function getPolicyValidationItems() {
       const belowCi = earlyCiBenefit.amount <= relatedCiBenefit.amount;
 
       items.push({
+        severity: belowCi ? "pass" : "error",
+
         valid: belowCi,
 
         message: belowCi
@@ -950,6 +900,8 @@ function getPolicyValidationItems() {
     deathBenefits.length <= 1
   ) {
     items.push({
+      severity: "pass",
+
       valid: true,
 
       message: "No CI or Early CI conflicts detected.",
