@@ -104,7 +104,7 @@ const bonusNotSubjectToCpfElement = document.getElementById(
   "bonusNotSubjectToCpf",
 );
 
-const cpfOnOrdinaryWagesElement = document.getElementById("cpfOnOrdinaryWages");
+//const cpfOnOrdinaryWagesElement = document.getElementById("cpfOnOrdinaryWages");
 
 const cpfOnAdditionalWagesElement = document.getElementById(
   "cpfOnAdditionalWages",
@@ -448,11 +448,11 @@ function updateIncomeSummaryDisplay(summary) {
     );
   }
 
-  if (cpfOnOrdinaryWagesElement) {
-    cpfOnOrdinaryWagesElement.textContent = formatCurrency(
-      summary.annualOrdinaryWageEmployeeCpf,
-    );
-  }
+  //if (cpfOnOrdinaryWagesElement) {
+  //  cpfOnOrdinaryWagesElement.textContent = formatCurrency(
+  //    summary.annualOrdinaryWageEmployeeCpf,
+  //  );
+  // }
 
   if (cpfOnAdditionalWagesElement) {
     cpfOnAdditionalWagesElement.textContent = formatCurrency(
