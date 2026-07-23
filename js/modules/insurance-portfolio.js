@@ -656,7 +656,7 @@ function getPolicyValidationItems(benefits) {
 
   const benefitsByType = groupBenefitsByType(benefits);
 
-  const deathBenefits = benefitsByType[BENEFIT_TYPES.DEATH] ?? [];
+  const deathBenefits = benefitsByType["death"] ?? [];
 
   const deathBenefit = deathBenefits[0] ?? null;
 
@@ -674,7 +674,7 @@ function getPolicyValidationItems(benefits) {
     });
   }
 
-  const tpdBenefits = benefitsByType[BENEFIT_TYPES.TPD] ?? [];
+  const tpdBenefits = benefitsByType["tpd"] ?? [];
 
   if (tpdBenefits.length > 0) {
     const hasOneTpdBenefit = tpdBenefits.length === 1;
@@ -716,8 +716,7 @@ function getPolicyValidationItems(benefits) {
     });
   }
 
-  const hospitalisationBenefits =
-    benefitsByType[BENEFIT_TYPES.HOSPITALISATION] ?? [];
+  const hospitalisationBenefits = benefitsByType["hospitalisation"] ?? [];
 
   if (hospitalisationBenefits.length > 0) {
     const hasOneHospitalisationBenefit = hospitalisationBenefits.length === 1;
@@ -733,8 +732,7 @@ function getPolicyValidationItems(benefits) {
     });
   }
 
-  const hospitalCashBenefits =
-    benefitsByType[BENEFIT_TYPES.HOSPITAL_CASH] ?? [];
+  const hospitalCashBenefits = benefitsByType["hospital_cash"] ?? [];
 
   if (hospitalCashBenefits.length > 1) {
     items.push({
@@ -746,8 +744,7 @@ function getPolicyValidationItems(benefits) {
     });
   }
 
-  const medicalBenefits =
-    benefitsByType[BENEFIT_TYPES.MEDICAL_REIMBURSEMENT] ?? [];
+  const medicalBenefits = benefitsByType["medical_reimbursement"] ?? [];
 
   if (medicalBenefits.length > 1) {
     items.push({
@@ -759,8 +756,7 @@ function getPolicyValidationItems(benefits) {
     });
   }
 
-  const longTermCareBenefits =
-    benefitsByType[BENEFIT_TYPES.LONG_TERM_CARE] ?? [];
+  const longTermCareBenefits = benefitsByType["long_term_care_income"] ?? [];
 
   if (longTermCareBenefits.length > 1) {
     items.push({
@@ -772,7 +768,7 @@ function getPolicyValidationItems(benefits) {
     });
   }
 
-  const monthlyBenefits = benefitsByType[BENEFIT_TYPES.MONTHLY_BENEFIT] ?? [];
+  const monthlyBenefits = benefitsByType["monthly_benefit"] ?? [];
 
   if (monthlyBenefits.length > 1) {
     items.push({
@@ -784,8 +780,7 @@ function getPolicyValidationItems(benefits) {
     });
   }
 
-  const criticalIllnessBenefits =
-    benefitsByType[BENEFIT_TYPES.CRITICAL_ILLNESS] ?? [];
+  const criticalIllnessBenefits = benefitsByType["critical_illness"] ?? [];
 
   const acceleratedCiBenefits = criticalIllnessBenefits.filter(
     function (benefit) {
@@ -793,8 +788,7 @@ function getPolicyValidationItems(benefits) {
     },
   );
 
-  const earlyCiBenefits =
-    benefitsByType[BENEFIT_TYPES.EARLY_CRITICAL_ILLNESS] ?? [];
+  const earlyCiBenefits = benefitsByType["early_critical_illness"] ?? [];
 
   if (deathBenefits.length > 0) {
     const hasOneDeathBenefit = deathBenefits.length === 1;
