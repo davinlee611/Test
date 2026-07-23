@@ -1706,14 +1706,22 @@ body.liability-modal-open {
   display: flex;
   align-items: center;
   gap: 12px;
+
+  width: 100%;
   min-height: 72px;
-  padding: 14px 16px;
+
+  padding: 14px 18px;
+
   border: 1px solid transparent;
   border-radius: var(--border-radius);
+
   text-align: left;
+
+  box-sizing: border-box;
 }
 
 button.insurance-validation-count {
+  display: flex;
   width: 100%;
   font: inherit;
   cursor: pointer;
@@ -1730,6 +1738,7 @@ button.insurance-validation-count:disabled {
 
 .insurance-validation-count span {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 2px;
 }
