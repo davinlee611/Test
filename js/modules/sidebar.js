@@ -117,6 +117,10 @@ function navigateToSection(sectionName) {
     return;
   }
 
+  if (sectionName === "insurance") {
+    initializeInsurancePortfolio();
+  }
+
   openSection(sectionName);
 }
 

@@ -952,7 +952,13 @@ function getPolicyValidationItems(benefits) {
           "Enter the client's monthly earned income before assessing Disability Income coverage.",
       });
     } else {
+
       const withinLimit = totalDisabilityIncome <= disabilityIncomeLimit;
+
+      const recommendedReduction = Math.max(
+        0,
+        totalDisabilityIncome - disabilityIncomeLimit,
+      );
 
       items.push({
         severity: withinLimit ? "pass" : "error",
@@ -969,6 +975,8 @@ function getPolicyValidationItems(benefits) {
               totalDisabilityIncome,
             )}/month) exceeds the recommended limit of ${formatCurrency(
               disabilityIncomeLimit,
+            )}/month. Reduce Disability Income by ${formatCurrency(
+              recommendedReduction,
             )}/month.`,
       });
     }
