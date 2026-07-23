@@ -981,6 +981,78 @@
                   </div>
                 </div>
 
+                <section
+                  id="portfolioValidationSummary"
+                  class="insurance-validation-summary"
+                  aria-labelledby="insuranceValidationSummaryTitle"
+                  hidden
+                >
+                  <div class="insurance-validation-summary__header">
+                    <div>
+                      <p class="insurance-validation-summary__eyebrow">
+                        Portfolio review
+                      </p>
+
+                      <h3 id="insuranceValidationSummaryTitle">
+                        Insurance Portfolio Health
+                      </h3>
+                    </div>
+
+                    <p class="insurance-validation-summary__description">
+                      Review policies that may require attention based on the
+                      latest client information.
+                    </p>
+                  </div>
+
+                  <div class="insurance-validation-summary__counts">
+                    <button
+                      id="portfolioErrorButton"
+                      class="insurance-validation-count insurance-validation-count--error"
+                      type="button"
+                    >
+                      <i
+                        class="fa-solid fa-circle-exclamation"
+                        aria-hidden="true"
+                      ></i>
+
+                      <span>
+                        <strong id="portfolioErrorCount">0</strong>
+                        Issues
+                      </span>
+                    </button>
+
+                    <button
+                      id="portfolioReviewButton"
+                      class="insurance-validation-count insurance-validation-count--review"
+                      type="button"
+                    >
+                      <i
+                        class="fa-solid fa-triangle-exclamation"
+                        aria-hidden="true"
+                      ></i>
+
+                      <span>
+                        <strong id="portfolioReviewCount">0</strong>
+                        Reviews
+                      </span>
+                    </button>
+
+                    <div
+                      class="insurance-validation-count insurance-validation-count--pass"
+                    >
+                      <i
+                        class="fa-solid fa-circle-check"
+                        aria-hidden="true"
+                      ></i>
+
+                      <span>
+                        <strong id="portfolioPassCount">0</strong>
+                        Checks passed
+                      </span>
+                    </div>
+                  </div>
+                </section>
+
                 <div id="policyList" class="planning-card-list">
                   <p id="emptyPolicyMessage" class="empty-state-message">
                     No policies added yet.

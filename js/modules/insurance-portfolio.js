@@ -106,7 +106,21 @@ export function resetInsurancePortfolio() {
 
 function cacheInsuranceElements() {
   elements = {
-    policyList: document.getElementById("policyList"),
+  portfolioValidationSummary: document.getElementById(
+    "portfolioValidationSummary",
+  ),
+
+  portfolioErrorButton: document.getElementById("portfolioErrorButton"),
+
+  portfolioErrorCount: document.getElementById("portfolioErrorCount"),
+
+  portfolioReviewButton: document.getElementById("portfolioReviewButton"),
+
+  portfolioReviewCount: document.getElementById("portfolioReviewCount"),
+
+  portfolioPassCount: document.getElementById("portfolioPassCount"),
+
+  policyList: document.getElementById("policyList"),
 
     emptyPolicyMessage: document.getElementById("emptyPolicyMessage"),
 
@@ -227,6 +241,15 @@ function cacheInsuranceElements() {
 ======================================== */
 
 function bindInsuranceEvents() {
+
+  elements.portfolioErrorButton?.addEventListener("click", function () {
+  scrollToFirstPolicyWithSeverity("error");
+});
+
+elements.portfolioReviewButton?.addEventListener("click", function () {
+  scrollToFirstPolicyWithSeverity("review");
+});
+
   elements.addPolicyButton?.addEventListener("click", openAddPolicyModal);
 
   elements.closePolicyModalButton?.addEventListener("click", closePolicyModal);
@@ -949,7 +972,7 @@ function getPolicyValidationItems(benefits) {
         valid: true,
 
         message:
-          "Enter the client's monthly earned income before assessing Disability Income coverage.",
+          "Enter the client's monthly gross income before assessing Disability Income coverage.",
       });
     } else {
 
@@ -971,18 +994,69 @@ function getPolicyValidationItems(benefits) {
             )}/month) is within the recommended limit of ${formatCurrency(
               disabilityIncomeLimit,
             )}/month.`
-          : `Total Disability Income (${formatCurrency(
-              totalDisabilityIncome,
-            )}/month) exceeds the recommended limit of ${formatCurrency(
-              disabilityIncomeLimit,
-            )}/month. Reduce Disability Income by ${formatCurrency(
-              recommendedReduction,
-            )}/month.`,
+          : : `Total Disability Income (${formatCurrency(
+    totalDisabilityIncome,
+  )}/month) exceeds the recommended limit of ${formatCurrency(
+    disabilityIncomeLimit,
+  )}/month. Recommended reduction: ${formatCurrency(
+    recommendedReduction,
+  )}/month.`,
       });
     }
   }
 
   return items;
+}
+
+function getPolicyValidationSummary(policy) {
+  const validationItems = getPolicyValidationItems(policy.benefits || []);
+
+  const errors = validationItems.filter(function (item) {
+    return item.severity === "error" && !item.valid;
+  });
+
+  const reviews = validationItems.filter(function (item) {
+    return item.severity === "review";
+  });
+
+  const passes = validationItems.filter(function (item) {
+    return item.severity === "pass" && item.valid;
+  });
+
+  let highestSeverity = "pass";
+
+  if (errors.length > 0) {
+    highestSeverity = "error";
+  } else if (reviews.length > 0) {
+    highestSeverity = "review";
+  }
+
+  return {
+    items: validationItems,
+    errors,
+    reviews,
+    passes,
+    highestSeverity,
+  };
+}
+
+function getPortfolioValidationSummary(policies) {
+  return policies.reduce(
+    function (summary, policy) {
+      const policySummary = getPolicyValidationSummary(policy);
+
+      summary.errorCount += policySummary.errors.length;
+      summary.reviewCount += policySummary.reviews.length;
+      summary.passCount += policySummary.passes.length;
+
+      return summary;
+    },
+    {
+      errorCount: 0,
+      reviewCount: 0,
+      passCount: 0,
+    },
+  );
 }
 
 function getPolicyPremium(formData) {
@@ -1732,15 +1806,17 @@ function createBenefitMetadata(benefit) {
 ======================================== */
 
 function renderInsurancePortfolio() {
-  renderPolicies();
+  const policies = getAllPolicies();
+
+  renderPortfolioValidationSummary(policies);
+
+  renderPolicies(policies);
 }
 
-function renderPolicies() {
+function renderPolicies(policies = getAllPolicies()) {
   if (!elements.policyList) {
     return;
   }
-
-  const policies = getAllPolicies();
 
   elements.policyList.innerHTML = "";
 
@@ -1760,22 +1836,34 @@ function renderPolicies() {
 }
 
 function createPolicyElement(policy) {
-  return createPlanningCard({
-    itemClass: "policy-item",
+  const validationSummary = getPolicyValidationSummary(policy);
+
+  const policyElement = createPlanningCard({
+    itemClass: [
+      "policy-item",
+      `policy-item--${validationSummary.highestSeverity}`,
+    ].join(" "),
 
     icon: createPolicyIcon(),
 
-    details: createPolicyDetails(policy),
+    details: createPolicyDetails(policy, validationSummary),
 
     actions: createPolicyActions(policy),
   });
+
+  policyElement.dataset.validationSeverity =
+    validationSummary.highestSeverity;
+
+  policyElement.dataset.policyId = policy.id;
+
+  return policyElement;
 }
 
 function createPolicyIcon() {
   return createPlanningCardIcon("fa-solid fa-shield-halved");
 }
 
-function createPolicyDetails(policy) {
+function createPolicyDetails(policy, validationSummary) {
   const policyName = policy.policyName || "Unnamed Policy";
 
   const policyType = POLICY_TYPE_LABELS[policy.policyType] || "Other";
@@ -1787,8 +1875,93 @@ function createPolicyDetails(policy) {
 
     description: `${insurer} · ${policyType}`,
 
-    content: createPolicyMetadata(policy),
+    content: createPolicyCardContent(policy, validationSummary),
   });
+}
+
+function createPolicyCardContent(policy, validationSummary) {
+  const content = document.createElement("div");
+
+  content.className = "policy-card-content";
+
+  content.appendChild(createPolicyMetadata(policy));
+
+  content.appendChild(createPolicyValidationPreview(validationSummary));
+
+  return content;
+}
+
+function createPolicyValidationPreview(validationSummary) {
+  const container = document.createElement("div");
+
+  container.className = [
+    "policy-card-validation",
+    `policy-card-validation--${validationSummary.highestSeverity}`,
+  ].join(" ");
+
+  const status = document.createElement("div");
+
+  status.className = "policy-card-validation__status";
+
+  const icon = document.createElement("i");
+
+  icon.setAttribute("aria-hidden", "true");
+
+  const label = document.createElement("strong");
+
+  if (validationSummary.errors.length > 0) {
+    icon.className = "fa-solid fa-circle-exclamation";
+
+    label.textContent =
+      validationSummary.errors.length === 1
+        ? "1 issue requires attention"
+        : `${validationSummary.errors.length} issues require attention`;
+  } else if (validationSummary.reviews.length > 0) {
+    icon.className = "fa-solid fa-triangle-exclamation";
+
+    label.textContent =
+      validationSummary.reviews.length === 1
+        ? "1 item requires review"
+        : `${validationSummary.reviews.length} items require review`;
+  } else {
+    icon.className = "fa-solid fa-circle-check";
+
+    label.textContent = "No issues detected";
+  }
+
+  status.append(icon, label);
+
+  container.appendChild(status);
+
+  const messages = [
+    ...validationSummary.errors,
+    ...validationSummary.reviews,
+  ];
+
+  messages.slice(0, 2).forEach(function (item) {
+    const message = document.createElement("p");
+
+    message.className = "policy-card-validation__message";
+
+    message.textContent = item.message;
+
+    container.appendChild(message);
+  });
+
+  if (messages.length > 2) {
+    const remainingMessage = document.createElement("p");
+
+    remainingMessage.className =
+      "policy-card-validation__remaining";
+
+    remainingMessage.textContent = `+${
+      messages.length - 2
+    } more item${messages.length - 2 === 1 ? "" : "s"}`;
+
+    container.appendChild(remainingMessage);
+  }
+
+  return container;
 }
 
 function createPolicyMetadata(policy) {
@@ -1931,4 +2104,29 @@ function getHospitalRiderLabel(riderType) {
     default:
       return "";
   }
+}
+
+function scrollToFirstPolicyWithSeverity(severity) {
+  const matchingPolicy = elements.policyList?.querySelector(
+    `[data-validation-severity="${severity}"]`,
+  );
+
+  if (!matchingPolicy) {
+    return;
+  }
+
+  matchingPolicy.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+  });
+
+  matchingPolicy.classList.remove("policy-item--highlighted");
+
+  window.requestAnimationFrame(function () {
+    matchingPolicy.classList.add("policy-item--highlighted");
+  });
+
+  window.setTimeout(function () {
+    matchingPolicy.classList.remove("policy-item--highlighted");
+  }, 1800);
 }

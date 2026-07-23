@@ -1657,6 +1657,192 @@ body.liability-modal-open {
 }
 
 /* ========================================
+   INSURANCE VALIDATION SUMMARY
+======================================== */
+
+.insurance-validation-summary {
+  margin-bottom: 24px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--surface-color, #ffffff);
+  box-shadow: var(--box-shadow);
+}
+
+.insurance-validation-summary__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+
+.insurance-validation-summary__eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.insurance-validation-summary__header h3 {
+  margin: 0;
+}
+
+.insurance-validation-summary__description {
+  max-width: 480px;
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.insurance-validation-summary__counts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.insurance-validation-count {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 14px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  text-align: left;
+}
+
+button.insurance-validation-count {
+  width: 100%;
+  font: inherit;
+  cursor: pointer;
+}
+
+button.insurance-validation-count:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.insurance-validation-count i {
+  font-size: 1.25rem;
+}
+
+.insurance-validation-count span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.insurance-validation-count strong {
+  font-size: 1.25rem;
+}
+
+.insurance-validation-count--error {
+  color: #b42318;
+  background: #fef3f2;
+  border-color: #fecdca;
+}
+
+.insurance-validation-count--review {
+  color: #9a6700;
+  background: #fffaeb;
+  border-color: #fedf89;
+}
+
+.insurance-validation-count--pass {
+  color: #027a48;
+  background: #ecfdf3;
+  border-color: #abefc6;
+}
+
+/* ========================================
+   POLICY CARD VALIDATION
+======================================== */
+
+.policy-item--error {
+  border-color: #fda29b;
+}
+
+.policy-item--review {
+  border-color: #fec84b;
+}
+
+.policy-card-content {
+  display: grid;
+  gap: 14px;
+}
+
+.policy-card-validation {
+  display: grid;
+  gap: 7px;
+  padding: 12px 14px;
+  border-radius: calc(var(--border-radius) - 2px);
+}
+
+.policy-card-validation--error {
+  color: #b42318;
+  background: #fef3f2;
+}
+
+.policy-card-validation--review {
+  color: #9a6700;
+  background: #fffaeb;
+}
+
+.policy-card-validation--pass {
+  color: #027a48;
+  background: #ecfdf3;
+}
+
+.policy-card-validation__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.policy-card-validation__message,
+.policy-card-validation__remaining {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.policy-card-validation__message {
+  font-size: 0.875rem;
+}
+
+.policy-card-validation__remaining {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.policy-item--highlighted {
+  animation: highlight-policy-card 1.8s ease;
+}
+
+@keyframes highlight-policy-card {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  30% {
+    transform: translateY(-4px);
+    box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.15);
+  }
+}
+
+@media (max-width: 760px) {
+  .insurance-validation-summary__header {
+    flex-direction: column;
+  }
+
+  .insurance-validation-summary__counts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
    TABLET
 ======================================== */
 
