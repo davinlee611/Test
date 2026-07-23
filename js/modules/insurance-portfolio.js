@@ -942,25 +942,36 @@ function getPolicyValidationItems(benefits) {
   }
 
   if (disabilityIncomeBenefits.length > 0) {
-    const withinLimit = totalDisabilityIncome <= disabilityIncomeLimit;
+    if (averageGrossMonthlyEmploymentIncome <= 0) {
+      items.push({
+        severity: "review",
 
-    items.push({
-      severity: withinLimit ? "pass" : "error",
+        valid: true,
 
-      valid: withinLimit,
+        message:
+          "Enter the client's monthly earned income before assessing Disability Income coverage.",
+      });
+    } else {
+      const withinLimit = totalDisabilityIncome <= disabilityIncomeLimit;
 
-      message: withinLimit
-        ? `Total Disability Income (${formatCurrency(
-            totalDisabilityIncome,
-          )}/month) is within the recommended limit of ${formatCurrency(
-            disabilityIncomeLimit,
-          )}/month.`
-        : `Total Disability Income (${formatCurrency(
-            totalDisabilityIncome,
-          )}/month) exceeds the recommended limit of ${formatCurrency(
-            disabilityIncomeLimit,
-          )}/month.`,
-    });
+      items.push({
+        severity: withinLimit ? "pass" : "error",
+
+        valid: withinLimit,
+
+        message: withinLimit
+          ? `Total Disability Income (${formatCurrency(
+              totalDisabilityIncome,
+            )}/month) is within the recommended limit of ${formatCurrency(
+              disabilityIncomeLimit,
+            )}/month.`
+          : `Total Disability Income (${formatCurrency(
+              totalDisabilityIncome,
+            )}/month) exceeds the recommended limit of ${formatCurrency(
+              disabilityIncomeLimit,
+            )}/month.`,
+      });
+    }
   }
 
   return items;
