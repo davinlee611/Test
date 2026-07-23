@@ -25,7 +25,7 @@ import {
   PREMIUM_FREQUENCY_LABELS,
 } from "../constants/insurance.js";
 
-import { getClientProfile } from "../state/client-plan.js";
+import { getAssets, getClientProfile } from "../state/client-plan.js";
 
 import { getAverageGrossMonthlyIncome } from "../services/income-calculator.js";
 
@@ -792,12 +792,12 @@ function getPolicyValidationItems(benefits) {
 
   const earlyCiBenefits = benefitsByType["early_critical_illness"] ?? [];
 
-  const profile = getClientProfile();
+  const assets = getAssets();
 
   const averageGrossMonthlyEmploymentIncome = getAverageGrossMonthlyIncome({
-    monthlyEmploymentIncome: profile.priorities.assets.income.monthlyEmployment,
+    monthlyEmploymentIncome: assets.income.monthlyEmployment,
 
-    annualBonus: profile.priorities.assets.income.annualBonus,
+    annualBonus: assets.income.annualBonus,
   });
 
   const disabilityIncomeLimit = averageGrossMonthlyEmploymentIncome * 0.75;
