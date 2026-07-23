@@ -6,6 +6,9 @@ import { on } from "../events/event-bus.js";
 
 import { EVENTS } from "../events/events.js";
 
+import {
+  initializeInsurancePortfolio,
+} from "./modules/insurance-portfolio.js";
 
 
 /* ========================================
