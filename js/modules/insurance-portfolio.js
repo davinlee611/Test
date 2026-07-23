@@ -994,7 +994,7 @@ function getPolicyValidationItems(benefits) {
             )}/month) is within the recommended limit of ${formatCurrency(
               disabilityIncomeLimit,
             )}/month.`
-          : : `Total Disability Income (${formatCurrency(
+          : `Total Disability Income (${formatCurrency(
     totalDisabilityIncome,
   )}/month) exceeds the recommended limit of ${formatCurrency(
     disabilityIncomeLimit,
