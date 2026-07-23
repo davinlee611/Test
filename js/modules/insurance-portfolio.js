@@ -27,6 +27,8 @@ import {
 
 import { getClientProfile } from "../state/client-plan.js";
 
+import { getAverageGrossMonthlyIncome } from "../services/income-calculator.js";
+
 import {
   getAllPolicies,
   getPolicyById,
@@ -790,6 +792,25 @@ function getPolicyValidationItems(benefits) {
 
   const earlyCiBenefits = benefitsByType["early_critical_illness"] ?? [];
 
+  const profile = getClientProfile();
+
+  const averageGrossMonthlyEmploymentIncome = getAverageGrossMonthlyIncome({
+    monthlyEmploymentIncome: profile.priorities.assets.income.monthlyEmployment,
+
+    annualBonus: profile.priorities.assets.income.annualBonus,
+  });
+
+  const disabilityIncomeLimit = averageGrossMonthlyEmploymentIncome * 0.75;
+
+  const disabilityIncomeBenefits = benefitsByType["disability_income"] ?? [];
+
+  const totalDisabilityIncome = disabilityIncomeBenefits.reduce(function (
+    total,
+    benefit,
+  ) {
+    return total + (Number(benefit.amount) || 0);
+  }, 0);
+
   if (deathBenefits.length > 0) {
     const hasOneDeathBenefit = deathBenefits.length === 1;
 
@@ -917,6 +938,28 @@ function getPolicyValidationItems(benefits) {
       valid: true,
 
       message: "No CI or Early CI conflicts detected.",
+    });
+  }
+
+  if (disabilityIncomeBenefits.length > 0) {
+    const withinLimit = totalDisabilityIncome <= disabilityIncomeLimit;
+
+    items.push({
+      severity: withinLimit ? "pass" : "error",
+
+      valid: withinLimit,
+
+      message: withinLimit
+        ? `Total Disability Income (${formatCurrency(
+            totalDisabilityIncome,
+          )}/month) is within the recommended limit of ${formatCurrency(
+            disabilityIncomeLimit,
+          )}/month.`
+        : `Total Disability Income (${formatCurrency(
+            totalDisabilityIncome,
+          )}/month) exceeds the recommended limit of ${formatCurrency(
+            disabilityIncomeLimit,
+          )}/month.`,
     });
   }
 

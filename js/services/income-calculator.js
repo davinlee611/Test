@@ -149,3 +149,17 @@ function toNonNegativeNumber(value) {
 
   return number;
 }
+
+/* ========================================
+   PUBLIC HELPERS
+======================================== */
+
+export function getAverageGrossMonthlyIncome({
+  monthlyEmploymentIncome = 0,
+  annualBonus = 0,
+}) {
+  return (
+    toNonNegativeNumber(monthlyEmploymentIncome) +
+    toNonNegativeNumber(annualBonus) / 12
+  );
+}
