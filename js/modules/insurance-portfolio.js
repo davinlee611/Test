@@ -64,10 +64,6 @@ let editingPolicyId = null;
 let previousPolicyType = "";
 
 /* ========================================
-   BENEFIT CONFIGURATION
-======================================== */
-
-/* ========================================
    INITIALIZATION
 ======================================== */
 
@@ -1811,6 +1807,32 @@ function renderInsurancePortfolio() {
   renderPortfolioValidationSummary(policies);
 
   renderPolicies(policies);
+}
+
+function renderPortfolioValidationSummary(policies) {
+  if (!elements.portfolioValidationSummary) {
+    return;
+  }
+
+  if (policies.length === 0) {
+    elements.portfolioValidationSummary.hidden = true;
+
+    return;
+  }
+
+  const summary = getPortfolioValidationSummary(policies);
+
+  elements.portfolioErrorCount.textContent = summary.errorCount;
+
+  elements.portfolioReviewCount.textContent = summary.reviewCount;
+
+  elements.portfolioPassCount.textContent = summary.passCount;
+
+  elements.portfolioErrorButton.disabled = summary.errorCount === 0;
+
+  elements.portfolioReviewButton.disabled = summary.reviewCount === 0;
+
+  elements.portfolioValidationSummary.hidden = false;
 }
 
 function renderPolicies(policies = getAllPolicies()) {
