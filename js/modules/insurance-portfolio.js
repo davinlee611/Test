@@ -59,6 +59,8 @@ let editingBenefitId = null;
 
 let editingPolicyId = null;
 
+let previousPolicyType = "";
+
 /* ========================================
    BENEFIT CONFIGURATION
 ======================================== */
@@ -281,6 +283,8 @@ function openAddPolicyModal() {
 
   resetPolicyForm();
 
+  previousPolicyType = "";
+
   handleInsurerChange();
 
   elements.policyModalTitle.textContent = "Add Policy";
@@ -312,6 +316,8 @@ function openEditPolicyModal(policyId) {
   elements.policyNameInput.value = policy.policyName || "";
 
   elements.policyTypeSelect.value = policy.policyType || "";
+
+  previousPolicyType = policy.policyType || "";
 
   populateInsurerFields(policy.insurer);
 
@@ -369,6 +375,8 @@ function resetPolicyForm() {
   draftBenefits = [];
 
   editingBenefitId = null;
+
+  previousPolicyType = "";
 
   updatePremiumFields();
 
@@ -996,10 +1004,17 @@ function handlePolicyTypeChange() {
     );
 
     if (!confirmed) {
+      elements.policyTypeSelect.value = previousPolicyType;
+
+      populateBenefitTypeOptions();
+
       renderDraftBenefits();
+
       return;
     }
   }
+
+  previousPolicyType = policyType;
 
   draftBenefits = [];
 
