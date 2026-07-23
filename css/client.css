@@ -1699,6 +1699,7 @@ body.liability-modal-open {
 .insurance-validation-summary__counts {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
   gap: 12px;
 }
 
@@ -1708,22 +1709,21 @@ body.liability-modal-open {
   gap: 12px;
 
   width: 100%;
-  min-height: 72px;
+  height: 86px;
+  padding: 14px 16px;
 
-  padding: 14px 18px;
-
+  color: inherit;
+  background: transparent;
   border: 1px solid transparent;
   border-radius: var(--border-radius);
 
+  font: inherit;
   text-align: left;
 
   box-sizing: border-box;
 }
 
 button.insurance-validation-count {
-  display: flex;
-  width: 100%;
-  font: inherit;
   cursor: pointer;
 }
 
