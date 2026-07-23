@@ -821,6 +821,8 @@ function getPolicyValidationItems(benefits) {
 
   const disabilityIncomeLimit = averageGrossMonthlyEmploymentIncome * 0.75;
 
+  const disabilityIncomeBenefits = benefitsByType["disability_income"] ?? [];
+
   let totalDisabilityIncome = getAllPolicies().reduce(function (
     portfolioTotal,
     policy,
@@ -865,13 +867,6 @@ function getPolicyValidationItems(benefits) {
   }
 
   totalDisabilityIncome += draftDisabilityIncome;
-
-  const totalDisabilityIncome = disabilityIncomeBenefits.reduce(function (
-    total,
-    benefit,
-  ) {
-    return total + (Number(benefit.amount) || 0);
-  }, 0);
 
   if (deathBenefits.length > 0) {
     const hasOneDeathBenefit = deathBenefits.length === 1;
@@ -1028,18 +1023,18 @@ function getPolicyValidationItems(benefits) {
         valid: withinLimit,
 
         message: withinLimit
-          ? `Total Disability Income (${formatCurrency(
+          ? `Portfolio Disability Income (${formatCurrency(
               totalDisabilityIncome,
             )}/month) is within the recommended limit of ${formatCurrency(
               disabilityIncomeLimit,
             )}/month.`
-          : `Total Disability Income (${formatCurrency(
-    totalDisabilityIncome,
-  )}/month) exceeds the recommended limit of ${formatCurrency(
-    disabilityIncomeLimit,
-  )}/month. Recommended reduction: ${formatCurrency(
-    recommendedReduction,
-  )}/month.`,
+          : `Portfolio Disability Income (${formatCurrency(
+              totalDisabilityIncome,
+            )}/month) exceeds the recommended limit of ${formatCurrency(
+              disabilityIncomeLimit,
+            )}/month. Recommended reduction: ${formatCurrency(
+              recommendedReduction,
+            )}/month.`,
       });
     }
   }
