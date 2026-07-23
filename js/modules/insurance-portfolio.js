@@ -576,11 +576,11 @@ function validatePolicyForm(formData) {
     return "Add at least one benefit to the policy.";
   }
 
-  const firstError = getPolicyValidationItems(draftBenefits).find(
-    function (item) {
-      return item.severity === "error" && !item.valid;
-    },
-  );
+  const firstError = getPolicyValidationItems(draftBenefits, {
+    includeDraftBenefits: true,
+  }).find(function (item) {
+    return item.severity === "error" && !item.valid;
+  });
 
   if (firstError) {
     return firstError.message;
@@ -618,7 +618,9 @@ function renderPolicyValidation() {
     return;
   }
 
-  const validationItems = getPolicyValidationItems(draftBenefits);
+  const validationItems = getPolicyValidationItems(draftBenefits, {
+    includeDraftBenefits: true,
+  });
 
   const hasErrors = validationItems.some(function (item) {
     return item.severity === "error" && !item.valid;
@@ -672,7 +674,10 @@ function renderPolicyValidation() {
   });
 }
 
-function getPolicyValidationItems(benefits) {
+function getPolicyValidationItems(
+  benefits,
+  { includeDraftBenefits = false } = {},
+) {
   const items = [];
 
   const benefitsByType = groupBenefitsByType(benefits);
@@ -827,46 +832,50 @@ function getPolicyValidationItems(benefits) {
     portfolioTotal,
     policy,
   ) {
-    const disabilityBenefits = (policy.benefits || []).filter(
-      function (benefit) {
+    const policyDisabilityIncome = (policy.benefits || [])
+      .filter(function (benefit) {
         return benefit.type === "disability_income";
-      },
-    );
+      })
+      .reduce(function (benefitTotal, benefit) {
+        return benefitTotal + (Number(benefit.amount) || 0);
+      }, 0);
 
-    const policyTotal = disabilityBenefits.reduce(function (
-      benefitTotal,
+    return portfolioTotal + policyDisabilityIncome;
+  }, 0);
+
+  /*
+  Only adjust the saved portfolio total when validating
+  the Add/Edit Policy modal.
+
+  Saved policy cards are already included in getAllPolicies(),
+  so their benefits must not be added again.
+*/
+  if (includeDraftBenefits) {
+    if (editingPolicyId) {
+      const existingPolicy = getPolicyById(editingPolicyId);
+
+      if (existingPolicy) {
+        const existingDisabilityIncome = (existingPolicy.benefits || [])
+          .filter(function (benefit) {
+            return benefit.type === "disability_income";
+          })
+          .reduce(function (total, benefit) {
+            return total + (Number(benefit.amount) || 0);
+          }, 0);
+
+        totalDisabilityIncome -= existingDisabilityIncome;
+      }
+    }
+
+    const draftDisabilityIncome = disabilityIncomeBenefits.reduce(function (
+      total,
       benefit,
     ) {
-      return benefitTotal + (Number(benefit.amount) || 0);
+      return total + (Number(benefit.amount) || 0);
     }, 0);
 
-    return portfolioTotal + policyTotal;
-  }, 0);
-
-  const draftDisabilityIncome = disabilityIncomeBenefits.reduce(function (
-    total,
-    benefit,
-  ) {
-    return total + (Number(benefit.amount) || 0);
-  }, 0);
-
-  if (editingPolicyId) {
-    const existingPolicy = getPolicyById(editingPolicyId);
-
-    if (existingPolicy) {
-      const existingAmount = (existingPolicy.benefits || [])
-        .filter(function (benefit) {
-          return benefit.type === "disability_income";
-        })
-        .reduce(function (total, benefit) {
-          return total + (Number(benefit.amount) || 0);
-        }, 0);
-
-      totalDisabilityIncome -= existingAmount;
-    }
+    totalDisabilityIncome += draftDisabilityIncome;
   }
-
-  totalDisabilityIncome += draftDisabilityIncome;
 
   if (deathBenefits.length > 0) {
     const hasOneDeathBenefit = deathBenefits.length === 1;
@@ -1009,7 +1018,6 @@ function getPolicyValidationItems(benefits) {
           "Enter the client's monthly gross income before assessing Disability Income coverage.",
       });
     } else {
-
       const withinLimit = totalDisabilityIncome <= disabilityIncomeLimit;
 
       const recommendedReduction = Math.max(
@@ -1043,7 +1051,9 @@ function getPolicyValidationItems(benefits) {
 }
 
 function getPolicyValidationSummary(policy) {
-  const validationItems = getPolicyValidationItems(policy.benefits || []);
+  const validationItems = getPolicyValidationItems(policy.benefits || [], {
+    includeDraftBenefits: false,
+  });
 
   const errors = validationItems.filter(function (item) {
     return item.severity === "error" && !item.valid;
