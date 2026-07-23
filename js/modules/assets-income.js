@@ -78,7 +78,7 @@ const cpfNotApplicableMessage = document.getElementById(
   "cpfNotApplicableMessage",
 );
 
-const cpfDetailsRows = document.getElementById("cpfDetailsRows");
+//const cpfDetailsRows = document.getElementById("cpfDetailsRows");
 
 const employeeCpfRateElement = document.getElementById("employeeCpfRate");
 
@@ -396,9 +396,9 @@ function updateIncomeSummaryDisplay(summary) {
     }
   }
 
-  if (cpfDetailsRows) {
-    cpfDetailsRows.hidden = !summary.cpfApplies;
-  }
+  //if (cpfDetailsRows) {
+  //  cpfDetailsRows.hidden = !summary.cpfApplies;
+  //}
 
   if (employeeCpfRateElement) {
     employeeCpfRateElement.textContent = formatPercentage(
