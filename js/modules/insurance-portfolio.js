@@ -821,7 +821,50 @@ function getPolicyValidationItems(benefits) {
 
   const disabilityIncomeLimit = averageGrossMonthlyEmploymentIncome * 0.75;
 
-  const disabilityIncomeBenefits = benefitsByType["disability_income"] ?? [];
+  let totalDisabilityIncome = getAllPolicies().reduce(function (
+    portfolioTotal,
+    policy,
+  ) {
+    const disabilityBenefits = (policy.benefits || []).filter(
+      function (benefit) {
+        return benefit.type === "disability_income";
+      },
+    );
+
+    const policyTotal = disabilityBenefits.reduce(function (
+      benefitTotal,
+      benefit,
+    ) {
+      return benefitTotal + (Number(benefit.amount) || 0);
+    }, 0);
+
+    return portfolioTotal + policyTotal;
+  }, 0);
+
+  const draftDisabilityIncome = disabilityIncomeBenefits.reduce(function (
+    total,
+    benefit,
+  ) {
+    return total + (Number(benefit.amount) || 0);
+  }, 0);
+
+  if (editingPolicyId) {
+    const existingPolicy = getPolicyById(editingPolicyId);
+
+    if (existingPolicy) {
+      const existingAmount = (existingPolicy.benefits || [])
+        .filter(function (benefit) {
+          return benefit.type === "disability_income";
+        })
+        .reduce(function (total, benefit) {
+          return total + (Number(benefit.amount) || 0);
+        }, 0);
+
+      totalDisabilityIncome -= existingAmount;
+    }
+  }
+
+  totalDisabilityIncome += draftDisabilityIncome;
 
   const totalDisabilityIncome = disabilityIncomeBenefits.reduce(function (
     total,
