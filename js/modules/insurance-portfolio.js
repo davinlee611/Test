@@ -585,6 +585,16 @@ function renderPolicyValidation() {
     return;
   }
 
+  const validationItems = getPolicyValidationItems(draftBenefits);
+
+  const hasErrors = validationItems.some(function (item) {
+    return item.severity === "error" && !item.valid;
+  });
+
+  if (!hasErrors) {
+    elements.policyFormMessage.textContent = "";
+  }
+
   elements.policyValidationList.innerHTML = "";
 
   if (draftBenefits.length === 0) {
@@ -594,8 +604,6 @@ function renderPolicyValidation() {
   }
 
   elements.policyValidationSection.hidden = false;
-
-  const validationItems = getPolicyValidationItems(draftBenefits);
 
   validationItems.forEach(function (item) {
     const validationItem = document.createElement("div");
