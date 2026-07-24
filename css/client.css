@@ -2059,12 +2059,21 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-of-wants-custom-income {
-  max-width: 420px;
-  margin-top: 20px;
-  padding: 18px;
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  background: #f8fafc;
+    width: 100%;
+    margin-top: 20px;
+    padding: 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: #f8fafc;
+    box-sizing: border-box;
+}
+
+.cost-of-wants-custom-income .currency-input {
+    width: 100%;
+}
+
+.cost-of-wants-custom-income .form-control {
+    width: 100%;
 }
 
 .cost-of-wants-custom-income label {
