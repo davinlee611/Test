@@ -513,20 +513,23 @@ function handleLongTermCareBasePlanChange() {
 
   const basePlan = LONG_TERM_CARE_BASE_PLANS[selectedBasePlan];
 
-  if (!basePlan) {
-    renderDraftBenefits();
+  if (basePlan) {
+    const lifeAssured =
+      elements.policyLifeAssuredInput.value.trim() ||
+      getClientProfile().fullName ||
+      "";
 
-    return;
+    draftBenefits.unshift(
+      createLongTermCareBaseBenefit(selectedBasePlan, basePlan, lifeAssured),
+    );
   }
 
-  const lifeAssured =
-    elements.policyLifeAssuredInput.value.trim() ||
-    getClientProfile().fullName ||
-    "";
-
-  draftBenefits.unshift(
-    createLongTermCareBaseBenefit(selectedBasePlan, basePlan, lifeAssured),
-  );
+  if (
+    !elements.benefitEditor.hidden &&
+    elements.benefitTypeSelect.value === "long_term_care_income"
+  ) {
+    updateLongTermCarePayoutTermOptions();
+  }
 
   renderDraftBenefits();
 }
@@ -1592,7 +1595,11 @@ function resetBenefitForm() {
 
   elements.benefitAmountInput.value = "";
 
-  elements.benefitPayoutTermSelect.value = "";
+  elements.benefitPayoutTermSelect.disabled = false;
+
+  elements.benefitPayoutTermSelect.innerHTML = `
+  <option value="">Select payout term</option>
+`;
 
   elements.benefitPayoutDurationInput.value = "";
 
@@ -1647,22 +1654,96 @@ function updateBenefitFields() {
       showBenefitAmountField("Monthly Benefit");
       break;
 
-    case "long_term_care_income":
+    case "long_term_care_income": {
       showBenefitAmountField("Monthly Benefit");
 
       elements.benefitPayoutTermGroup.hidden = false;
 
       elements.benefitAdlRequirementGroup.hidden = false;
 
-      updatePayoutDurationField();
+      const selectedPayoutTerm = elements.benefitPayoutTermSelect.value;
+
+      updateLongTermCarePayoutTermOptions(selectedPayoutTerm);
 
       break;
+    }
 
     case "other":
       elements.benefitCustomNameGroup.hidden = false;
       showBenefitAmountField("Coverage Amount");
       break;
   }
+}
+
+function updateLongTermCarePayoutTermOptions(selectedPayoutTerm = "") {
+  const basePlan = elements.longTermCareBasePlanSelect.value;
+
+  const payoutTermOptions = [];
+
+  if (basePlan === "eldershield_300" || basePlan === "eldershield_400") {
+    payoutTermOptions.push(
+      {
+        value: "extend_10_years",
+        label: "Extend Total Payout to 10 Years",
+      },
+      {
+        value: "lifetime",
+        label: "Lifetime",
+      },
+    );
+  } else if (basePlan === "careshield_life") {
+    payoutTermOptions.push({
+      value: "lifetime",
+      label: "Lifetime",
+    });
+  } else {
+    payoutTermOptions.push(
+      {
+        value: "lifetime",
+        label: "Lifetime",
+      },
+      {
+        value: "limited",
+        label: "Limited Duration",
+      },
+    );
+  }
+
+  elements.benefitPayoutTermSelect.innerHTML = "";
+
+  const placeholderOption = document.createElement("option");
+
+  placeholderOption.value = "";
+
+  placeholderOption.textContent = "Select payout term";
+
+  elements.benefitPayoutTermSelect.appendChild(placeholderOption);
+
+  payoutTermOptions.forEach(function (optionData) {
+    const option = document.createElement("option");
+
+    option.value = optionData.value;
+
+    option.textContent = optionData.label;
+
+    elements.benefitPayoutTermSelect.appendChild(option);
+  });
+
+  const selectedTermIsAvailable = payoutTermOptions.some(function (optionData) {
+    return optionData.value === selectedPayoutTerm;
+  });
+
+  if (selectedTermIsAvailable) {
+    elements.benefitPayoutTermSelect.value = selectedPayoutTerm;
+  } else if (basePlan === "careshield_life") {
+    elements.benefitPayoutTermSelect.value = "lifetime";
+  } else {
+    elements.benefitPayoutTermSelect.value = "";
+  }
+
+  elements.benefitPayoutTermSelect.disabled = basePlan === "careshield_life";
+
+  updatePayoutDurationField();
 }
 
 function updatePayoutDurationField() {
@@ -1739,9 +1820,11 @@ function getBenefitFormData() {
     payoutTerm: elements.benefitPayoutTermSelect.value || null,
 
     payoutDuration:
-      elements.benefitPayoutTermSelect.value === "limited"
-        ? getWholeNumber(elements.benefitPayoutDurationInput.value)
-        : null,
+      elements.benefitPayoutTermSelect.value === "extend_10_years"
+        ? 120
+        : elements.benefitPayoutTermSelect.value === "limited"
+          ? getWholeNumber(elements.benefitPayoutDurationInput.value)
+          : null,
 
     hospitalClass: elements.benefitHospitalClassSelect.value,
 
@@ -1781,8 +1864,21 @@ function validateBenefit(formData) {
   }
 
   if (formData.type === "long_term_care_income") {
+    const basePlan = elements.longTermCareBasePlanSelect.value;
+
     if (!formData.payoutTerm) {
       return "Select the payout term.";
+    }
+
+    if (
+      (basePlan === "eldershield_300" || basePlan === "eldershield_400") &&
+      !["extend_10_years", "lifetime"].includes(formData.payoutTerm)
+    ) {
+      return "Select either Extend Total Payout to 10 Years or Lifetime.";
+    }
+
+    if (basePlan === "careshield_life" && formData.payoutTerm !== "lifetime") {
+      return "CareShield Life supplements must have a lifetime payout.";
     }
 
     if (formData.payoutTerm === "limited" && formData.payoutDuration <= 0) {
@@ -2034,6 +2130,10 @@ function getBenefitSummary(benefit) {
   }
 
   if (benefit.type === "long_term_care_income") {
+    if (benefit.payoutTerm === "extend_10_years") {
+      parts.push("Extends total payout to 10 years");
+    }
+
     if (benefit.payoutTerm === "lifetime") {
       parts.push("Lifetime payout");
     }
@@ -2099,6 +2199,10 @@ function createBenefitMetadata(benefit) {
   if (benefit.type === "long_term_care_income") {
     if (benefit.isBasePlanBenefit) {
       appendMetadataItem(metadata, "Base Plan");
+    }
+
+    if (benefit.payoutTerm === "extend_10_years") {
+      appendMetadataItem(metadata, "Extends Total Payout to 10 Years");
     }
 
     if (benefit.payoutTerm === "lifetime") {
