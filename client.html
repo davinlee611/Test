@@ -1953,6 +1953,38 @@
                   </div>
                 </div>
 
+                <!-- Long-Term Care Payout Term -->
+                <div id="benefitPayoutTermGroup" class="form-group" hidden>
+                  <label for="benefitPayoutTermSelect">
+                    Payout Term
+                    <span class="required-label">*</span>
+                  </label>
+
+                  <select id="benefitPayoutTermSelect" class="form-control">
+                    <option value="">Select payout term</option>
+                    <option value="lifetime">Lifetime</option>
+                    <option value="limited">Limited Duration</option>
+                  </select>
+                </div>
+
+                <!-- Long-Term Care Payout Duration -->
+                <div id="benefitPayoutDurationGroup" class="form-group" hidden>
+                  <label for="benefitPayoutDurationInput">
+                    Payout Duration (Months)
+                    <span class="required-label">*</span>
+                  </label>
+
+                  <input
+                    id="benefitPayoutDurationInput"
+                    class="form-control"
+                    type="number"
+                    min="1"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="Enter number of months"
+                  />
+                </div>
+
                 <!-- Payout Type -->
                 <div id="benefitPayoutTypeGroup" class="form-group" hidden>
                   <label for="benefitPayoutTypeSelect">

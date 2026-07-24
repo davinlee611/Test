@@ -184,6 +184,18 @@ function cacheInsuranceElements() {
 
     benefitAmountInput: document.getElementById("benefitAmountInput"),
 
+    benefitPayoutTermGroup: document.getElementById("benefitPayoutTermGroup"),
+
+    benefitPayoutTermSelect: document.getElementById("benefitPayoutTermSelect"),
+
+    benefitPayoutDurationGroup: document.getElementById(
+      "benefitPayoutDurationGroup",
+    ),
+
+    benefitPayoutDurationInput: document.getElementById(
+      "benefitPayoutDurationInput",
+    ),
+
     benefitPayoutTypeGroup: document.getElementById("benefitPayoutTypeGroup"),
 
     benefitPayoutTypeSelect: document.getElementById("benefitPayoutTypeSelect"),
@@ -267,6 +279,11 @@ function bindInsuranceEvents() {
   elements.cancelBenefitButton?.addEventListener("click", closeBenefitEditor);
 
   elements.policyTypeSelect?.addEventListener("change", handlePolicyTypeChange);
+
+  elements.benefitPayoutTermSelect?.addEventListener(
+    "change",
+    updatePayoutDurationField,
+  );
 
   elements.benefitTypeSelect?.addEventListener("change", updateBenefitFields);
 
@@ -785,18 +802,6 @@ function getPolicyValidationItems(
     });
   }
 
-  const longTermCareBenefits = benefitsByType["long_term_care_income"] ?? [];
-
-  if (longTermCareBenefits.length > 1) {
-    items.push({
-      severity: "review",
-
-      valid: true,
-
-      message: `Multiple Long-Term Care benefits found (${longTermCareBenefits.length}).`,
-    });
-  }
-
   const monthlyBenefits = benefitsByType["monthly_benefit"] ?? [];
 
   if (monthlyBenefits.length > 1) {
@@ -1260,6 +1265,10 @@ function createEmptyBenefit(benefitType, lifeAssured) {
 
     payoutType: null,
 
+    payoutTerm: null,
+
+    payoutDuration: null,
+
     hospitalClass: "",
 
     riderType: "",
@@ -1357,6 +1366,11 @@ function openEditBenefitEditor(benefitId) {
 
   elements.benefitAmountInput.value = benefit.amount > 0 ? benefit.amount : "";
 
+  elements.benefitPayoutTermSelect.value = benefit.payoutTerm || "";
+
+  elements.benefitPayoutDurationInput.value =
+    benefit.payoutDuration > 0 ? benefit.payoutDuration : "";
+
   elements.benefitPayoutTypeSelect.value = benefit.payoutType || "";
 
   elements.benefitHospitalClassSelect.value = benefit.hospitalClass || "";
@@ -1419,6 +1433,10 @@ function resetBenefitForm() {
 
   elements.benefitAmountInput.value = "";
 
+  elements.benefitPayoutTermSelect.value = "";
+
+  elements.benefitPayoutDurationInput.value = "";
+
   elements.benefitPayoutTypeSelect.value = "";
 
   elements.benefitHospitalClassSelect.value = "";
@@ -1472,7 +1490,13 @@ function updateBenefitFields() {
 
     case "long_term_care_income":
       showBenefitAmountField("Monthly Benefit");
+
+      elements.benefitPayoutTermGroup.hidden = false;
+
       elements.benefitAdlRequirementGroup.hidden = false;
+
+      updatePayoutDurationField();
+
       break;
 
     case "other":
@@ -1482,10 +1506,24 @@ function updateBenefitFields() {
   }
 }
 
+function updatePayoutDurationField() {
+  const hasLimitedPayout = elements.benefitPayoutTermSelect.value === "limited";
+
+  elements.benefitPayoutDurationGroup.hidden = !hasLimitedPayout;
+
+  elements.benefitPayoutDurationInput.required = hasLimitedPayout;
+
+  if (!hasLimitedPayout) {
+    elements.benefitPayoutDurationInput.value = "";
+  }
+}
+
 function hideBenefitSpecificFields() {
   elements.benefitLifeAssuredGroup.hidden = true;
   elements.benefitCustomNameGroup.hidden = true;
   elements.benefitAmountGroup.hidden = true;
+  elements.benefitPayoutTermGroup.hidden = true;
+  elements.benefitPayoutDurationGroup.hidden = true;
   elements.benefitPayoutTypeGroup.hidden = true;
   elements.benefitHospitalClassGroup.hidden = true;
   elements.benefitHospitalRiderGroup.hidden = true;
@@ -1539,6 +1577,13 @@ function getBenefitFormData() {
 
     payoutType: elements.benefitPayoutTypeSelect.value || null,
 
+    payoutTerm: elements.benefitPayoutTermSelect.value || null,
+
+    payoutDuration:
+      elements.benefitPayoutTermSelect.value === "limited"
+        ? getWholeNumber(elements.benefitPayoutDurationInput.value)
+        : null,
+
     hospitalClass: elements.benefitHospitalClassSelect.value,
 
     riderType: elements.benefitHospitalRiderSelect.value,
@@ -1576,8 +1621,18 @@ function validateBenefit(formData) {
     return "";
   }
 
-  if (formData.type === "long_term_care_income" && !formData.adlRequirement) {
-    return "Select the Claim Trigger (ADLs).";
+  if (formData.type === "long_term_care_income") {
+    if (!formData.payoutTerm) {
+      return "Select the payout term.";
+    }
+
+    if (formData.payoutTerm === "limited" && formData.payoutDuration <= 0) {
+      return "Enter the payout duration in months.";
+    }
+
+    if (!formData.adlRequirement) {
+      return "Select the Claim Trigger (ADLs).";
+    }
   }
 
   if (formData.amount <= 0) {
@@ -1821,6 +1876,20 @@ function getBenefitSummary(benefit) {
     parts.push(`Claim Trigger: ${adlLabel}`);
   }
 
+  if (benefit.type === "long_term_care_income") {
+    if (benefit.payoutTerm === "lifetime") {
+      parts.push("Lifetime payout");
+    }
+
+    if (benefit.payoutTerm === "limited" && benefit.payoutDuration > 0) {
+      parts.push(
+        `${benefit.payoutDuration} ${
+          benefit.payoutDuration === 1 ? "month" : "months"
+        } payout`,
+      );
+    }
+  }
+
   if (benefit.lifeAssured) {
     parts.push(benefit.lifeAssured);
   }
@@ -1856,6 +1925,21 @@ function createBenefitMetadata(benefit) {
 
     if (riderLabel) {
       appendMetadataItem(metadata, `Rider: ${riderLabel}`);
+    }
+  }
+
+  if (benefit.type === "long_term_care_income") {
+    if (benefit.payoutTerm === "lifetime") {
+      appendMetadataItem(metadata, "Lifetime Payout");
+    }
+
+    if (benefit.payoutTerm === "limited" && benefit.payoutDuration > 0) {
+      appendMetadataItem(
+        metadata,
+        `${benefit.payoutDuration} ${
+          benefit.payoutDuration === 1 ? "Month" : "Months"
+        } Payout`,
+      );
     }
   }
 
