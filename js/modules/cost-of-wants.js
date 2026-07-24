@@ -32,6 +32,24 @@ const postRetirementReturnRateInput = document.getElementById(
   "postRetirementReturnRate",
 );
 
+const lifestyleOptionButtons = Array.from(
+  document.querySelectorAll("[data-lifestyle-option]"),
+);
+
+const customIncomeGroup = document.getElementById(
+  "costOfWantsCustomIncomeGroup",
+);
+
+const customIncomeInput = document.getElementById("costOfWantsCustomIncome");
+
+const selectedIncomeSummary = document.getElementById(
+  "costOfWantsSelectedIncome",
+);
+
+const selectedIncomeAmount = document.getElementById(
+  "costOfWantsSelectedIncomeAmount",
+);
+
 const formMessage = document.getElementById("costOfWantsFormMessage");
 
 /* ========================================
@@ -50,8 +68,9 @@ export function initializeCostOfWants() {
     return;
   }
 
-  attachInputListeners();
-  attachApplicationListeners();
+    attachInputListeners();
+    attachLifestyleListeners();
+    attachApplicationListeners();
 
   renderCostOfWants();
 
@@ -89,8 +108,17 @@ function attachInputListeners() {
     }
 
     input.addEventListener("input", handleCostOfWantsInput);
-
     input.addEventListener("blur", validateCostOfWants);
+  });
+
+  customIncomeInput?.addEventListener("input", handleCustomIncomeInput);
+}
+
+function attachLifestyleListeners() {
+  lifestyleOptionButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      selectLifestyleOption(button.dataset.lifestyleOption);
+    });
   });
 }
 
@@ -114,9 +142,39 @@ function handleCostOfWantsInput() {
   emitCostOfWantsChanged();
 }
 
+function handleCustomIncomeInput() {
+  updateCostOfWants({
+    customMonthlyIncome: getWholeNumberInput(customIncomeInput),
+  });
+
+  renderSelectedIncome();
+  emitCostOfWantsChanged();
+}
+
 /* ========================================
    STATE
 ======================================== */
+
+function selectLifestyleOption(option) {
+  const validOptions = ["basic", "average", "comfort", "custom"];
+
+  if (!validOptions.includes(option)) {
+    return;
+  }
+
+  updateCostOfWants({
+    lifestyleOption: option,
+  });
+
+  renderLifestyleSelection();
+  renderSelectedIncome();
+
+  emitCostOfWantsChanged();
+
+  if (option === "custom") {
+    customIncomeInput?.focus();
+  }
+}
 
 function saveCostOfWantsInputs() {
   updateCostOfWants({
@@ -137,6 +195,8 @@ function saveCostOfWantsInputs() {
 function renderCostOfWants() {
   renderClientDetails();
   syncCostOfWantsInputs();
+  renderLifestyleSelection();
+  renderSelectedIncome();
 }
 
 function renderClientDetails() {
@@ -175,6 +235,39 @@ function syncCostOfWantsInputs() {
   );
 }
 
+function renderLifestyleSelection() {
+  const { lifestyleOption, customMonthlyIncome } = getCostOfWants();
+
+  lifestyleOptionButtons.forEach(function (button) {
+    const isSelected = button.dataset.lifestyleOption === lifestyleOption;
+
+    button.classList.toggle("is-selected", isSelected);
+
+    button.setAttribute("aria-checked", String(isSelected));
+  });
+
+  if (customIncomeGroup) {
+    customIncomeGroup.hidden = lifestyleOption !== "custom";
+  }
+
+  if (customIncomeInput) {
+    customIncomeInput.value =
+      customMonthlyIncome > 0 ? String(customMonthlyIncome) : "";
+  }
+}
+
+function renderSelectedIncome() {
+  if (!selectedIncomeSummary || !selectedIncomeAmount) {
+    return;
+  }
+
+  const monthlyIncome = getSelectedMonthlyIncome();
+
+  selectedIncomeSummary.hidden = monthlyIncome <= 0;
+
+  selectedIncomeAmount.textContent = formatCurrency(monthlyIncome);
+}
+
 function setOptionalNumberInput(input, value) {
   if (!input) {
     return;
@@ -193,6 +286,23 @@ function setNumberInput(input, value) {
   const number = Number(value);
 
   input.value = Number.isFinite(number) ? String(number) : "";
+}
+
+/* ========================================
+   LIFESTYLE CALCULATION
+======================================== */
+
+function getSelectedMonthlyIncome() {
+  const {
+    lifestyleOption,
+    customMonthlyIncome,
+  } = getCostOfWants();
+
+  if (lifestyleOption === "custom") {
+    return Number(customMonthlyIncome) || 0;
+  }
+
+  return LIFESTYLE_AMOUNTS[lifestyleOption] || 0;
 }
 
 /* ========================================
@@ -276,6 +386,14 @@ function getDecimalInput(input) {
   return value;
 }
 
+function formatCurrency(value) {
+  return new Intl.NumberFormat("en-SG", {
+    style: "currency",
+    currency: "SGD",
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0);
+}
+
 /* ========================================
    FORM MESSAGE
 ======================================== */
@@ -307,6 +425,7 @@ function emitCostOfWantsChanged() {
     },
 
     currentAge: getClientAge(),
+    selectedMonthlyIncome: getSelectedMonthlyIncome(),
   });
 }
 
@@ -325,3 +444,13 @@ function createDefaultCostOfWants() {
     customMonthlyIncome: 0,
   };
 }
+
+/* ========================================
+   LIFESTYLE AMOUNTS
+======================================== */
+
+const LIFESTYLE_AMOUNTS = Object.freeze({
+  basic: 3000,
+  average: 5000,
+  comfort: 8000,
+});

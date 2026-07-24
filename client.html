@@ -1457,27 +1457,148 @@
                       </div>
                     </div>
 
+                                        </div>
+
+                    <!-- Ideal Monthly Passive Income -->
+                    <div class="cost-of-wants-section-divider"></div>
+
+                    <div class="cost-of-wants-income-section">
+                      <div class="cost-of-wants-income-heading">
+                        <h3>
+                          Ideal Monthly Passive Income
+                          <span>(Today's Value)</span>
+                        </h3>
+
+                        <p>
+                          Select the monthly passive income that best reflects
+                          the client's desired retirement lifestyle.
+                        </p>
+                      </div>
+
+                      <div
+                        class="cost-of-wants-lifestyle-grid"
+                        role="radiogroup"
+                        aria-label="Ideal monthly passive income in today's value"
+                      >
+                        <button
+                          class="cost-of-wants-lifestyle-option"
+                          type="button"
+                          data-lifestyle-option="basic"
+                          role="radio"
+                          aria-checked="false"
+                        >
+                          <span class="cost-of-wants-lifestyle-name">
+                            Basic
+                          </span>
+
+                          <strong>$3,000</strong>
+
+                          <span class="cost-of-wants-lifestyle-period">
+                            per month
+                          </span>
+                        </button>
+
+                        <button
+                          class="cost-of-wants-lifestyle-option"
+                          type="button"
+                          data-lifestyle-option="average"
+                          role="radio"
+                          aria-checked="false"
+                        >
+                          <span class="cost-of-wants-lifestyle-name">
+                            Average
+                          </span>
+
+                          <strong>$5,000</strong>
+
+                          <span class="cost-of-wants-lifestyle-period">
+                            per month
+                          </span>
+                        </button>
+
+                        <button
+                          class="cost-of-wants-lifestyle-option"
+                          type="button"
+                          data-lifestyle-option="comfort"
+                          role="radio"
+                          aria-checked="false"
+                        >
+                          <span class="cost-of-wants-lifestyle-name">
+                            Comfort
+                          </span>
+
+                          <strong>$8,000</strong>
+
+                          <span class="cost-of-wants-lifestyle-period">
+                            per month
+                          </span>
+                        </button>
+
+                        <button
+                          class="cost-of-wants-lifestyle-option"
+                          type="button"
+                          data-lifestyle-option="custom"
+                          role="radio"
+                          aria-checked="false"
+                        >
+                          <span class="cost-of-wants-lifestyle-name">
+                            Custom
+                          </span>
+
+                          <strong>Enter amount</strong>
+
+                          <span class="cost-of-wants-lifestyle-period">
+                            per month
+                          </span>
+                        </button>
+                      </div>
+
+                      <div
+                        id="costOfWantsCustomIncomeGroup"
+                        class="cost-of-wants-custom-income"
+                        hidden
+                      >
+                        <label for="costOfWantsCustomIncome">
+                          Custom Monthly Passive Income
+                        </label>
+
+                        <div class="currency-input">
+                          <span>$</span>
+
+                          <input
+                            id="costOfWantsCustomIncome"
+                            class="form-control"
+                            type="number"
+                            min="0"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="Enter monthly amount"
+                          />
+                        </div>
+
+                        <span class="form-helper-text">
+                          Enter the desired monthly amount in today's value.
+                        </span>
+                      </div>
+
+                      <div
+                        id="costOfWantsSelectedIncome"
+                        class="cost-of-wants-selected-income"
+                        hidden
+                      >
+                        <span>Selected monthly passive income</span>
+
+                        <strong id="costOfWantsSelectedIncomeAmount">
+                          $0
+                        </strong>
+                      </div>
+                    </div>
+
                     <p
                       id="costOfWantsFormMessage"
                       class="cost-of-wants-form-message"
                       aria-live="polite"
                     ></p>
-                  </div>
-                </section>
-
-                <!-- Lifestyle section will be added next -->
-                <section class="planning-category-section">
-                  <div class="planning-card cost-of-wants-coming-soon">
-                    <div class="empty-section-icon">
-                      <i class="fa-solid fa-wallet"></i>
-                    </div>
-
-                    <h3>Ideal Monthly Passive Income</h3>
-
-                    <p>
-                      Basic, Average, Comfort and Custom lifestyle options will
-                      be added next.
-                    </p>
                   </div>
                 </section>
 
