@@ -1969,8 +1969,17 @@ button.insurance-validation-count:disabled {
 
 .cost-of-wants-section-divider {
   height: 1px;
-  margin: 32px 0;
+  margin: 24px 0;
   background: var(--border-color);
+}
+
+.cost-of-wants-income-box {
+  width: 100%;
+  padding: 20px 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: #ffffff;
+  box-sizing: border-box;
 }
 
 .cost-of-wants-income-heading {
