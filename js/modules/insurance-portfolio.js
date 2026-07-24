@@ -751,25 +751,37 @@ function getPolicyValidationItems(
 
   const hospitalCashBenefits = benefitsByType["hospital_cash"] ?? [];
 
+  if (hospitalCashBenefits.length === 1) {
+    items.push({
+      severity: "pass",
+      valid: true,
+      message: "One Hospital Cash benefit recorded.",
+    });
+  }
+
   if (hospitalCashBenefits.length > 1) {
     items.push({
       severity: "review",
-
       valid: true,
-
-      message: `Multiple Hospital Cash benefits found (${hospitalCashBenefits.length}).`,
+      message: `Multiple Hospital Cash benefits found (${hospitalCashBenefits.length}). Confirm that the benefits are separate and have not been entered twice.`,
     });
   }
 
   const medicalBenefits = benefitsByType["medical_reimbursement"] ?? [];
 
+  if (medicalBenefits.length === 1) {
+    items.push({
+      severity: "pass",
+      valid: true,
+      message: "One Medical Reimbursement benefit recorded.",
+    });
+  }
+
   if (medicalBenefits.length > 1) {
     items.push({
       severity: "review",
-
       valid: true,
-
-      message: `Multiple Medical Reimbursement benefits found (${medicalBenefits.length}).`,
+      message: `Multiple Medical Reimbursement benefits found (${medicalBenefits.length}). Confirm that the benefits are separate and have not been entered twice.`,
     });
   }
 
