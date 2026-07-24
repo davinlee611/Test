@@ -32,7 +32,13 @@ import {
   resetInsurancePortfolio,
 } from "./modules/insurance-portfolio.js";
 
+import {
+  initializeCostOfWants,
+  resetCostOfWants,
+} from "./modules/cost-of-wants.js";
+
 import { on } from "./events/event-bus.js";
+
 import { EVENTS } from "./events/events.js";
 
 const supabaseClient = window.supabaseClient;
@@ -62,6 +68,7 @@ initializeGoals();
 initializeAssetsIncome();
 initializeExpenses();
 initializeInsurancePortfolio();
+initializeCostOfWants();
 initializePage();
 
 on(EVENTS.SECTION_CHANGED, function ({ section }) {
@@ -153,6 +160,11 @@ function clearFinancialPlan() {
    * Reset insurance portfolio.
    */
   resetInsurancePortfolio();
+
+  /*
+   * Reset Cost of Wants.
+   */
+  resetCostOfWants();
 
   /*
    * Return to the Client Profile section.

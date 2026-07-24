@@ -9,7 +9,6 @@ export const EVENTS = Object.freeze({
   PROFILE_COMPLETED: "profile:completed",
 
   WEALTH_TYPE_CHANGED: "wealth-type:changed",
-
   PROPERTY_CHANGED: "property:changed",
   INCOME_CHANGED: "income:changed",
   ASSETS_CHANGED: "assets:changed",
@@ -17,6 +16,8 @@ export const EVENTS = Object.freeze({
   GOALS_CHANGED: "goals:changed",
   LIABILITIES_CHANGED: "liabilities:changed",
   EXPENSES_CHANGED: "expenses:changed",
+
+  COST_OF_WANTS_CHANGED: "cost-of-wants:changed",
 
   SECTION_CHANGED: "section:changed",
 });

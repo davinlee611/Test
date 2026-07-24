@@ -64,12 +64,13 @@ export function createEmptyClientPlan() {
     },
 
     costOfWants: {
-      education: [],
-      retirement: {},
-      legacy: {},
-      emergencyFund: {},
-      debtClearance: {},
-      customGoals: [],
+      desiredRetirementAge: 0,
+      plannedMortalityAge: 85,
+      inflationRate: 2.5,
+      postRetirementReturnRate: 3.5,
+
+      lifestyleOption: "",
+      customMonthlyIncome: 0,
     },
 
     summary: {},
@@ -127,6 +128,10 @@ export function getLiabilities() {
 
 export function getPolicies() {
   return clientPlan.priorities.policies;
+}
+
+export function getCostOfWants() {
+  return clientPlan.costOfWants;
 }
 
 /* ========================================
@@ -228,6 +233,17 @@ export function setPolicies(policies) {
   touchClientPlan();
 
   return clientPlan.priorities.policies;
+}
+
+export function updateCostOfWants(updates) {
+  clientPlan.costOfWants = {
+    ...clientPlan.costOfWants,
+    ...updates,
+  };
+
+  touchClientPlan();
+
+  return clientPlan.costOfWants;
 }
 
 /* ========================================

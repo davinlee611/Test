@@ -1275,27 +1275,208 @@
           <section class="workspace-section" data-content="cost">
             <div class="section-header">
               <div>
-                <p class="section-label">Goal Calculations</p>
+                <p class="section-label">Retirement Lifestyle Planning</p>
 
-                <h2>Cost of Wants</h2>
+                <h2 id="costOfWantsHeading">Cost of Wants</h2>
 
                 <p>
-                  Calculate how much is needed to achieve the client's financial
-                  goals.
+                  Estimate the income required to support the client's desired
+                  retirement lifestyle.
                 </p>
               </div>
             </div>
 
-            <div class="empty-section-card">
-              <div class="empty-section-icon">
-                <i class="fa-solid fa-coins"></i>
+            <div class="cost-of-wants-layout">
+              <!-- Main Form Column -->
+              <div class="cost-of-wants-main">
+                <!-- Retirement Assumptions -->
+                <section class="planning-category-section">
+                  <div class="planning-card">
+                    <div class="planning-card-header">
+                      <div>
+                        <h3>Retirement Assumptions</h3>
+
+                        <p>
+                          Set the client's retirement timeline and planning
+                          assumptions.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="cost-of-wants-form-grid">
+                      <!-- Current Age -->
+                      <div class="form-group">
+                        <label for="costOfWantsCurrentAge"> Current Age </label>
+
+                        <input
+                          id="costOfWantsCurrentAge"
+                          class="form-control"
+                          type="number"
+                          placeholder="Enter date of birth first"
+                          readonly
+                        />
+
+                        <span class="form-helper-text">
+                          Calculated automatically from the Client Profile.
+                        </span>
+                      </div>
+
+                      <!-- Desired Retirement Age -->
+                      <div class="form-group">
+                        <label for="desiredRetirementAge">
+                          Desired Retirement Age
+                        </label>
+
+                        <input
+                          id="desiredRetirementAge"
+                          class="form-control"
+                          type="number"
+                          min="1"
+                          max="120"
+                          step="1"
+                          inputmode="numeric"
+                          placeholder="Enter age"
+                        />
+
+                        <span class="form-helper-text">
+                          The age at which the client plans to retire.
+                        </span>
+                      </div>
+
+                      <!-- Planned Mortality Age -->
+                      <div class="form-group">
+                        <label for="plannedMortalityAge">
+                          Planned Mortality Age
+                        </label>
+
+                        <input
+                          id="plannedMortalityAge"
+                          class="form-control"
+                          type="number"
+                          min="1"
+                          max="120"
+                          step="1"
+                          inputmode="numeric"
+                          value="85"
+                        />
+
+                        <span class="form-helper-text">
+                          Used to estimate how long retirement income may be
+                          needed.
+                        </span>
+                      </div>
+
+                      <!-- Inflation Rate -->
+                      <div class="form-group">
+                        <label for="costOfWantsInflationRate">
+                          Inflation Rate (% p.a.)
+                        </label>
+
+                        <div class="percentage-input">
+                          <input
+                            id="costOfWantsInflationRate"
+                            class="form-control"
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            inputmode="decimal"
+                            value="2.5"
+                          />
+
+                          <span>%</span>
+                        </div>
+
+                        <span class="form-helper-text">
+                          Used to project today's desired income into future
+                          value.
+                        </span>
+                      </div>
+
+                      <!-- Post-Retirement Return Rate -->
+                      <div class="form-group">
+                        <label for="postRetirementReturnRate">
+                          Post-Retirement Return Rate (% p.a.)
+                        </label>
+
+                        <div class="percentage-input">
+                          <input
+                            id="postRetirementReturnRate"
+                            class="form-control"
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            inputmode="decimal"
+                            value="3.5"
+                          />
+
+                          <span>%</span>
+                        </div>
+
+                        <span class="form-helper-text">
+                          Expected annual return on the retirement fund after
+                          retirement.
+                        </span>
+                      </div>
+                    </div>
+
+                    <p
+                      id="costOfWantsFormMessage"
+                      class="cost-of-wants-form-message"
+                      aria-live="polite"
+                    ></p>
+                  </div>
+                </section>
+
+                <!-- Lifestyle section will be added next -->
+                <section class="planning-category-section">
+                  <div class="planning-card cost-of-wants-coming-soon">
+                    <div class="empty-section-icon">
+                      <i class="fa-solid fa-wallet"></i>
+                    </div>
+
+                    <h3>Ideal Monthly Passive Income</h3>
+
+                    <p>
+                      Basic, Average, Comfort and Custom lifestyle options will
+                      be added next.
+                    </p>
+                  </div>
+                </section>
+
+                <!-- Spending breakdown will be added next -->
+                <section class="planning-category-section">
+                  <div class="planning-card cost-of-wants-coming-soon">
+                    <div class="empty-section-icon">
+                      <i class="fa-solid fa-receipt"></i>
+                    </div>
+
+                    <h3>Monthly Spending Breakdown</h3>
+
+                    <p>
+                      Current spending information will be pulled from
+                      Priorities &amp; Situation and the Insurance Portfolio.
+                    </p>
+                  </div>
+                </section>
               </div>
 
-              <h3>Cost of Wants</h3>
+              <!-- Projection Column -->
+              <aside class="cost-of-wants-projection">
+                <div class="planning-card cost-of-wants-projection-card">
+                  <div class="cost-of-wants-projection-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                  </div>
 
-              <p>
-                Goal funding and future-cost calculations will be added here.
-              </p>
+                  <h3>Your Projections</h3>
+
+                  <p>
+                    Retirement projections and the procrastination calculator
+                    will appear here after the planning inputs are completed.
+                  </p>
+                </div>
+              </aside>
             </div>
           </section>
 
