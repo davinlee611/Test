@@ -74,7 +74,7 @@ export const POLICY_TYPE_DEFAULT_BENEFITS = {
 
   disability_income: ["disability_income"],
 
-  long_term_care: ["long_term_care_income"],
+  long_term_care: [],
 
   other: [],
 };

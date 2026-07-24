@@ -1730,48 +1730,6 @@
                 </select>
               </div>
 
-              <!-- Long-Term Care Base Plan Reference -->
-              <div
-                id="longTermCareBasePlanSummary"
-                class="form-group form-group--full"
-                hidden
-              >
-                <div class="long-term-care-base-summary">
-                  <div class="long-term-care-base-summary__heading">
-                    <div>
-                      <span class="long-term-care-base-summary__label">
-                        Base plan reference
-                      </span>
-
-                      <strong id="longTermCareBasePlanName"></strong>
-                    </div>
-                  </div>
-
-                  <div class="long-term-care-base-summary__details">
-                    <div>
-                      <span>Monthly Benefit</span>
-                      <strong id="longTermCareBasePlanAmount"></strong>
-                    </div>
-
-                    <div>
-                      <span>Payout Period</span>
-                      <strong id="longTermCareBasePlanPayout"></strong>
-                    </div>
-
-                    <div>
-                      <span>Claim Trigger</span>
-                      <strong id="longTermCareBasePlanTrigger"></strong>
-                    </div>
-                  </div>
-
-                  <p
-                    id="longTermCareBasePlanNote"
-                    class="form-helper-text"
-                    hidden
-                  ></p>
-                </div>
-              </div>
-
               <!-- Life Assured -->
               <div class="form-group">
                 <label for="policyLifeAssuredInput">
@@ -2047,29 +2005,6 @@
                     inputmode="numeric"
                     placeholder="Enter number of months"
                   />
-                </div>
-
-                <!-- Long-Term Care Payout Start -->
-                <div id="benefitPayoutStartGroup" class="form-group" hidden>
-                  <label for="benefitPayoutStartInput">
-                    Payout Starts After
-                    <span class="optional-label">(Months)</span>
-                  </label>
-
-                  <input
-                    id="benefitPayoutStartInput"
-                    class="form-control"
-                    type="number"
-                    min="0"
-                    step="1"
-                    inputmode="numeric"
-                    value="0"
-                    placeholder="0"
-                  />
-
-                  <span class="form-helper-text">
-                    Enter 0 if the benefit starts when the claim begins.
-                  </span>
                 </div>
 
                 <!-- Payout Type -->
