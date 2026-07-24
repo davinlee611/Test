@@ -102,21 +102,21 @@ export function resetInsurancePortfolio() {
 
 function cacheInsuranceElements() {
   elements = {
-  portfolioValidationSummary: document.getElementById(
-    "portfolioValidationSummary",
-  ),
+    portfolioValidationSummary: document.getElementById(
+      "portfolioValidationSummary",
+    ),
 
-  portfolioErrorButton: document.getElementById("portfolioErrorButton"),
+    portfolioErrorButton: document.getElementById("portfolioErrorButton"),
 
-  portfolioErrorCount: document.getElementById("portfolioErrorCount"),
+    portfolioErrorCount: document.getElementById("portfolioErrorCount"),
 
-  portfolioReviewButton: document.getElementById("portfolioReviewButton"),
+    portfolioReviewButton: document.getElementById("portfolioReviewButton"),
 
-  portfolioReviewCount: document.getElementById("portfolioReviewCount"),
+    portfolioReviewCount: document.getElementById("portfolioReviewCount"),
 
-  portfolioPassCount: document.getElementById("portfolioPassCount"),
+    portfolioPassCount: document.getElementById("portfolioPassCount"),
 
-  policyList: document.getElementById("policyList"),
+    policyList: document.getElementById("policyList"),
 
     emptyPolicyMessage: document.getElementById("emptyPolicyMessage"),
 
@@ -237,14 +237,13 @@ function cacheInsuranceElements() {
 ======================================== */
 
 function bindInsuranceEvents() {
-
   elements.portfolioErrorButton?.addEventListener("click", function () {
-  scrollToFirstPolicyWithSeverity("error");
-});
+    scrollToFirstPolicyWithSeverity("error");
+  });
 
-elements.portfolioReviewButton?.addEventListener("click", function () {
-  scrollToFirstPolicyWithSeverity("review");
-});
+  elements.portfolioReviewButton?.addEventListener("click", function () {
+    scrollToFirstPolicyWithSeverity("review");
+  });
 
   elements.addPolicyButton?.addEventListener("click", openAddPolicyModal);
 
@@ -576,7 +575,11 @@ function validatePolicyForm(formData) {
     return "Add at least one benefit to the policy.";
   }
 
-  const firstError = getPolicyValidationItems(draftBenefits, {
+  const firstError = getCompletePolicyValidationItems({
+    policyId: editingPolicyId || "",
+    policyLifeAssured: formData.lifeAssured,
+    benefits: draftBenefits,
+    allPolicies: getAllPolicies(),
     includeDraftBenefits: true,
   }).find(function (item) {
     return item.severity === "error" && !item.valid;
@@ -618,7 +621,11 @@ function renderPolicyValidation() {
     return;
   }
 
-  const validationItems = getPolicyValidationItems(draftBenefits, {
+  const validationItems = getCompletePolicyValidationItems({
+    policyId: editingPolicyId || "",
+    policyLifeAssured: elements.policyLifeAssuredInput.value.trim(),
+    benefits: draftBenefits,
+    allPolicies: getAllPolicies(),
     includeDraftBenefits: true,
   });
 
@@ -739,22 +746,6 @@ function getPolicyValidationItems(
       valid: true,
 
       message: "TPD benefit exists without a Death benefit.",
-    });
-  }
-
-  const hospitalisationBenefits = benefitsByType["hospitalisation"] ?? [];
-
-  if (hospitalisationBenefits.length > 0) {
-    const hasOneHospitalisationBenefit = hospitalisationBenefits.length === 1;
-
-    items.push({
-      severity: hasOneHospitalisationBenefit ? "pass" : "error",
-
-      valid: hasOneHospitalisationBenefit,
-
-      message: hasOneHospitalisationBenefit
-        ? "One Hospitalisation benefit recorded."
-        : "A policy can only contain one Hospitalisation benefit.",
     });
   }
 
@@ -1050,8 +1041,33 @@ function getPolicyValidationItems(
   return items;
 }
 
+function getCompletePolicyValidationItems({
+  policyId = "",
+  policyLifeAssured = "",
+  benefits = [],
+  allPolicies = [],
+  includeDraftBenefits = false,
+}) {
+  return [
+    ...getPolicyValidationItems(benefits, {
+      includeDraftBenefits,
+    }),
+
+    ...getHospitalisationPolicyValidationItems({
+      policyId,
+      policyLifeAssured,
+      benefits,
+      allPolicies,
+    }),
+  ];
+}
+
 function getPolicyValidationSummary(policy) {
-  const validationItems = getPolicyValidationItems(policy.benefits || [], {
+  const validationItems = getCompletePolicyValidationItems({
+    policyId: policy.id,
+    policyLifeAssured: policy.lifeAssured || "",
+    benefits: policy.benefits || [],
+    allPolicies: getAllPolicies(),
     includeDraftBenefits: false,
   });
 
@@ -1921,8 +1937,7 @@ function createPolicyElement(policy) {
     actions: createPolicyActions(policy),
   });
 
-  policyElement.dataset.validationSeverity =
-    validationSummary.highestSeverity;
+  policyElement.dataset.validationSeverity = validationSummary.highestSeverity;
 
   policyElement.dataset.policyId = policy.id;
 
@@ -2003,10 +2018,7 @@ function createPolicyValidationPreview(validationSummary) {
 
   container.appendChild(status);
 
-  const messages = [
-    ...validationSummary.errors,
-    ...validationSummary.reviews,
-  ];
+  const messages = [...validationSummary.errors, ...validationSummary.reviews];
 
   messages.slice(0, 2).forEach(function (item) {
     const message = document.createElement("p");
@@ -2021,8 +2033,7 @@ function createPolicyValidationPreview(validationSummary) {
   if (messages.length > 2) {
     const remainingMessage = document.createElement("p");
 
-    remainingMessage.className =
-      "policy-card-validation__remaining";
+    remainingMessage.className = "policy-card-validation__remaining";
 
     remainingMessage.textContent = `+${
       messages.length - 2
@@ -2199,4 +2210,191 @@ function scrollToFirstPolicyWithSeverity(severity) {
   window.setTimeout(function () {
     matchingPolicy.classList.remove("policy-item--highlighted");
   }, 1800);
+}
+
+function normalizeLifeAssuredName(name) {
+  return String(name || "")
+    .trim()
+    .toLowerCase();
+}
+
+function getUniqueLifeAssuredNames(benefits) {
+  const namesByNormalizedValue = new Map();
+
+  benefits.forEach(function (benefit) {
+    const displayName = String(benefit.lifeAssured || "").trim();
+    const normalizedName = normalizeLifeAssuredName(displayName);
+
+    if (!normalizedName) {
+      return;
+    }
+
+    if (!namesByNormalizedValue.has(normalizedName)) {
+      namesByNormalizedValue.set(normalizedName, displayName);
+    }
+  });
+
+  return Array.from(namesByNormalizedValue.entries()).map(function ([
+    normalizedName,
+    displayName,
+  ]) {
+    return {
+      normalizedName,
+      displayName,
+    };
+  });
+}
+
+function getHospitalisationPolicyValidationItems({
+  policyId = "",
+  policyLifeAssured = "",
+  benefits = [],
+  allPolicies = [],
+}) {
+  const validationItems = [];
+
+  const hospitalisationBenefits = benefits.filter(function (benefit) {
+    return benefit.type === "hospitalisation";
+  });
+
+  if (hospitalisationBenefits.length === 0) {
+    return validationItems;
+  }
+
+  const hospitalisationLifeAssuredNames = getUniqueLifeAssuredNames(
+    hospitalisationBenefits,
+  );
+
+  /*
+   * Include both the policy-level Life Assured and all benefit-level
+   * Life Assured names.
+   *
+   * This catches cases where the policy says "Davin Lee" but the
+   * Hospitalisation benefit says "Jane Lee".
+   */
+  const allPolicyLifeAssuredNames = getUniqueLifeAssuredNames([
+    {
+      lifeAssured: policyLifeAssured,
+    },
+
+    ...benefits,
+  ]);
+
+  /*
+   * Rule 4:
+   * Hospitalisation benefits for different people cannot be placed
+   * under the same policy.
+   */
+  if (
+    hospitalisationBenefits.length > 1 &&
+    hospitalisationLifeAssuredNames.length > 1
+  ) {
+    validationItems.push({
+      severity: "error",
+      valid: false,
+      message:
+        "Hospitalisation benefits for different life assureds must be entered as separate policies because each policy has its own policy number and premium.",
+    });
+  } else if (hospitalisationBenefits.length > 1) {
+    /*
+     * Rule 1:
+     * Only one Hospitalisation benefit per policy.
+     */
+    validationItems.push({
+      severity: "error",
+      valid: false,
+      message: "Only one Hospitalisation benefit is allowed per policy.",
+    });
+  } else {
+    validationItems.push({
+      severity: "pass",
+      valid: true,
+      message: "One Hospitalisation benefit recorded.",
+    });
+  }
+
+  /*
+   * Rule 3:
+   * A policy containing Hospitalisation coverage must belong to
+   * only one life assured.
+   */
+  if (allPolicyLifeAssuredNames.length > 1) {
+    validationItems.push({
+      severity: "error",
+      valid: false,
+      message:
+        "A Hospitalisation policy can only cover one life assured. The policy and all its benefits must have the same life assured.",
+    });
+  } else {
+    validationItems.push({
+      severity: "pass",
+      valid: true,
+      message:
+        "The Hospitalisation policy and its benefits belong to one life assured.",
+    });
+  }
+
+  /*
+   * Rule 2:
+   * The same life assured cannot have another Hospitalisation policy
+   * elsewhere in the portfolio.
+   */
+  hospitalisationLifeAssuredNames.forEach(function ({
+    normalizedName,
+    displayName,
+  }) {
+    const matchingPolicy = allPolicies.find(function (savedPolicy) {
+      /*
+       * Exclude the policy currently being validated.
+       */
+      if (policyId && String(savedPolicy.id) === String(policyId)) {
+        return false;
+      }
+
+      const savedHospitalisationBenefits = (savedPolicy.benefits || []).filter(
+        function (benefit) {
+          return benefit.type === "hospitalisation";
+        },
+      );
+
+      if (savedHospitalisationBenefits.length === 0) {
+        return false;
+      }
+
+      const savedPolicyLifeAssured = normalizeLifeAssuredName(
+        savedPolicy.lifeAssured,
+      );
+
+      const policyLevelMatches = savedPolicyLifeAssured === normalizedName;
+
+      const benefitLevelMatches = savedHospitalisationBenefits.some(
+        function (benefit) {
+          return (
+            normalizeLifeAssuredName(benefit.lifeAssured) === normalizedName
+          );
+        },
+      );
+
+      return policyLevelMatches || benefitLevelMatches;
+    });
+
+    if (matchingPolicy) {
+      validationItems.push({
+        severity: "error",
+        valid: false,
+        message:
+          `${displayName} already has a Hospitalisation policy ` +
+          `in the portfolio. Only one Hospitalisation policy is ` +
+          `allowed per life assured.`,
+      });
+    } else {
+      validationItems.push({
+        severity: "pass",
+        valid: true,
+        message: `${displayName} does not have another Hospitalisation policy in the portfolio.`,
+      });
+    }
+  });
+
+  return validationItems;
 }
