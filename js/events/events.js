@@ -16,6 +16,7 @@ export const EVENTS = Object.freeze({
   CPF_CHANGED: "cpf:changed",
   GOALS_CHANGED: "goals:changed",
   LIABILITIES_CHANGED: "liabilities:changed",
+  EXPENSES_CHANGED: "expenses:changed",
 
   SECTION_CHANGED: "section:changed",
 });

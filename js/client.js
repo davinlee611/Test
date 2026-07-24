@@ -18,6 +18,8 @@ import {
   resetAssetsIncome,
 } from "./modules/assets-income.js";
 
+import { initializeExpenses, resetExpenses } from "./modules/expenses.js";
+
 import { initializeProperties, resetProperties } from "./modules/properties.js";
 
 import {
@@ -58,6 +60,7 @@ initializeLiabilities();
 initializeWealthType();
 initializeGoals();
 initializeAssetsIncome();
+initializeExpenses();
 initializeInsurancePortfolio();
 initializePage();
 
@@ -130,6 +133,11 @@ function clearFinancialPlan() {
    * Reset Withdrawable Assets, Income and CPF.
    */
   resetAssetsIncome();
+
+  /*
+   * Reset monthly expenses.
+   */
+  resetExpenses();
 
   /*
    * Reset the property interface.

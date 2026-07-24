@@ -49,6 +49,15 @@ export function createEmptyClientPlan() {
         properties: [],
       },
 
+      expenses: {
+        household: 0,
+        transport: 0,
+        subscriptionsLifestyle: 0,
+        parentsDependantsSupport: 0,
+        insurancePremiums: 0,
+        otherRecurringExpenses: 0,
+      },
+
       goals: [],
       liabilities: [],
       policies: [],
@@ -98,6 +107,10 @@ export function getPriorities() {
 
 export function getAssets() {
   return clientPlan.priorities.assets;
+}
+
+export function getExpenses() {
+  return clientPlan.priorities.expenses;
 }
 
 export function getGoals() {
@@ -168,6 +181,17 @@ export function updateAssets(updates) {
   touchClientPlan();
 
   return clientPlan.priorities.assets;
+}
+
+export function updateExpenses(updates) {
+  clientPlan.priorities.expenses = {
+    ...clientPlan.priorities.expenses,
+    ...updates,
+  };
+
+  touchClientPlan();
+
+  return clientPlan.priorities.expenses;
 }
 
 export function setGoals(goals) {
@@ -262,6 +286,11 @@ function normalizeClientPlan(plan) {
         properties: Array.isArray(plan.priorities?.assets?.properties)
           ? plan.priorities.assets.properties
           : [],
+      },
+
+      expenses: {
+        ...emptyPlan.priorities.expenses,
+        ...plan.priorities?.expenses,
       },
 
       goals: Array.isArray(plan.priorities?.goals) ? plan.priorities.goals : [],

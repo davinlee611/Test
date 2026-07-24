@@ -326,8 +326,8 @@
                 <h2>Priorities &amp; Situation</h2>
 
                 <p>
-                  Identify the client's wealth preferences, goals, assets and
-                  liabilities.
+                  Record the client's wealth priorities, goals, assets, income,
+                  expenses and liabilities.
                 </p>
               </div>
             </div>
@@ -873,6 +873,184 @@
                     <i class="fa-solid fa-plus"></i>
                     Add Property
                   </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Monthly Expenses -->
+            <section class="planning-category-section">
+              <div class="planning-card">
+                <div class="planning-card-header">
+                  <div>
+                    <h3>Monthly Expenses</h3>
+
+                    <p>
+                      Enter the client's regular monthly living expenses and
+                      commitments.
+                    </p>
+                  </div>
+
+                  <div class="financial-category-total">
+                    <span>Total Monthly Expenses</span>
+
+                    <strong id="totalMonthlyExpenses">$0</strong>
+                  </div>
+                </div>
+
+                <div class="financial-input-list">
+                  <!-- Household -->
+                  <div class="financial-input-row">
+                    <label for="householdExpense">
+                      Household
+
+                      <span class="form-helper-text">
+                        E.g. utilities, food, groceries and household supplies.
+                      </span>
+                    </label>
+
+                    <div class="currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="householdExpense"
+                        class="form-control financial-amount-input"
+                        type="number"
+                        min="0"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Transport -->
+                  <div class="financial-input-row">
+                    <label for="transportExpense">
+                      Transport
+
+                      <span class="form-helper-text">
+                        E.g. public transport, petrol, parking and regular
+                        vehicle running costs.
+                      </span>
+                    </label>
+
+                    <div class="currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="transportExpense"
+                        class="form-control financial-amount-input"
+                        type="number"
+                        min="0"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Subscriptions and Lifestyle -->
+                  <div class="financial-input-row">
+                    <label for="subscriptionsLifestyleExpense">
+                      Subscriptions &amp; Lifestyle
+
+                      <span class="form-helper-text">
+                        E.g. streaming services, gym memberships, hobbies and
+                        entertainment.
+                      </span>
+                    </label>
+
+                    <div class="currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="subscriptionsLifestyleExpense"
+                        class="form-control financial-amount-input"
+                        type="number"
+                        min="0"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Parents and Dependants Support -->
+                  <div class="financial-input-row">
+                    <label for="parentsDependantsSupportExpense">
+                      Parents / Dependants Support
+
+                      <span class="form-helper-text">
+                        E.g. parents' allowance, children's expenses, education
+                        and childcare.
+                      </span>
+                    </label>
+
+                    <div class="currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="parentsDependantsSupportExpense"
+                        class="form-control financial-amount-input"
+                        type="number"
+                        min="0"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Insurance Premiums -->
+                  <div class="financial-input-row">
+                    <label for="insurancePremiumsExpense">
+                      Insurance Premiums
+
+                      <span class="form-helper-text">
+                        Enter the client's total monthly premiums if known.
+                      </span>
+                    </label>
+
+                    <div class="currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="insurancePremiumsExpense"
+                        class="form-control financial-amount-input"
+                        type="number"
+                        min="0"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Other Recurring Expenses -->
+                  <div class="financial-input-row">
+                    <label for="otherRecurringExpenses">
+                      Other Recurring Expenses
+
+                      <span class="form-helper-text">
+                        E.g. domestic helper, recurring donations or other
+                        regular commitments.
+                      </span>
+                    </label>
+
+                    <div class="currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="otherRecurringExpenses"
+                        class="form-control financial-amount-input"
+                        type="number"
+                        min="0"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
