@@ -1303,121 +1303,157 @@
                       </div>
                     </div>
 
-                    <div class="cost-of-wants-form-grid">
-                      <!-- Current Age -->
-                      <div class="form-group">
-                        <label for="costOfWantsCurrentAge"> Current Age </label>
-
-                        <input
-                          id="costOfWantsCurrentAge"
-                          class="form-control"
-                          type="number"
-                          placeholder="Enter date of birth first"
-                          readonly
-                        />
-
-                        <span class="form-helper-text">
-                          Calculated automatically from the Client Profile.
-                        </span>
-                      </div>
-
-                      <!-- Desired Retirement Age -->
-                      <div class="form-group">
-                        <label for="desiredRetirementAge">
-                          Desired Retirement Age
-                        </label>
-
-                        <input
-                          id="desiredRetirementAge"
-                          class="form-control"
-                          type="number"
-                          min="1"
-                          max="120"
-                          step="1"
-                          inputmode="numeric"
-                          placeholder="Enter age"
-                        />
-
-                        <span class="form-helper-text">
-                          The age at which the client plans to retire.
-                        </span>
-                      </div>
-
-                      <!-- Planned Mortality Age -->
-                      <div class="form-group">
-                        <label for="plannedMortalityAge">
-                          Planned Mortality Age
-                        </label>
-
-                        <input
-                          id="plannedMortalityAge"
-                          class="form-control"
-                          type="number"
-                          min="1"
-                          max="120"
-                          step="1"
-                          inputmode="numeric"
-                          value="85"
-                        />
-
-                        <span class="form-helper-text">
-                          Used to estimate how long retirement income may be
-                          needed.
-                        </span>
-                      </div>
-
-                      <!-- Inflation Rate -->
-                      <div class="form-group">
-                        <label for="costOfWantsInflationRate">
-                          Inflation Rate (% p.a.)
-                        </label>
-
-                        <div class="percentage-input">
-                          <input
-                            id="costOfWantsInflationRate"
-                            class="form-control"
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.1"
-                            inputmode="decimal"
-                            value="2.5"
-                          />
-
-                          <span>%</span>
+                    <div class="cost-of-wants-assumptions">
+                      <!-- Retirement Timeline -->
+                      <div class="cost-of-wants-field-group">
+                        <div class="cost-of-wants-field-group-heading">
+                          <span>Retirement Timeline</span>
                         </div>
 
-                        <span class="form-helper-text">
-                          Used to project today's desired income into future
-                          value.
-                        </span>
-                      </div>
+                        <!-- Current Age -->
+                        <div class="cost-of-wants-field-row">
+                          <div class="cost-of-wants-field-content">
+                            <label for="costOfWantsCurrentAge">
+                              Current Age
+                            </label>
 
-                      <!-- Post-Retirement Return Rate -->
-                      <div class="form-group">
-                        <label for="postRetirementReturnRate">
-                          Post-Retirement Return Rate (% p.a.)
-                        </label>
+                            <span class="form-helper-text">
+                              Calculated automatically from the Client Profile.
+                            </span>
+                          </div>
 
-                        <div class="percentage-input">
-                          <input
-                            id="postRetirementReturnRate"
-                            class="form-control"
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.1"
-                            inputmode="decimal"
-                            value="3.5"
-                          />
-
-                          <span>%</span>
+                          <div class="cost-of-wants-field-input">
+                            <input
+                              id="costOfWantsCurrentAge"
+                              class="form-control"
+                              type="number"
+                              placeholder="-"
+                              readonly
+                            />
+                          </div>
                         </div>
 
-                        <span class="form-helper-text">
-                          Expected annual return on the retirement fund after
-                          retirement.
-                        </span>
+                        <!-- Desired Retirement Age -->
+                        <div class="cost-of-wants-field-row">
+                          <div class="cost-of-wants-field-content">
+                            <label for="desiredRetirementAge">
+                              Desired Retirement Age
+                            </label>
+
+                            <span class="form-helper-text">
+                              The age at which the client plans to retire.
+                            </span>
+                          </div>
+
+                          <div class="cost-of-wants-field-input">
+                            <input
+                              id="desiredRetirementAge"
+                              class="form-control"
+                              type="number"
+                              min="1"
+                              max="120"
+                              step="1"
+                              inputmode="numeric"
+                              placeholder="Enter age"
+                            />
+                          </div>
+                        </div>
+
+                        <!-- Planned Mortality Age -->
+                        <div class="cost-of-wants-field-row">
+                          <div class="cost-of-wants-field-content">
+                            <label for="plannedMortalityAge">
+                              Planned Mortality Age
+                            </label>
+
+                            <span class="form-helper-text">
+                              Used to estimate how long retirement income may be
+                              needed.
+                            </span>
+                          </div>
+
+                          <div class="cost-of-wants-field-input">
+                            <input
+                              id="plannedMortalityAge"
+                              class="form-control"
+                              type="number"
+                              min="1"
+                              max="120"
+                              step="1"
+                              inputmode="numeric"
+                              value="85"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Economic Assumptions -->
+                      <div class="cost-of-wants-field-group">
+                        <div class="cost-of-wants-field-group-heading">
+                          <span>Economic Assumptions</span>
+                        </div>
+
+                        <!-- Inflation Rate -->
+                        <div class="cost-of-wants-field-row">
+                          <div class="cost-of-wants-field-content">
+                            <label for="costOfWantsInflationRate">
+                              Inflation Rate (% p.a.)
+                            </label>
+
+                            <span class="form-helper-text">
+                              Used to project today's desired income into future
+                              value.
+                            </span>
+                          </div>
+
+                          <div class="cost-of-wants-field-input">
+                            <div class="percentage-input">
+                              <input
+                                id="costOfWantsInflationRate"
+                                class="form-control"
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.1"
+                                inputmode="decimal"
+                                value="2.5"
+                              />
+
+                              <span>%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Post-Retirement Return Rate -->
+                        <div class="cost-of-wants-field-row">
+                          <div class="cost-of-wants-field-content">
+                            <label for="postRetirementReturnRate">
+                              Post-Retirement Return Rate (% p.a.)
+                            </label>
+
+                            <span class="form-helper-text">
+                              Expected annual return on the retirement fund
+                              after retirement.
+                            </span>
+                          </div>
+
+                          <div class="cost-of-wants-field-input">
+                            <div class="percentage-input">
+                              <input
+                                id="postRetirementReturnRate"
+                                class="form-control"
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.1"
+                                inputmode="decimal"
+                                value="3.5"
+                              />
+
+                              <span>%</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
