@@ -1923,15 +1923,50 @@ button.insurance-validation-count:disabled {
   border: none;
   border-radius: 18px;
   background:
-    linear-gradient(
-      135deg,
-      #591827 0%,
-      #7b2436 55%,
-      #4b101d 100%
-    );
+  linear-gradient(
+    135deg,
+    #475569 0%,
+    #64748b 55%,
+    #334155 100%
+  );
   color: #ffffff;
   cursor: pointer;
   text-align: left;
+}
+
+/* Floating summary background based on Net Surplus */
+
+.cost-of-wants-floating-summary.is-positive
+  .cost-of-wants-summary-bar {
+  background:
+    linear-gradient(
+      135deg,
+      #05603a 0%,
+      #078653 55%,
+      #034c2e 100%
+    );
+}
+
+.cost-of-wants-floating-summary.is-negative
+  .cost-of-wants-summary-bar {
+  background:
+    linear-gradient(
+      135deg,
+      #7a1c1c 0%,
+      #a62929 55%,
+      #621313 100%
+    );
+}
+
+.cost-of-wants-floating-summary.is-neutral
+  .cost-of-wants-summary-bar {
+  background:
+    linear-gradient(
+      135deg,
+      #475569 0%,
+      #64748b 55%,
+      #334155 100%
+    );
 }
 
 .cost-of-wants-floating-summary.is-expanded
@@ -2107,15 +2142,7 @@ button.insurance-validation-count:disabled {
 
 /* Collapsed summary value colours */
 
-.cost-of-wants-summary-metric strong.is-positive {
-  color: #d1fadf;
-}
-
-.cost-of-wants-summary-metric strong.is-negative {
-  color: #fecaca;
-}
-
-.cost-of-wants-summary-metric strong.is-neutral {
+.cost-of-wants-summary-metric strong {
   color: #ffffff;
 }
 
@@ -2428,8 +2455,7 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-of-wants-projection {
-  position: sticky;
-  top: 24px;
+  position: static;
 }
 
 .cost-of-wants-projection-card {
@@ -2486,10 +2512,6 @@ button.insurance-validation-count:disabled {
 @media (max-width: 1100px) {
   .cost-of-wants-layout {
     grid-template-columns: 1fr;
-  }
-
-  .cost-of-wants-projection {
-    position: static;
   }
 
   .cost-of-wants-projection-card {

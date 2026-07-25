@@ -612,6 +612,8 @@ function renderFloatingSummary() {
   setSignedCurrencyText(breakdownNetSurplusElement, position.netSurplus);
 
   setSignedCurrencyText(availableSurplusElement, position.netSurplus);
+
+  applyFinancialPositionClass(floatingSummaryElement, position.netSurplus);
 }
 
 /* ========================================
