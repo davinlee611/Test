@@ -1325,20 +1325,135 @@
               </div>
             </div>
 
+            <!-- Floating Monthly Position -->
+            <aside
+              id="costOfWantsFloatingSummary"
+              class="cost-of-wants-floating-summary"
+              aria-label="Monthly financial position"
+            >
+              <button
+                id="costOfWantsSummaryToggle"
+                class="cost-of-wants-summary-bar"
+                type="button"
+                aria-expanded="false"
+                aria-controls="costOfWantsCalculatedBreakdown"
+              >
+                <span class="cost-of-wants-summary-metric">
+                  <small>Monthly Surplus</small>
+
+                  <strong id="costOfWantsMonthlySurplus"> $0 </strong>
+                </span>
+
+                <span class="cost-of-wants-summary-metric">
+                  <small>Goal Savings</small>
+
+                  <strong id="costOfWantsGoalSavings"> $0 </strong>
+                </span>
+
+                <span class="cost-of-wants-summary-metric">
+                  <small>Net Surplus</small>
+
+                  <strong id="costOfWantsNetSurplus"> $0 </strong>
+                </span>
+
+                <span
+                  id="costOfWantsSummaryToggleIcon"
+                  class="cost-of-wants-summary-toggle-icon"
+                  aria-hidden="true"
+                >
+                  <i class="fa-solid fa-chevron-down"></i>
+                </span>
+              </button>
+
+              <div
+                id="costOfWantsCalculatedBreakdown"
+                class="cost-of-wants-calculated-breakdown"
+                hidden
+              >
+                <div class="cost-of-wants-calculated-heading">
+                  <div>
+                    <h3>Calculated Breakdown</h3>
+
+                    <p>Current monthly cash-flow position.</p>
+                  </div>
+                </div>
+
+                <div class="cost-of-wants-calculation-list">
+                  <div class="cost-of-wants-calculation-row">
+                    <span>Take Home Income</span>
+
+                    <strong id="costOfWantsBreakdownIncome"> $0 </strong>
+                  </div>
+
+                  <div class="cost-of-wants-calculation-row">
+                    <span>Monthly Expenses</span>
+
+                    <strong
+                      id="costOfWantsBreakdownExpenses"
+                      class="is-deduction"
+                    >
+                      -$0
+                    </strong>
+                  </div>
+
+                  <div class="cost-of-wants-calculation-row">
+                    <span>Monthly Commitments</span>
+
+                    <strong
+                      id="costOfWantsBreakdownCommitments"
+                      class="is-deduction"
+                    >
+                      -$0
+                    </strong>
+                  </div>
+
+                  <div
+                    class="cost-of-wants-calculation-row cost-of-wants-calculation-row--subtotal"
+                  >
+                    <span>Monthly Surplus</span>
+
+                    <strong id="costOfWantsBreakdownSurplus"> $0 </strong>
+                  </div>
+
+                  <div class="cost-of-wants-calculation-row">
+                    <span>Minimum Goal Savings</span>
+
+                    <strong
+                      id="costOfWantsBreakdownGoalSavings"
+                      class="is-deduction"
+                    >
+                      -$0
+                    </strong>
+                  </div>
+
+                  <div
+                    class="cost-of-wants-calculation-row cost-of-wants-calculation-row--total"
+                  >
+                    <span>Net Surplus</span>
+
+                    <strong id="costOfWantsBreakdownNetSurplus"> $0 </strong>
+                  </div>
+                </div>
+
+                <div class="cost-of-wants-net-position">
+                  <span>Net Surplus for Investment / Insurance</span>
+
+                  <strong id="costOfWantsAvailableSurplus"> $0 </strong>
+                </div>
+              </div>
+            </aside>
+
             <div class="cost-of-wants-layout">
               <!-- Main Form Column -->
               <div class="cost-of-wants-main">
-                <!-- Retirement Assumptions -->
+                <!-- FYBC -->
                 <section class="planning-category-section">
                   <div class="planning-card">
                     <div class="planning-card-header">
                       <div>
-                        <h3>Retirement Assumptions</h3>
+                        <h3>FYBC</h3>
 
-                        <p>
-                          Set the client's retirement timeline and planning
-                          assumptions.
-                        </p>
+                        <p>Fire Your Own Boss Cost</p>
                       </div>
                     </div>
 

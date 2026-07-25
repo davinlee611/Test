@@ -1896,6 +1896,246 @@ button.insurance-validation-count:disabled {
 }
 
 /* ========================================
+   COST OF WANTS FLOATING SUMMARY
+======================================== */
+
+.cost-of-wants-floating-summary {
+  position: sticky;
+  z-index: 20;
+  top: 18px;
+  width: min(100%, 620px);
+  margin: 0 0 24px auto;
+  border-radius: 18px;
+  box-shadow:
+    0 14px 34px rgba(15, 23, 42, 0.16),
+    0 3px 8px rgba(15, 23, 42, 0.08);
+}
+
+.cost-of-wants-summary-bar {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr))
+    auto;
+  align-items: center;
+  width: 100%;
+  min-height: 78px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      135deg,
+      #591827 0%,
+      #7b2436 55%,
+      #4b101d 100%
+    );
+  color: #ffffff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cost-of-wants-floating-summary.is-expanded
+  .cost-of-wants-summary-bar {
+  border-radius: 18px 18px 0 0;
+}
+
+.cost-of-wants-summary-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 0 16px;
+  border-right: 1px solid
+    rgba(255, 255, 255, 0.18);
+}
+
+.cost-of-wants-summary-metric:first-child {
+  padding-left: 0;
+}
+
+.cost-of-wants-summary-metric small {
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cost-of-wants-summary-metric strong {
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 19px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cost-of-wants-summary-toggle-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  margin-left: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  place-items: center;
+  transition:
+    transform 180ms ease,
+    background 180ms ease;
+}
+
+.cost-of-wants-summary-toggle-icon.is-expanded {
+  transform: rotate(180deg);
+}
+
+.cost-of-wants-summary-bar:hover
+  .cost-of-wants-summary-toggle-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cost-of-wants-summary-bar:focus-visible {
+  outline: 3px solid
+    rgba(123, 36, 54, 0.28);
+  outline-offset: 3px;
+}
+
+.cost-of-wants-calculated-breakdown {
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 18px 18px;
+  background: #ffffff;
+}
+
+.cost-of-wants-calculated-breakdown[hidden] {
+  display: none;
+}
+
+.cost-of-wants-calculated-heading {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: #f8fafc;
+}
+
+.cost-of-wants-calculated-heading h3 {
+  margin: 0 0 4px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cost-of-wants-calculated-heading p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.cost-of-wants-calculation-list {
+  padding: 10px 20px;
+}
+
+.cost-of-wants-calculation-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 40px;
+}
+
+.cost-of-wants-calculation-row span {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.cost-of-wants-calculation-row strong {
+  flex-shrink: 0;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cost-of-wants-calculation-row
+  .is-deduction {
+  color: #b42318;
+}
+
+.cost-of-wants-calculation-row--subtotal {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+.cost-of-wants-calculation-row--subtotal span,
+.cost-of-wants-calculation-row--subtotal strong,
+.cost-of-wants-calculation-row--total span,
+.cost-of-wants-calculation-row--total strong {
+  font-weight: 750;
+}
+
+.cost-of-wants-calculation-row--total {
+  margin-top: 6px;
+  padding: 12px 0 4px;
+  border-top: 1px solid var(--border-color);
+}
+
+.cost-of-wants-net-position {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 20px;
+  border-top: 1px solid var(--border-color);
+  background: #f8fafc;
+}
+
+.cost-of-wants-net-position span {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cost-of-wants-net-position strong {
+  flex-shrink: 0;
+  font-size: 19px;
+  font-weight: 750;
+}
+
+.cost-of-wants-floating-summary
+  .is-positive {
+  color: #d1fadf;
+}
+
+.cost-of-wants-calculated-breakdown
+  .is-positive {
+  color: #027a48;
+}
+
+.cost-of-wants-floating-summary
+  .is-negative {
+  color: #fecaca;
+}
+
+.cost-of-wants-calculated-breakdown
+  .is-negative {
+  color: #b42318;
+}
+
+.cost-of-wants-floating-summary
+  .is-neutral {
+  color: #ffffff;
+}
+
+.cost-of-wants-calculated-breakdown
+  .is-neutral {
+  color: var(--text-primary);
+}
+
+/* ========================================
    COST OF WANTS
 ======================================== */
 
@@ -2593,5 +2833,53 @@ button.insurance-validation-count:disabled {
 .cost-of-wants-spending-total {
   align-items: flex-start;
   flex-direction: column;
+}
+
+.cost-of-wants-floating-summary {
+  position: static;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.cost-of-wants-summary-bar {
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr))
+    auto;
+  min-height: 72px;
+  padding: 12px;
+}
+
+.cost-of-wants-summary-metric {
+  padding: 0 8px;
+}
+
+.cost-of-wants-summary-metric small {
+  font-size: 8px;
+  white-space: normal;
+}
+
+.cost-of-wants-summary-metric strong {
+  font-size: 14px;
+}
+
+.cost-of-wants-summary-toggle-icon {
+  width: 28px;
+  height: 28px;
+  margin-left: 7px;
+}
+
+.cost-of-wants-calculated-heading,
+.cost-of-wants-net-position {
+  padding: 16px;
+}
+
+.cost-of-wants-calculation-list {
+  padding: 8px 16px;
+}
+
+.cost-of-wants-net-position {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 8px;
 }
 }

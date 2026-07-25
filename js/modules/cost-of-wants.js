@@ -1,6 +1,8 @@
 "use strict";
 
 import {
+  getAssets,
+  getClientProfile,
   getCommitments,
   getCostOfWants,
   getExpenses,
@@ -10,6 +12,8 @@ import {
 } from "../state/client-plan.js";
 
 import { getClientAge } from "./client-profile.js";
+
+import { calculateIncomeSummary } from "../services/income-calculator.js";
 
 import { on, emit } from "../events/event-bus.js";
 
@@ -98,6 +102,66 @@ const totalSpendingElement = document.getElementById(
 );
 
 /* ========================================
+   FLOATING SUMMARY ELEMENTS
+======================================== */
+
+const floatingSummaryElement = document.getElementById(
+  "costOfWantsFloatingSummary",
+);
+
+const summaryToggleButton = document.getElementById(
+  "costOfWantsSummaryToggle",
+);
+
+const summaryToggleIcon = document.getElementById(
+  "costOfWantsSummaryToggleIcon",
+);
+
+const calculatedBreakdownElement = document.getElementById(
+  "costOfWantsCalculatedBreakdown",
+);
+
+const monthlySurplusElement = document.getElementById(
+  "costOfWantsMonthlySurplus",
+);
+
+const goalSavingsElement = document.getElementById(
+  "costOfWantsGoalSavings",
+);
+
+const netSurplusElement = document.getElementById(
+  "costOfWantsNetSurplus",
+);
+
+const breakdownIncomeElement = document.getElementById(
+  "costOfWantsBreakdownIncome",
+);
+
+const breakdownExpensesElement = document.getElementById(
+  "costOfWantsBreakdownExpenses",
+);
+
+const breakdownCommitmentsElement = document.getElementById(
+  "costOfWantsBreakdownCommitments",
+);
+
+const breakdownSurplusElement = document.getElementById(
+  "costOfWantsBreakdownSurplus",
+);
+
+const breakdownGoalSavingsElement = document.getElementById(
+  "costOfWantsBreakdownGoalSavings",
+);
+
+const breakdownNetSurplusElement = document.getElementById(
+  "costOfWantsBreakdownNetSurplus",
+);
+
+const availableSurplusElement = document.getElementById(
+  "costOfWantsAvailableSurplus",
+);
+
+/* ========================================
    MODULE STATE
 ======================================== */
 
@@ -115,6 +179,7 @@ export function initializeCostOfWants() {
 
   attachInputListeners();
   attachLifestyleListeners();
+  attachSummaryListeners();
   attachApplicationListeners();
 
   renderCostOfWants();
@@ -131,8 +196,23 @@ export function resetCostOfWants() {
 
   clearFormMessage();
   renderCostOfWants();
+  collapseCalculatedBreakdown();
 
   emitCostOfWantsChanged();
+}
+
+function collapseCalculatedBreakdown() {
+  if (!calculatedBreakdownElement) {
+    return;
+  }
+
+  calculatedBreakdownElement.hidden = true;
+
+  summaryToggleButton?.setAttribute("aria-expanded", "false");
+
+  floatingSummaryElement?.classList.remove("is-expanded");
+
+  summaryToggleIcon?.classList.remove("is-expanded");
 }
 
 /* ========================================
@@ -167,26 +247,55 @@ function attachLifestyleListeners() {
   });
 }
 
+function attachSummaryListeners() {
+  summaryToggleButton?.addEventListener("click", toggleCalculatedBreakdown);
+}
+
+function toggleCalculatedBreakdown() {
+  if (!summaryToggleButton || !calculatedBreakdownElement) {
+    return;
+  }
+
+  const willExpand = calculatedBreakdownElement.hidden;
+
+  calculatedBreakdownElement.hidden = !willExpand;
+
+  summaryToggleButton.setAttribute("aria-expanded", String(willExpand));
+
+  floatingSummaryElement?.classList.toggle("is-expanded", willExpand);
+
+  summaryToggleIcon?.classList.toggle("is-expanded", willExpand);
+}
+
 function attachApplicationListeners() {
   on(EVENTS.PROFILE_CHANGED, function () {
     renderClientDetails();
     validateCostOfWants();
+    renderFloatingSummary();
+  });
+
+  on(EVENTS.INCOME_CHANGED, function () {
+    renderFloatingSummary();
   });
 
   on(EVENTS.EXPENSES_CHANGED, function () {
     renderMonthlySpendingBreakdown();
+    renderFloatingSummary();
   });
 
   on(EVENTS.COMMITMENTS_CHANGED, function () {
     renderMonthlySpendingBreakdown();
+    renderFloatingSummary();
   });
 
   on(EVENTS.LIABILITIES_CHANGED, function () {
     renderMonthlySpendingBreakdown();
+    renderFloatingSummary();
   });
 
   on(EVENTS.POLICIES_CHANGED, function () {
     renderMonthlySpendingBreakdown();
+    renderFloatingSummary();
   });
 
   on(EVENTS.SECTION_CHANGED, function ({ section }) {
@@ -262,6 +371,7 @@ function renderCostOfWants() {
   renderLifestyleSelection();
   renderSelectedIncome();
   renderMonthlySpendingBreakdown();
+  renderFloatingSummary();
 }
 
 function renderClientDetails() {
@@ -474,6 +584,109 @@ function calculateMonthlySpendingBreakdown() {
   };
 }
 
+function renderFloatingSummary() {
+  const position = calculateMonthlyFinancialPosition();
+
+  setSignedCurrencyText(monthlySurplusElement, position.monthlySurplus);
+
+  setCurrencyText(goalSavingsElement, position.minimumGoalSavings);
+
+  setSignedCurrencyText(netSurplusElement, position.netSurplus);
+
+  setCurrencyText(breakdownIncomeElement, position.monthlyTakeHomeIncome);
+
+  setDeductionCurrencyText(breakdownExpensesElement, position.monthlyExpenses);
+
+  setDeductionCurrencyText(
+    breakdownCommitmentsElement,
+    position.monthlyCommitments,
+  );
+
+  setSignedCurrencyText(breakdownSurplusElement, position.monthlySurplus);
+
+  setDeductionCurrencyText(
+    breakdownGoalSavingsElement,
+    position.minimumGoalSavings,
+  );
+
+  setSignedCurrencyText(breakdownNetSurplusElement, position.netSurplus);
+
+  setSignedCurrencyText(availableSurplusElement, position.netSurplus);
+}
+
+/* ========================================
+   MONTHLY FINANCIAL POSITION
+======================================== */
+
+function calculateMonthlyFinancialPosition() {
+  const incomeSummary =
+    calculateCurrentIncomeSummary();
+
+  const spendingBreakdown =
+    calculateMonthlySpendingBreakdown();
+
+  const monthlyTakeHomeIncome =
+    getValidAmount(
+      incomeSummary.monthlyTakeHomeIncome,
+    );
+
+  const monthlyExpenses =
+    spendingBreakdown.totalMonthlyExpenses;
+
+  const monthlyCommitments =
+    spendingBreakdown.totalMonthlyCommitments;
+
+  const monthlySurplus =
+    monthlyTakeHomeIncome -
+    monthlyExpenses -
+    monthlyCommitments;
+
+  /*
+   * Temporary value.
+   * This will be replaced by the goal-savings
+   * calculation later.
+   */
+  const minimumGoalSavings = 0;
+
+  const netSurplus =
+    monthlySurplus -
+    minimumGoalSavings;
+
+  return {
+    monthlyTakeHomeIncome,
+    monthlyExpenses,
+    monthlyCommitments,
+    monthlySurplus,
+    minimumGoalSavings,
+    netSurplus,
+  };
+}
+
+function calculateCurrentIncomeSummary() {
+  const assets = getAssets();
+
+  const profile = getClientProfile();
+
+  const income = assets.income;
+
+  return calculateIncomeSummary({
+    monthlyEmploymentIncome:
+      income.monthlyEmployment,
+
+    annualBonus:
+      income.annualBonus,
+
+    monthlyOtherIncome:
+      income.otherMonthly,
+
+    employmentStatus:
+      profile.employmentStatus,
+
+    age:
+      getClientAge(),
+  });
+}
+
 function calculateTotalMonthlyLiabilityRepayments() {
   return getLiabilities().reduce(function (runningTotal, liability) {
     return runningTotal + getValidAmount(liability?.monthlyRepayment);
@@ -529,6 +742,47 @@ function setCurrencyText(element, value) {
   }
 
   element.textContent = formatCurrency(value);
+}
+
+function setDeductionCurrencyText(element, value) {
+  if (!element) {
+    return;
+  }
+
+  const amount = getValidAmount(value);
+
+  element.textContent =
+    amount > 0 ? `-${formatCurrency(amount)}` : formatCurrency(0);
+}
+
+function setSignedCurrencyText(element, value) {
+  if (!element) {
+    return;
+  }
+
+  const amount = Number(value);
+
+  const safeAmount = Number.isFinite(amount) ? amount : 0;
+
+  element.textContent = formatCurrency(safeAmount);
+
+  applyFinancialPositionClass(element, safeAmount);
+}
+
+function applyFinancialPositionClass(element, value) {
+  element.classList.remove("is-positive", "is-negative", "is-neutral");
+
+  if (value > 0) {
+    element.classList.add("is-positive");
+    return;
+  }
+
+  if (value < 0) {
+    element.classList.add("is-negative");
+    return;
+  }
+
+  element.classList.add("is-neutral");
 }
 
 function getValidAmount(value) {
