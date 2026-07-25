@@ -2171,6 +2171,84 @@ button.insurance-validation-count:disabled {
 }
 
 /* ========================================
+   GOAL SAVINGS BREAKDOWN
+======================================== */
+
+.cost-of-wants-goal-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+.cost-of-wants-goal-breakdown-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cost-of-wants-goal-savings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cost-of-wants-goal-savings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-left: 12px;
+}
+
+.cost-of-wants-goal-savings-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cost-of-wants-goal-savings-amount {
+  flex-shrink: 0;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cost-of-wants-goal-savings-empty {
+  margin: 0;
+  padding-left: 12px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.cost-of-wants-goal-breakdown-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+.cost-of-wants-goal-breakdown-total span {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cost-of-wants-goal-breakdown-total strong {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ========================================
    COST OF WANTS
 ======================================== */
 

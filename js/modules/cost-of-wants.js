@@ -153,6 +153,10 @@ const breakdownSurplusElement = document.getElementById(
   "costOfWantsBreakdownSurplus",
 );
 
+const goalSavingsListElement = document.getElementById(
+  "costOfWantsGoalSavingsList",
+);
+
 const breakdownGoalSavingsElement = document.getElementById(
   "costOfWantsBreakdownGoalSavings",
 );
@@ -621,6 +625,8 @@ function renderFloatingSummary() {
     position.minimumGoalSavings,
   );
 
+  renderGoalSavingsBreakdown(position.goalSavingsSummary);
+
   renderGoalSavingsStatus(position.goalSavingsSummary);
 
   setSignedCurrencyText(breakdownNetSurplusElement, position.netSurplus);
@@ -628,6 +634,63 @@ function renderFloatingSummary() {
   setSignedCurrencyText(availableSurplusElement, position.netSurplus);
 
   applyFinancialPositionClass(floatingSummaryElement, position.netSurplus);
+}
+
+function renderGoalSavingsBreakdown(goalSavingsSummary) {
+  if (!goalSavingsListElement) {
+    return;
+  }
+
+  goalSavingsListElement.replaceChildren();
+
+  const validGoals = goalSavingsSummary?.validGoals || [];
+
+  if (validGoals.length === 0) {
+    const emptyMessage = document.createElement("p");
+
+    emptyMessage.className = "cost-of-wants-goal-savings-empty";
+
+    emptyMessage.textContent = "No active goal savings required.";
+
+    goalSavingsListElement.append(emptyMessage);
+
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  validGoals.forEach(function (goal) {
+    fragment.append(createGoalSavingsRow(goal));
+  });
+
+  goalSavingsListElement.append(fragment);
+}
+
+function createGoalSavingsRow(goal) {
+  const row = document.createElement("div");
+
+  row.className = "cost-of-wants-goal-savings-row";
+
+  const nameElement = document.createElement("span");
+
+  nameElement.className = "cost-of-wants-goal-savings-name";
+
+  const goalName = goal.name || "Unnamed Goal";
+
+  nameElement.textContent = goalName;
+  nameElement.title = goalName;
+
+  const amountElement = document.createElement("strong");
+
+  amountElement.className = "cost-of-wants-goal-savings-amount";
+
+  amountElement.textContent = `-${formatCurrency(
+    Math.abs(goal.monthlySavings),
+  )}`;
+
+  row.append(nameElement, amountElement);
+
+  return row;
 }
 
 function renderGoalSavingsStatus(goalSavingsSummary) {
