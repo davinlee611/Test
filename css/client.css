@@ -2145,6 +2145,31 @@ button.insurance-validation-count:disabled {
   color: #b42318;
 }
 
+.cost-of-wants-calculation-label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cost-of-wants-calculation-label > span {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.cost-of-wants-calculation-label small {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.cost-of-wants-calculation-label
+  small.is-review {
+  color: #9a6700;
+  font-weight: 600;
+}
+
 /* ========================================
    COST OF WANTS
 ======================================== */

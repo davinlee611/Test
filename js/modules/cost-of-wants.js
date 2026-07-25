@@ -15,6 +15,10 @@ import { getClientAge } from "./client-profile.js";
 
 import { calculateIncomeSummary } from "../services/income-calculator.js";
 
+import { getAllGoals } from "../services/goal-service.js";
+
+import { calculateGoalSavings } from "../services/goal-savings-calculator.js";
+
 import { on, emit } from "../events/event-bus.js";
 
 import { EVENTS } from "../events/events.js";
@@ -151,6 +155,10 @@ const breakdownSurplusElement = document.getElementById(
 
 const breakdownGoalSavingsElement = document.getElementById(
   "costOfWantsBreakdownGoalSavings",
+);
+
+const goalSavingsStatusElement = document.getElementById(
+  "costOfWantsGoalSavingsStatus",
 );
 
 const breakdownNetSurplusElement = document.getElementById(
@@ -295,6 +303,10 @@ function attachApplicationListeners() {
 
   on(EVENTS.POLICIES_CHANGED, function () {
     renderMonthlySpendingBreakdown();
+    renderFloatingSummary();
+  });
+
+  on(EVENTS.GOALS_CHANGED, function () {
     renderFloatingSummary();
   });
 
@@ -609,11 +621,47 @@ function renderFloatingSummary() {
     position.minimumGoalSavings,
   );
 
+  renderGoalSavingsStatus(position.goalSavingsSummary);
+
   setSignedCurrencyText(breakdownNetSurplusElement, position.netSurplus);
 
   setSignedCurrencyText(availableSurplusElement, position.netSurplus);
 
   applyFinancialPositionClass(floatingSummaryElement, position.netSurplus);
+}
+
+function renderGoalSavingsStatus(goalSavingsSummary) {
+  if (!goalSavingsStatusElement) {
+    return;
+  }
+
+  const reviewCount = goalSavingsSummary?.reviewGoalCount || 0;
+
+  const incompleteCount = goalSavingsSummary?.incompleteGoalCount || 0;
+
+  const messages = [];
+
+  if (reviewCount > 0) {
+    messages.push(
+      `${reviewCount} overdue ${
+        reviewCount === 1 ? "goal requires" : "goals require"
+      } review`,
+    );
+  }
+
+  if (incompleteCount > 0) {
+    messages.push(
+      `${incompleteCount} incomplete ${
+        incompleteCount === 1 ? "goal is" : "goals are"
+      } excluded`,
+    );
+  }
+
+  goalSavingsStatusElement.hidden = messages.length === 0;
+
+  goalSavingsStatusElement.textContent = messages.join(" · ");
+
+  goalSavingsStatusElement.classList.toggle("is-review", messages.length > 0);
 }
 
 /* ========================================
@@ -643,12 +691,9 @@ function calculateMonthlyFinancialPosition() {
     monthlyExpenses -
     monthlyCommitments;
 
-  /*
-   * Temporary value.
-   * This will be replaced by the goal-savings
-   * calculation later.
-   */
-  const minimumGoalSavings = 0;
+  const goalSavingsSummary = calculateGoalSavings(getAllGoals());
+
+  const minimumGoalSavings = goalSavingsSummary.totalMonthlySavings;
 
   const netSurplus =
     monthlySurplus -
@@ -661,6 +706,7 @@ function calculateMonthlyFinancialPosition() {
     monthlySurplus,
     minimumGoalSavings,
     netSurplus,
+    goalSavingsSummary,
   };
 }
 

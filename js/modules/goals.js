@@ -24,6 +24,8 @@ import {
   renderPlanningEmptyState,
 } from "../components/planning-card.js";
 
+import { calculateGoalSavings } from "../services/goal-savings-calculator.js";
+
 /* ========================================
    DOM REFERENCES
 ======================================== */
@@ -423,16 +425,36 @@ function createGoalItem(goal) {
 }
 
 function createGoalDetails(goal) {
+  const calculation = calculateGoalSavings([goal]);
+
+  const goalResult = calculation.goals[0];
+
+  const descriptionParts = [
+    getGoalTypeLabel(goal.type),
+
+    `${formatCurrency(goal.targetAmount)} target amount`,
+
+    `${formatGoalDate(getSavedGoalDate(goal))} target date`,
+  ];
+
+  if (goalResult?.status === "valid") {
+    descriptionParts.push(
+      `${formatCurrency(goalResult.monthlySavings)} per month required`,
+    );
+  }
+
+  if (goalResult?.status === "review") {
+    descriptionParts.push("Review required");
+  }
+
+  if (goalResult?.status === "incomplete") {
+    descriptionParts.push("Incomplete goal details");
+  }
+
   return createPlanningCardDetails({
     title: goal.name || "Unnamed Goal",
 
-    description: [
-      getGoalTypeLabel(goal.type),
-
-      `${formatCurrency(goal.targetAmount)} target amount`,
-
-      `${formatGoalDate(getSavedGoalDate(goal))} target date`,
-    ].join(" · "),
+    description: descriptionParts.join(" · "),
   });
 }
 
