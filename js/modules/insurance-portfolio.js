@@ -1626,58 +1626,47 @@ function updateBenefitFields() {
   elements.benefitLifeAssuredGroup.hidden = !benefitType;
 
   switch (benefitType) {
-  case "death":
-  case "tpd":
-    showBenefitAmountField("Coverage Amount");
-    break;
+    case "death":
+    case "tpd":
+      showBenefitAmountField("Coverage Amount");
+      break;
 
-  case "critical_illness":
-  case "early_critical_illness":
-    showBenefitAmountField("Coverage Amount");
-    elements.benefitPayoutTypeGroup.hidden = false;
-    break;
+    case "critical_illness":
+    case "early_critical_illness":
+      showBenefitAmountField("Coverage Amount");
+      elements.benefitPayoutTypeGroup.hidden = false;
+      break;
 
-  case "hospitalisation":
-    elements.benefitHospitalClassGroup.hidden = false;
-    elements.benefitHospitalRiderGroup.hidden = false;
-    break;
+    case "hospitalisation":
+      elements.benefitHospitalClassGroup.hidden = false;
+      elements.benefitHospitalRiderGroup.hidden = false;
+      break;
 
-  case "hospital_cash":
-    showBenefitAmountField("Daily Cash Benefit");
-    break;
+    case "hospital_cash":
+      showBenefitAmountField("Daily Cash Benefit");
+      break;
 
-  case "medical_reimbursement":
-    showBenefitAmountField(
-      "Medical Reimbursement per Event",
-    );
-    break;
+    case "medical_reimbursement":
+      showBenefitAmountField("Medical Reimbursement per Event");
+      break;
 
-  case "monthly_benefit":
-  case "disability_income":
-    showBenefitAmountField("Monthly Benefit");
-    break;
+    case "monthly_benefit":
+    case "disability_income":
+      showBenefitAmountField("Monthly Benefit");
+      break;
 
-  case "long_term_care_income": {
-    showBenefitAmountField("Monthly Benefit");
+    case "long_term_care_income": {
+      showBenefitAmountField("Monthly Benefit");
 
-    elements.benefitPayoutTermGroup.hidden = false;
-    elements.benefitAdlRequirementGroup.hidden = false;
+      elements.benefitPayoutTermGroup.hidden = false;
+      elements.benefitAdlRequirementGroup.hidden = false;
 
-    const selectedPayoutTerm =
-      elements.benefitPayoutTermSelect.value;
+      const selectedPayoutTerm = elements.benefitPayoutTermSelect.value;
 
-    updateLongTermCarePayoutTermOptions(
-      selectedPayoutTerm,
-    );
+      updateLongTermCarePayoutTermOptions(selectedPayoutTerm);
 
-    break;
-  }
-
-  case "other":
-    elements.benefitCustomNameGroup.hidden = false;
-    showBenefitAmountField("Coverage Amount");
-    break;
-}
+      break;
+    }
 
     case "other":
       elements.benefitCustomNameGroup.hidden = false;
