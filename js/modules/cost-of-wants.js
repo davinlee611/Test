@@ -492,37 +492,6 @@ function convertPremiumToMonthly(premium) {
   }
 }
 
-function calculatePortfolioMonthlyPremium() {
-  return getPolicies().reduce(function (total, policy) {
-    return total + convertPremiumToMonthly(policy?.premium);
-  }, 0);
-}
-
-function convertPremiumToMonthly(premium) {
-  const amount = getValidAmount(premium?.amount);
-
-  if (amount <= 0) {
-    return 0;
-  }
-
-  switch (premium?.frequency) {
-    case "monthly":
-      return amount;
-
-    case "quarterly":
-      return amount / 3;
-
-    case "half_yearly":
-      return amount / 6;
-
-    case "annual":
-      return amount / 12;
-
-    default:
-      return 0;
-  }
-}
-
 function setCurrencyText(element, value) {
   if (!element) {
     return;
