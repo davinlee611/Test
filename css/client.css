@@ -1901,6 +1901,7 @@ button.insurance-validation-count:disabled {
 
 :root {
   --cost-summary-width: 620px;
+  --cost-summary-left-offset: 20px;
 }
 
 .cost-of-wants-floating-summary {
@@ -1908,8 +1909,16 @@ button.insurance-validation-count:disabled {
   z-index: 20;
   top: 18px;
 
-  width: min(100%, var(--cost-summary-width));
-  margin: 0 auto 24px 0;
+  width: min(
+    calc(100% - var(--cost-summary-left-offset)),
+    var(--cost-summary-width)
+  );
+
+  margin:
+    0
+    auto
+    24px
+    var(--cost-summary-left-offset);
 
   border-radius: 18px;
   box-shadow:
