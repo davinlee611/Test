@@ -29,16 +29,6 @@
   font-size: 22px;
 }
 
-/*.client-label,
-.section-label {
-  margin-bottom: 5px;
-  color: var(--primary-color);
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}*/
-
 .client-header h1 {
   color: var(--text-primary);
   font-size: var(--font-size-page-title);

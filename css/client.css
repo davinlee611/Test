@@ -714,15 +714,6 @@ body.validation-modal-open {
   margin-bottom: 26px;
 }
 
-.property-modal-eyebrow {
-  margin: 0 0 5px;
-  color: var(--primary-color);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .property-modal-header h2 {
   margin: 0;
 }
@@ -844,15 +835,6 @@ body.property-modal-open {
   justify-content: space-between;
   gap: 20px;
   margin-bottom: 26px;
-}
-
-.goal-modal-eyebrow {
-  margin: 0 0 5px;
-  color: var(--primary-color);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .goal-modal-header h2 {
@@ -1014,15 +996,6 @@ body.goal-modal-open {
   justify-content: space-between;
   gap: 24px;
   margin-bottom: 24px;
-}
-
-.liability-modal-eyebrow {
-  margin: 0 0 6px;
-  color: var(--primary-color);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .liability-modal-header h2 {
