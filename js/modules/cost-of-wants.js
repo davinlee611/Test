@@ -341,39 +341,6 @@ function setNumberInput(input, value) {
 }
 
 /* ========================================
-   SPENDING BREAKDOWN ELEMENTS
-======================================== */
-
-const householdAmountElement = document.getElementById(
-  "costOfWantsHouseholdAmount",
-);
-
-const transportAmountElement = document.getElementById(
-  "costOfWantsTransportAmount",
-);
-
-const subscriptionsAmountElement = document.getElementById(
-  "costOfWantsSubscriptionsAmount",
-);
-
-const dependantsAmountElement = document.getElementById(
-  "costOfWantsDependantsAmount",
-);
-
-const insuranceAmountElement = document.getElementById(
-  "costOfWantsInsuranceAmount",
-);
-
-
-const otherExpensesAmountElement = document.getElementById(
-  "costOfWantsOtherExpensesAmount",
-);
-
-const totalSpendingElement = document.getElementById(
-  "costOfWantsTotalSpending",
-);
-
-/* ========================================
    LIFESTYLE CALCULATION
 ======================================== */
 
