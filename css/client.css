@@ -2068,34 +2068,40 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-of-wants-custom-income {
-    width: 100%;
-    margin-top: 20px;
-    padding: 18px;
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    background: #f8fafc;
-    box-sizing: border-box;
-}
-
-.cost-of-wants-custom-income .currency-input {
-    width: 100%;
-}
-
-.cost-of-wants-custom-income .form-control {
-    width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: #f8fafc;
+  box-sizing: border-box;
 }
 
 .cost-of-wants-custom-income label {
-  display: block;
-  margin-bottom: 10px;
+  margin: 0;
   color: var(--text-primary);
   font-size: 14px;
   font-weight: 700;
 }
 
+.cost-of-wants-custom-income .currency-input {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 100%;
+}
+
+.cost-of-wants-custom-income .form-control {
+  width: 100%;
+}
+
 .cost-of-wants-custom-income .form-helper-text {
+  grid-column: 1;
   display: block;
-  margin-top: 8px;
+  margin: 6px 0 0;
 }
 
 .cost-of-wants-selected-income {
@@ -2115,9 +2121,9 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-of-wants-selected-income span {
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .cost-of-wants-selected-income strong {
@@ -2222,6 +2228,21 @@ button.insurance-validation-count:disabled {
     flex-direction: column;
     gap: 6px;
   }
+
+  .cost-of-wants-custom-income {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.cost-of-wants-custom-income .currency-input {
+  grid-column: 1;
+  grid-row: auto;
+}
+
+.cost-of-wants-custom-income .form-helper-text {
+  grid-column: 1;
+  margin-top: 0;
+}
 }
 
 /* ========================================
