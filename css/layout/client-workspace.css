@@ -16,7 +16,13 @@ body {
   display: grid;
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   min-height: 650px;
-  overflow: hidden;
+
+  /*
+   * Do not use overflow: hidden here.
+   * It prevents sticky children from following the page scroll.
+   */
+  overflow: visible;
+
   background: var(--surface-color);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-2xl);
@@ -30,6 +36,12 @@ body {
 .workspace-content {
   min-width: 0;
   padding: 38px;
+  background: var(--surface-color);
+  border-radius:
+    0
+    var(--radius-2xl)
+    var(--radius-2xl)
+    0;
 }
 
 .workspace-section {

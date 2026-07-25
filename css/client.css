@@ -2105,34 +2105,38 @@ button.insurance-validation-count:disabled {
   font-weight: 750;
 }
 
-.cost-of-wants-floating-summary
-  .is-positive {
+/* Collapsed summary value colours */
+
+.cost-of-wants-summary-metric strong.is-positive {
   color: #d1fadf;
 }
 
-.cost-of-wants-calculated-breakdown
-  .is-positive {
-  color: #027a48;
-}
-
-.cost-of-wants-floating-summary
-  .is-negative {
+.cost-of-wants-summary-metric strong.is-negative {
   color: #fecaca;
 }
 
-.cost-of-wants-calculated-breakdown
-  .is-negative {
-  color: #b42318;
-}
-
-.cost-of-wants-floating-summary
-  .is-neutral {
+.cost-of-wants-summary-metric strong.is-neutral {
   color: #ffffff;
 }
 
-.cost-of-wants-calculated-breakdown
-  .is-neutral {
+/* Expanded breakdown value colours */
+
+.cost-of-wants-calculated-breakdown strong.is-positive {
+  color: #027a48;
+}
+
+.cost-of-wants-calculated-breakdown strong.is-negative {
+  color: #b42318;
+}
+
+.cost-of-wants-calculated-breakdown strong.is-neutral {
   color: var(--text-primary);
+}
+
+/* Expenses, commitments and goal savings are deductions */
+
+.cost-of-wants-calculated-breakdown strong.is-deduction {
+  color: #b42318;
 }
 
 /* ========================================
@@ -2836,7 +2840,9 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-of-wants-floating-summary {
-  position: static;
+  position: sticky;
+  top: 10px;
+  z-index: 50;
   width: 100%;
   margin-bottom: 20px;
 }
