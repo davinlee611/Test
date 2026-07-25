@@ -1277,15 +1277,6 @@ body.liability-modal-open {
   min-width: 0;
 }
 
-.policy-modal-eyebrow {
-  margin: 0 0 6px;
-  color: var(--primary-color);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .policy-modal-header h2 {
   margin: 0;
 }
