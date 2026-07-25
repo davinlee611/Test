@@ -2246,6 +2246,115 @@ button.insurance-validation-count:disabled {
 }
 
 /* ========================================
+   COST OF WANTS SPENDING BREAKDOWN
+======================================== */
+
+.cost-of-wants-spending-box {
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.cost-of-wants-spending-heading {
+  padding: 20px 18px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.cost-of-wants-spending-heading h4 {
+  margin: 0 0 6px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.cost-of-wants-spending-heading p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cost-of-wants-spending-list {
+  padding: 8px 18px;
+}
+
+.cost-of-wants-spending-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cost-of-wants-spending-row:last-child {
+  border-bottom: none;
+}
+
+.cost-of-wants-spending-row > span,
+.cost-of-wants-spending-label > span {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cost-of-wants-spending-row > strong {
+  flex-shrink: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.cost-of-wants-spending-label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cost-of-wants-spending-label small {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.cost-of-wants-spending-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px;
+  border-top: 1px solid var(--border-color);
+  background: #f8fafc;
+}
+
+.cost-of-wants-spending-total > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cost-of-wants-spending-total span {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.cost-of-wants-spending-total small {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.cost-of-wants-spending-total strong {
+  flex-shrink: 0;
+  color: var(--primary-color);
+  font-size: 21px;
+  font-weight: 700;
+}
+
+/* ========================================
    TABLET
 ======================================== */
 
@@ -2388,5 +2497,17 @@ button.insurance-validation-count:disabled {
 
   .financial-input-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .cost-of-wants-spending-row,
+  .cost-of-wants-spending-total {
+    gap: 16px;
+  }
+
+  .cost-of-wants-spending-total {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

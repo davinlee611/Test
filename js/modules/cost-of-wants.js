@@ -1,8 +1,9 @@
 "use strict";
 
 import {
-  getClientProfile,
   getCostOfWants,
+  getExpenses,
+  getPolicies,
   updateCostOfWants,
 } from "../state/client-plan.js";
 
@@ -15,8 +16,6 @@ import { EVENTS } from "../events/events.js";
 /* ========================================
    PAGE ELEMENTS
 ======================================== */
-
-const costOfWantsHeading = document.getElementById("costOfWantsHeading");
 
 const currentAgeInput = document.getElementById("costOfWantsCurrentAge");
 
@@ -128,6 +127,10 @@ function attachApplicationListeners() {
     validateCostOfWants();
   });
 
+  on(EVENTS.EXPENSES_CHANGED, function () {
+    renderMonthlySpendingBreakdown();
+  });
+
   on(EVENTS.SECTION_CHANGED, function ({ section }) {
     if (section === "cost") {
       renderCostOfWants();
@@ -197,24 +200,17 @@ function renderCostOfWants() {
   syncCostOfWantsInputs();
   renderLifestyleSelection();
   renderSelectedIncome();
+  renderMonthlySpendingBreakdown();
 }
 
 function renderClientDetails() {
-  const profile = getClientProfile();
-
-  const fullName = profile.fullName.trim();
-
-  if (costOfWantsHeading) {
-    costOfWantsHeading.textContent = fullName
-      ? `Cost of Wants for ${fullName}`
-      : "Cost of Wants";
+  if (!currentAgeInput) {
+    return;
   }
 
-  if (currentAgeInput) {
-    const currentAge = getClientAge();
+  const currentAge = getClientAge();
 
-    currentAgeInput.value = currentAge === null ? "" : String(currentAge);
-  }
+  currentAgeInput.value = currentAge === null ? "" : String(currentAge);
 }
 
 function syncCostOfWantsInputs() {
@@ -266,6 +262,8 @@ function renderSelectedIncome() {
   selectedIncomeSummary.hidden = monthlyIncome <= 0;
 
   selectedIncomeAmount.textContent = formatCurrency(monthlyIncome);
+
+  renderMonthlySpendingBreakdown();
 }
 
 function setOptionalNumberInput(input, value) {
@@ -289,6 +287,46 @@ function setNumberInput(input, value) {
 }
 
 /* ========================================
+   SPENDING BREAKDOWN ELEMENTS
+======================================== */
+
+const householdAmountElement = document.getElementById(
+  "costOfWantsHouseholdAmount",
+);
+
+const transportAmountElement = document.getElementById(
+  "costOfWantsTransportAmount",
+);
+
+const subscriptionsAmountElement = document.getElementById(
+  "costOfWantsSubscriptionsAmount",
+);
+
+const dependantsAmountElement = document.getElementById(
+  "costOfWantsDependantsAmount",
+);
+
+const insuranceAmountElement = document.getElementById(
+  "costOfWantsInsuranceAmount",
+);
+
+const insuranceSourceElement = document.getElementById(
+  "costOfWantsInsuranceSource",
+);
+
+const otherExpensesAmountElement = document.getElementById(
+  "costOfWantsOtherExpensesAmount",
+);
+
+const totalSpendingElement = document.getElementById(
+  "costOfWantsTotalSpending",
+);
+
+const spendingPreviewElement = document.getElementById(
+  "costOfWantsSpendingPreview",
+);
+
+/* ========================================
    LIFESTYLE CALCULATION
 ======================================== */
 
@@ -303,6 +341,198 @@ function getSelectedMonthlyIncome() {
   }
 
   return LIFESTYLE_AMOUNTS[lifestyleOption] || 0;
+}
+
+/* ========================================
+   MONTHLY SPENDING BREAKDOWN
+======================================== */
+
+function renderMonthlySpendingBreakdown() {
+  const breakdown = calculateMonthlySpendingBreakdown();
+
+  setCurrencyText(
+    householdAmountElement,
+    breakdown.household,
+  );
+
+  setCurrencyText(
+    transportAmountElement,
+    breakdown.transport,
+  );
+
+  setCurrencyText(
+    subscriptionsAmountElement,
+    breakdown.subscriptionsLifestyle,
+  );
+
+  setCurrencyText(
+    dependantsAmountElement,
+    breakdown.parentsDependantsSupport,
+  );
+
+  setCurrencyText(
+    insuranceAmountElement,
+    breakdown.insurancePremiums,
+  );
+
+  setCurrencyText(
+    otherExpensesAmountElement,
+    breakdown.otherRecurringExpenses,
+  );
+
+  setCurrencyText(
+    totalSpendingElement,
+    breakdown.totalMonthlySpending,
+  );
+
+  renderInsurancePremiumSource(breakdown.insuranceSource);
+
+  renderSpendingPreview(
+    breakdown.totalMonthlySpending,
+  );
+}
+
+function calculateMonthlySpendingBreakdown() {
+  const expenses = getExpenses();
+
+  const portfolioMonthlyPremium =
+    calculatePortfolioMonthlyPremium();
+
+  const manualInsurancePremium =
+    getValidAmount(expenses.insurancePremiums);
+
+  const insurancePremiums =
+    portfolioMonthlyPremium > 0
+      ? portfolioMonthlyPremium
+      : manualInsurancePremium;
+
+  const insuranceSource =
+    portfolioMonthlyPremium > 0
+      ? "portfolio"
+      : manualInsurancePremium > 0
+        ? "expenses"
+        : "none";
+
+  const breakdown = {
+    household: getValidAmount(expenses.household),
+
+    transport: getValidAmount(expenses.transport),
+
+    subscriptionsLifestyle: getValidAmount(
+      expenses.subscriptionsLifestyle,
+    ),
+
+    parentsDependantsSupport: getValidAmount(
+      expenses.parentsDependantsSupport,
+    ),
+
+    insurancePremiums,
+
+    otherRecurringExpenses: getValidAmount(
+      expenses.otherRecurringExpenses,
+    ),
+
+    insuranceSource,
+  };
+
+  breakdown.totalMonthlySpending =
+    breakdown.household +
+    breakdown.transport +
+    breakdown.subscriptionsLifestyle +
+    breakdown.parentsDependantsSupport +
+    breakdown.insurancePremiums +
+    breakdown.otherRecurringExpenses;
+
+  return breakdown;
+}
+
+function calculatePortfolioMonthlyPremium() {
+  return getPolicies().reduce(function (total, policy) {
+    return total + convertPremiumToMonthly(policy?.premium);
+  }, 0);
+}
+
+function convertPremiumToMonthly(premium) {
+  const amount = getValidAmount(premium?.amount);
+
+  if (amount <= 0) {
+    return 0;
+  }
+
+  switch (premium?.frequency) {
+    case "monthly":
+      return amount;
+
+    case "quarterly":
+      return amount / 3;
+
+    case "half_yearly":
+      return amount / 6;
+
+    case "annual":
+      return amount / 12;
+
+    default:
+      return 0;
+  }
+}
+
+function renderInsurancePremiumSource(source) {
+  if (!insuranceSourceElement) {
+    return;
+  }
+
+  const sourceLabels = {
+    portfolio: "Calculated from Insurance Portfolio",
+    expenses: "From Monthly Expenses",
+    none: "No insurance premium entered",
+  };
+
+  insuranceSourceElement.textContent =
+    sourceLabels[source] || sourceLabels.none;
+}
+
+function renderSpendingPreview(totalMonthlySpending) {
+  if (!spendingPreviewElement) {
+    return;
+  }
+
+  const selectedMonthlyIncome = getSelectedMonthlyIncome();
+
+  if (selectedMonthlyIncome <= 0) {
+    spendingPreviewElement.textContent =
+      "Select an ideal monthly passive income to compare it with current spending.";
+
+    return;
+  }
+
+  const difference = selectedMonthlyIncome - totalMonthlySpending;
+
+  if (difference >= 0) {
+    spendingPreviewElement.textContent =
+      `${formatCurrency(selectedMonthlyIncome)} selected · ` +
+      `${formatCurrency(difference)} remaining after current spending`;
+
+    return;
+  }
+
+  spendingPreviewElement.textContent =
+    `${formatCurrency(selectedMonthlyIncome)} selected · ` +
+    `${formatCurrency(Math.abs(difference))} below current spending`;
+}
+
+function setCurrencyText(element, value) {
+  if (!element) {
+    return;
+  }
+
+  element.textContent = formatCurrency(value);
+}
+
+function getValidAmount(value) {
+  const amount = Number(value);
+
+  return Number.isFinite(amount) && amount > 0 ? amount : 0;
 }
 
 /* ========================================
