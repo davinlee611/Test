@@ -1052,35 +1052,103 @@
               </div>
             </section>
 
-            <!-- Liabilities -->
+            <!-- Commitments -->
             <section class="planning-category-section">
               <div class="planning-card">
                 <div class="planning-card-header">
                   <div>
-                    <h3>Liabilities</h3>
+                    <h3>Commitments</h3>
+
                     <p>
-                      Record mortgages, loans, credit cards and other
-                      outstanding liabilities.
+                      Record fixed monthly amounts the client is committed to
+                      paying.
                     </p>
                   </div>
+
                   <div class="financial-category-total">
-                    <span>Total Liabilities</span>
-                    <strong id="totalLiabilitiesValue"> $0 </strong>
+                    <span>Total Monthly Commitments</span>
+
+                    <strong id="totalMonthlyCommitmentsValue"> $0 </strong>
                   </div>
                 </div>
-                <div id="liabilitiesList" class="planning-card-list">
-                  <p id="emptyLiabilityMessage" class="empty-state-message">
-                    No liabilities added.
-                  </p>
+
+                <!-- General Insurance Premium -->
+                <div class="commitments-subsection">
+                  <div class="commitments-subsection-header">
+                    <div>
+                      <h4>Insurance Premiums</h4>
+
+                      <p>
+                        Enter a general monthly amount when individual policy
+                        details are unavailable.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="financial-input-list">
+                    <div class="financial-input-row">
+                      <label for="generalInsurancePremium">
+                        Monthly Insurance Premium
+
+                        <span class="form-helper-text">
+                          Insurance Portfolio premiums will take priority when
+                          policy details are entered.
+                        </span>
+                      </label>
+
+                      <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                          id="generalInsurancePremium"
+                          class="form-control financial-amount-input"
+                          type="number"
+                          min="0"
+                          step="1"
+                          inputmode="numeric"
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <button
-                  id="addLiabilityButton"
-                  class="add-planning-item-button"
-                  type="button"
+
+                <!-- Liabilities -->
+                <div
+                  class="commitments-subsection commitments-subsection--liabilities"
                 >
-                  <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                  Add Liability
-                </button>
+                  <div class="commitments-subsection-header">
+                    <div>
+                      <h4>Liabilities</h4>
+
+                      <p>
+                        Record mortgages, loans, credit cards and other
+                        outstanding liabilities.
+                      </p>
+                    </div>
+
+                    <div class="financial-category-total">
+                      <span>Total Liabilities</span>
+
+                      <strong id="totalLiabilitiesValue"> $0 </strong>
+                    </div>
+                  </div>
+
+                  <div id="liabilitiesList" class="planning-card-list">
+                    <p id="emptyLiabilityMessage" class="empty-state-message">
+                      No liabilities added.
+                    </p>
+                  </div>
+
+                  <button
+                    id="addLiabilityButton"
+                    class="add-planning-item-button"
+                    type="button"
+                  >
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Add Liability
+                  </button>
+                </div>
               </div>
             </section>
 
@@ -1681,7 +1749,8 @@
                               <span>Insurance Premiums</span>
 
                               <small>
-                                Calculated from the Insurance Portfolio.
+                                Insurance Portfolio total, or the general
+                                commitment amount when no policies are entered.
                               </small>
                             </div>
 

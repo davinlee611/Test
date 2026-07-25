@@ -57,6 +57,10 @@ export function createEmptyClientPlan() {
         otherRecurringExpenses: 0,
       },
 
+      commitments: {
+        insurancePremiums: 0,
+      },
+
       goals: [],
       liabilities: [],
       policies: [],
@@ -111,6 +115,10 @@ export function getAssets() {
 
 export function getExpenses() {
   return clientPlan.priorities.expenses;
+}
+
+export function getCommitments() {
+  return clientPlan.priorities.commitments;
 }
 
 export function getGoals() {
@@ -196,6 +204,17 @@ export function updateExpenses(updates) {
   touchClientPlan();
 
   return clientPlan.priorities.expenses;
+}
+
+export function updateCommitments(updates) {
+  clientPlan.priorities.commitments = {
+    ...clientPlan.priorities.commitments,
+    ...updates,
+  };
+
+  touchClientPlan();
+
+  return clientPlan.priorities.commitments;
 }
 
 export function setGoals(goals) {
@@ -306,6 +325,11 @@ function normalizeClientPlan(plan) {
       expenses: {
         ...emptyPlan.priorities.expenses,
         ...plan.priorities?.expenses,
+      },
+
+      commitments: {
+        ...emptyPlan.priorities.commitments,
+        ...plan.priorities?.commitments,
       },
 
       goals: Array.isArray(plan.priorities?.goals) ? plan.priorities.goals : [],

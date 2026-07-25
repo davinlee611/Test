@@ -20,6 +20,11 @@ import {
 
 import { initializeExpenses, resetExpenses } from "./modules/expenses.js";
 
+import {
+  initializeCommitments,
+  resetCommitments,
+} from "./modules/commitments.js";
+
 import { initializeProperties, resetProperties } from "./modules/properties.js";
 
 import {
@@ -67,6 +72,7 @@ initializeWealthType();
 initializeGoals();
 initializeAssetsIncome();
 initializeExpenses();
+initializeCommitments();
 initializeInsurancePortfolio();
 initializeCostOfWants();
 initializePage();
@@ -145,6 +151,11 @@ function clearFinancialPlan() {
    * Reset monthly expenses.
    */
   resetExpenses();
+
+  /*
+   * Reset monthly commitments.
+   */
+  resetCommitments();
 
   /*
    * Reset the property interface.

@@ -16,6 +16,7 @@ export const EVENTS = Object.freeze({
   GOALS_CHANGED: "goals:changed",
   LIABILITIES_CHANGED: "liabilities:changed",
   EXPENSES_CHANGED: "expenses:changed",
+  COMMITMENTS_CHANGED: "commitments:changed",
 
   POLICIES_CHANGED: "policies:changed",
 

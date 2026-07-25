@@ -1,6 +1,7 @@
 "use strict";
 
 import {
+  getCommitments,
   getCostOfWants,
   getExpenses,
   getLiabilities,
@@ -173,6 +174,10 @@ function attachApplicationListeners() {
   });
 
   on(EVENTS.EXPENSES_CHANGED, function () {
+    renderMonthlySpendingBreakdown();
+  });
+
+  on(EVENTS.COMMITMENTS_CHANGED, function () {
     renderMonthlySpendingBreakdown();
   });
 
@@ -441,11 +446,9 @@ function calculateMonthlySpendingBreakdown() {
   };
 
   const monthlyCommitments = {
-    liabilityRepayments:
-      calculateTotalMonthlyLiabilityRepayments(),
+    liabilityRepayments: calculateTotalMonthlyLiabilityRepayments(),
 
-    insurancePremiums:
-      calculatePortfolioMonthlyPremium(),
+    insurancePremiums: calculateMonthlyInsurancePremiums(),
   };
 
   const totalMonthlyExpenses =
@@ -475,6 +478,18 @@ function calculateTotalMonthlyLiabilityRepayments() {
   return getLiabilities().reduce(function (runningTotal, liability) {
     return runningTotal + getValidAmount(liability?.monthlyRepayment);
   }, 0);
+}
+
+function calculateMonthlyInsurancePremiums() {
+  const portfolioMonthlyPremium = calculatePortfolioMonthlyPremium();
+
+  if (portfolioMonthlyPremium > 0) {
+    return portfolioMonthlyPremium;
+  }
+
+  const commitments = getCommitments();
+
+  return getValidAmount(commitments.insurancePremiums);
 }
 
 function calculatePortfolioMonthlyPremium() {

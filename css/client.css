@@ -927,6 +927,50 @@ body.goal-modal-open {
 }
 
 /* ========================================
+   COMMITMENTS
+======================================== */
+
+.commitments-subsection {
+  padding-top: 4px;
+}
+
+.commitments-subsection + .commitments-subsection {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-color);
+}
+
+.commitments-subsection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.commitments-subsection-header > div:first-child {
+  min-width: 0;
+}
+
+.commitments-subsection-header h4 {
+  margin: 0 0 5px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.commitments-subsection-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.commitments-subsection--liabilities .planning-card-list {
+  margin-top: 0;
+}
+
+/* ========================================
    LIABILITIES
 ======================================== */
 
@@ -2516,6 +2560,12 @@ button.insurance-validation-count:disabled {
   .financial-input-grid {
     grid-template-columns: 1fr;
   }
+
+  .commitments-subsection-header {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
+}
 }
 
 @media (max-width: 700px) {
