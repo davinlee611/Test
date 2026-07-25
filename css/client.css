@@ -1901,7 +1901,7 @@ button.insurance-validation-count:disabled {
 
 :root {
   --cost-summary-width: 580px;
-  --cost-summary-left-offset: 4px;
+  --cost-summary-left-offset: 0px;
 }
 
 .cost-of-wants-floating-summary {
