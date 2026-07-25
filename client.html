@@ -884,10 +884,7 @@
                   <div>
                     <h3>Monthly Expenses</h3>
 
-                    <p>
-                      Enter the client's regular monthly living expenses and
-                      commitments.
-                    </p>
+                    <p>Enter the client's regular monthly living expenses.</p>
                   </div>
 
                   <div class="financial-category-total">
@@ -1001,32 +998,6 @@
                     </div>
                   </div>
 
-                  <!-- Insurance Premiums -->
-                  <div class="financial-input-row">
-                    <label for="insurancePremiumsExpense">
-                      Insurance Premiums (Monthly)
-
-                      <span class="form-helper-text">
-                        Leave this as $0 if you'll be completing the Insurance
-                        Portfolio section next.
-                      </span>
-                    </label>
-
-                    <div class="currency-input">
-                      <span>$</span>
-
-                      <input
-                        id="insurancePremiumsExpense"
-                        class="form-control financial-amount-input"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="0"
-                      />
-                    </div>
-                  </div>
-
                   <!-- Other Recurring Expenses -->
                   <div class="financial-input-row">
                     <label for="otherRecurringExpenses">
@@ -1034,7 +1005,7 @@
 
                       <span class="form-helper-text">
                         E.g. domestic helper, recurring donations or other
-                        regular commitments.
+                        regular living expenses.
                       </span>
                     </label>
 
@@ -1610,75 +1581,124 @@
                         <h3>Monthly Spending Breakdown</h3>
 
                         <p>
-                          A monthly summary based on the client's expenses and
-                          insurance portfolio.
+                          A summary of the client's monthly living expenses and
+                          fixed commitments.
                         </p>
                       </div>
                     </div>
 
                     <div class="cost-of-wants-spending-box">
-                      <div class="cost-of-wants-spending-heading">
-                        <h4>Monthly Spending Breakdown</h4>
+                      <!-- Monthly Expenses -->
+                      <section class="cost-of-wants-breakdown-section">
+                        <div class="cost-of-wants-breakdown-heading">
+                          <div>
+                            <h4>Monthly Expenses</h4>
 
-                        <p id="costOfWantsSpendingPreview">
-                          Compared with the selected monthly passive income.
-                        </p>
-                      </div>
-
-                      <div class="cost-of-wants-spending-list">
-                        <div class="cost-of-wants-spending-row">
-                          <span>Household</span>
-
-                          <strong id="costOfWantsHouseholdAmount"> $0 </strong>
-                        </div>
-
-                        <div class="cost-of-wants-spending-row">
-                          <span>Transport</span>
-
-                          <strong id="costOfWantsTransportAmount"> $0 </strong>
-                        </div>
-
-                        <div class="cost-of-wants-spending-row">
-                          <span>Subscriptions &amp; Lifestyle</span>
-
-                          <strong id="costOfWantsSubscriptionsAmount">
-                            $0
-                          </strong>
-                        </div>
-
-                        <div class="cost-of-wants-spending-row">
-                          <span>Parents / Dependants Support</span>
-
-                          <strong id="costOfWantsDependantsAmount"> $0 </strong>
-                        </div>
-
-                        <div class="cost-of-wants-spending-row">
-                          <div class="cost-of-wants-spending-label">
-                            <span>Insurance Premiums</span>
-
-                            <small id="costOfWantsInsuranceSource">
-                              From Monthly Expenses
-                            </small>
+                            <p>
+                              Regular living expenses that may be adjusted over
+                              time.
+                            </p>
                           </div>
 
-                          <strong id="costOfWantsInsuranceAmount"> $0 </strong>
+                          <strong id="costOfWantsTotalExpenses"> $0 </strong>
                         </div>
 
-                        <div class="cost-of-wants-spending-row">
-                          <span>Other Recurring Expenses</span>
+                        <div class="cost-of-wants-spending-list">
+                          <div class="cost-of-wants-spending-row">
+                            <span>Household</span>
 
-                          <strong id="costOfWantsOtherExpensesAmount">
-                            $0
-                          </strong>
+                            <strong id="costOfWantsHouseholdAmount">
+                              $0
+                            </strong>
+                          </div>
+
+                          <div class="cost-of-wants-spending-row">
+                            <span>Transport</span>
+
+                            <strong id="costOfWantsTransportAmount">
+                              $0
+                            </strong>
+                          </div>
+
+                          <div class="cost-of-wants-spending-row">
+                            <span>Subscriptions &amp; Lifestyle</span>
+
+                            <strong id="costOfWantsSubscriptionsAmount">
+                              $0
+                            </strong>
+                          </div>
+
+                          <div class="cost-of-wants-spending-row">
+                            <span>Parents / Dependants Support</span>
+
+                            <strong id="costOfWantsDependantsAmount">
+                              $0
+                            </strong>
+                          </div>
+
+                          <div class="cost-of-wants-spending-row">
+                            <span>Other Recurring Expenses</span>
+
+                            <strong id="costOfWantsOtherExpensesAmount">
+                              $0
+                            </strong>
+                          </div>
                         </div>
-                      </div>
+                      </section>
 
+                      <!-- Monthly Commitments -->
+                      <section class="cost-of-wants-breakdown-section">
+                        <div class="cost-of-wants-breakdown-heading">
+                          <div>
+                            <h4>Monthly Commitments</h4>
+
+                            <p>
+                              Fixed repayments and premiums that the client is
+                              committed to paying.
+                            </p>
+                          </div>
+
+                          <strong id="costOfWantsTotalCommitments"> $0 </strong>
+                        </div>
+
+                        <div class="cost-of-wants-spending-list">
+                          <div class="cost-of-wants-spending-row">
+                            <div class="cost-of-wants-spending-label">
+                              <span>Liability Repayments</span>
+
+                              <small>
+                                Total monthly repayments from all liabilities.
+                              </small>
+                            </div>
+
+                            <strong id="costOfWantsLiabilityRepayments">
+                              $0
+                            </strong>
+                          </div>
+
+                          <div class="cost-of-wants-spending-row">
+                            <div class="cost-of-wants-spending-label">
+                              <span>Insurance Premiums</span>
+
+                              <small>
+                                Calculated from the Insurance Portfolio.
+                              </small>
+                            </div>
+
+                            <strong id="costOfWantsInsuranceAmount">
+                              $0
+                            </strong>
+                          </div>
+                        </div>
+                      </section>
+
+                      <!-- Total -->
                       <div class="cost-of-wants-spending-total">
                         <div>
-                          <span>Total Monthly Spending</span>
+                          <span>Total Monthly Outflow</span>
 
                           <small>
-                            Based on the client's current monthly commitments.
+                            Monthly expenses plus monthly commitments.
                           </small>
                         </div>
 

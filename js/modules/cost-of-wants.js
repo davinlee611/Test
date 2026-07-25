@@ -3,6 +3,7 @@
 import {
   getCostOfWants,
   getExpenses,
+  getLiabilities,
   getPolicies,
   updateCostOfWants,
 } from "../state/client-plan.js";
@@ -128,6 +129,10 @@ function attachApplicationListeners() {
   });
 
   on(EVENTS.EXPENSES_CHANGED, function () {
+    renderMonthlySpendingBreakdown();
+  });
+
+  on(EVENTS.LIABILITIES_CHANGED, function () {
     renderMonthlySpendingBreakdown();
   });
 
@@ -310,9 +315,6 @@ const insuranceAmountElement = document.getElementById(
   "costOfWantsInsuranceAmount",
 );
 
-const insuranceSourceElement = document.getElementById(
-  "costOfWantsInsuranceSource",
-);
 
 const otherExpensesAmountElement = document.getElementById(
   "costOfWantsOtherExpensesAmount",
@@ -320,10 +322,6 @@ const otherExpensesAmountElement = document.getElementById(
 
 const totalSpendingElement = document.getElementById(
   "costOfWantsTotalSpending",
-);
-
-const spendingPreviewElement = document.getElementById(
-  "costOfWantsSpendingPreview",
 );
 
 /* ========================================
@@ -352,71 +350,66 @@ function renderMonthlySpendingBreakdown() {
 
   setCurrencyText(
     householdAmountElement,
-    breakdown.household,
+    breakdown.expenses.household,
   );
 
   setCurrencyText(
     transportAmountElement,
-    breakdown.transport,
+    breakdown.expenses.transport,
   );
 
   setCurrencyText(
     subscriptionsAmountElement,
-    breakdown.subscriptionsLifestyle,
+    breakdown.expenses.subscriptionsLifestyle,
   );
 
   setCurrencyText(
     dependantsAmountElement,
-    breakdown.parentsDependantsSupport,
-  );
-
-  setCurrencyText(
-    insuranceAmountElement,
-    breakdown.insurancePremiums,
+    breakdown.expenses.parentsDependantsSupport,
   );
 
   setCurrencyText(
     otherExpensesAmountElement,
-    breakdown.otherRecurringExpenses,
+    breakdown.expenses.otherRecurringExpenses,
+  );
+
+  setCurrencyText(
+    liabilityRepaymentsElement,
+    breakdown.commitments.liabilityRepayments,
+  );
+
+  setCurrencyText(
+    insuranceAmountElement,
+    breakdown.commitments.insurancePremiums,
+  );
+
+  setCurrencyText(
+    totalExpensesElement,
+    breakdown.totalMonthlyExpenses,
+  );
+
+  setCurrencyText(
+    totalCommitmentsElement,
+    breakdown.totalMonthlyCommitments,
   );
 
   setCurrencyText(
     totalSpendingElement,
-    breakdown.totalMonthlySpending,
-  );
-
-  renderInsurancePremiumSource(breakdown.insuranceSource);
-
-  renderSpendingPreview(
-    breakdown.totalMonthlySpending,
+    breakdown.totalMonthlyOutflow,
   );
 }
 
 function calculateMonthlySpendingBreakdown() {
   const expenses = getExpenses();
 
-  const portfolioMonthlyPremium =
-    calculatePortfolioMonthlyPremium();
+  const monthlyExpenses = {
+    household: getValidAmount(
+      expenses.household,
+    ),
 
-  const manualInsurancePremium =
-    getValidAmount(expenses.insurancePremiums);
-
-  const insurancePremiums =
-    portfolioMonthlyPremium > 0
-      ? portfolioMonthlyPremium
-      : manualInsurancePremium;
-
-  const insuranceSource =
-    portfolioMonthlyPremium > 0
-      ? "portfolio"
-      : manualInsurancePremium > 0
-        ? "expenses"
-        : "none";
-
-  const breakdown = {
-    household: getValidAmount(expenses.household),
-
-    transport: getValidAmount(expenses.transport),
+    transport: getValidAmount(
+      expenses.transport,
+    ),
 
     subscriptionsLifestyle: getValidAmount(
       expenses.subscriptionsLifestyle,
@@ -426,24 +419,77 @@ function calculateMonthlySpendingBreakdown() {
       expenses.parentsDependantsSupport,
     ),
 
-    insurancePremiums,
-
     otherRecurringExpenses: getValidAmount(
       expenses.otherRecurringExpenses,
     ),
-
-    insuranceSource,
   };
 
-  breakdown.totalMonthlySpending =
-    breakdown.household +
-    breakdown.transport +
-    breakdown.subscriptionsLifestyle +
-    breakdown.parentsDependantsSupport +
-    breakdown.insurancePremiums +
-    breakdown.otherRecurringExpenses;
+  const monthlyCommitments = {
+    liabilityRepayments:
+      calculateTotalMonthlyLiabilityRepayments(),
 
-  return breakdown;
+    insurancePremiums:
+      calculatePortfolioMonthlyPremium(),
+  };
+
+  const totalMonthlyExpenses =
+    monthlyExpenses.household +
+    monthlyExpenses.transport +
+    monthlyExpenses.subscriptionsLifestyle +
+    monthlyExpenses.parentsDependantsSupport +
+    monthlyExpenses.otherRecurringExpenses;
+
+  const totalMonthlyCommitments =
+    monthlyCommitments.liabilityRepayments +
+    monthlyCommitments.insurancePremiums;
+
+  return {
+    expenses: monthlyExpenses,
+    commitments: monthlyCommitments,
+    totalMonthlyExpenses,
+    totalMonthlyCommitments,
+
+    totalMonthlyOutflow:
+      totalMonthlyExpenses +
+      totalMonthlyCommitments,
+  };
+}
+
+function calculateTotalMonthlyLiabilityRepayments() {
+  return getLiabilities().reduce(function (runningTotal, liability) {
+    return runningTotal + getValidAmount(liability?.monthlyRepayment);
+  }, 0);
+}
+
+function calculatePortfolioMonthlyPremium() {
+  return getPolicies().reduce(function (runningTotal, policy) {
+    return runningTotal + convertPremiumToMonthly(policy?.premium);
+  }, 0);
+}
+
+function convertPremiumToMonthly(premium) {
+  const amount = getValidAmount(premium?.amount);
+
+  if (amount <= 0) {
+    return 0;
+  }
+
+  switch (premium?.frequency) {
+    case "monthly":
+      return amount;
+
+    case "quarterly":
+      return amount / 3;
+
+    case "half_yearly":
+      return amount / 6;
+
+    case "annual":
+      return amount / 12;
+
+    default:
+      return 0;
+  }
 }
 
 function calculatePortfolioMonthlyPremium() {
@@ -477,50 +523,6 @@ function convertPremiumToMonthly(premium) {
   }
 }
 
-function renderInsurancePremiumSource(source) {
-  if (!insuranceSourceElement) {
-    return;
-  }
-
-  const sourceLabels = {
-    portfolio: "Calculated from Insurance Portfolio",
-    expenses: "From Monthly Expenses",
-    none: "No insurance premium entered",
-  };
-
-  insuranceSourceElement.textContent =
-    sourceLabels[source] || sourceLabels.none;
-}
-
-function renderSpendingPreview(totalMonthlySpending) {
-  if (!spendingPreviewElement) {
-    return;
-  }
-
-  const selectedMonthlyIncome = getSelectedMonthlyIncome();
-
-  if (selectedMonthlyIncome <= 0) {
-    spendingPreviewElement.textContent =
-      "Select an ideal monthly passive income to compare it with current spending.";
-
-    return;
-  }
-
-  const difference = selectedMonthlyIncome - totalMonthlySpending;
-
-  if (difference >= 0) {
-    spendingPreviewElement.textContent =
-      `${formatCurrency(selectedMonthlyIncome)} selected · ` +
-      `${formatCurrency(difference)} remaining after current spending`;
-
-    return;
-  }
-
-  spendingPreviewElement.textContent =
-    `${formatCurrency(selectedMonthlyIncome)} selected · ` +
-    `${formatCurrency(Math.abs(difference))} below current spending`;
-}
-
 function setCurrencyText(element, value) {
   if (!element) {
     return;
@@ -534,6 +536,50 @@ function getValidAmount(value) {
 
   return Number.isFinite(amount) && amount > 0 ? amount : 0;
 }
+
+/* ========================================
+   SPENDING BREAKDOWN ELEMENTS
+======================================== */
+
+const householdAmountElement = document.getElementById(
+  "costOfWantsHouseholdAmount",
+);
+
+const transportAmountElement = document.getElementById(
+  "costOfWantsTransportAmount",
+);
+
+const subscriptionsAmountElement = document.getElementById(
+  "costOfWantsSubscriptionsAmount",
+);
+
+const dependantsAmountElement = document.getElementById(
+  "costOfWantsDependantsAmount",
+);
+
+const otherExpensesAmountElement = document.getElementById(
+  "costOfWantsOtherExpensesAmount",
+);
+
+const liabilityRepaymentsElement = document.getElementById(
+  "costOfWantsLiabilityRepayments",
+);
+
+const insuranceAmountElement = document.getElementById(
+  "costOfWantsInsuranceAmount",
+);
+
+const totalExpensesElement = document.getElementById(
+  "costOfWantsTotalExpenses",
+);
+
+const totalCommitmentsElement = document.getElementById(
+  "costOfWantsTotalCommitments",
+);
+
+const totalSpendingElement = document.getElementById(
+  "costOfWantsTotalSpending",
+);
 
 /* ========================================
    VALIDATION

@@ -54,7 +54,6 @@ export function createEmptyClientPlan() {
         transport: 0,
         subscriptionsLifestyle: 0,
         parentsDependantsSupport: 0,
-        insurancePremiums: 0,
         otherRecurringExpenses: 0,
       },
 

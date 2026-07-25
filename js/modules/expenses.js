@@ -24,10 +24,6 @@ const parentsDependantsSupportExpenseInput = document.getElementById(
   "parentsDependantsSupportExpense",
 );
 
-const insurancePremiumsExpenseInput = document.getElementById(
-  "insurancePremiumsExpense",
-);
-
 const otherRecurringExpensesInput = document.getElementById(
   "otherRecurringExpenses",
 );
@@ -45,7 +41,6 @@ const expenseInputs = [
   transportExpenseInput,
   subscriptionsLifestyleExpenseInput,
   parentsDependantsSupportExpenseInput,
-  insurancePremiumsExpenseInput,
   otherRecurringExpensesInput,
 ];
 
@@ -122,8 +117,6 @@ function saveExpenseInputs() {
       parentsDependantsSupportExpenseInput,
     ),
 
-    insurancePremiums: getInputWholeNumber(insurancePremiumsExpenseInput),
-
     otherRecurringExpenses: getInputWholeNumber(otherRecurringExpensesInput),
   });
 }
@@ -149,8 +142,6 @@ function syncExpenseInputs() {
     expenses.parentsDependantsSupport,
   );
 
-  setInputValue(insurancePremiumsExpenseInput, expenses.insurancePremiums);
-
   setInputValue(otherRecurringExpensesInput, expenses.otherRecurringExpenses);
 }
 
@@ -172,13 +163,18 @@ function calculateTotalMonthlyExpenses() {
   const expenses = getExpenses();
 
   return (
-    expenses.household +
-    expenses.transport +
-    expenses.subscriptionsLifestyle +
-    expenses.parentsDependantsSupport +
-    expenses.insurancePremiums +
-    expenses.otherRecurringExpenses
+    getValidAmount(expenses.household) +
+    getValidAmount(expenses.transport) +
+    getValidAmount(expenses.subscriptionsLifestyle) +
+    getValidAmount(expenses.parentsDependantsSupport) +
+    getValidAmount(expenses.otherRecurringExpenses)
   );
+}
+
+function getValidAmount(value) {
+  const amount = Number(value);
+
+  return Number.isFinite(amount) && amount > 0 ? amount : 0;
 }
 
 /* ========================================
@@ -219,7 +215,6 @@ function createEmptyExpenses() {
     transport: 0,
     subscriptionsLifestyle: 0,
     parentsDependantsSupport: 0,
-    insurancePremiums: 0,
     otherRecurringExpenses: 0,
   };
 }

@@ -2256,28 +2256,47 @@ button.insurance-validation-count:disabled {
   background: #ffffff;
 }
 
-.cost-of-wants-spending-heading {
-  padding: 20px 18px;
+.cost-of-wants-breakdown-section {
   border-bottom: 1px solid var(--border-color);
-  text-align: center;
 }
 
-.cost-of-wants-spending-heading h4 {
-  margin: 0 0 6px;
+.cost-of-wants-breakdown-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-color);
+  background: #f8fafc;
+}
+
+.cost-of-wants-breakdown-heading > div {
+  min-width: 0;
+}
+
+.cost-of-wants-breakdown-heading h4 {
+  margin: 0 0 4px;
   color: var(--text-primary);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
 }
 
-.cost-of-wants-spending-heading p {
+.cost-of-wants-breakdown-heading p {
   margin: 0;
   color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.5;
 }
 
+.cost-of-wants-breakdown-heading > strong {
+  flex-shrink: 0;
+  color: var(--primary-color);
+  font-size: 17px;
+  font-weight: 700;
+}
+
 .cost-of-wants-spending-list {
-  padding: 8px 18px;
+  padding: 6px 18px;
 }
 
 .cost-of-wants-spending-row {
@@ -2285,7 +2304,7 @@ button.insurance-validation-count:disabled {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  min-height: 48px;
+  min-height: 50px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -2326,7 +2345,6 @@ button.insurance-validation-count:disabled {
   justify-content: space-between;
   gap: 24px;
   padding: 18px;
-  border-top: 1px solid var(--border-color);
   background: #f8fafc;
 }
 
@@ -2338,7 +2356,7 @@ button.insurance-validation-count:disabled {
 
 .cost-of-wants-spending-total span {
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -2350,7 +2368,7 @@ button.insurance-validation-count:disabled {
 .cost-of-wants-spending-total strong {
   flex-shrink: 0;
   color: var(--primary-color);
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 700;
 }
 
@@ -2510,4 +2528,20 @@ button.insurance-validation-count:disabled {
     align-items: flex-start;
     flex-direction: column;
   }
+
+  .cost-of-wants-breakdown-heading {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cost-of-wants-spending-row,
+.cost-of-wants-spending-total {
+  gap: 16px;
+}
+
+.cost-of-wants-spending-total {
+  align-items: flex-start;
+  flex-direction: column;
+}
 }
