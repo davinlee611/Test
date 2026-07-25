@@ -53,6 +53,50 @@ const selectedIncomeAmount = document.getElementById(
 const formMessage = document.getElementById("costOfWantsFormMessage");
 
 /* ========================================
+   SPENDING BREAKDOWN ELEMENTS
+======================================== */
+
+const householdAmountElement = document.getElementById(
+  "costOfWantsHouseholdAmount",
+);
+
+const transportAmountElement = document.getElementById(
+  "costOfWantsTransportAmount",
+);
+
+const subscriptionsAmountElement = document.getElementById(
+  "costOfWantsSubscriptionsAmount",
+);
+
+const dependantsAmountElement = document.getElementById(
+  "costOfWantsDependantsAmount",
+);
+
+const otherExpensesAmountElement = document.getElementById(
+  "costOfWantsOtherExpensesAmount",
+);
+
+const liabilityRepaymentsElement = document.getElementById(
+  "costOfWantsLiabilityRepayments",
+);
+
+const insuranceAmountElement = document.getElementById(
+  "costOfWantsInsuranceAmount",
+);
+
+const totalExpensesElement = document.getElementById(
+  "costOfWantsTotalExpenses",
+);
+
+const totalCommitmentsElement = document.getElementById(
+  "costOfWantsTotalCommitments",
+);
+
+const totalSpendingElement = document.getElementById(
+  "costOfWantsTotalSpending",
+);
+
+/* ========================================
    MODULE STATE
 ======================================== */
 
@@ -68,9 +112,9 @@ export function initializeCostOfWants() {
     return;
   }
 
-    attachInputListeners();
-    attachLifestyleListeners();
-    attachApplicationListeners();
+  attachInputListeners();
+  attachLifestyleListeners();
+  attachApplicationListeners();
 
   renderCostOfWants();
 
@@ -136,6 +180,10 @@ function attachApplicationListeners() {
     renderMonthlySpendingBreakdown();
   });
 
+  on(EVENTS.POLICIES_CHANGED, function () {
+    renderMonthlySpendingBreakdown();
+  });
+
   on(EVENTS.SECTION_CHANGED, function ({ section }) {
     if (section === "cost") {
       renderCostOfWants();
@@ -156,6 +204,8 @@ function handleCustomIncomeInput() {
   });
 
   renderSelectedIncome();
+  renderMonthlySpendingBreakdown();
+
   emitCostOfWantsChanged();
 }
 
@@ -176,6 +226,7 @@ function selectLifestyleOption(option) {
 
   renderLifestyleSelection();
   renderSelectedIncome();
+  renderMonthlySpendingBreakdown();
 
   emitCostOfWantsChanged();
 
@@ -267,8 +318,6 @@ function renderSelectedIncome() {
   selectedIncomeSummary.hidden = monthlyIncome <= 0;
 
   selectedIncomeAmount.textContent = formatCurrency(monthlyIncome);
-
-  renderMonthlySpendingBreakdown();
 }
 
 function setOptionalNumberInput(input, value) {
@@ -505,50 +554,6 @@ function getValidAmount(value) {
 
   return Number.isFinite(amount) && amount > 0 ? amount : 0;
 }
-
-/* ========================================
-   SPENDING BREAKDOWN ELEMENTS
-======================================== */
-
-const householdAmountElement = document.getElementById(
-  "costOfWantsHouseholdAmount",
-);
-
-const transportAmountElement = document.getElementById(
-  "costOfWantsTransportAmount",
-);
-
-const subscriptionsAmountElement = document.getElementById(
-  "costOfWantsSubscriptionsAmount",
-);
-
-const dependantsAmountElement = document.getElementById(
-  "costOfWantsDependantsAmount",
-);
-
-const otherExpensesAmountElement = document.getElementById(
-  "costOfWantsOtherExpensesAmount",
-);
-
-const liabilityRepaymentsElement = document.getElementById(
-  "costOfWantsLiabilityRepayments",
-);
-
-const insuranceAmountElement = document.getElementById(
-  "costOfWantsInsuranceAmount",
-);
-
-const totalExpensesElement = document.getElementById(
-  "costOfWantsTotalExpenses",
-);
-
-const totalCommitmentsElement = document.getElementById(
-  "costOfWantsTotalCommitments",
-);
-
-const totalSpendingElement = document.getElementById(
-  "costOfWantsTotalSpending",
-);
 
 /* ========================================
    VALIDATION
