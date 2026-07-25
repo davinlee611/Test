@@ -1899,12 +1899,18 @@ button.insurance-validation-count:disabled {
    COST OF WANTS FLOATING SUMMARY
 ======================================== */
 
+:root {
+  --cost-summary-width: 620px;
+}
+
 .cost-of-wants-floating-summary {
   position: sticky;
   z-index: 20;
   top: 18px;
-  width: min(100%, 620px);
-  margin: 0 0 24px auto;
+
+  width: min(100%, var(--cost-summary-width));
+  margin: 0 auto 24px 0;
+
   border-radius: 18px;
   box-shadow:
     0 14px 34px rgba(15, 23, 42, 0.16),
