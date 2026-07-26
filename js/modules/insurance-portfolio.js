@@ -47,6 +47,8 @@ import {
 
 import { readPolicyFormData } from "./insurance/policy-form-data.js";
 
+import { writePolicyFormData } from "./insurance/policy-form-writer.js";
+
 import {
   createPlanningCard,
   createPlanningCardIcon,
@@ -410,30 +412,17 @@ function openEditPolicyModal(policyId) {
 
   elements.savePolicyButton.textContent = "Save Changes";
 
-  elements.policyNameInput.value = policy.policyName || "";
-
-  elements.policyTypeSelect.value = policy.policyType || "";
-
-  elements.longTermCareBasePlanSelect.value = policy.longTermCareBasePlan || "";
+  writePolicyFormData(
+    elements,
+    policy,
+    getLifeAssuredFromBenefits(policy.benefits),
+  );
 
   previousPolicyType = policy.policyType || "";
 
   populateBenefitTypeOptions();
 
   updateLongTermCareBasePlanField();
-
-  populateInsurerFields(policy.insurer);
-
-  elements.policyNumberInput.value = policy.policyNumber || "";
-
-  elements.policyLifeAssuredInput.value =
-    policy.lifeAssured || getLifeAssuredFromBenefits(policy.benefits) || "";
-
-  elements.policyStatusSelect.value = policy.status || "";
-
-  elements.premiumInput.value = policy.premium?.amount || "";
-
-  elements.premiumFrequencySelect.value = policy.premium?.frequency || "annual";
 
   draftBenefits = cloneBenefits(policy.benefits);
 
@@ -564,36 +553,6 @@ function updatePremiumFields() {
     elements.premiumInput.value = "";
 
     elements.premiumFrequencySelect.value = "";
-  }
-}
-
-function populateInsurerFields(insurer) {
-  const savedInsurer = insurer || "";
-
-  const insurerOptionExists = Array.from(elements.insurerSelect.options).some(
-    function (option) {
-      return option.value === savedInsurer;
-    },
-  );
-
-  if (savedInsurer && insurerOptionExists && savedInsurer !== "other") {
-    elements.insurerSelect.value = savedInsurer;
-
-    elements.otherInsurerInput.value = "";
-  } else if (savedInsurer) {
-    elements.insurerSelect.value = "other";
-
-    elements.otherInsurerInput.value = savedInsurer;
-  } else {
-    elements.insurerSelect.value = "";
-
-    elements.otherInsurerInput.value = "";
-  }
-
-  handleInsurerChange();
-
-  if (elements.insurerSelect.value === "other") {
-    elements.otherInsurerInput.value = savedInsurer;
   }
 }
 
