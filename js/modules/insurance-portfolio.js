@@ -924,7 +924,7 @@ function handleOpenEditBenefitEditor(benefitId) {
   elements.benefitTypeSelect.focus();
 }
 
-function closeBenefitEditor() {
+function handleCloseBenefitEditor() {
   if (!elements.benefitEditor) {
     return;
   }
