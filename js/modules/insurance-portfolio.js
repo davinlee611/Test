@@ -61,6 +61,13 @@ import {
 import { renderDraftBenefitList } from "./insurance/draft-benefit-renderer.js";
 
 import {
+  openAddBenefitEditor,
+  openEditBenefitEditor,
+  closeBenefitEditor,
+  saveBenefit,
+} from "./insurance/benefit-editor.js";
+
+import {
   createPlanningCard,
   createPlanningCardIcon,
   createPlanningCardActions,
@@ -1136,32 +1143,26 @@ function showBenefitAmountField(label) {
    SAVE BENEFIT
 ======================================== */
 
-function saveBenefit() {
-  const formData = readBenefitFormData(elements);
+function handleSaveBenefit() {
+  const result = saveBenefit({
+    elements,
 
-  const validationMessage = validateBenefit(formData, {
+    draftBenefits,
+
+    editingBenefitId,
+
     longTermCareBasePlan: elements.longTermCareBasePlanSelect.value,
+
+    renderDraftBenefits,
+
+    closeBenefitEditor() {
+      handleCloseBenefitEditor();
+    },
   });
 
-  if (validationMessage) {
-    elements.benefitFormMessage.textContent = validationMessage;
+  draftBenefits = result.draftBenefits;
 
-    return;
-  }
-
-  if (editingBenefitId) {
-    draftBenefits = updateDraftBenefit(
-      draftBenefits,
-      editingBenefitId,
-      formData,
-    );
-  } else {
-    draftBenefits = addDraftBenefit(draftBenefits, formData);
-  }
-
-  renderDraftBenefits();
-
-  closeBenefitEditor();
+  editingBenefitId = result.editingBenefitId;
 }
 
 /* ========================================
