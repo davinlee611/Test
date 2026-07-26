@@ -2,6 +2,13 @@
 
 import { getProperties, setProperties } from "../state/client-plan.js";
 
+import {
+  appendItem,
+  findItemById,
+  removeItemById,
+  updateItemById,
+} from "../utils/collection-utils.js";
+
 import { createPlannerId } from "../utils/client-utils.js";
 
 /* ========================================
@@ -13,7 +20,7 @@ export function getAllProperties() {
 }
 
 export function getPropertyById(propertyId) {
-  return getProperties().find((property) => property.id === propertyId) ?? null;
+  return findItemById(getProperties(), propertyId);
 }
 
 /* ========================================
@@ -32,7 +39,7 @@ export function createProperty({
     ownershipPercentage,
   };
 
-  setProperties([...getProperties(), newProperty]);
+  setProperties(appendItem(getProperties(), newProperty));
 
   return newProperty;
 }
@@ -41,42 +48,34 @@ export function updateProperty(
   propertyId,
   { propertyType, marketValue, ownershipPercentage },
 ) {
-  let updatedProperty = null;
-
-  const properties = getProperties().map((property) => {
-    if (property.id !== propertyId) {
-      return property;
-    }
-
-    updatedProperty = {
+  const { items, updatedItem } = updateItemById(
+    getProperties(),
+    propertyId,
+    (property) => ({
       ...property,
       type: propertyType,
       marketValue,
       ownershipPercentage,
-    };
+    }),
+  );
 
-    return updatedProperty;
-  });
-
-  if (!updatedProperty) {
+  if (!updatedItem) {
     return null;
   }
 
-  setProperties(properties);
+  setProperties(items);
 
-  return updatedProperty;
+  return updatedItem;
 }
 
 export function removeProperty(propertyId) {
-  const existingProperty = getPropertyById(propertyId);
+  const { items, removedItem } = removeItemById(getProperties(), propertyId);
 
-  if (!existingProperty) {
+  if (!removedItem) {
     return false;
   }
 
-  setProperties(
-    getProperties().filter((property) => property.id !== propertyId),
-  );
+  setProperties(items);
 
   return true;
 }
