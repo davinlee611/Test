@@ -35,3 +35,36 @@ export function createEmptyBenefit(benefitType,lifeAssured) {
     notes: "",
   };
 }
+
+export function createLongTermCareBaseBenefit(basePlanValue, basePlan, lifeAssured) {
+  return {
+    id: createPlannerId(),
+
+    isSuggested: true,
+
+    isBasePlanBenefit: true,
+
+    basePlan: basePlanValue,
+
+    type: "long_term_care_income",
+
+    customName: basePlan.name,
+
+    lifeAssured,
+
+    amount: basePlan.amount,
+
+    payoutType: null,
+
+    payoutTerm: basePlan.payoutTerm,
+
+    payoutDuration: basePlan.payoutDuration,
+
+    hospitalClass: "",
+
+    riderType: "",
+
+    adlRequirement: basePlan.adlRequirement,
+
+    notes: "",
+  };
