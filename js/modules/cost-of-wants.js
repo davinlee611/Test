@@ -61,6 +61,10 @@ const selectedIncomeAmount = document.getElementById(
 
 const formMessage = document.getElementById("costOfWantsFormMessage");
 
+const fybcAgeErrorElement = document.getElementById("costOfWantsFybCAgeError");
+
+const projectionButton = document.getElementById("costOfWantsProjectionButton");
+
 /* ========================================
    SPENDING BREAKDOWN ELEMENTS
 ======================================== */
@@ -192,6 +196,7 @@ export function initializeCostOfWants() {
   attachInputListeners();
   attachLifestyleListeners();
   attachSummaryListeners();
+  attachProjectionListeners();
   attachApplicationListeners();
 
   renderCostOfWants();
@@ -245,7 +250,8 @@ function attachInputListeners() {
     }
 
     input.addEventListener("input", handleCostOfWantsInput);
-    input.addEventListener("blur", validateCostOfWants);
+
+    input.addEventListener("blur", handleCostOfWantsBlur);
   });
 
   customIncomeInput?.addEventListener("input", handleCustomIncomeInput);
@@ -257,10 +263,6 @@ function attachLifestyleListeners() {
       selectLifestyleOption(button.dataset.lifestyleOption);
     });
   });
-}
-
-function attachSummaryListeners() {
-  summaryToggleButton?.addEventListener("click", toggleCalculatedBreakdown);
 }
 
 function toggleCalculatedBreakdown() {
@@ -277,6 +279,26 @@ function toggleCalculatedBreakdown() {
   floatingSummaryElement?.classList.toggle("is-expanded", willExpand);
 
   summaryToggleIcon?.classList.toggle("is-expanded", willExpand);
+}
+
+function attachSummaryListeners() {
+  summaryToggleButton?.addEventListener("click", toggleCalculatedBreakdown);
+}
+
+function attachProjectionListeners() {
+  projectionButton?.addEventListener("click", handleProjectionRequest);
+}
+
+function handleProjectionRequest() {
+  saveCostOfWantsInputs();
+
+  const isValid = validateCostOfWantsForProjection();
+
+  if (!isValid) {
+    return;
+  }
+
+  renderProjection();
 }
 
 function attachApplicationListeners() {
@@ -321,9 +343,18 @@ function attachApplicationListeners() {
   });
 }
 
+function handleCostOfWantsBlur() {
+  saveCostOfWantsInputs();
+
+  validateFybCAge();
+  validateCostOfWants();
+}
+
 function handleCostOfWantsInput() {
   saveCostOfWantsInputs();
+
   clearFormMessage();
+  clearFybCAgeError();
 
   emitCostOfWantsChanged();
 }
@@ -906,6 +937,113 @@ function getValidAmount(value) {
    VALIDATION
 ======================================== */
 
+function validateFybCAge() {
+  const currentAge = getClientAge();
+
+  const { desiredRetirementAge, plannedMortalityAge } = getCostOfWants();
+
+  if (currentAge === null || currentAge <= 0) {
+    showFybCAgeError(
+      "Complete the client's date of birth before generating projections.",
+    );
+
+    return false;
+  }
+
+  if (
+    desiredRetirementAge <= currentAge ||
+    desiredRetirementAge >= plannedMortalityAge
+  ) {
+    showFybCAgeError(
+      `Desired FYBC Age must be between age ${
+        currentAge + 1
+      } and ${plannedMortalityAge - 1}.`,
+    );
+
+    return false;
+  }
+
+  clearFybCAgeError();
+
+  return true;
+}
+
+function showFybCAgeError(message) {
+  if (!fybcAgeErrorElement) {
+    return;
+  }
+
+  fybcAgeErrorElement.textContent = message;
+
+  fybcAgeErrorElement.hidden = false;
+
+  desiredRetirementAgeInput?.setAttribute("aria-invalid", "true");
+}
+
+function clearFybCAgeError() {
+  if (!fybcAgeErrorElement) {
+    return;
+  }
+
+  fybcAgeErrorElement.textContent = "";
+
+  fybcAgeErrorElement.hidden = true;
+
+  desiredRetirementAgeInput?.removeAttribute("aria-invalid");
+}
+
+function validateCostOfWantsForProjection() {
+  clearFormMessage();
+
+  const isFybCAgeValid = validateFybCAge();
+
+  if (!isFybCAgeValid) {
+    return false;
+  }
+
+  const {
+    plannedMortalityAge,
+    inflationRate,
+    postRetirementReturnRate,
+    lifestyleOption,
+    customMonthlyIncome,
+  } = getCostOfWants();
+
+  if (plannedMortalityAge <= 0) {
+    showFormMessage("Enter a valid planned mortality age.");
+
+    return false;
+  }
+
+  if (inflationRate < 0) {
+    showFormMessage("Inflation rate cannot be negative.");
+
+    return false;
+  }
+
+  if (postRetirementReturnRate < 0) {
+    showFormMessage("Post-retirement return rate cannot be negative.");
+
+    return false;
+  }
+
+  if (!lifestyleOption) {
+    showFormMessage("Select an ideal monthly passive income.");
+
+    return false;
+  }
+
+  if (lifestyleOption === "custom" && customMonthlyIncome <= 0) {
+    showFormMessage("Enter a custom monthly passive income.");
+
+    return false;
+  }
+
+  clearFormMessage();
+
+  return true;
+}
+
 function validateCostOfWants() {
   const currentAge = getClientAge();
 
@@ -916,23 +1054,7 @@ function validateCostOfWants() {
     postRetirementReturnRate,
   } = getCostOfWants();
 
-  if (
-    desiredRetirementAge > 0 &&
-    currentAge !== null &&
-    desiredRetirementAge <= currentAge
-  ) {
-    showFormMessage(
-      "Desired retirement age must be greater than the client's current age.",
-    );
-
-    return false;
-  }
-
-  if (desiredRetirementAge > 0 && plannedMortalityAge <= desiredRetirementAge) {
-    showFormMessage(
-      "Planned mortality age must be greater than the desired retirement age.",
-    );
-
+  if (!validateFybCAge()) {
     return false;
   }
 
