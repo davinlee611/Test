@@ -40,6 +40,8 @@ import {
   clearPolicies,
 } from "../services/policy-service.js";
 
+import { createEmptyBenefit } from "../factories/benefit-factory.js";
+
 import {
   createPlanningCard,
   createPlanningCardIcon,
@@ -1397,36 +1399,6 @@ function handlePolicyTypeChange() {
   });
 
   renderDraftBenefits();
-}
-
-function createEmptyBenefit(benefitType, lifeAssured) {
-  return {
-    id: createPlannerId(),
-
-    isSuggested: true,
-
-    type: benefitType,
-
-    customName: "",
-
-    lifeAssured,
-
-    amount: 0,
-
-    payoutType: null,
-
-    payoutTerm: null,
-
-    payoutDuration: null,
-
-    hospitalClass: "",
-
-    riderType: "",
-
-    adlRequirement: null,
-
-    notes: "",
-  };
 }
 
 function populateBenefitTypeOptions(selectedBenefitType = "") {
