@@ -67,10 +67,10 @@ export function createEmptyClientPlan() {
     },
 
     costOfWants: {
-      desiredRetirementAge: 0,
+      desiredFybcAge: 0,
       plannedMortalityAge: 85,
       inflationRate: 2.5,
-      postRetirementReturnRate: 3.5,
+      postFybcReturnRate: 3.5,
 
       lifestyleOption: "",
       customMonthlyIncome: 0,

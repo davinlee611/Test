@@ -1461,10 +1461,10 @@
                     </div>
 
                     <div class="cost-of-wants-assumptions">
-                      <!-- Retirement Timeline -->
+                      <!-- FYBC Timeline -->
                       <div class="cost-of-wants-field-group">
                         <div class="cost-of-wants-field-group-heading">
-                          <span>Retirement Timeline</span>
+                          <span>FYBC Timeline</span>
                         </div>
 
                         <!-- Current Age -->
@@ -1493,7 +1493,7 @@
                         <!-- Desired FYBC Age -->
                         <div class="cost-of-wants-field-row">
                           <div class="cost-of-wants-field-content">
-                            <label for="desiredRetirementAge">
+                            <label for="desiredFybcAge">
                               Desired FYBC Age
                             </label>
 
@@ -1504,7 +1504,7 @@
 
                           <div class="cost-of-wants-field-input">
                             <input
-                              id="desiredRetirementAge"
+                              id="desiredFybcAge"
                               class="form-control"
                               type="number"
                               min="1"
@@ -1522,11 +1522,6 @@
                             <label for="plannedMortalityAge">
                               Planned Mortality Age
                             </label>
-
-                            <span class="form-helper-text">
-                              Used to estimate how long retirement income may be
-                              needed.
-                            </span>
                           </div>
 
                           <div class="cost-of-wants-field-input">
@@ -1581,23 +1576,22 @@
                           </div>
                         </div>
 
-                        <!-- Post-Retirement Return Rate -->
+                        <!-- Post-FYBC Return Rate -->
                         <div class="cost-of-wants-field-row">
                           <div class="cost-of-wants-field-content">
-                            <label for="postRetirementReturnRate">
-                              Post-Retirement Return Rate (% p.a.)
+                            <label for="postFybcReturnRate">
+                              Post-FYBC Return Rate (% p.a.)
                             </label>
 
                             <span class="form-helper-text">
-                              Expected annual return on the retirement fund
-                              after retirement.
+                              Expected annual return after FYB.
                             </span>
                           </div>
 
                           <div class="cost-of-wants-field-input">
                             <div class="percentage-input">
                               <input
-                                id="postRetirementReturnRate"
+                                id="postFybcReturnRate"
                                 class="form-control"
                                 type="number"
                                 min="0"
@@ -1628,7 +1622,7 @@
 
                         <p>
                           Select the monthly passive income that best reflects
-                          the client's desired retirement lifestyle.
+                          the client's desired lifestyle.
                         </p>
                       </div>
 
@@ -1836,7 +1830,7 @@
 
                       <!-- FYBC Age Validation -->
                       <div
-                        id="costOfWantsFybCAgeError"
+                        id="costOfWantsFybcAgeError"
                         class="cost-of-wants-validation-message"
                         role="alert"
                         hidden

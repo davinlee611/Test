@@ -29,17 +29,13 @@ import { EVENTS } from "../events/events.js";
 
 const currentAgeInput = document.getElementById("costOfWantsCurrentAge");
 
-const desiredRetirementAgeInput = document.getElementById(
-  "desiredRetirementAge",
-);
+const desiredFybcAgeInput = document.getElementById("desiredFybcAge");
 
 const plannedMortalityAgeInput = document.getElementById("plannedMortalityAge");
 
 const inflationRateInput = document.getElementById("costOfWantsInflationRate");
 
-const postRetirementReturnRateInput = document.getElementById(
-  "postRetirementReturnRate",
-);
+const postFybcReturnRateInput = document.getElementById("postFybcReturnRate");
 
 const lifestyleOptionButtons = Array.from(
   document.querySelectorAll("[data-lifestyle-option]"),
@@ -61,7 +57,7 @@ const selectedIncomeAmount = document.getElementById(
 
 const formMessage = document.getElementById("costOfWantsFormMessage");
 
-const fybcAgeErrorElement = document.getElementById("costOfWantsFybCAgeError");
+const fybcAgeErrorElement = document.getElementById("costOfWantsFybcAgeError");
 
 const projectionButton = document.getElementById("costOfWantsProjectionButton");
 
@@ -238,10 +234,10 @@ function collapseCalculatedBreakdown() {
 
 function attachInputListeners() {
   const inputs = [
-    desiredRetirementAgeInput,
+    desiredFybcAgeInput,
     plannedMortalityAgeInput,
     inflationRateInput,
-    postRetirementReturnRateInput,
+    postFybcReturnRateInput,
   ];
 
   inputs.forEach(function (input) {
@@ -346,7 +342,7 @@ function attachApplicationListeners() {
 function handleCostOfWantsBlur() {
   saveCostOfWantsInputs();
 
-  validateFybCAge();
+  validateFybcAge();
   validateCostOfWants();
 }
 
@@ -354,7 +350,7 @@ function handleCostOfWantsInput() {
   saveCostOfWantsInputs();
 
   clearFormMessage();
-  clearFybCAgeError();
+  clearFybcAgeError();
 
   emitCostOfWantsChanged();
 }
@@ -398,13 +394,13 @@ function selectLifestyleOption(option) {
 
 function saveCostOfWantsInputs() {
   updateCostOfWants({
-    desiredRetirementAge: getWholeNumberInput(desiredRetirementAgeInput),
+    desiredFybcAge: getWholeNumberInput(desiredFybcAgeInput),
 
     plannedMortalityAge: getWholeNumberInput(plannedMortalityAgeInput),
 
     inflationRate: getDecimalInput(inflationRateInput),
 
-    postRetirementReturnRate: getDecimalInput(postRetirementReturnRateInput),
+    postFybcReturnRate: getDecimalInput(postFybcReturnRateInput),
   });
 }
 
@@ -434,19 +430,13 @@ function renderClientDetails() {
 function syncCostOfWantsInputs() {
   const costOfWants = getCostOfWants();
 
-  setOptionalNumberInput(
-    desiredRetirementAgeInput,
-    costOfWants.desiredRetirementAge,
-  );
+  setOptionalNumberInput(desiredFybcAgeInput, costOfWants.desiredFybcAge);
 
   setNumberInput(plannedMortalityAgeInput, costOfWants.plannedMortalityAge);
 
   setNumberInput(inflationRateInput, costOfWants.inflationRate);
 
-  setNumberInput(
-    postRetirementReturnRateInput,
-    costOfWants.postRetirementReturnRate,
-  );
+  setNumberInput(postFybcReturnRateInput, costOfWants.postFybcReturnRate);
 }
 
 function renderLifestyleSelection() {
@@ -938,38 +928,35 @@ function getValidAmount(value) {
    VALIDATION
 ======================================== */
 
-function validateFybCAge() {
+function validateFybcAge() {
   const currentAge = getClientAge();
 
-  const { desiredRetirementAge, plannedMortalityAge } = getCostOfWants();
+  const { desiredFybcAge, plannedMortalityAge } = getCostOfWants();
 
   if (currentAge === null || currentAge <= 0) {
-    showFybCAgeError(
+    showFybcAgeError(
       "Complete the client's date of birth before generating projections.",
     );
 
     return false;
   }
 
-  if (
-    desiredRetirementAge <= currentAge ||
-    desiredRetirementAge >= plannedMortalityAge
-  ) {
-    showFybCAgeError(
-      `Desired FYBC Age must be between age ${
-        currentAge + 1
-      } and ${plannedMortalityAge - 1}.`,
+  if (desiredFybcAge <= currentAge || desiredFybcAge >= plannedMortalityAge) {
+    showFybcAgeError(
+      `Desired FYBC Age must be between age ${currentAge + 1} and ${
+        plannedMortalityAge - 1
+      }.`,
     );
 
     return false;
   }
 
-  clearFybCAgeError();
+  clearFybcAgeError();
 
   return true;
 }
 
-function showFybCAgeError(message) {
+function showFybcAgeError(message) {
   if (!fybcAgeErrorElement) {
     return;
   }
@@ -978,10 +965,10 @@ function showFybCAgeError(message) {
 
   fybcAgeErrorElement.hidden = false;
 
-  desiredRetirementAgeInput?.setAttribute("aria-invalid", "true");
+  desiredFybcAgeInput?.setAttribute("aria-invalid", "true");
 }
 
-function clearFybCAgeError() {
+function clearFybcAgeError() {
   if (!fybcAgeErrorElement) {
     return;
   }
@@ -990,22 +977,23 @@ function clearFybCAgeError() {
 
   fybcAgeErrorElement.hidden = true;
 
-  desiredRetirementAgeInput?.removeAttribute("aria-invalid");
+  desiredFybcAgeInput?.removeAttribute("aria-invalid");
 }
 
 function validateCostOfWantsForProjection() {
   clearFormMessage();
 
-  const isFybCAgeValid = validateFybCAge();
+  const isFybcAgeValid =
+  validateFybcAge();
 
-  if (!isFybCAgeValid) {
-    return false;
-  }
+if (!isFybcAgeValid) {
+  return false;
+}
 
   const {
     plannedMortalityAge,
     inflationRate,
-    postRetirementReturnRate,
+    postFybcReturnRate,
     lifestyleOption,
     customMonthlyIncome,
   } = getCostOfWants();
@@ -1022,8 +1010,8 @@ function validateCostOfWantsForProjection() {
     return false;
   }
 
-  if (postRetirementReturnRate < 0) {
-    showFormMessage("Post-retirement return rate cannot be negative.");
+  if (postFybcReturnRate < 0) {
+    showFormMessage("Post-FYBC return rate cannot be negative.");
 
     return false;
   }
@@ -1049,13 +1037,13 @@ function validateCostOfWants() {
   const currentAge = getClientAge();
 
   const {
-    desiredRetirementAge,
+    desiredFybcAge,
     plannedMortalityAge,
     inflationRate,
-    postRetirementReturnRate,
+    postFybcReturnRate,
   } = getCostOfWants();
 
-  if (!validateFybCAge()) {
+  if (!validateFybcAge()) {
     return false;
   }
 
@@ -1071,7 +1059,7 @@ function validateCostOfWants() {
     return false;
   }
 
-  if (postRetirementReturnRate < 0) {
+  if (postFybcReturnRate < 0) {
     showFormMessage("Post-retirement return rate cannot be negative.");
 
     return false;
@@ -1155,10 +1143,10 @@ function emitCostOfWantsChanged() {
 
 function createDefaultCostOfWants() {
   return {
-    desiredRetirementAge: 0,
+    desiredFybcAge: 0,
     plannedMortalityAge: 85,
     inflationRate: 2.5,
-    postRetirementReturnRate: 3.5,
+    postFybcReturnRate: 3.5,
 
     lifestyleOption: "",
     customMonthlyIncome: 0,
