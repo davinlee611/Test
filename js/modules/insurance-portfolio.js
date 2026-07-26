@@ -508,7 +508,18 @@ function updateLongTermCareBasePlanField() {
 }
 
 function handleLongTermCareBasePlanChange() {
-  removeLongTermCareBaseBenefit();
+  /*
+   * Changing the base plan invalidates the previously
+   * entered supplementary benefits because their payout
+   * options depend on the selected base plan.
+   *
+   * Keep only untouched suggested benefits.
+   */
+  draftBenefits = draftBenefits.filter(function (benefit) {
+    return benefit.isSuggested;
+  });
+
+  closeBenefitEditor();
 
   const selectedBasePlan = elements.longTermCareBasePlanSelect.value;
 
@@ -525,20 +536,7 @@ function handleLongTermCareBasePlanChange() {
     );
   }
 
-  if (
-    !elements.benefitEditor.hidden &&
-    elements.benefitTypeSelect.value === "long_term_care_income"
-  ) {
-    updateLongTermCarePayoutTermOptions();
-  }
-
   renderDraftBenefits();
-}
-
-function removeLongTermCareBaseBenefit() {
-  draftBenefits = draftBenefits.filter(function (benefit) {
-    return !benefit.isBasePlanBenefit;
-  });
 }
 
 function updatePremiumFields() {
