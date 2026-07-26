@@ -29,31 +29,8 @@ export function getPolicyById(policyId) {
    POLICY COMMANDS
 ======================================== */
 
-export function createPolicy({
-  policyName,
-  policyType,
-  longTermCareBasePlan = null,
-  insurer,
-  policyNumber,
-  lifeAssured,
-  status,
-  premium,
-  benefits = [],
-}) {
-  const newPolicy = {
-    id: createPlannerId(),
-    policyName,
-    policyType,
-    longTermCareBasePlan,
-    insurer,
-    policyNumber,
-    lifeAssured,
-    status,
-
-    premium: clonePolicyPremium(premium),
-
-    benefits: cloneBenefits(benefits),
-  };
+export function createPolicy(policyData) {
+  const newPolicy = createPolicyRecord(policyData);
 
   setPolicies(appendItem(getPolicies(), newPolicy));
 
@@ -110,6 +87,41 @@ export function removePolicy(policyId) {
 
 export function clearPolicies() {
   setPolicies([]);
+}
+
+export function clearPolicies() {
+  setPolicies([]);
+}
+
+/* ========================================
+   PRIVATE POLICY FACTORY
+======================================== */
+
+function createPolicyRecord({
+  policyName,
+  policyType,
+  longTermCareBasePlan = null,
+  insurer,
+  policyNumber,
+  lifeAssured,
+  status,
+  premium,
+  benefits = [],
+}) {
+  return {
+    id: createPlannerId(),
+    policyName,
+    policyType,
+    longTermCareBasePlan,
+    insurer,
+    policyNumber,
+    lifeAssured,
+    status,
+
+    premium: clonePolicyPremium(premium),
+
+    benefits: cloneBenefits(benefits),
+  };
 }
 
 /* ========================================
