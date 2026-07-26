@@ -89,10 +89,6 @@ export function clearPolicies() {
   setPolicies([]);
 }
 
-export function clearPolicies() {
-  setPolicies([]);
-}
-
 /* ========================================
    PRIVATE POLICY FACTORY
 ======================================== */
