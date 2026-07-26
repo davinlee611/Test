@@ -7,6 +7,7 @@ export function getPolicyValidationItems(
   {
     includeDraftBenefits = false,
     allPolicies = [],
+    editingPolicyId = "",
     monthlyEmploymentIncome = 0,
     annualBonus = 0,
   } = {},
@@ -166,7 +167,9 @@ export function getPolicyValidationItems(
   */
   if (includeDraftBenefits) {
     if (editingPolicyId) {
-      const existingPolicy = getPolicyById(editingPolicyId);
+      const existingPolicy = allPolicies.find(function (policy) {
+        return policy.id === editingPolicyId;
+      });
 
       if (existingPolicy) {
         const existingDisabilityIncome = (existingPolicy.benefits || [])
@@ -370,6 +373,7 @@ export function getCompletePolicyValidationItems({
   policyLifeAssured = "",
   benefits = [],
   allPolicies = [],
+  editingPolicyId = "",
   includeDraftBenefits = false,
   monthlyEmploymentIncome = 0,
   annualBonus = 0,
@@ -378,6 +382,7 @@ export function getCompletePolicyValidationItems({
     ...getPolicyValidationItems(benefits, {
       includeDraftBenefits,
       allPolicies,
+      editingPolicyId,
       monthlyEmploymentIncome,
       annualBonus,
     }),

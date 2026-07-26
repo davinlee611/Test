@@ -681,10 +681,19 @@ function validatePolicyForm(formData) {
 
   const firstError = getCompletePolicyValidationItems({
     policyId: editingPolicyId || "",
+    editingPolicyId: editingPolicyId || "",
+
     policyLifeAssured: formData.lifeAssured,
+
     benefits: draftBenefits,
+
     allPolicies: getAllPolicies(),
+
     includeDraftBenefits: true,
+
+    monthlyEmploymentIncome: assets.income.monthlyEmployment,
+
+    annualBonus: assets.income.annualBonus,
   }).find(function (item) {
     return item.severity === "error" && !item.valid;
   });
@@ -716,7 +725,10 @@ function renderPolicyValidation() {
   const assets = getAssets();
 
   const validationItems = getCompletePolicyValidationItems({
-    policyId: editingPolicyId || "",
+    policyId: editingPolicyId,
+
+    editingPolicyId,
+
     policyLifeAssured: elements.policyLifeAssuredInput.value.trim(),
     benefits: draftBenefits,
     allPolicies: getAllPolicies(),
@@ -785,11 +797,22 @@ function renderPolicyValidation() {
 
 function getPolicyValidationSummary(policy) {
   const validationItems = getCompletePolicyValidationItems({
-    policyId: policy.id,
-    policyLifeAssured: policy.lifeAssured || "",
-    benefits: policy.benefits || [],
+    policyId: editingPolicyId || "",
+    editingPolicyId: editingPolicyId || "",
+
+    policyLifeAssured: formData.lifeAssured,
+
+    benefits: draftBenefits,
+
     allPolicies: getAllPolicies(),
-    includeDraftBenefits: false,
+
+    includeDraftBenefits: true,
+
+    monthlyEmploymentIncome: assets.income.monthlyEmployment,
+
+    annualBonus: assets.income.annualBonus,
+  }).find(function (item) {
+    return item.severity === "error" && !item.valid;
   });
 
   const errors = validationItems.filter(function (item) {
