@@ -1,9 +1,6 @@
 "use strict";
 
-import {
-  escapeHtml,
-  formatCurrency,
-} from "../utils/client-utils.js";
+import { escapeHtml, formatCurrency } from "../utils/client-utils.js";
 
 import {
   openModal,
@@ -708,8 +705,6 @@ function validatePolicyForm(formData) {
   return "";
 }
 
-
-
 function renderPolicyValidation() {
   if (!elements.policyValidationSection || !elements.policyValidationList) {
     return;
@@ -789,28 +784,25 @@ function renderPolicyValidation() {
   });
 }
 
-
-
-
-
 function getPolicyValidationSummary(policy) {
+  const assets = getAssets();
+
   const validationItems = getCompletePolicyValidationItems({
-    policyId: editingPolicyId || "",
-    editingPolicyId: editingPolicyId || "",
+    policyId: policy.id || "",
 
-    policyLifeAssured: formData.lifeAssured,
+    policyLifeAssured: policy.lifeAssured || "",
 
-    benefits: draftBenefits,
+    benefits: policy.benefits || [],
 
-    allPolicies: getAllPolicies(),
+    includeDraftBenefits: false,
 
-    includeDraftBenefits: true,
+    context: {
+      allPolicies: getAllPolicies(),
 
-    monthlyEmploymentIncome: assets.income.monthlyEmployment,
+      monthlyEmploymentIncome: assets.income.monthlyEmployment,
 
-    annualBonus: assets.income.annualBonus,
-  }).find(function (item) {
-    return item.severity === "error" && !item.valid;
+      annualBonus: assets.income.annualBonus,
+    },
   });
 
   const errors = validationItems.filter(function (item) {
