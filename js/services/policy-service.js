@@ -9,6 +9,8 @@ import {
   updateItemById,
 } from "../utils/collection-utils.js";
 
+import { createPlannerId } from "../utils/client-utils.js";
+
 /* ========================================
    POLICY QUERIES
 ======================================== */
@@ -25,14 +27,35 @@ export function getPolicyById(policyId) {
    POLICY COMMANDS
 ======================================== */
 
-export function createPolicy(policy) {
-  if (!policy || typeof policy !== "object" || !policy.id) {
-    return null;
-  }
+export function createPolicy({
+  policyName,
+  policyType,
+  longTermCareBasePlan = null,
+  insurer,
+  policyNumber,
+  lifeAssured,
+  status,
+  premium,
+  benefits = [],
+}) {
+  const newPolicy = {
+    id: createPlannerId(),
+    policyName,
+    policyType,
+    longTermCareBasePlan,
+    insurer,
+    policyNumber,
+    lifeAssured,
+    status,
 
-  setPolicies(appendItem(getPolicies(), policy));
+    premium: clonePolicyPremium(premium),
 
-  return policy;
+    benefits: clonePolicyBenefits(benefits),
+  };
+
+  setPolicies(appendItem(getPolicies(), newPolicy));
+
+  return newPolicy;
 }
 
 export function updatePolicy(policyId, updates) {
@@ -43,11 +66,23 @@ export function updatePolicy(policyId, updates) {
   const { items, updatedItem } = updateItemById(
     getPolicies(),
     policyId,
-    (policy) => ({
-      ...policy,
-      ...updates,
-      id: policy.id,
-    }),
+    (policy) => {
+      const updatedPolicy = {
+        ...policy,
+        ...updates,
+        id: policy.id,
+      };
+
+      if (Object.prototype.hasOwnProperty.call(updates, "premium")) {
+        updatedPolicy.premium = clonePolicyPremium(updates.premium);
+      }
+
+      if (Object.prototype.hasOwnProperty.call(updates, "benefits")) {
+        updatedPolicy.benefits = clonePolicyBenefits(updates.benefits);
+      }
+
+      return updatedPolicy;
+    },
   );
 
   if (!updatedItem) {
@@ -73,4 +108,33 @@ export function removePolicy(policyId) {
 
 export function clearPolicies() {
   setPolicies([]);
+}
+
+/* ========================================
+   PRIVATE COPY HELPERS
+======================================== */
+
+function clonePolicyPremium(premium) {
+  if (!premium || typeof premium !== "object") {
+    return {
+      amount: 0,
+      frequency: null,
+    };
+  }
+
+  return {
+    amount: Number(premium.amount) || 0,
+
+    frequency: premium.frequency || null,
+  };
+}
+
+function clonePolicyBenefits(benefits) {
+  if (!Array.isArray(benefits)) {
+    return [];
+  }
+
+  return benefits.map((benefit) => ({
+    ...benefit,
+  }));
 }

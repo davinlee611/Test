@@ -657,10 +657,28 @@ function savePolicy() {
 
       premium: getPolicyPremium(formData),
 
-      benefits: cloneBenefits(draftBenefits),
+      benefits: draftBenefits,
     });
   } else {
-    createPolicy(createPolicyObject(formData));
+    createPolicy({
+      policyName: formData.policyName,
+
+      policyType: formData.policyType,
+
+      longTermCareBasePlan: formData.longTermCareBasePlan,
+
+      insurer: formData.insurer,
+
+      policyNumber: formData.policyNumber,
+
+      lifeAssured: formData.lifeAssured,
+
+      status: formData.status,
+
+      premium: getPolicyPremium(formData),
+
+      benefits: draftBenefits,
+    });
   }
 
   renderInsurancePortfolio();
@@ -1301,30 +1319,6 @@ function getPolicyPremium(formData) {
   return {
     amount: formData.premiumAmount,
     frequency: formData.premiumFrequency,
-  };
-}
-
-function createPolicyObject(formData) {
-  return {
-    id: createPlannerId(),
-
-    policyName: formData.policyName,
-
-    policyType: formData.policyType,
-
-    longTermCareBasePlan: formData.longTermCareBasePlan,
-
-    insurer: formData.insurer,
-
-    policyNumber: formData.policyNumber,
-
-    lifeAssured: formData.lifeAssured,
-
-    status: formData.status,
-
-    premium: getPolicyPremium(formData),
-
-    benefits: cloneBenefits(draftBenefits),
   };
 }
 
