@@ -50,6 +50,8 @@ import { writePolicyFormData } from "./insurance/policy-form-writer.js";
 
 import { readBenefitFormData } from "./insurance/benefit-form-data.js";
 
+import { writeBenefitFormData } from "./insurance/benefit-form-writer.js";
+
 import {
   createPlanningCard,
   createPlanningCardIcon,
@@ -1378,36 +1380,11 @@ function openEditBenefitEditor(benefitId) {
 
   populateBenefitTypeOptions(benefit.type);
 
-  elements.benefitTypeSelect.value = benefit.type || "";
-
-  elements.benefitLifeAssuredInput.value =
-    benefit.lifeAssured || elements.policyLifeAssuredInput.value.trim();
-
-  elements.benefitCustomNameInput.value = benefit.customName || "";
-
-  elements.benefitAmountInput.value = benefit.amount > 0 ? benefit.amount : "";
-
-  elements.benefitPayoutTermSelect.value = benefit.payoutTerm || "";
-
-  elements.benefitPayoutDurationInput.value =
-    benefit.payoutDuration > 0 ? benefit.payoutDuration : "";
-
-  elements.benefitPayoutTypeSelect.value = benefit.payoutType || "";
-
-  elements.benefitHospitalClassSelect.value = benefit.hospitalClass || "";
-
-  elements.benefitHospitalRiderSelect.value =
-    benefit.riderType ||
-    (benefit.hasRider === true
-      ? "yes"
-      : benefit.hasRider === false
-        ? "no"
-        : "");
-
-  elements.benefitAdlRequirementSelect.value =
-    benefit.adlRequirement != null ? String(benefit.adlRequirement) : "";
-
-  elements.benefitNotesInput.value = benefit.notes || "";
+  writeBenefitFormData(
+    elements,
+    benefit,
+    elements.policyLifeAssuredInput.value.trim(),
+  );
 
   elements.benefitFormMessage.textContent = "";
 
