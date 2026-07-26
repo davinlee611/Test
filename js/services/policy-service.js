@@ -2,6 +2,13 @@
 
 import { getPolicies, setPolicies } from "../state/client-plan.js";
 
+import {
+  appendItem,
+  findItemById,
+  removeItemById,
+  updateItemById,
+} from "../utils/collection-utils.js";
+
 /* ========================================
    POLICY QUERIES
 ======================================== */
@@ -11,7 +18,7 @@ export function getAllPolicies() {
 }
 
 export function getPolicyById(policyId) {
-  return getPolicies().find((policy) => policy.id === policyId) ?? null;
+  return findItemById(getPolicies(), policyId);
 }
 
 /* ========================================
@@ -23,44 +30,43 @@ export function createPolicy(policy) {
     return null;
   }
 
-  setPolicies([...getPolicies(), policy]);
+  setPolicies(appendItem(getPolicies(), policy));
 
   return policy;
 }
 
 export function updatePolicy(policyId, updates) {
-  let updatedPolicy = null;
-
-  const policies = getPolicies().map((policy) => {
-    if (policy.id !== policyId) {
-      return policy;
-    }
-
-    updatedPolicy = {
-      ...policy,
-      ...updates,
-    };
-
-    return updatedPolicy;
-  });
-
-  if (!updatedPolicy) {
+  if (!updates || typeof updates !== "object") {
     return null;
   }
 
-  setPolicies(policies);
+  const { items, updatedItem } = updateItemById(
+    getPolicies(),
+    policyId,
+    (policy) => ({
+      ...policy,
+      ...updates,
+      id: policy.id,
+    }),
+  );
 
-  return updatedPolicy;
+  if (!updatedItem) {
+    return null;
+  }
+
+  setPolicies(items);
+
+  return updatedItem;
 }
 
 export function removePolicy(policyId) {
-  const existingPolicy = getPolicyById(policyId);
+  const { items, removedItem } = removeItemById(getPolicies(), policyId);
 
-  if (!existingPolicy) {
+  if (!removedItem) {
     return false;
   }
 
-  setPolicies(getPolicies().filter((policy) => policy.id !== policyId));
+  setPolicies(items);
 
   return true;
 }
