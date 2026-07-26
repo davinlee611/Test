@@ -679,21 +679,26 @@ function validatePolicyForm(formData) {
     return "Add at least one benefit to the policy.";
   }
 
+  const assets = getAssets();
+
   const firstError = getCompletePolicyValidationItems({
     policyId: editingPolicyId || "",
-    editingPolicyId: editingPolicyId || "",
 
     policyLifeAssured: formData.lifeAssured,
 
     benefits: draftBenefits,
 
-    allPolicies: getAllPolicies(),
-
     includeDraftBenefits: true,
 
-    monthlyEmploymentIncome: assets.income.monthlyEmployment,
+    context: {
+      editingPolicyId: editingPolicyId || "",
 
-    annualBonus: assets.income.annualBonus,
+      allPolicies: getAllPolicies(),
+
+      monthlyEmploymentIncome: assets.income.monthlyEmployment,
+
+      annualBonus: assets.income.annualBonus,
+    },
   }).find(function (item) {
     return item.severity === "error" && !item.valid;
   });
@@ -725,18 +730,23 @@ function renderPolicyValidation() {
   const assets = getAssets();
 
   const validationItems = getCompletePolicyValidationItems({
-    policyId: editingPolicyId,
-
-    editingPolicyId,
+    policyId: editingPolicyId || "",
 
     policyLifeAssured: elements.policyLifeAssuredInput.value.trim(),
+
     benefits: draftBenefits,
-    allPolicies: getAllPolicies(),
+
     includeDraftBenefits: true,
 
-    monthlyEmploymentIncome: assets.income.monthlyEmployment,
+    context: {
+      editingPolicyId: editingPolicyId || "",
 
-    annualBonus: assets.income.annualBonus,
+      allPolicies: getAllPolicies(),
+
+      monthlyEmploymentIncome: assets.income.monthlyEmployment,
+
+      annualBonus: assets.income.annualBonus,
+    },
   });
 
   const hasErrors = validationItems.some(function (item) {
@@ -1969,154 +1979,6 @@ function getUniqueLifeAssuredNames(benefits) {
       displayName,
     };
   });
-}
-
-function getHospitalisationPolicyValidationItems({
-  policyId = "",
-  policyLifeAssured = "",
-  benefits = [],
-  allPolicies = [],
-}) {
-  const validationItems = [];
-
-  const hospitalisationBenefits = benefits.filter(function (benefit) {
-    return benefit.type === "hospitalisation";
-  });
-
-  if (hospitalisationBenefits.length === 0) {
-    return validationItems;
-  }
-
-  const hospitalisationLifeAssuredNames = getUniqueLifeAssuredNames(
-    hospitalisationBenefits,
-  );
-
-  /*
-   * Include both the policy-level Life Assured and all benefit-level
-   * Life Assured names.
-   *
-   * This catches cases where the policy says "Davin Lee" but a
-   * benefit says "Jane Lee".
-   */
-  const allPolicyLifeAssuredNames = getUniqueLifeAssuredNames([
-    {
-      lifeAssured: policyLifeAssured,
-    },
-    ...benefits,
-  ]);
-
-  /*
-   * Rule 1:
-   * Only one Hospitalisation benefit is allowed per policy.
-   */
-  const hasOneHospitalisationBenefit = hospitalisationBenefits.length === 1;
-
-  validationItems.push({
-    severity: hasOneHospitalisationBenefit ? "pass" : "error",
-    valid: hasOneHospitalisationBenefit,
-    message: hasOneHospitalisationBenefit
-      ? "One Hospitalisation benefit recorded."
-      : "Only one Hospitalisation benefit is allowed per policy.",
-  });
-
-  /*
-   * Rule 4:
-   * Multiple Hospitalisation benefits for different life assureds
-   * cannot be placed under the same policy.
-   */
-  if (hospitalisationBenefits.length > 1) {
-    const hasOneHospitalisationLifeAssured =
-      hospitalisationLifeAssuredNames.length === 1;
-
-    validationItems.push({
-      severity: hasOneHospitalisationLifeAssured ? "pass" : "error",
-      valid: hasOneHospitalisationLifeAssured,
-      message: hasOneHospitalisationLifeAssured
-        ? "All Hospitalisation benefits belong to the same life assured."
-        : "Hospitalisation benefits for different life assureds must be entered as separate policies because each policy has its own policy number and premium.",
-    });
-  }
-
-  /*
-   * Rule 3:
-   * A policy containing Hospitalisation coverage must belong to
-   * only one life assured.
-   */
-  const hasOnePolicyLifeAssured = allPolicyLifeAssuredNames.length === 1;
-
-  validationItems.push({
-    severity: hasOnePolicyLifeAssured ? "pass" : "error",
-    valid: hasOnePolicyLifeAssured,
-    message: hasOnePolicyLifeAssured
-      ? "The Hospitalisation policy and all its benefits belong to one life assured."
-      : "A Hospitalisation policy can only cover one life assured. The policy and all its benefits must have the same life assured.",
-  });
-
-  /*
-   * Rule 2:
-   * The same life assured cannot have another Hospitalisation policy
-   * elsewhere in the portfolio.
-   */
-  hospitalisationLifeAssuredNames.forEach(function ({
-    normalizedName,
-    displayName,
-  }) {
-    const matchingPolicy = allPolicies.find(function (savedPolicy) {
-      /*
-       * Exclude the policy currently being edited or validated.
-       */
-      if (policyId && String(savedPolicy.id) === String(policyId)) {
-        return false;
-      }
-
-      const savedHospitalisationBenefits = (savedPolicy.benefits || []).filter(
-        function (benefit) {
-          return benefit.type === "hospitalisation";
-        },
-      );
-
-      if (savedHospitalisationBenefits.length === 0) {
-        return false;
-      }
-
-      const savedPolicyLifeAssured = normalizeLifeAssuredName(
-        savedPolicy.lifeAssured,
-      );
-
-      const policyLevelMatches = savedPolicyLifeAssured === normalizedName;
-
-      const benefitLevelMatches = savedHospitalisationBenefits.some(
-        function (benefit) {
-          return (
-            normalizeLifeAssuredName(benefit.lifeAssured) === normalizedName
-          );
-        },
-      );
-
-      return policyLevelMatches || benefitLevelMatches;
-    });
-
-    if (matchingPolicy) {
-      validationItems.push({
-        severity: "error",
-        valid: false,
-        message:
-          `${displayName} already has a Hospitalisation policy ` +
-          "in the portfolio. Only one Hospitalisation policy is " +
-          "allowed per life assured.",
-      });
-    } else {
-      validationItems.push({
-        severity: "pass",
-        valid: true,
-        message:
-          `${displayName} does not have another ` +
-          "Hospitalisation policy in the portfolio.",
-      });
-    }
-  });
-
-  return validationItems;
 }
 
 function getLongTermCareBasePlanLabel(basePlanValue) {
