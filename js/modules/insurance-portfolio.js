@@ -1324,14 +1324,6 @@ function getPolicyPremium(formData) {
   };
 }
 
-function cloneBenefits(benefits) {
-  return benefits.map(function (benefit) {
-    return {
-      ...benefit,
-    };
-  });
-}
-
 function showPolicyFormMessage(message) {
   elements.policyFormMessage.textContent = message;
 
