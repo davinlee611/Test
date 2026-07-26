@@ -46,6 +46,8 @@ import { validateBenefit } from "./insurance/benefit-validation.js";
 
 import {
   getCompletePolicyValidationItems,
+  getPolicyValidationSummary,
+  getPortfolioValidationSummary,
 } from "./insurance/policy-validation.js";
 
 import {
@@ -749,75 +751,6 @@ function renderPolicyValidation() {
   });
 }
 
-function getPolicyValidationSummary(policy) {
-  const assets = getAssets();
-
-  const validationItems = getCompletePolicyValidationItems({
-    policyId: policy.id || "",
-
-    policyLifeAssured: policy.lifeAssured || "",
-
-    benefits: policy.benefits || [],
-
-    includeDraftBenefits: false,
-
-    context: {
-      allPolicies: getAllPolicies(),
-
-      monthlyEmploymentIncome: assets.income.monthlyEmployment,
-
-      annualBonus: assets.income.annualBonus,
-    },
-  });
-
-  const errors = validationItems.filter(function (item) {
-    return item.severity === "error" && !item.valid;
-  });
-
-  const reviews = validationItems.filter(function (item) {
-    return item.severity === "review";
-  });
-
-  const passes = validationItems.filter(function (item) {
-    return item.severity === "pass" && item.valid;
-  });
-
-  let highestSeverity = "pass";
-
-  if (errors.length > 0) {
-    highestSeverity = "error";
-  } else if (reviews.length > 0) {
-    highestSeverity = "review";
-  }
-
-  return {
-    items: validationItems,
-    errors,
-    reviews,
-    passes,
-    highestSeverity,
-  };
-}
-
-function getPortfolioValidationSummary(policies) {
-  return policies.reduce(
-    function (summary, policy) {
-      const policySummary = getPolicyValidationSummary(policy);
-
-      summary.errorCount += policySummary.errors.length;
-      summary.reviewCount += policySummary.reviews.length;
-      summary.passCount += policySummary.passes.length;
-
-      return summary;
-    },
-    {
-      errorCount: 0,
-      reviewCount: 0,
-      passCount: 0,
-    },
-  );
-}
-
 function getPolicyPremium(formData) {
   if (formData.status === "paid_up") {
     return {
@@ -1400,7 +1333,13 @@ function renderPortfolioValidationSummary(policies) {
     return;
   }
 
-  const summary = getPortfolioValidationSummary(policies);
+  const assets = getAssets();
+
+  const summary = getPortfolioValidationSummary(policies, {
+    monthlyEmploymentIncome: assets.income.monthlyEmployment,
+
+    annualBonus: assets.income.annualBonus,
+  });
 
   elements.portfolioErrorCount.textContent = summary.errorCount;
 
@@ -1438,7 +1377,15 @@ function renderPolicies(policies = getAllPolicies()) {
 }
 
 function createPolicyElement(policy) {
-  const validationSummary = getPolicyValidationSummary(policy);
+  const assets = getAssets();
+
+  const validationSummary = getPolicyValidationSummary(policy, {
+    allPolicies: getAllPolicies(),
+
+    monthlyEmploymentIncome: assets.income.monthlyEmployment,
+
+    annualBonus: assets.income.annualBonus,
+  });
 
   const policyElement = createPlanningCard({
     itemClass: [

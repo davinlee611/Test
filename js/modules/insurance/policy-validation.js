@@ -596,6 +596,89 @@ export function getCompletePolicyValidationItems({
   ];
 }
 
+export function getPolicyValidationSummary(
+  policy,
+  { allPolicies = [], monthlyEmploymentIncome = 0, annualBonus = 0 } = {},
+) {
+  const validationItems = getCompletePolicyValidationItems({
+    policyId: policy.id || "",
+
+    policyLifeAssured: policy.lifeAssured || "",
+
+    benefits: policy.benefits || [],
+
+    includeDraftBenefits: false,
+
+    context: {
+      allPolicies,
+
+      monthlyEmploymentIncome,
+
+      annualBonus,
+    },
+  });
+
+  const errors = validationItems.filter(function (item) {
+    return item.severity === "error" && !item.valid;
+  });
+
+  const reviews = validationItems.filter(function (item) {
+    return item.severity === "review";
+  });
+
+  const passes = validationItems.filter(function (item) {
+    return item.severity === "pass" && item.valid;
+  });
+
+  let highestSeverity = "pass";
+
+  if (errors.length > 0) {
+    highestSeverity = "error";
+  } else if (reviews.length > 0) {
+    highestSeverity = "review";
+  }
+
+  return {
+    items: validationItems,
+    errors,
+    reviews,
+    passes,
+    highestSeverity,
+  };
+}
+
+export function getPortfolioValidationSummary(
+  policies,
+  { monthlyEmploymentIncome = 0, annualBonus = 0 } = {},
+) {
+  const allPolicies = Array.isArray(policies) ? policies : [];
+
+  return allPolicies.reduce(
+    function (summary, policy) {
+      const policySummary = getPolicyValidationSummary(policy, {
+        allPolicies,
+
+        monthlyEmploymentIncome,
+
+        annualBonus,
+      });
+
+      summary.errorCount += policySummary.errors.length;
+
+      summary.reviewCount += policySummary.reviews.length;
+
+      summary.passCount += policySummary.passes.length;
+
+      return summary;
+    },
+    {
+      errorCount: 0,
+      reviewCount: 0,
+      passCount: 0,
+    },
+  );
+}
+
 /* ========================================
    BENEFIT GROUPING
 ======================================== */
