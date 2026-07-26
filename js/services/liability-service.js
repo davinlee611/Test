@@ -2,6 +2,13 @@
 
 import { getLiabilities, setLiabilities } from "../state/client-plan.js";
 
+import {
+  appendItem,
+  findItemById,
+  removeItemById,
+  updateItemById,
+} from "../utils/collection-utils.js";
+
 import { createPlannerId } from "../utils/client-utils.js";
 
 /* ========================================
@@ -13,9 +20,7 @@ export function getAllLiabilities() {
 }
 
 export function getLiabilityById(liabilityId) {
-  return (
-    getLiabilities().find((liability) => liability.id === liabilityId) ?? null
-  );
+  return findItemById(getLiabilities(), liabilityId);
 }
 
 /* ========================================
@@ -38,7 +43,7 @@ export function createLiability({
     interestRate,
   };
 
-  setLiabilities([...getLiabilities(), newLiability]);
+  setLiabilities(appendItem(getLiabilities(), newLiability));
 
   return newLiability;
 }
@@ -53,44 +58,36 @@ export function updateLiability(
     interestRate,
   },
 ) {
-  let updatedLiability = null;
-
-  const liabilities = getLiabilities().map((liability) => {
-    if (liability.id !== liabilityId) {
-      return liability;
-    }
-
-    updatedLiability = {
+  const { items, updatedItem } = updateItemById(
+    getLiabilities(),
+    liabilityId,
+    (liability) => ({
       ...liability,
       type: liabilityType,
       name: liabilityName,
       outstandingBalance,
       monthlyRepayment,
       interestRate,
-    };
+    }),
+  );
 
-    return updatedLiability;
-  });
-
-  if (!updatedLiability) {
+  if (!updatedItem) {
     return null;
   }
 
-  setLiabilities(liabilities);
+  setLiabilities(items);
 
-  return updatedLiability;
+  return updatedItem;
 }
 
 export function removeLiability(liabilityId) {
-  const existingLiability = getLiabilityById(liabilityId);
+  const { items, removedItem } = removeItemById(getLiabilities(), liabilityId);
 
-  if (!existingLiability) {
+  if (!removedItem) {
     return false;
   }
 
-  setLiabilities(
-    getLiabilities().filter((liability) => liability.id !== liabilityId),
-  );
+  setLiabilities(items);
 
   return true;
 }
