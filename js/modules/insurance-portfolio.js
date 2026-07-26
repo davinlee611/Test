@@ -1,7 +1,6 @@
 "use strict";
 
 import {
-  createPlannerId,
   escapeHtml,
   formatCurrency,
 } from "../utils/client-utils.js";
@@ -51,6 +50,12 @@ import { writePolicyFormData } from "./insurance/policy-form-writer.js";
 import { readBenefitFormData } from "./insurance/benefit-form-data.js";
 
 import { writeBenefitFormData } from "./insurance/benefit-form-writer.js";
+
+import {
+  addDraftBenefit,
+  updateDraftBenefit,
+  removeDraftBenefit,
+} from "./insurance/draft-benefits.js";
 
 import {
   createPlanningCard,
@@ -1630,9 +1635,13 @@ function saveBenefit() {
   }
 
   if (editingBenefitId) {
-    updateDraftBenefit(formData);
+    draftBenefits = updateDraftBenefit(
+      draftBenefits,
+      editingBenefitId,
+      formData,
+    );
   } else {
-    addDraftBenefit(formData);
+    draftBenefits = addDraftBenefit(draftBenefits, formData);
   }
 
   renderDraftBenefits();
@@ -1725,42 +1734,12 @@ function getBenefitAmountValidationMessage(benefitType) {
   }
 }
 
-function addDraftBenefit(formData) {
-  draftBenefits.push({
-    id: createPlannerId(),
-
-    isSuggested: false,
-
-    ...formData,
-  });
-}
-
-function updateDraftBenefit(formData) {
-  const benefitIndex = draftBenefits.findIndex(function (benefit) {
-    return benefit.id === editingBenefitId;
-  });
-
-  if (benefitIndex === -1) {
-    return;
-  }
-
-  draftBenefits[benefitIndex] = {
-    ...draftBenefits[benefitIndex],
-
-    ...formData,
-
-    isSuggested: false,
-  };
-}
-
 /* ========================================
    BENEFIT ACTIONS
 ======================================== */
 
 function deleteDraftBenefit(benefitId) {
-  draftBenefits = draftBenefits.filter(function (benefit) {
-    return benefit.id !== benefitId;
-  });
+  draftBenefits = removeDraftBenefit(draftBenefits, benefitId);
 
   if (editingBenefitId === benefitId) {
     closeBenefitEditor();
