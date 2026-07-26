@@ -3,13 +3,9 @@
 import { escapeHtml, formatCurrency } from "../utils/client-utils.js";
 
 import {
-  openModal,
-  closeModal,
   closeModalOnOverlayClick,
   closeModalOnEscape,
 } from "../utils/modal.js";
-
-import { cloneBenefits } from "../utils/benefit-utils.js";
 
 import {
   BENEFIT_LABELS,
@@ -22,7 +18,6 @@ import { getAssets, getClientProfile } from "../state/client-plan.js";
 
 import {
   getAllPolicies,
-  getPolicyById,
   createPolicy,
   updatePolicy,
   removePolicy,
@@ -36,11 +31,11 @@ import {
 
 import { readPolicyFormData } from "./insurance/policy-form-data.js";
 
-import { writePolicyFormData } from "./insurance/policy-form-writer.js";
-
 import { readBenefitFormData } from "./insurance/benefit-form-data.js";
 
 import { writeBenefitFormData } from "./insurance/benefit-form-writer.js";
+
+import { createPolicyModal } from "./insurance/policy-modal.js";
 
 import { validateBenefit } from "./insurance/benefit-validation.js";
 
@@ -78,6 +73,8 @@ let moduleInitialized = false;
 
 let elements = {};
 
+let policyModal = null;
+
 let draftBenefits = [];
 
 let editingBenefitId = null;
@@ -92,6 +89,40 @@ let previousPolicyType = "";
 
 export function initializeInsurancePortfolio() {
   cacheInsuranceElements();
+
+  policyModal = createPolicyModal({
+    elements,
+
+    setDraftBenefits(updatedBenefits) {
+      draftBenefits = updatedBenefits;
+    },
+
+    setEditingBenefitId(benefitId) {
+      editingBenefitId = benefitId;
+    },
+
+    setEditingPolicyId(policyId) {
+      editingPolicyId = policyId;
+    },
+
+    setPreviousPolicyType(policyType) {
+      previousPolicyType = policyType;
+    },
+
+    populateBenefitTypeOptions,
+
+    updateLongTermCareBasePlanField,
+
+    updatePremiumFields,
+
+    handleInsurerChange,
+
+    closeBenefitEditor,
+
+    renderDraftBenefits,
+
+    getLifeAssuredFromBenefits,
+  });
 
   if (!moduleInitialized) {
     bindInsuranceEvents();
@@ -114,7 +145,7 @@ export function resetInsurancePortfolio() {
   editingBenefitId = null;
   editingPolicyId = null;
 
-  closePolicyModal();
+  policyModal?.close();
 
   renderInsurancePortfolio();
 }
@@ -288,11 +319,17 @@ function bindInsuranceEvents() {
     scrollToFirstPolicyWithSeverity("review");
   });
 
-  elements.addPolicyButton?.addEventListener("click", openAddPolicyModal);
+  elements.addPolicyButton?.addEventListener("click", function () {
+    policyModal.openAdd();
+  });
 
-  elements.closePolicyModalButton?.addEventListener("click", closePolicyModal);
+  elements.closePolicyModalButton?.addEventListener("click", function () {
+    policyModal.close();
+  });
 
-  elements.cancelPolicyButton?.addEventListener("click", closePolicyModal);
+  elements.cancelPolicyButton?.addEventListener("click", function () {
+    policyModal.close();
+  });
 
   elements.savePolicyButton?.addEventListener("click", savePolicy);
 
@@ -353,110 +390,6 @@ function syncSuggestedBenefitLifeAssured() {
 /* ========================================
    POLICY MODAL
 ======================================== */
-
-function openAddPolicyModal() {
-  editingPolicyId = null;
-
-  resetPolicyForm();
-
-  previousPolicyType = "";
-
-  handleInsurerChange();
-
-  elements.policyModalTitle.textContent = "Add Policy";
-
-  elements.savePolicyButton.textContent = "Save Policy";
-
-  elements.policyLifeAssuredInput.value = getClientProfile().fullName || "";
-
-  updatePremiumFields();
-
-  openModal(elements.policyModal);
-}
-
-function openEditPolicyModal(policyId) {
-  const policy = getPolicyById(policyId);
-
-  if (!policy) {
-    return;
-  }
-
-  editingPolicyId = policy.id;
-
-  resetPolicyForm();
-
-  elements.policyModalTitle.textContent = "Edit Policy";
-
-  elements.savePolicyButton.textContent = "Save Changes";
-
-  writePolicyFormData(
-    elements,
-    policy,
-    getLifeAssuredFromBenefits(policy.benefits),
-  );
-
-  previousPolicyType = policy.policyType || "";
-
-  populateBenefitTypeOptions();
-
-  updateLongTermCareBasePlanField();
-
-  draftBenefits = cloneBenefits(policy.benefits);
-
-  updatePremiumFields();
-
-  renderDraftBenefits();
-
-  openModal(elements.policyModal);
-}
-
-function closePolicyModal() {
-  closeBenefitEditor();
-
-  editingPolicyId = null;
-
-  closeModal(elements.policyModal);
-}
-
-function resetPolicyForm() {
-  elements.policyNameInput.value = "";
-
-  elements.policyTypeSelect.value = "";
-
-  elements.longTermCareBasePlanSelect.value = "";
-
-  updateLongTermCareBasePlanField();
-
-  elements.insurerSelect.value = "";
-
-  elements.otherInsurerInput.value = "";
-
-  elements.otherInsurerGroup.hidden = true;
-
-  elements.policyNumberInput.value = "";
-
-  elements.policyLifeAssuredInput.value = "";
-
-  elements.policyStatusSelect.value = "";
-
-  elements.premiumInput.value = "";
-
-  elements.premiumFrequencySelect.value = "";
-
-  elements.policyFormMessage.textContent = "";
-
-  draftBenefits = [];
-
-  editingBenefitId = null;
-
-  previousPolicyType = "";
-
-  updatePremiumFields();
-
-  closeBenefitEditor();
-
-  renderDraftBenefits();
-}
 
 function handleInsurerChange() {
   const isOtherSelected = elements.insurerSelect.value === "other";
@@ -576,7 +509,7 @@ function savePolicy() {
 
   renderInsurancePortfolio();
 
-  closePolicyModal();
+  policyModal.close();
 }
 
 function validatePolicyForm(formData) {
@@ -1340,7 +1273,7 @@ function createPolicyEditButton(policy) {
     label: `Edit ${policy.policyName || "policy"}`,
 
     onClick() {
-      openEditPolicyModal(policy.id);
+      policyModal.openEdit(policy.id);
     },
   });
 }
