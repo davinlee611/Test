@@ -27,17 +27,8 @@ export function getPropertyById(propertyId) {
    PROPERTY COMMANDS
 ======================================== */
 
-export function createProperty({
-  propertyType,
-  marketValue,
-  ownershipPercentage,
-}) {
-  const newProperty = {
-    id: createPlannerId(),
-    type: propertyType,
-    marketValue,
-    ownershipPercentage,
-  };
+export function createProperty(propertyData) {
+  const newProperty = createPropertyRecord(propertyData);
 
   setProperties(appendItem(getProperties(), newProperty));
 
@@ -82,4 +73,21 @@ export function removeProperty(propertyId) {
 
 export function clearProperties() {
   setProperties([]);
+}
+
+/* ========================================
+   PRIVATE PROPERTY FACTORY
+======================================== */
+
+function createPropertyRecord({
+  propertyType,
+  marketValue,
+  ownershipPercentage,
+}) {
+  return {
+    id: createPlannerId(),
+    type: propertyType,
+    marketValue,
+    ownershipPercentage,
+  };
 }
