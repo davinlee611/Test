@@ -2,7 +2,11 @@
 
 export function getPolicyValidationItems(
   benefits,
-  { includeDraftBenefits = false } = {},
+  {
+    includeDraftBenefits = false,
+    monthlyEmploymentIncome = 0,
+    annualBonus = 0,
+  } = {},
 ) {
   const items = [];
 
@@ -126,12 +130,9 @@ export function getPolicyValidationItems(
 
   const earlyCiBenefits = benefitsByType["early_critical_illness"] ?? [];
 
-  const assets = getAssets();
-
   const averageGrossMonthlyEmploymentIncome = getAverageGrossMonthlyIncome({
-    monthlyEmploymentIncome: assets.income.monthlyEmployment,
-
-    annualBonus: assets.income.annualBonus,
+    monthlyEmploymentIncome,
+    annualBonus,
   });
 
   const disabilityIncomeLimit = averageGrossMonthlyEmploymentIncome * 0.75;
@@ -367,10 +368,14 @@ export function getCompletePolicyValidationItems({
   benefits = [],
   allPolicies = [],
   includeDraftBenefits = false,
+  monthlyEmploymentIncome = 0,
+  annualBonus = 0,
 }) {
   return [
     ...getPolicyValidationItems(benefits, {
       includeDraftBenefits,
+      monthlyEmploymentIncome,
+      annualBonus,
     }),
 
     ...getHospitalisationPolicyValidationItems({

@@ -713,12 +713,18 @@ function renderPolicyValidation() {
     return;
   }
 
+  const assets = getAssets();
+
   const validationItems = getCompletePolicyValidationItems({
     policyId: editingPolicyId || "",
     policyLifeAssured: elements.policyLifeAssuredInput.value.trim(),
     benefits: draftBenefits,
     allPolicies: getAllPolicies(),
     includeDraftBenefits: true,
+
+    monthlyEmploymentIncome: assets.income.monthlyEmployment,
+
+    annualBonus: assets.income.annualBonus,
   });
 
   const hasErrors = validationItems.some(function (item) {
