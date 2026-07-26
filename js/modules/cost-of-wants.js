@@ -8,6 +8,7 @@ import {
   getExpenses,
   getLiabilities,
   getPolicies,
+  resetCostOfWantsState,
   updateCostOfWants,
 } from "../state/client-plan.js";
 
@@ -205,9 +206,11 @@ export function initializeCostOfWants() {
 ======================================== */
 
 export function resetCostOfWants() {
-  updateCostOfWants(createDefaultCostOfWants());
+  resetCostOfWantsState();
 
   clearFormMessage();
+  clearFybcAgeError();
+
   renderCostOfWants();
   collapseCalculatedBreakdown();
 
@@ -1135,22 +1138,6 @@ function emitCostOfWantsChanged() {
     currentAge: getClientAge(),
     selectedMonthlyIncome: getSelectedMonthlyIncome(),
   });
-}
-
-/* ========================================
-   FACTORY
-======================================== */
-
-function createDefaultCostOfWants() {
-  return {
-    desiredFybcAge: 0,
-    plannedMortalityAge: 85,
-    inflationRate: 2.5,
-    postFybcReturnRate: 3.5,
-
-    lifestyleOption: "",
-    customMonthlyIncome: 0,
-  };
 }
 
 /* ========================================

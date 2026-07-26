@@ -1,6 +1,22 @@
 "use strict";
 
 /* ========================================
+   FEATURE FACTORIES
+======================================== */
+
+export function createEmptyCostOfWants() {
+  return {
+    desiredFybcAge: 0,
+    plannedMortalityAge: 85,
+    inflationRate: 2.5,
+    postFybcReturnRate: 3.5,
+
+    lifestyleOption: "",
+    customMonthlyIncome: 0,
+  };
+}
+
+/* ========================================
    PLAN FACTORY
 ======================================== */
 
@@ -66,15 +82,7 @@ export function createEmptyClientPlan() {
       policies: [],
     },
 
-    costOfWants: {
-      desiredFybcAge: 0,
-      plannedMortalityAge: 85,
-      inflationRate: 2.5,
-      postFybcReturnRate: 3.5,
-
-      lifestyleOption: "",
-      customMonthlyIncome: 0,
-    },
+    costOfWants: createEmptyCostOfWants(),
 
     summary: {},
 
@@ -264,6 +272,14 @@ export function updateCostOfWants(updates) {
   return clientPlan.costOfWants;
 }
 
+export function resetCostOfWantsState() {
+  clientPlan.costOfWants = createEmptyCostOfWants();
+
+  touchClientPlan();
+
+  return clientPlan.costOfWants;
+}
+
 /* ========================================
    INTERNAL HELPERS
 ======================================== */
@@ -343,10 +359,7 @@ function normalizeClientPlan(plan) {
         : [],
     },
 
-    costOfWants: {
-      ...emptyPlan.costOfWants,
-      ...plan.costOfWants,
-    },
+    costOfWants: normalizeCostOfWants(plan.costOfWants),
 
     summary: {
       ...emptyPlan.summary,
@@ -358,4 +371,48 @@ function normalizeClientPlan(plan) {
       ...plan.metadata,
     },
   };
+}
+
+function normalizeCostOfWants(costOfWants) {
+  const defaults = createEmptyCostOfWants();
+
+  if (!costOfWants || typeof costOfWants !== "object") {
+    return defaults;
+  }
+
+  const hasDesiredFybcAge = Object.prototype.hasOwnProperty.call(
+    costOfWants,
+    "desiredFybcAge",
+  );
+
+  const hasPostFybcReturnRate = Object.prototype.hasOwnProperty.call(
+    costOfWants,
+    "postFybcReturnRate",
+  );
+
+  const normalized = {
+    ...defaults,
+    ...costOfWants,
+  };
+
+  if (
+    !hasDesiredFybcAge &&
+    Number.isFinite(Number(costOfWants.desiredRetirementAge))
+  ) {
+    normalized.desiredFybcAge = Number(costOfWants.desiredRetirementAge);
+  }
+
+  if (
+    !hasPostFybcReturnRate &&
+    Number.isFinite(Number(costOfWants.postRetirementReturnRate))
+  ) {
+    normalized.postFybcReturnRate = Number(
+      costOfWants.postRetirementReturnRate,
+    );
+  }
+
+  delete normalized.desiredRetirementAge;
+  delete normalized.postRetirementReturnRate;
+
+  return normalized;
 }
