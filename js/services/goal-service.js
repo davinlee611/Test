@@ -2,6 +2,13 @@
 
 import { getGoals, setGoals } from "../state/client-plan.js";
 
+import {
+  appendItem,
+  findItemById,
+  removeItemById,
+  updateItemById,
+} from "../utils/collection-utils.js";
+
 import { createPlannerId } from "../utils/client-utils.js";
 
 /* ========================================
@@ -13,7 +20,7 @@ export function getAllGoals() {
 }
 
 export function getGoalById(goalId) {
-  return getGoals().find((goal) => goal.id === goalId) ?? null;
+  return findItemById(getGoals(), goalId);
 }
 
 /* ========================================
@@ -29,7 +36,7 @@ export function createGoal({ goalType, goalName, targetAmount, targetDate }) {
     targetDate,
   };
 
-  setGoals([...getGoals(), newGoal]);
+  setGoals(appendItem(getGoals(), newGoal));
 
   return newGoal;
 }
@@ -38,14 +45,8 @@ export function updateGoal(
   goalId,
   { goalType, goalName, targetAmount, targetDate },
 ) {
-  let updatedGoal = null;
-
-  const goals = getGoals().map((goal) => {
-    if (goal.id !== goalId) {
-      return goal;
-    }
-
-    updatedGoal = {
+  const { items, updatedItem } = updateItemById(getGoals(), goalId, (goal) => {
+    const updatedGoal = {
       ...goal,
       type: goalType,
       name: goalName,
@@ -54,31 +55,32 @@ export function updateGoal(
     };
 
     /*
-     * Remove the legacy targetYear property
-     * after the goal has been updated.
+     * Remove the legacy targetYear
+     * property when an older goal is
+     * updated.
      */
     delete updatedGoal.targetYear;
 
     return updatedGoal;
   });
 
-  if (!updatedGoal) {
+  if (!updatedItem) {
     return null;
   }
 
-  setGoals(goals);
+  setGoals(items);
 
-  return updatedGoal;
+  return updatedItem;
 }
 
 export function removeGoal(goalId) {
-  const existingGoal = getGoalById(goalId);
+  const { items, removedItem } = removeItemById(getGoals(), goalId);
 
-  if (!existingGoal) {
+  if (!removedItem) {
     return false;
   }
 
-  setGoals(getGoals().filter((goal) => goal.id !== goalId));
+  setGoals(items);
 
   return true;
 }
