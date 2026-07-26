@@ -861,7 +861,7 @@ function populateBenefitTypeOptions(selectedBenefitType = "") {
   elements.benefitTypeSelect.disabled = !policyType;
 }
 
-function openAddBenefitEditor() {
+function handleOpenAddBenefitEditor() {
   editingBenefitId = null;
 
   resetBenefitForm();
@@ -887,7 +887,7 @@ function openAddBenefitEditor() {
   elements.benefitTypeSelect.focus();
 }
 
-function openEditBenefitEditor(benefitId) {
+function handleOpenEditBenefitEditor(benefitId) {
   const benefit = draftBenefits.find(function (item) {
     return item.id === benefitId;
   });
