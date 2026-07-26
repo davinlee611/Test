@@ -13,8 +13,6 @@ import { cloneBenefits } from "../utils/benefit-utils.js";
 
 import {
   BENEFIT_LABELS,
-  HOSPITAL_CLASS_LABELS,
-  PAYOUT_TYPE_LABELS,
   POLICY_STATUS_LABELS,
   POLICY_TYPE_BENEFIT_OPTIONS,
   POLICY_TYPE_DEFAULT_BENEFITS,
@@ -51,6 +49,12 @@ import { validateBenefit } from "./insurance/benefit-validation.js";
 import {
   getCompletePolicyValidationItems,
 } from "./insurance/policy-validation.js";
+
+import {
+  getBenefitDisplayName,
+  getBenefitSummary,
+  createBenefitMetadata,
+} from "./insurance/benefit-renderer.js";
 
 import {
   addDraftBenefit,
@@ -1373,43 +1377,12 @@ function createBenefitIcon() {
 
 function createBenefitDetails(benefit) {
   return createPlanningCardDetails({
-    title: benefit.isBasePlanBenefit
-      ? benefit.customName || "Long-Term Care Base Plan"
-      : benefit.type === "other"
-        ? benefit.customName || "Other Benefit"
-        : BENEFIT_LABELS[benefit.type] || "Benefit",
+    title: getBenefitDisplayName(benefit),
 
     description: getBenefitSummary(benefit),
 
     content: createBenefitMetadata(benefit),
   });
-}
-
-function getBenefitAmountDescription(benefit) {
-  if (benefit.type === "hospitalisation") {
-    return (
-      HOSPITAL_CLASS_LABELS[benefit.hospitalClass] ||
-      "Hospital class not provided"
-    );
-  }
-
-  const formattedAmount = formatCurrency(benefit.amount);
-
-  switch (benefit.type) {
-    case "hospital_cash":
-      return `${formattedAmount} per day`;
-
-    case "medical_reimbursement":
-      return `${formattedAmount} per event`;
-
-    case "disability_income":
-    case "long_term_care_income":
-    case "monthly_benefit":
-      return `${formattedAmount} per month`;
-
-    default:
-      return formattedAmount;
-  }
 }
 
 function createBenefitEditButton(benefit) {
@@ -1440,130 +1413,6 @@ function createBenefitDeleteButton(benefit) {
       deleteDraftBenefit(benefit.id);
     },
   });
-}
-
-function getBenefitSummary(benefit) {
-  const parts = [];
-
-  parts.push(getBenefitAmountDescription(benefit));
-
-  if (benefit.type === "hospitalisation") {
-    const riderLabel = getHospitalRiderLabel(
-      benefit.riderType ||
-        (benefit.hasRider === true
-          ? "yes"
-          : benefit.hasRider === false
-            ? "no"
-            : ""),
-    );
-
-    if (riderLabel) {
-      parts.push(`Rider: ${riderLabel}`);
-    }
-  }
-
-  if (benefit.type === "long_term_care_income") {
-    if (benefit.payoutTerm === "extend_10_years") {
-      parts.push("Extends total payout to 10 years");
-    }
-
-    if (benefit.payoutTerm === "lifetime") {
-      parts.push("Lifetime payout");
-    }
-
-    if (benefit.payoutTerm === "limited" && benefit.payoutDuration > 0) {
-      parts.push(
-        `${benefit.payoutDuration} ${
-          benefit.payoutDuration === 1 ? "month" : "months"
-        } payout`,
-      );
-    }
-
-    if (benefit.adlRequirement) {
-      const adlLabel =
-        benefit.adlRequirement === 1
-          ? "1 ADL"
-          : `${benefit.adlRequirement} ADLs`;
-
-      parts.push(`Claim Trigger: ${adlLabel}`);
-    }
-  }
-
-  if (benefit.lifeAssured) {
-    parts.push(benefit.lifeAssured);
-  }
-
-  return parts.join(" · ");
-}
-
-function createBenefitMetadata(benefit) {
-  const metadata = document.createElement("div");
-
-  metadata.className = "benefit-item-meta";
-
-  appendMetadataItem(
-    metadata,
-    benefit.isBasePlanBenefit
-      ? benefit.customName || "Long-Term Care Base Plan"
-      : benefit.type === "other"
-        ? benefit.customName || "Other Benefit"
-        : BENEFIT_LABELS[benefit.type] || "Benefit",
-  );
-
-  if (benefit.payoutType) {
-    appendMetadataItem(metadata, PAYOUT_TYPE_LABELS[benefit.payoutType]);
-  }
-
-  if (benefit.type === "hospitalisation") {
-    const riderLabel = getHospitalRiderLabel(
-      benefit.riderType ||
-        (benefit.hasRider === true
-          ? "yes"
-          : benefit.hasRider === false
-            ? "no"
-            : ""),
-    );
-
-    if (riderLabel) {
-      appendMetadataItem(metadata, `Rider: ${riderLabel}`);
-    }
-  }
-
-  if (benefit.type === "long_term_care_income") {
-    if (benefit.isBasePlanBenefit) {
-      appendMetadataItem(metadata, "Base Plan");
-    }
-
-    if (benefit.payoutTerm === "extend_10_years") {
-      appendMetadataItem(metadata, "Extends Total Payout to 10 Years");
-    }
-
-    if (benefit.payoutTerm === "lifetime") {
-      appendMetadataItem(metadata, "Lifetime Payout");
-    }
-
-    if (benefit.payoutTerm === "limited" && benefit.payoutDuration > 0) {
-      appendMetadataItem(
-        metadata,
-        `${benefit.payoutDuration} ${
-          benefit.payoutDuration === 1 ? "Month" : "Months"
-        } Payout`,
-      );
-    }
-  }
-
-  if (benefit.type === "long_term_care_income" && benefit.adlRequirement) {
-    const adlLabel =
-      benefit.adlRequirement === 1 ? "1 ADL" : `${benefit.adlRequirement} ADLs`;
-
-    appendMetadataItem(metadata, `Claim Trigger: ${adlLabel}`);
-  }
-
-  if (benefit.notes) {
-    appendMetadataItem(metadata, benefit.notes);
-  }
-
-  return metadata;
 }
 
 /* ========================================
@@ -1884,22 +1733,6 @@ function getLifeAssuredFromBenefits(benefits) {
   });
 
   return benefitWithLifeAssured?.lifeAssured || "";
-}
-
-function getHospitalRiderLabel(riderType) {
-  switch (riderType) {
-    case "panel_only":
-      return "Yes (Panel Only)";
-
-    case "yes":
-      return "Yes";
-
-    case "no":
-      return "No";
-
-    default:
-      return "";
-  }
 }
 
 function scrollToFirstPolicyWithSeverity(severity) {
