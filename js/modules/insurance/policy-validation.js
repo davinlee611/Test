@@ -6,6 +6,7 @@ export function getPolicyValidationItems(
   benefits,
   {
     includeDraftBenefits = false,
+    allPolicies = [],
     monthlyEmploymentIncome = 0,
     annualBonus = 0,
   } = {},
@@ -141,7 +142,7 @@ export function getPolicyValidationItems(
 
   const disabilityIncomeBenefits = benefitsByType["disability_income"] ?? [];
 
-  let totalDisabilityIncome = getAllPolicies().reduce(function (
+  let totalDisabilityIncome = allPolicies.reduce(function (
     portfolioTotal,
     policy,
   ) {
@@ -376,6 +377,7 @@ export function getCompletePolicyValidationItems({
   return [
     ...getPolicyValidationItems(benefits, {
       includeDraftBenefits,
+      allPolicies,
       monthlyEmploymentIncome,
       annualBonus,
     }),
