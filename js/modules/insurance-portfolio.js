@@ -8,9 +8,7 @@ import {
 } from "../utils/modal.js";
 
 import {
-  BENEFIT_LABELS,
   LONG_TERM_CARE_BASE_PLANS,
-  POLICY_TYPE_BENEFIT_OPTIONS,
   POLICY_TYPE_DEFAULT_BENEFITS,
 } from "../constants/insurance.js";
 
@@ -31,13 +29,7 @@ import {
 
 import { readPolicyFormData } from "./insurance/policy-form-data.js";
 
-import { readBenefitFormData } from "./insurance/benefit-form-data.js";
-
-import { writeBenefitFormData } from "./insurance/benefit-form-writer.js";
-
 import { createPolicyModal } from "./insurance/policy-modal.js";
-
-import { validateBenefit } from "./insurance/benefit-validation.js";
 
 import {
   getCompletePolicyValidationItems,
@@ -47,15 +39,9 @@ import {
 
 import { createPolicyDetails } from "./insurance/policy-renderer.js";
 
-import {
-  addDraftBenefit,
-  updateDraftBenefit,
-  removeDraftBenefit,
-} from "./insurance/draft-benefits.js";
-
 import { renderDraftBenefitList } from "./insurance/draft-benefit-renderer.js";
 
-import { saveBenefit as saveBenefitData } from "./insurance/benefit-editor.js";
+import { createBenefitEditor } from "./insurance/benefit-editor.js";
 
 import {
   createPlanningCard,
@@ -75,6 +61,8 @@ let elements = {};
 
 let policyModal = null;
 
+let benefitEditor = null;
+
 let draftBenefits = [];
 
 let editingBenefitId = null;
@@ -89,6 +77,46 @@ let previousPolicyType = "";
 
 export function initializeInsurancePortfolio() {
   cacheInsuranceElements();
+
+  benefitEditor = createBenefitEditor({
+    elements,
+
+    getDraftBenefits() {
+      return draftBenefits;
+    },
+
+    setDraftBenefits(updatedBenefits) {
+      draftBenefits = updatedBenefits;
+    },
+
+    getEditingBenefitId() {
+      return editingBenefitId;
+    },
+
+    setEditingBenefitId(benefitId) {
+      editingBenefitId = benefitId;
+    },
+
+    getPolicyType() {
+      return elements.policyTypeSelect.value;
+    },
+
+    getPolicyLifeAssured() {
+      return elements.policyLifeAssuredInput.value.trim();
+    },
+
+    getDefaultLifeAssured() {
+      return getClientProfile().fullName || "";
+    },
+
+    getLongTermCareBasePlan() {
+      return elements.longTermCareBasePlanSelect.value;
+    },
+
+    onBenefitsChanged() {
+      renderDraftBenefits();
+    },
+  });
 
   policyModal = createPolicyModal({
     elements,
@@ -109,7 +137,9 @@ export function initializeInsurancePortfolio() {
       previousPolicyType = policyType;
     },
 
-    populateBenefitTypeOptions,
+    populateBenefitTypeOptions(selectedBenefitType) {
+      benefitEditor.populateBenefitTypeOptions(selectedBenefitType);
+    },
 
     updateLongTermCareBasePlanField,
 
@@ -117,7 +147,9 @@ export function initializeInsurancePortfolio() {
 
     handleInsurerChange,
 
-    closeBenefitEditor,
+    closeBenefitEditor() {
+      benefitEditor.close();
+    },
 
     renderDraftBenefits,
 
@@ -337,17 +369,17 @@ function bindInsuranceEvents() {
 
   elements.policyStatusSelect?.addEventListener("change", updatePremiumFields);
 
-  elements.addBenefitButton?.addEventListener(
-    "click",
-    handleOpenAddBenefitEditor,
-  );
+  elements.addBenefitButton?.addEventListener("click", function () {
+    benefitEditor.openAdd();
+  });
 
-  elements.closeBenefitEditorButton?.addEventListener(
-    "click",
-    closeBenefitEditor,
-  );
+  elements.closeBenefitEditorButton?.addEventListener("click", function () {
+    benefitEditor.close();
+  });
 
-  elements.cancelBenefitButton?.addEventListener("click", closeBenefitEditor);
+  elements.cancelBenefitButton?.addEventListener("click", function () {
+    benefitEditor.close();
+  });
 
   elements.policyTypeSelect?.addEventListener("change", handlePolicyTypeChange);
 
@@ -356,14 +388,17 @@ function bindInsuranceEvents() {
     handleLongTermCareBasePlanChange,
   );
 
-  elements.benefitPayoutTermSelect?.addEventListener(
-    "change",
-    updatePayoutDurationField,
-  );
+  elements.benefitPayoutTermSelect?.addEventListener("change", function () {
+    benefitEditor.updatePayoutDurationField();
+  });
 
-  elements.benefitTypeSelect?.addEventListener("change", updateBenefitFields);
+  elements.benefitTypeSelect?.addEventListener("change", function () {
+    benefitEditor.updateBenefitFields();
+  });
 
-  elements.saveBenefitButton?.addEventListener("click", handleSaveBenefit);
+  elements.saveBenefitButton?.addEventListener("click", function () {
+    benefitEditor.save();
+  });
 
   elements.policyLifeAssuredInput?.addEventListener(
     "input",
@@ -426,7 +461,7 @@ function handleLongTermCareBasePlanChange() {
     return benefit.isSuggested && !benefit.isBasePlanBenefit;
   });
 
-  closeBenefitEditor();
+  benefitEditor.close();
 
   const selectedBasePlan = elements.longTermCareBasePlanSelect.value;
 
@@ -713,9 +748,9 @@ function hasOnlySuggestedBenefits() {
 function handlePolicyTypeChange() {
   const policyType = elements.policyTypeSelect.value;
 
-  populateBenefitTypeOptions();
+  benefitEditor.populateBenefitTypeOptions();
 
-  closeBenefitEditor();
+  benefitEditor.close();
 
   if (!hasOnlySuggestedBenefits()) {
     const confirmed = window.confirm(
@@ -725,7 +760,7 @@ function handlePolicyTypeChange() {
     if (!confirmed) {
       elements.policyTypeSelect.value = previousPolicyType;
 
-      populateBenefitTypeOptions();
+      benefitEditor.populateBenefitTypeOptions();
 
       updateLongTermCareBasePlanField();
 
@@ -757,384 +792,6 @@ function handlePolicyTypeChange() {
   renderDraftBenefits();
 }
 
-function populateBenefitTypeOptions(selectedBenefitType = "") {
-  const policyType = elements.policyTypeSelect.value;
-
-  const allowedBenefitTypes = POLICY_TYPE_BENEFIT_OPTIONS[policyType] ?? [];
-
-  elements.benefitTypeSelect.innerHTML = "";
-
-  const placeholderOption = document.createElement("option");
-
-  placeholderOption.value = "";
-  placeholderOption.textContent = policyType
-    ? "Select benefit type"
-    : "Select a policy type first";
-
-  elements.benefitTypeSelect.appendChild(placeholderOption);
-
-  allowedBenefitTypes.forEach(function (benefitType) {
-    const option = document.createElement("option");
-
-    option.value = benefitType;
-    option.textContent = BENEFIT_LABELS[benefitType] || "Other Benefit";
-
-    elements.benefitTypeSelect.appendChild(option);
-  });
-
-  const selectedTypeIsAllowed =
-    allowedBenefitTypes.includes(selectedBenefitType);
-
-  elements.benefitTypeSelect.value = selectedTypeIsAllowed
-    ? selectedBenefitType
-    : "";
-
-  elements.benefitTypeSelect.disabled = !policyType;
-}
-
-function handleOpenAddBenefitEditor() {
-  editingBenefitId = null;
-
-  resetBenefitForm();
-
-  populateBenefitTypeOptions();
-
-  elements.benefitLifeAssuredInput.value =
-    elements.policyLifeAssuredInput.value.trim() ||
-    getClientProfile().fullName ||
-    "";
-
-  elements.benefitEditorTitle.textContent = "Add Benefit";
-
-  elements.saveBenefitButton.textContent = "Add Benefit";
-
-  elements.benefitEditor.hidden = false;
-
-  elements.benefitEditor.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
-
-  elements.benefitTypeSelect.focus();
-}
-
-function handleOpenEditBenefitEditor(benefitId) {
-  const benefit = draftBenefits.find(function (item) {
-    return item.id === benefitId;
-  });
-
-  if (!benefit) {
-    return;
-  }
-
-  editingBenefitId = benefit.id;
-
-  elements.benefitEditorTitle.textContent = "Edit Benefit";
-
-  elements.saveBenefitButton.textContent = "Save Changes";
-
-  populateBenefitTypeOptions(benefit.type);
-
-  writeBenefitFormData(
-    elements,
-    benefit,
-    elements.policyLifeAssuredInput.value.trim(),
-  );
-
-  elements.benefitFormMessage.textContent = "";
-
-  updateBenefitFields();
-
-  elements.benefitEditor.hidden = false;
-
-  elements.benefitEditor.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
-
-  elements.benefitTypeSelect.focus();
-}
-
-function closeBenefitEditor() {
-  if (!elements.benefitEditor) {
-    return;
-  }
-
-  elements.benefitEditor.hidden = true;
-
-  editingBenefitId = null;
-
-  elements.benefitEditorTitle.textContent = "Add Benefit";
-
-  elements.saveBenefitButton.textContent = "Add Benefit";
-
-  resetBenefitForm();
-}
-
-function resetBenefitForm() {
-  if (!elements.benefitTypeSelect) {
-    return;
-  }
-
-  populateBenefitTypeOptions();
-
-  elements.benefitTypeSelect.value = "";
-
-  elements.benefitLifeAssuredInput.value = "";
-
-  elements.benefitCustomNameInput.value = "";
-
-  elements.benefitAmountInput.value = "";
-
-  elements.benefitPayoutTermSelect.disabled = false;
-
-  elements.benefitPayoutTermSelect.innerHTML = `
-  <option value="">Select payout term</option>
-`;
-
-  elements.benefitPayoutDurationInput.value = "";
-
-  elements.benefitPayoutTypeSelect.value = "";
-
-  elements.benefitHospitalClassSelect.value = "";
-
-  elements.benefitHospitalRiderSelect.value = "";
-
-  elements.benefitAdlRequirementSelect.value = "";
-
-  elements.benefitNotesInput.value = "";
-
-  elements.benefitFormMessage.textContent = "";
-
-  updateBenefitFields();
-}
-
-function updateBenefitFields() {
-  const benefitType = elements.benefitTypeSelect.value;
-
-  hideBenefitSpecificFields();
-
-  elements.benefitLifeAssuredGroup.hidden = !benefitType;
-
-  switch (benefitType) {
-    case "death":
-    case "tpd":
-      showBenefitAmountField("Coverage Amount");
-      break;
-
-    case "critical_illness":
-    case "early_critical_illness":
-      showBenefitAmountField("Coverage Amount");
-      elements.benefitPayoutTypeGroup.hidden = false;
-      break;
-
-    case "hospitalisation":
-      elements.benefitHospitalClassGroup.hidden = false;
-      elements.benefitHospitalRiderGroup.hidden = false;
-      break;
-
-    case "hospital_cash":
-      showBenefitAmountField("Daily Cash Benefit");
-      break;
-
-    case "medical_reimbursement":
-      showBenefitAmountField("Medical Reimbursement per Event");
-      break;
-
-    case "monthly_benefit":
-    case "disability_income":
-      showBenefitAmountField("Monthly Benefit");
-      break;
-
-    case "long_term_care_income": {
-      showBenefitAmountField("Monthly Benefit");
-
-      elements.benefitPayoutTermGroup.hidden = false;
-      elements.benefitAdlRequirementGroup.hidden = false;
-
-      const selectedPayoutTerm = elements.benefitPayoutTermSelect.value;
-
-      updateLongTermCarePayoutTermOptions(selectedPayoutTerm);
-
-      break;
-    }
-
-    case "other":
-      elements.benefitCustomNameGroup.hidden = false;
-      showBenefitAmountField("Coverage Amount");
-      break;
-  }
-}
-
-function updateLongTermCarePayoutTermOptions(selectedPayoutTerm = "") {
-  const basePlan = elements.longTermCareBasePlanSelect.value;
-
-  const payoutTermOptions = [];
-
-  if (basePlan === "eldershield_300" || basePlan === "eldershield_400") {
-    payoutTermOptions.push(
-      {
-        value: "extend_10_years",
-        label: "Extend Total Payout to 10 Years",
-      },
-      {
-        value: "lifetime",
-        label: "Lifetime",
-      },
-    );
-  } else if (basePlan === "careshield_life") {
-    payoutTermOptions.push({
-      value: "lifetime",
-      label: "Lifetime",
-    });
-  } else {
-    payoutTermOptions.push(
-      {
-        value: "lifetime",
-        label: "Lifetime",
-      },
-      {
-        value: "limited",
-        label: "Limited Duration",
-      },
-    );
-  }
-
-  elements.benefitPayoutTermSelect.innerHTML = "";
-
-  const placeholderOption = document.createElement("option");
-
-  placeholderOption.value = "";
-
-  placeholderOption.textContent = "Select payout term";
-
-  elements.benefitPayoutTermSelect.appendChild(placeholderOption);
-
-  payoutTermOptions.forEach(function (optionData) {
-    const option = document.createElement("option");
-
-    option.value = optionData.value;
-
-    option.textContent = optionData.label;
-
-    elements.benefitPayoutTermSelect.appendChild(option);
-  });
-
-  const selectedTermIsAvailable = payoutTermOptions.some(function (optionData) {
-    return optionData.value === selectedPayoutTerm;
-  });
-
-  if (selectedTermIsAvailable) {
-    elements.benefitPayoutTermSelect.value = selectedPayoutTerm;
-  } else if (basePlan === "careshield_life") {
-    elements.benefitPayoutTermSelect.value = "lifetime";
-  } else {
-    elements.benefitPayoutTermSelect.value = "";
-  }
-
-  elements.benefitPayoutTermSelect.disabled = basePlan === "careshield_life";
-
-  updatePayoutDurationField();
-}
-
-function updatePayoutDurationField() {
-  const hasLimitedPayout = elements.benefitPayoutTermSelect.value === "limited";
-
-  elements.benefitPayoutDurationGroup.hidden = !hasLimitedPayout;
-
-  elements.benefitPayoutDurationInput.required = hasLimitedPayout;
-
-  if (!hasLimitedPayout) {
-    elements.benefitPayoutDurationInput.value = "";
-  }
-}
-
-function hideBenefitSpecificFields() {
-  elements.benefitLifeAssuredGroup.hidden = true;
-  elements.benefitCustomNameGroup.hidden = true;
-  elements.benefitAmountGroup.hidden = true;
-  elements.benefitPayoutTermGroup.hidden = true;
-  elements.benefitPayoutDurationGroup.hidden = true;
-  elements.benefitPayoutTypeGroup.hidden = true;
-  elements.benefitHospitalClassGroup.hidden = true;
-  elements.benefitHospitalRiderGroup.hidden = true;
-  elements.benefitAdlRequirementGroup.hidden = true;
-}
-
-function showBenefitAmountField(label) {
-  elements.benefitAmountGroup.hidden = false;
-
-  elements.benefitAmountLabel.innerHTML = `
-    ${escapeHtml(label)}
-    <span class="required-label">*</span>
-  `;
-}
-
-/* ========================================
-   SAVE BENEFIT
-======================================== */
-
-function handleSaveBenefit() {
-  const result = saveBenefitData({
-    elements,
-
-    draftBenefits,
-
-    editingBenefitId,
-
-    longTermCareBasePlan: elements.longTermCareBasePlanSelect.value,
-  });
-
-  if (!result.saved) {
-    return;
-  }
-
-  draftBenefits = result.draftBenefits;
-
-  editingBenefitId = result.editingBenefitId;
-
-  renderDraftBenefits();
-
-  closeBenefitEditor();
-}
-
-/* ========================================
-   BENEFIT ACTIONS
-======================================== */
-
-function confirmDeleteDraftBenefit(
-  benefitId,
-) {
-  const confirmed =
-    window.confirm(
-      "Delete this benefit?",
-    );
-
-  if (!confirmed) {
-    return;
-  }
-
-  deleteDraftBenefit(benefitId);
-}
-
-function deleteDraftBenefit(
-  benefitId,
-) {
-  draftBenefits =
-    removeDraftBenefit(
-      draftBenefits,
-      benefitId,
-    );
-
-  if (
-    editingBenefitId ===
-    benefitId
-  ) {
-    closeBenefitEditor();
-  }
-
-  renderDraftBenefits();
-}
 
 /* ========================================
    DRAFT BENEFIT RENDERING
@@ -1146,9 +803,13 @@ function renderDraftBenefits() {
 
     benefits: draftBenefits,
 
-    onEdit: handleOpenEditBenefitEditor,
+    onEdit(benefitId) {
+      benefitEditor.openEdit(benefitId);
+    },
 
-    onDelete: confirmDeleteDraftBenefit,
+    onDelete(benefitId) {
+      benefitEditor.confirmDelete(benefitId);
+    },
   });
 
   renderPolicyValidation();
