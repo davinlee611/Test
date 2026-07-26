@@ -12,7 +12,6 @@ import {
 import { cloneBenefits } from "../utils/benefit-utils.js";
 
 import {
-  BENEFIT_LABELS,
   LONG_TERM_CARE_BASE_PLANS,
   POLICY_TYPE_BENEFIT_OPTIONS,
   POLICY_TYPE_DEFAULT_BENEFITS,
@@ -50,12 +49,6 @@ import {
   getPortfolioValidationSummary,
 } from "./insurance/policy-validation.js";
 
-import {
-  getBenefitDisplayName,
-  getBenefitSummary,
-  createBenefitMetadata,
-} from "./insurance/benefit-renderer.js";
-
 import { createPolicyDetails } from "./insurance/policy-renderer.js";
 
 import {
@@ -64,10 +57,11 @@ import {
   removeDraftBenefit,
 } from "./insurance/draft-benefits.js";
 
+import { renderDraftBenefitList } from "./insurance/draft-benefit-renderer.js";
+
 import {
   createPlanningCard,
   createPlanningCardIcon,
-  createPlanningCardDetails,
   createPlanningCardActions,
   createPlanningCardButton,
   renderPlanningEmptyState,
@@ -548,46 +542,30 @@ function savePolicy() {
     return;
   }
 
+  const policyData = {
+    policyName: formData.policyName,
+
+    policyType: formData.policyType,
+
+    longTermCareBasePlan: formData.longTermCareBasePlan,
+
+    insurer: formData.insurer,
+
+    policyNumber: formData.policyNumber,
+
+    lifeAssured: formData.lifeAssured,
+
+    status: formData.status,
+
+    premium: getPolicyPremium(formData),
+
+    benefits: draftBenefits,
+  };
+
   if (editingPolicyId) {
-    updatePolicy(editingPolicyId, {
-      policyName: formData.policyName,
-
-      policyType: formData.policyType,
-
-      longTermCareBasePlan: formData.longTermCareBasePlan,
-
-      insurer: formData.insurer,
-
-      policyNumber: formData.policyNumber,
-
-      lifeAssured: formData.lifeAssured,
-
-      status: formData.status,
-
-      premium: getPolicyPremium(formData),
-
-      benefits: draftBenefits,
-    });
+    updatePolicy(editingPolicyId, policyData);
   } else {
-    createPolicy({
-      policyName: formData.policyName,
-
-      policyType: formData.policyType,
-
-      longTermCareBasePlan: formData.longTermCareBasePlan,
-
-      insurer: formData.insurer,
-
-      policyNumber: formData.policyNumber,
-
-      lifeAssured: formData.lifeAssured,
-
-      status: formData.status,
-
-      premium: getPolicyPremium(formData),
-
-      benefits: draftBenefits,
-    });
+    createPolicy(policyData);
   }
 
   renderInsurancePortfolio();
@@ -1189,10 +1167,34 @@ function saveBenefit() {
    BENEFIT ACTIONS
 ======================================== */
 
-function deleteDraftBenefit(benefitId) {
-  draftBenefits = removeDraftBenefit(draftBenefits, benefitId);
+function confirmDeleteDraftBenefit(
+  benefitId,
+) {
+  const confirmed =
+    window.confirm(
+      "Delete this benefit?",
+    );
 
-  if (editingBenefitId === benefitId) {
+  if (!confirmed) {
+    return;
+  }
+
+  deleteDraftBenefit(benefitId);
+}
+
+function deleteDraftBenefit(
+  benefitId,
+) {
+  draftBenefits =
+    removeDraftBenefit(
+      draftBenefits,
+      benefitId,
+    );
+
+  if (
+    editingBenefitId ===
+    benefitId
+  ) {
     closeBenefitEditor();
   }
 
@@ -1204,110 +1206,17 @@ function deleteDraftBenefit(benefitId) {
 ======================================== */
 
 function renderDraftBenefits() {
-  if (!elements.policyBenefitList) {
-    return;
-  }
+  renderDraftBenefitList({
+    container: elements.policyBenefitList,
 
-  elements.policyBenefitList.innerHTML = "";
+    benefits: draftBenefits,
 
-  if (draftBenefits.length === 0) {
-    renderEmptyBenefitMessage();
+    onEdit: openEditBenefitEditor,
 
-    renderPolicyValidation();
-
-    return;
-  }
-
-  draftBenefits.forEach(function (benefit) {
-    elements.policyBenefitList.appendChild(createBenefitElement(benefit));
+    onDelete: confirmDeleteDraftBenefit,
   });
 
   renderPolicyValidation();
-}
-
-function renderEmptyBenefitMessage() {
-  const message = document.createElement("p");
-
-  message.id = "emptyPolicyBenefitMessage";
-
-  message.className = "empty-state-message";
-
-  message.textContent = "No benefits added yet.";
-
-  elements.emptyPolicyBenefitMessage = message;
-
-  elements.policyBenefitList.appendChild(message);
-}
-
-function createBenefitElement(benefit) {
-  return createPlanningCard({
-    itemClass: "benefit-item",
-
-    icon: createBenefitIcon(),
-
-    details: createBenefitDetails(benefit),
-
-    actions: createBenefitActions(benefit),
-  });
-}
-
-function createBenefitActions(benefit) {
-  const actions = createPlanningCardActions();
-
-  if (benefit.isBasePlanBenefit) {
-    return actions;
-  }
-
-  actions.append(
-    createBenefitEditButton(benefit),
-    createBenefitDeleteButton(benefit),
-  );
-
-  return actions;
-}
-
-function createBenefitIcon() {
-  return createPlanningCardIcon("fa-solid fa-shield-heart");
-}
-
-function createBenefitDetails(benefit) {
-  return createPlanningCardDetails({
-    title: getBenefitDisplayName(benefit),
-
-    description: getBenefitSummary(benefit),
-
-    content: createBenefitMetadata(benefit),
-  });
-}
-
-function createBenefitEditButton(benefit) {
-  return createPlanningCardButton({
-    iconClass: "fa-solid fa-pen",
-
-    label: `Edit ${BENEFIT_LABELS[benefit.type]}`,
-
-    onClick() {
-      openEditBenefitEditor(benefit.id);
-    },
-  });
-}
-
-function createBenefitDeleteButton(benefit) {
-  return createPlanningCardButton({
-    iconClass: "fa-solid fa-trash",
-
-    variant: "delete",
-
-    label: `Delete ${BENEFIT_LABELS[benefit.type]}`,
-
-    onClick() {
-      if (!window.confirm("Delete this benefit?")) {
-        return;
-      }
-
-      deleteDraftBenefit(benefit.id);
-    },
-  });
 }
 
 /* ========================================
