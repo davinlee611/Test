@@ -45,6 +45,8 @@ import {
   createLongTermCareBaseBenefit,
 } from "../factories/benefit-factory.js";
 
+import { readPolicyFormData } from "./insurance/policy-form-data.js";
+
 import {
   createPlanningCard,
   createPlanningCardIcon,
@@ -602,7 +604,7 @@ function populateInsurerFields(insurer) {
 function savePolicy() {
   clearPolicyFormMessage();
 
-  const formData = getPolicyFormData();
+  const formData = readPolicyFormData(elements);
 
   const validationMessage = validatePolicyForm(formData);
 
@@ -657,38 +659,6 @@ function savePolicy() {
   renderInsurancePortfolio();
 
   closePolicyModal();
-}
-
-function getPolicyFormData() {
-  const selectedInsurer = elements.insurerSelect.value;
-
-  const insurer =
-    selectedInsurer === "other"
-      ? elements.otherInsurerInput.value.trim()
-      : selectedInsurer;
-
-  return {
-    policyName: elements.policyNameInput.value.trim(),
-
-    policyType: elements.policyTypeSelect.value,
-
-    longTermCareBasePlan:
-      elements.policyTypeSelect.value === "long_term_care"
-        ? elements.longTermCareBasePlanSelect.value
-        : null,
-
-    lifeAssured: elements.policyLifeAssuredInput.value.trim(),
-
-    insurer,
-
-    policyNumber: elements.policyNumberInput.value.trim(),
-
-    status: elements.policyStatusSelect.value,
-
-    premiumAmount: getWholeNumber(elements.premiumInput.value),
-
-    premiumFrequency: elements.premiumFrequencySelect.value,
-  };
 }
 
 function validatePolicyForm(formData) {
