@@ -1076,16 +1076,17 @@ function getPolicyValidationItems(
     }
   });
 
+  const hasCiOrEarlyCiBenefits =
+    criticalIllnessBenefits.length > 0 || earlyCiBenefits.length > 0;
+
   if (
+    hasCiOrEarlyCiBenefits &&
     acceleratedCiBenefits.length === 0 &&
-    earlyCiBenefits.length === 0 &&
     deathBenefits.length <= 1
   ) {
     items.push({
       severity: "pass",
-
       valid: true,
-
       message: "No CI or Early CI conflicts detected.",
     });
   }
