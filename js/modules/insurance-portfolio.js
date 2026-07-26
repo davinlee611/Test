@@ -12,6 +12,7 @@ import {
 import { cloneBenefits } from "../utils/benefit-utils.js";
 
 import {
+  BENEFIT_LABELS,
   LONG_TERM_CARE_BASE_PLANS,
   POLICY_TYPE_BENEFIT_OPTIONS,
   POLICY_TYPE_DEFAULT_BENEFITS,
