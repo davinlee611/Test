@@ -710,17 +710,7 @@ function validatePolicyForm(formData) {
   return "";
 }
 
-function findRelatedCriticalIllnessBenefit(criticalIllnessBenefits) {
-  if (criticalIllnessBenefits.length === 0) {
-    return null;
-  }
 
-  const acceleratedCiBenefit = criticalIllnessBenefits.find(function (benefit) {
-    return benefit.payoutType === "accelerated";
-  });
-
-  return acceleratedCiBenefit ?? criticalIllnessBenefits[0];
-}
 
 function renderPolicyValidation() {
   if (!elements.policyValidationSection || !elements.policyValidationList) {
@@ -1946,12 +1936,6 @@ function scrollToFirstPolicyWithSeverity(severity) {
   window.setTimeout(function () {
     matchingPolicy.classList.remove("policy-item--highlighted");
   }, 1800);
-}
-
-function normalizeLifeAssuredName(name) {
-  return String(name || "")
-    .trim()
-    .toLowerCase();
 }
 
 function getLongTermCareBasePlanLabel(basePlanValue) {

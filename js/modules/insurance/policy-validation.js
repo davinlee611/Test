@@ -2,6 +2,10 @@
 
 import { getAverageGrossMonthlyIncome } from "../../services/income-calculator.js";
 
+import { formatCurrency } from "../../utils/client-utils.js";
+
+import { PAYOUT_TYPE_LABELS } from "../../constants/insurance.js";
+
 export function getPolicyValidationItems(
   benefits,
   {
@@ -371,6 +375,25 @@ export function getPolicyValidationItems(
   }
 
   return items;
+}
+
+function findRelatedCriticalIllnessBenefit(criticalIllnessBenefits) {
+  if (criticalIllnessBenefits.length === 0) {
+    return null;
+  }
+
+  const acceleratedCiBenefit = criticalIllnessBenefits.find(function (benefit) {
+    return benefit.payoutType === "accelerated";
+  });
+
+  return acceleratedCiBenefit ?? criticalIllnessBenefits[0];
+}
+
+function normalizeLifeAssuredName(name) {
+  return String(name || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
 }
 
 function getUniqueLifeAssuredNames(benefits) {
