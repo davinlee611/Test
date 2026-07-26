@@ -1,75 +1,16 @@
 "use strict";
 
 import { readBenefitFormData } from "./benefit-form-data.js";
-import { writeBenefitFormData } from "./benefit-form-writer.js";
+
 import { validateBenefit } from "./benefit-validation.js";
 
 import { addDraftBenefit, updateDraftBenefit } from "./draft-benefits.js";
-
-export function openAddBenefitEditor({
-  elements,
-  populateBenefitTypeOptions,
-  updateBenefitFields,
-}) {
-  elements.benefitEditorTitle.textContent = "Add Benefit";
-
-  elements.saveBenefitButton.textContent = "Add Benefit";
-
-  populateBenefitTypeOptions();
-
-  elements.benefitEditor.hidden = false;
-
-  updateBenefitFields();
-
-  elements.benefitTypeSelect.focus();
-}
-
-export function openEditBenefitEditor({
-  benefit,
-  elements,
-  policyLifeAssured,
-  populateBenefitTypeOptions,
-  updateBenefitFields,
-}) {
-  elements.benefitEditorTitle.textContent = "Edit Benefit";
-
-  elements.saveBenefitButton.textContent = "Save Changes";
-
-  populateBenefitTypeOptions(benefit.type);
-
-  writeBenefitFormData(elements, benefit, policyLifeAssured);
-
-  elements.benefitFormMessage.textContent = "";
-
-  updateBenefitFields();
-
-  elements.benefitEditor.hidden = false;
-
-  elements.benefitEditor.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
-
-  elements.benefitTypeSelect.focus();
-}
-
-export function closeBenefitEditor({ elements, resetBenefitForm }) {
-  elements.benefitEditor.hidden = true;
-
-  elements.benefitEditorTitle.textContent = "Add Benefit";
-
-  elements.saveBenefitButton.textContent = "Add Benefit";
-
-  resetBenefitForm();
-}
 
 export function saveBenefit({
   elements,
   draftBenefits,
   editingBenefitId,
   longTermCareBasePlan,
-  renderDraftBenefits,
-  closeBenefitEditor,
 }) {
   const formData = readBenefitFormData(elements);
 
@@ -81,6 +22,7 @@ export function saveBenefit({
     elements.benefitFormMessage.textContent = validationMessage;
 
     return {
+      saved: false,
       draftBenefits,
       editingBenefitId,
     };
@@ -98,11 +40,8 @@ export function saveBenefit({
     updatedBenefits = addDraftBenefit(draftBenefits, formData);
   }
 
-  renderDraftBenefits();
-
-  closeBenefitEditor();
-
   return {
+    saved: true,
     draftBenefits: updatedBenefits,
     editingBenefitId: null,
   };

@@ -60,12 +60,7 @@ import {
 
 import { renderDraftBenefitList } from "./insurance/draft-benefit-renderer.js";
 
-import {
-  openAddBenefitEditor,
-  openEditBenefitEditor,
-  closeBenefitEditor,
-  saveBenefit,
-} from "./insurance/benefit-editor.js";
+import { saveBenefit as saveBenefitData } from "./insurance/benefit-editor.js";
 
 import {
   createPlanningCard,
@@ -305,7 +300,10 @@ function bindInsuranceEvents() {
 
   elements.policyStatusSelect?.addEventListener("change", updatePremiumFields);
 
-  elements.addBenefitButton?.addEventListener("click", openAddBenefitEditor);
+  elements.addBenefitButton?.addEventListener(
+    "click",
+    handleOpenAddBenefitEditor,
+  );
 
   elements.closeBenefitEditorButton?.addEventListener(
     "click",
@@ -328,7 +326,7 @@ function bindInsuranceEvents() {
 
   elements.benefitTypeSelect?.addEventListener("change", updateBenefitFields);
 
-  elements.saveBenefitButton?.addEventListener("click", saveBenefit);
+  elements.saveBenefitButton?.addEventListener("click", handleSaveBenefit);
 
   elements.policyLifeAssuredInput?.addEventListener(
     "input",
@@ -1144,7 +1142,7 @@ function showBenefitAmountField(label) {
 ======================================== */
 
 function handleSaveBenefit() {
-  const result = saveBenefit({
+  const result = saveBenefitData({
     elements,
 
     draftBenefits,
@@ -1152,17 +1150,19 @@ function handleSaveBenefit() {
     editingBenefitId,
 
     longTermCareBasePlan: elements.longTermCareBasePlanSelect.value,
-
-    renderDraftBenefits,
-
-    closeBenefitEditor() {
-      handleCloseBenefitEditor();
-    },
   });
+
+  if (!result.saved) {
+    return;
+  }
 
   draftBenefits = result.draftBenefits;
 
   editingBenefitId = result.editingBenefitId;
+
+  renderDraftBenefits();
+
+  closeBenefitEditor();
 }
 
 /* ========================================
@@ -1213,7 +1213,7 @@ function renderDraftBenefits() {
 
     benefits: draftBenefits,
 
-    onEdit: openEditBenefitEditor,
+    onEdit: handleOpenEditBenefitEditor,
 
     onDelete: confirmDeleteDraftBenefit,
   });
