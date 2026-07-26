@@ -14,6 +14,8 @@ import {
   closeModalOnEscape,
 } from "../utils/modal.js";
 
+import { cloneBenefits } from "../utils/benefit-utils.js";
+
 import {
   BENEFIT_LABELS,
   HOSPITAL_CLASS_LABELS,
@@ -426,7 +428,7 @@ function openEditPolicyModal(policyId) {
 
   elements.premiumFrequencySelect.value = policy.premium?.frequency || "annual";
 
-  draftBenefits = cloneBenefits(policy.benefits || []);
+  draftBenefits = cloneBenefits(policy.benefits);
 
   updatePremiumFields();
 

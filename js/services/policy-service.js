@@ -9,6 +9,8 @@ import {
   updateItemById,
 } from "../utils/collection-utils.js";
 
+import { cloneBenefits } from "../utils/benefit-utils.js";
+
 import { createPlannerId } from "../utils/client-utils.js";
 
 /* ========================================
@@ -50,7 +52,7 @@ export function createPolicy({
 
     premium: clonePolicyPremium(premium),
 
-    benefits: clonePolicyBenefits(benefits),
+    benefits: cloneBenefits(benefits),
   };
 
   setPolicies(appendItem(getPolicies(), newPolicy));
@@ -78,7 +80,7 @@ export function updatePolicy(policyId, updates) {
       }
 
       if (Object.prototype.hasOwnProperty.call(updates, "benefits")) {
-        updatedPolicy.benefits = clonePolicyBenefits(updates.benefits);
+        updatedPolicy.benefits = cloneBenefits(updates.benefits);
       }
 
       return updatedPolicy;
@@ -127,14 +129,4 @@ function clonePolicyPremium(premium) {
 
     frequency: premium.frequency || null,
   };
-}
-
-function clonePolicyBenefits(benefits) {
-  if (!Array.isArray(benefits)) {
-    return [];
-  }
-
-  return benefits.map((benefit) => ({
-    ...benefit,
-  }));
 }
