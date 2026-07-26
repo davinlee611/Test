@@ -381,3 +381,26 @@ export function getCompletePolicyValidationItems({
     }),
   ];
 }
+
+/* ========================================
+   BENEFIT GROUPING
+======================================== */
+
+function groupBenefitsByType(benefits) {
+  return (benefits || []).reduce(
+    function (groups, benefit) {
+      const benefitType = benefit.type;
+
+      if (!groups[benefitType]) {
+        groups[benefitType] = [];
+      }
+
+      groups[benefitType].push(
+        benefit,
+      );
+
+      return groups;
+    },
+    {},
+  );
+}

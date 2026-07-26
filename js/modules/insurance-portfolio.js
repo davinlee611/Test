@@ -708,18 +708,6 @@ function findRelatedCriticalIllnessBenefit(criticalIllnessBenefits) {
   return acceleratedCiBenefit ?? criticalIllnessBenefits[0];
 }
 
-function groupBenefitsByType(benefits) {
-  return benefits.reduce(function (groups, benefit) {
-    if (!groups[benefit.type]) {
-      groups[benefit.type] = [];
-    }
-
-    groups[benefit.type].push(benefit);
-
-    return groups;
-  }, {});
-}
-
 function renderPolicyValidation() {
   if (!elements.policyValidationSection || !elements.policyValidationList) {
     return;
