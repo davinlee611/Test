@@ -4,7 +4,6 @@ import {
   createPlannerId,
   escapeHtml,
   formatCurrency,
-  getWholeNumber,
 } from "../utils/client-utils.js";
 
 import {
@@ -48,6 +47,8 @@ import {
 import { readPolicyFormData } from "./insurance/policy-form-data.js";
 
 import { writePolicyFormData } from "./insurance/policy-form-writer.js";
+
+import { readBenefitFormData } from "./insurance/benefit-form-data.js";
 
 import {
   createPlanningCard,
@@ -1642,7 +1643,7 @@ function showBenefitAmountField(label) {
 ======================================== */
 
 function saveBenefit() {
-  const formData = getBenefitFormData();
+  const formData = readBenefitFormData(elements);
 
   const validationMessage = validateBenefit(formData);
 
@@ -1661,39 +1662,6 @@ function saveBenefit() {
   renderDraftBenefits();
 
   closeBenefitEditor();
-}
-
-function getBenefitFormData() {
-  return {
-    type: elements.benefitTypeSelect.value,
-
-    customName: elements.benefitCustomNameInput.value.trim(),
-
-    lifeAssured: elements.benefitLifeAssuredInput.value.trim(),
-
-    amount: getWholeNumber(elements.benefitAmountInput.value),
-
-    payoutType: elements.benefitPayoutTypeSelect.value || null,
-
-    payoutTerm: elements.benefitPayoutTermSelect.value || null,
-
-    payoutDuration:
-      elements.benefitPayoutTermSelect.value === "extend_10_years"
-        ? 120
-        : elements.benefitPayoutTermSelect.value === "limited"
-          ? getWholeNumber(elements.benefitPayoutDurationInput.value)
-          : null,
-
-    hospitalClass: elements.benefitHospitalClassSelect.value,
-
-    riderType: elements.benefitHospitalRiderSelect.value,
-
-    adlRequirement: elements.benefitAdlRequirementSelect.value
-      ? Number(elements.benefitAdlRequirementSelect.value)
-      : null,
-
-    notes: elements.benefitNotesInput.value.trim(),
-  };
 }
 
 function validateBenefit(formData) {
