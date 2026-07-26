@@ -13,11 +13,9 @@ import { cloneBenefits } from "../utils/benefit-utils.js";
 
 import {
   BENEFIT_LABELS,
-  POLICY_STATUS_LABELS,
+  LONG_TERM_CARE_BASE_PLANS,
   POLICY_TYPE_BENEFIT_OPTIONS,
   POLICY_TYPE_DEFAULT_BENEFITS,
-  POLICY_TYPE_LABELS,
-  PREMIUM_FREQUENCY_LABELS,
 } from "../constants/insurance.js";
 
 import { getAssets, getClientProfile } from "../state/client-plan.js";
@@ -56,6 +54,8 @@ import {
   createBenefitMetadata,
 } from "./insurance/benefit-renderer.js";
 
+import { createPolicyDetails } from "./insurance/policy-renderer.js";
+
 import {
   addDraftBenefit,
   updateDraftBenefit,
@@ -70,44 +70,6 @@ import {
   createPlanningCardButton,
   renderPlanningEmptyState,
 } from "../components/planning-card.js";
-
-const LONG_TERM_CARE_BASE_PLANS = {
-  eldershield_300: {
-    name: "ElderShield 300",
-
-    amount: 300,
-
-    payoutTerm: "limited",
-
-    payoutDuration: 60,
-
-    adlRequirement: 3,
-  },
-
-  eldershield_400: {
-    name: "ElderShield 400",
-
-    amount: 400,
-
-    payoutTerm: "limited",
-
-    payoutDuration: 72,
-
-    adlRequirement: 3,
-  },
-
-  careshield_life: {
-    name: "CareShield Life",
-
-    amount: 600,
-
-    payoutTerm: "lifetime",
-
-    payoutDuration: null,
-
-    adlRequirement: 3,
-  },
-};
 
 /* ========================================
    MODULE STATE
@@ -1502,141 +1464,6 @@ function createPolicyIcon() {
   return createPlanningCardIcon("fa-solid fa-shield-halved");
 }
 
-function createPolicyDetails(policy, validationSummary) {
-  const policyName = policy.policyName || "Unnamed Policy";
-
-  const policyType = POLICY_TYPE_LABELS[policy.policyType] || "Other";
-
-  const insurer = policy.insurer || "Insurer not specified";
-
-  return createPlanningCardDetails({
-    title: policyName,
-
-    description: `${insurer} · ${policyType}`,
-
-    content: createPolicyCardContent(policy, validationSummary),
-  });
-}
-
-function createPolicyCardContent(policy, validationSummary) {
-  const content = document.createElement("div");
-
-  content.className = "policy-card-content";
-
-  content.appendChild(createPolicyMetadata(policy));
-
-  content.appendChild(createPolicyValidationPreview(validationSummary));
-
-  return content;
-}
-
-function createPolicyValidationPreview(validationSummary) {
-  const container = document.createElement("div");
-
-  container.className = [
-    "policy-card-validation",
-    `policy-card-validation--${validationSummary.highestSeverity}`,
-  ].join(" ");
-
-  const status = document.createElement("div");
-
-  status.className = "policy-card-validation__status";
-
-  const icon = document.createElement("i");
-
-  icon.setAttribute("aria-hidden", "true");
-
-  const label = document.createElement("strong");
-
-  if (validationSummary.errors.length > 0) {
-    icon.className = "fa-solid fa-circle-exclamation";
-
-    label.textContent =
-      validationSummary.errors.length === 1
-        ? "1 issue requires attention"
-        : `${validationSummary.errors.length} issues require attention`;
-  } else if (validationSummary.reviews.length > 0) {
-    icon.className = "fa-solid fa-triangle-exclamation";
-
-    label.textContent =
-      validationSummary.reviews.length === 1
-        ? "1 item requires review"
-        : `${validationSummary.reviews.length} items require review`;
-  } else {
-    icon.className = "fa-solid fa-circle-check";
-
-    label.textContent = "No issues detected";
-  }
-
-  status.append(icon, label);
-
-  container.appendChild(status);
-
-  const messages = [...validationSummary.errors, ...validationSummary.reviews];
-
-  messages.slice(0, 2).forEach(function (item) {
-    const message = document.createElement("p");
-
-    message.className = "policy-card-validation__message";
-
-    message.textContent = item.message;
-
-    container.appendChild(message);
-  });
-
-  if (messages.length > 2) {
-    const remainingMessage = document.createElement("p");
-
-    remainingMessage.className = "policy-card-validation__remaining";
-
-    remainingMessage.textContent = `+${
-      messages.length - 2
-    } more item${messages.length - 2 === 1 ? "" : "s"}`;
-
-    container.appendChild(remainingMessage);
-  }
-
-  return container;
-}
-
-function createPolicyMetadata(policy) {
-  const metadata = document.createElement("div");
-
-  metadata.className = "benefit-item-meta";
-
-  appendMetadataItem(
-    metadata,
-    POLICY_STATUS_LABELS[policy.status] || "Status not specified",
-  );
-
-  appendMetadataItem(metadata, getPremiumDescription(policy.premium));
-
-  if (policy.policyType === "long_term_care" && policy.longTermCareBasePlan) {
-    const basePlanLabel = getLongTermCareBasePlanLabel(
-      policy.longTermCareBasePlan,
-    );
-
-    if (basePlanLabel) {
-      appendMetadataItem(metadata, `Base Plan: ${basePlanLabel}`);
-    }
-  }
-
-  const benefitCount = Array.isArray(policy.benefits)
-    ? policy.benefits.length
-    : 0;
-
-  appendMetadataItem(
-    metadata,
-    benefitCount === 1 ? "1 benefit" : `${benefitCount} benefits`,
-  );
-
-  if (policy.policyNumber) {
-    appendMetadataItem(metadata, `Policy No: ${policy.policyNumber}`);
-  }
-
-  return metadata;
-}
-
 function createPolicyActions(policy) {
   const actions = createPlanningCardActions();
 
@@ -1700,29 +1527,6 @@ function handleDeletePolicy(policyId) {
    HELPERS
 ======================================== */
 
-function getPremiumDescription(premium) {
-  if (!premium) {
-    return "Premium not provided";
-  }
-
-  if (premium.amount <= 0) {
-    return "Paid-up";
-  }
-
-  const frequencyLabel =
-    PREMIUM_FREQUENCY_LABELS[premium.frequency] || "Premium";
-
-  return [formatCurrency(premium.amount), frequencyLabel].join(" · ");
-}
-
-function appendMetadataItem(container, text) {
-  const item = document.createElement("span");
-
-  item.textContent = text;
-
-  container.appendChild(item);
-}
-
 function getLifeAssuredFromBenefits(benefits) {
   if (!Array.isArray(benefits)) {
     return "";
@@ -1758,12 +1562,4 @@ function scrollToFirstPolicyWithSeverity(severity) {
   window.setTimeout(function () {
     matchingPolicy.classList.remove("policy-item--highlighted");
   }, 1800);
-}
-
-function getLongTermCareBasePlanLabel(basePlanValue) {
-  if (basePlanValue === "supplement_only") {
-    return "Supplement Only / Other Base Plan";
-  }
-
-  return LONG_TERM_CARE_BASE_PLANS[basePlanValue]?.name || "";
 }

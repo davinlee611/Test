@@ -117,3 +117,41 @@ export const POLICY_TYPE_BENEFIT_OPTIONS = {
 
   other: Object.keys(BENEFIT_LABELS),
 };
+
+export const LONG_TERM_CARE_BASE_PLANS = {
+  eldershield_300: {
+    name: "ElderShield 300",
+
+    amount: 300,
+
+    payoutTerm: "limited",
+
+    payoutDuration: 60,
+
+    adlRequirement: 3,
+  },
+
+  eldershield_400: {
+    name: "ElderShield 400",
+
+    amount: 400,
+
+    payoutTerm: "limited",
+
+    payoutDuration: 72,
+
+    adlRequirement: 3,
+  },
+
+  careshield_life: {
+    name: "CareShield Life",
+
+    amount: 600,
+
+    payoutTerm: "lifetime",
+
+    payoutDuration: null,
+
+    adlRequirement: 3,
+  },
+};
