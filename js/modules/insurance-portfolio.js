@@ -1,7 +1,7 @@
 "use strict";
 
 import {
-  createUniqueId,
+  createPlannerId,
   escapeHtml,
   formatCurrency,
   getWholeNumber,
@@ -536,7 +536,7 @@ function handleLongTermCareBasePlanChange() {
 
 function createLongTermCareBaseBenefit(basePlanValue, basePlan, lifeAssured) {
   return {
-    id: createUniqueId(),
+    id: createPlannerId(),
 
     isSuggested: true,
 
@@ -1306,7 +1306,7 @@ function getPolicyPremium(formData) {
 
 function createPolicyObject(formData) {
   return {
-    id: createUniqueId(),
+    id: createPlannerId(),
 
     policyName: formData.policyName,
 
@@ -1413,7 +1413,7 @@ function handlePolicyTypeChange() {
 
 function createEmptyBenefit(benefitType, lifeAssured) {
   return {
-    id: createUniqueId(),
+    id: createPlannerId(),
 
     isSuggested: true,
 
@@ -1925,7 +1925,7 @@ function getBenefitAmountValidationMessage(benefitType) {
 
 function addDraftBenefit(formData) {
   draftBenefits.push({
-    id: createUniqueId(),
+    id: createPlannerId(),
 
     isSuggested: false,
 

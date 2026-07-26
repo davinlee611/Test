@@ -74,15 +74,21 @@ export function isValidEmail(email) {
 }
 
 /* ========================================
-   ID UTILITIES
+   PLANNER ID UTILITIES
 ======================================== */
 
-export function createUniqueId() {
-  if (window.crypto && typeof window.crypto.randomUUID === "function") {
-    return window.crypto.randomUUID();
+export function createPlannerId() {
+  if (
+    globalThis.crypto &&
+    typeof globalThis.crypto.randomUUID === "function"
+  ) {
+    return globalThis.crypto.randomUUID();
   }
 
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+  return (
+    Date.now().toString(36) +
+    Math.random().toString(36).slice(2)
+  );
 }
 
 /* ========================================

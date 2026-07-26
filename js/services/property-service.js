@@ -2,7 +2,7 @@
 
 import { getProperties, setProperties } from "../state/client-plan.js";
 
-import { createUniqueId } from "../utils/client-utils.js";
+import { createPlannerId } from "../utils/client-utils.js";
 
 /* ========================================
    PROPERTY QUERIES
@@ -26,7 +26,7 @@ export function createProperty({
   ownershipPercentage,
 }) {
   const newProperty = {
-    id: createUniqueId(),
+    id: createPlannerId(),
     type: propertyType,
     marketValue,
     ownershipPercentage,

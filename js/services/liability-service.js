@@ -2,7 +2,7 @@
 
 import { getLiabilities, setLiabilities } from "../state/client-plan.js";
 
-import { createUniqueId } from "../utils/client-utils.js";
+import { createPlannerId } from "../utils/client-utils.js";
 
 /* ========================================
    LIABILITY QUERIES
@@ -30,7 +30,7 @@ export function createLiability({
   interestRate,
 }) {
   const newLiability = {
-    id: createUniqueId(),
+    id: createPlannerId(),
     type: liabilityType,
     name: liabilityName,
     outstandingBalance,

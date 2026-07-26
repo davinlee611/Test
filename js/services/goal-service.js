@@ -2,7 +2,7 @@
 
 import { getGoals, setGoals } from "../state/client-plan.js";
 
-import { createUniqueId } from "../utils/client-utils.js";
+import { createPlannerId } from "../utils/client-utils.js";
 
 /* ========================================
    GOAL QUERIES
@@ -22,7 +22,7 @@ export function getGoalById(goalId) {
 
 export function createGoal({ goalType, goalName, targetAmount, targetDate }) {
   const newGoal = {
-    id: createUniqueId(),
+    id: createPlannerId(),
     type: goalType,
     name: goalName,
     targetAmount,
