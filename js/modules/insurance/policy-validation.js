@@ -1,6 +1,6 @@
 "use strict";
 
-import { getAverageGrossMonthlyIncome } from "../services/income-calculator.js";
+import { getAverageGrossMonthlyIncome } from "./services/income-calculator.js";
 
 export function getPolicyValidationItems(
   benefits,
