@@ -516,7 +516,7 @@ function handleLongTermCareBasePlanChange() {
    * Keep only untouched suggested benefits.
    */
   draftBenefits = draftBenefits.filter(function (benefit) {
-    return benefit.isSuggested;
+    return benefit.isSuggested && !benefit.isBasePlanBenefit;
   });
 
   closeBenefitEditor();
