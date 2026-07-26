@@ -68,3 +68,4 @@ export function createLongTermCareBaseBenefit(basePlanValue, basePlan, lifeAssur
 
     notes: "",
   };
+}
