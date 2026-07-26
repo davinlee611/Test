@@ -27,21 +27,8 @@ export function getLiabilityById(liabilityId) {
    LIABILITY COMMANDS
 ======================================== */
 
-export function createLiability({
-  liabilityType,
-  liabilityName,
-  outstandingBalance,
-  monthlyRepayment,
-  interestRate,
-}) {
-  const newLiability = {
-    id: createPlannerId(),
-    type: liabilityType,
-    name: liabilityName,
-    outstandingBalance,
-    monthlyRepayment,
-    interestRate,
-  };
+export function createLiability(liabilityData) {
+  const newLiability = createLiabilityRecord(liabilityData);
 
   setLiabilities(appendItem(getLiabilities(), newLiability));
 
@@ -94,4 +81,25 @@ export function removeLiability(liabilityId) {
 
 export function clearLiabilities() {
   setLiabilities([]);
+}
+
+/* ========================================
+   PRIVATE LIABILITY FACTORY
+======================================== */
+
+function createLiabilityRecord({
+  liabilityType,
+  liabilityName,
+  outstandingBalance,
+  monthlyRepayment,
+  interestRate,
+}) {
+  return {
+    id: createPlannerId(),
+    type: liabilityType,
+    name: liabilityName,
+    outstandingBalance,
+    monthlyRepayment,
+    interestRate,
+  };
 }
