@@ -2944,6 +2944,74 @@ button.insurance-validation-count:disabled {
   font-weight: 700;
 }
 
+.client-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.client-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  flex: 1;
+  min-width: 0;
+}
+
+.client-title-row > div:last-child {
+  min-width: 0;
+}
+
+.client-title-row h1 {
+  margin: 0;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.client-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  flex-shrink: 0;
+}
+
+@media (max-width: 1200px) {
+  .client-header-actions .header-button {
+    padding-inline: 14px;
+  }
+}
+
+@media (max-width: 1050px) {
+  .client-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .client-header-actions {
+    justify-content: flex-end;
+    width: 100%;
+  }
+}
+
+@media (max-width: 650px) {
+  .client-header-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .client-header-actions .logout-button {
+    grid-column: 1 / -1;
+  }
+
+  .client-header-actions .header-button {
+    justify-content: center;
+  }
+}
+
 /* ========================================
    TABLET
 ======================================== */

@@ -120,6 +120,10 @@ html {
   font-family: var(--font-family);
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body,
 button,
 input,
