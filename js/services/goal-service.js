@@ -27,38 +27,29 @@ export function getGoalById(goalId) {
    GOAL COMMANDS
 ======================================== */
 
-export function createGoal({ goalType, goalName, targetAmount, targetDate }) {
-  const newGoal = {
-    id: createPlannerId(),
-    type: goalType,
-    name: goalName,
-    targetAmount,
-    targetDate,
-  };
+export function createGoal(goalData) {
+  const newGoal = createGoalRecord(goalData);
 
   setGoals(appendItem(getGoals(), newGoal));
 
   return newGoal;
 }
 
-export function updateGoal(
-  goalId,
-  { goalType, goalName, targetAmount, targetDate },
-) {
+export function updateGoal(goalId, goalData) {
   const { items, updatedItem } = updateItemById(getGoals(), goalId, (goal) => {
     const updatedGoal = {
       ...goal,
-      type: goalType,
-      name: goalName,
-      targetAmount,
-      targetDate,
+
+      /*
+       * Keep your existing field
+       * assignments here.
+       */
+      type: goalData.goalType,
+      name: goalData.goalName,
+      targetAmount: goalData.targetAmount,
+      targetDate: goalData.targetDate,
     };
 
-    /*
-     * Remove the legacy targetYear
-     * property when an older goal is
-     * updated.
-     */
     delete updatedGoal.targetYear;
 
     return updatedGoal;
@@ -87,4 +78,18 @@ export function removeGoal(goalId) {
 
 export function clearGoals() {
   setGoals([]);
+}
+
+/* ========================================
+   PRIVATE GOAL FACTORY
+======================================== */
+
+function createGoalRecord({ goalType, goalName, targetAmount, targetDate }) {
+  return {
+    id: createPlannerId(),
+    type: goalType,
+    name: goalName,
+    targetAmount,
+    targetDate,
+  };
 }
