@@ -477,9 +477,10 @@ function renderSelectedIncome() {
 
   const monthlyIncome = getSelectedMonthlyIncome();
 
-  selectedIncomeSummary.hidden = monthlyIncome <= 0;
+  selectedIncomeSummary.hidden = false;
 
-  selectedIncomeAmount.textContent = formatCurrency(monthlyIncome);
+  selectedIncomeAmount.textContent =
+    monthlyIncome > 0 ? formatCurrency(monthlyIncome) : "Not selected";
 }
 
 function setOptionalNumberInput(input, value) {
