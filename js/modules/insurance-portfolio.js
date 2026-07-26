@@ -49,7 +49,6 @@ import { writeBenefitFormData } from "./insurance/benefit-form-writer.js";
 import { validateBenefit } from "./insurance/benefit-validation.js";
 
 import {
-  getPolicyValidationItems,
   getCompletePolicyValidationItems,
 } from "./insurance/policy-validation.js";
 
