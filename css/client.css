@@ -2987,6 +2987,30 @@ button.insurance-validation-count:disabled {
 
 @media (max-width: 1050px) {
   .client-header {
+    align-items: center;
+    gap: 16px;
+  }
+
+  .client-title-row {
+    gap: 12px;
+  }
+
+  .client-title-row h1 {
+    font-size: 28px;
+  }
+
+  .client-header-actions {
+    gap: 8px;
+  }
+
+  .client-header-actions .header-button {
+    padding: 11px 14px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 800px) {
+  .client-header {
     flex-direction: column;
     align-items: stretch;
   }
