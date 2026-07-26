@@ -27,8 +27,6 @@ import {
 
 import { getAssets, getClientProfile } from "../state/client-plan.js";
 
-import { getAverageGrossMonthlyIncome } from "../services/income-calculator.js";
-
 import {
   getAllPolicies,
   getPolicyById,
