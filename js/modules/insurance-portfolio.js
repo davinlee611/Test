@@ -1954,33 +1954,6 @@ function normalizeLifeAssuredName(name) {
     .toLowerCase();
 }
 
-function getUniqueLifeAssuredNames(benefits) {
-  const namesByNormalizedValue = new Map();
-
-  benefits.forEach(function (benefit) {
-    const displayName = String(benefit.lifeAssured || "").trim();
-    const normalizedName = normalizeLifeAssuredName(displayName);
-
-    if (!normalizedName) {
-      return;
-    }
-
-    if (!namesByNormalizedValue.has(normalizedName)) {
-      namesByNormalizedValue.set(normalizedName, displayName);
-    }
-  });
-
-  return Array.from(namesByNormalizedValue.entries()).map(function ([
-    normalizedName,
-    displayName,
-  ]) {
-    return {
-      normalizedName,
-      displayName,
-    };
-  });
-}
-
 function getLongTermCareBasePlanLabel(basePlanValue) {
   if (basePlanValue === "supplement_only") {
     return "Supplement Only / Other Base Plan";
