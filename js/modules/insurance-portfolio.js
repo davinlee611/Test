@@ -1,22 +1,10 @@
 "use strict";
 
-import { getAssets, getClientProfile } from "../state/client-plan.js";
-
-import {
-  getAllPolicies,
-  createPolicy,
-  updatePolicy,
-  removePolicy,
-  clearPolicies,
-} from "../services/policy-service.js";
+import { getClientProfile } from "../state/client-plan.js";
 
 import { readPolicyFormData } from "./insurance/policy-form-data.js";
 
-import { savePolicyDraft } from "./insurance/policy-save-service.js";
-
 import { createPolicyModal } from "./insurance/policy-modal.js";
-
-import { getCompletePolicyValidationItems } from "./insurance/policy-validation.js";
 
 import { renderDraftBenefitList } from "./insurance/draft-benefit-renderer.js";
 
@@ -32,7 +20,7 @@ import { getInsuranceElements } from "./insurance/insurance-elements.js";
 
 import { bindInsuranceEvents } from "./insurance/insurance-event-binder.js";
 
-import { validatePolicyDraft } from "./insurance/policy-form-validator.js";
+import { createPolicyWorkflow } from "./insurance/policy-workflow.js";
 
 /* ========================================
    MODULE STATE
@@ -41,6 +29,8 @@ import { validatePolicyDraft } from "./insurance/policy-form-validator.js";
 let moduleInitialized = false;
 
 let elements = {};
+
+let policyWorkflow = null;
 
 let policyModal = null;
 
@@ -63,7 +53,7 @@ let previousPolicyType = "";
 export function initializeInsurancePortfolio() {
   elements = getInsuranceElements();
 
-  createInsuranceControllers();
+  createInsuranceComponents();
 
   if (!moduleInitialized) {
     bindModuleEvents();
@@ -75,10 +65,40 @@ export function initializeInsurancePortfolio() {
 }
 
 /* ========================================
-   CONTROLLER CREATION
+   COMPONENT CREATION
 ======================================== */
 
-function createInsuranceControllers() {
+function createInsuranceComponents() {
+  createWorkflow();
+
+  createBenefitEditorController();
+
+  createPolicyFormControllerInstance();
+
+  createPolicyModalController();
+}
+
+/* ========================================
+   POLICY WORKFLOW
+======================================== */
+
+function createWorkflow() {
+  policyWorkflow = createPolicyWorkflow({
+    getDraftBenefits() {
+      return draftBenefits;
+    },
+
+    getEditingPolicyId() {
+      return editingPolicyId;
+    },
+  });
+}
+
+/* ========================================
+   BENEFIT EDITOR
+======================================== */
+
+function createBenefitEditorController() {
   benefitEditor = createBenefitEditor({
     elements,
 
@@ -118,7 +138,13 @@ function createInsuranceControllers() {
       renderDraftBenefits();
     },
   });
+}
 
+/* ========================================
+   POLICY FORM CONTROLLER
+======================================== */
+
+function createPolicyFormControllerInstance() {
   policyFormController = createPolicyFormController({
     elements,
 
@@ -152,7 +178,13 @@ function createInsuranceControllers() {
 
     renderDraftBenefits,
   });
+}
 
+/* ========================================
+   POLICY MODAL
+======================================== */
+
+function createPolicyModalController() {
   policyModal = createPolicyModal({
     elements,
 
@@ -203,8 +235,16 @@ function createInsuranceControllers() {
 ======================================== */
 
 export function resetInsurancePortfolio() {
-  clearPolicies();
+  policyWorkflow?.resetPolicies();
 
+  resetModuleState();
+
+  policyModal?.close();
+
+  renderInsurancePortfolio();
+}
+
+function resetModuleState() {
   draftBenefits = [];
 
   editingBenefitId = null;
@@ -212,10 +252,6 @@ export function resetInsurancePortfolio() {
   editingPolicyId = null;
 
   previousPolicyType = "";
-
-  policyModal?.close();
-
-  renderInsurancePortfolio();
 }
 
 /* ========================================
@@ -297,20 +333,10 @@ function savePolicy() {
 
   const formData = readPolicyFormData(elements);
 
-  const result = savePolicyDraft({
+  const result = policyWorkflow.save({
     formData,
 
-    draftBenefits,
-
-    editingPolicyId,
-
-    validate() {
-      return validateCurrentPolicyDraft(formData);
-    },
-
-    createPolicy,
-
-    updatePolicy,
+    insurerSelection: elements.insurerSelect.value,
   });
 
   if (!result.success) {
@@ -322,82 +348,6 @@ function savePolicy() {
   renderInsurancePortfolio();
 
   policyModal.close();
-}
-
-/* ========================================
-   POLICY FORM VALIDATION
-======================================== */
-
-function validateCurrentPolicyDraft(formData) {
-  const validationItems = getCurrentDraftPolicyValidationItems({
-    lifeAssured: formData.lifeAssured,
-  });
-
-  return validatePolicyDraft({
-    formData,
-
-    insurerSelection: elements.insurerSelect.value,
-
-    draftBenefits,
-
-    validationItems,
-  });
-}
-
-/* ========================================
-   POLICY VALIDATION DATA
-======================================== */
-
-function getCurrentDraftPolicyValidationItems({
-  lifeAssured = elements.policyLifeAssuredInput.value.trim(),
-} = {}) {
-  const assets = getAssets();
-
-  return getCompletePolicyValidationItems({
-    policyId: editingPolicyId || "",
-
-    policyLifeAssured: lifeAssured,
-
-    benefits: draftBenefits,
-
-    includeDraftBenefits: true,
-
-    context: {
-      editingPolicyId: editingPolicyId || "",
-
-      allPolicies: getAllPolicies(),
-
-      monthlyEmploymentIncome: assets.income.monthlyEmployment,
-
-      annualBonus: assets.income.annualBonus,
-    },
-  });
-}
-
-/* ========================================
-   POLICY VALIDATION RENDERING
-======================================== */
-
-function renderPolicyValidation() {
-  const validationItems = getCurrentDraftPolicyValidationItems();
-
-  const hasErrors = validationItems.some(function (item) {
-    return item.severity === "error" && !item.valid;
-  });
-
-  if (!hasErrors) {
-    clearPolicyFormMessage();
-  }
-
-  renderPolicyValidationItems({
-    section: elements.policyValidationSection,
-
-    list: elements.policyValidationList,
-
-    validationItems,
-
-    hasBenefits: draftBenefits.length > 0,
-  });
 }
 
 /* ========================================
@@ -445,7 +395,35 @@ function renderDraftBenefits() {
     },
   });
 
-  renderPolicyValidation();
+  renderDraftPolicyValidation();
+}
+
+/* ========================================
+   DRAFT POLICY VALIDATION
+======================================== */
+
+function renderDraftPolicyValidation() {
+  const validationItems = policyWorkflow.getDraftValidationItems({
+    lifeAssured: elements.policyLifeAssuredInput.value.trim(),
+  });
+
+  const hasErrors = validationItems.some(function (item) {
+    return item.severity === "error" && !item.valid;
+  });
+
+  if (!hasErrors) {
+    clearPolicyFormMessage();
+  }
+
+  renderPolicyValidationItems({
+    section: elements.policyValidationSection,
+
+    list: elements.policyValidationList,
+
+    validationItems,
+
+    hasBenefits: draftBenefits.length > 0,
+  });
 }
 
 /* ========================================
@@ -453,20 +431,22 @@ function renderDraftBenefits() {
 ======================================== */
 
 function renderInsurancePortfolio() {
-  const policies = getAllPolicies();
+  if (!policyWorkflow) {
+    return;
+  }
 
-  const assets = getAssets();
+  const {
+    policies,
+
+    validationContext,
+  } = policyWorkflow.getPortfolioData();
 
   renderInsurancePortfolioView({
     elements,
 
     policies,
 
-    validationContext: {
-      monthlyEmploymentIncome: assets.income.monthlyEmployment,
-
-      annualBonus: assets.income.annualBonus,
-    },
+    validationContext,
 
     onEditPolicy(policyId) {
       policyModal.openEdit(policyId);
@@ -483,19 +463,15 @@ function renderInsurancePortfolio() {
 ======================================== */
 
 function confirmDeletePolicy(policy) {
-  const confirmed = window.confirm(
-    `Delete "${policy.policyName || "this policy"}"?`,
-  );
+  const policyName = policy.policyName || "this policy";
+
+  const confirmed = window.confirm(`Delete "${policyName}"?`);
 
   if (!confirmed) {
     return;
   }
 
-  handleDeletePolicy(policy.id);
-}
-
-function handleDeletePolicy(policyId) {
-  const removed = removePolicy(policyId);
+  const removed = policyWorkflow.deletePolicy(policy.id);
 
   if (!removed) {
     return;
@@ -505,7 +481,7 @@ function handleDeletePolicy(policyId) {
 }
 
 /* ========================================
-   HELPERS
+   LIFE ASSURED HELPER
 ======================================== */
 
 function getLifeAssuredFromBenefits(benefits) {
@@ -519,6 +495,10 @@ function getLifeAssuredFromBenefits(benefits) {
 
   return benefitWithLifeAssured?.lifeAssured || "";
 }
+
+/* ========================================
+   VALIDATION NAVIGATION
+======================================== */
 
 function scrollToFirstPolicyWithSeverity(severity) {
   const matchingPolicy = elements.policyList?.querySelector(
@@ -535,15 +515,19 @@ function scrollToFirstPolicyWithSeverity(severity) {
     block: "center",
   });
 
-  matchingPolicy.classList.remove("policy-item--highlighted");
+  highlightPolicy(matchingPolicy);
+}
+
+function highlightPolicy(policyElement) {
+  policyElement.classList.remove("policy-item--highlighted");
 
   window.requestAnimationFrame(function () {
-    matchingPolicy.classList.add("policy-item--highlighted");
+    policyElement.classList.add("policy-item--highlighted");
   });
 
   window.setTimeout(
     function () {
-      matchingPolicy.classList.remove("policy-item--highlighted");
+      policyElement.classList.remove("policy-item--highlighted");
     },
 
     1800,
