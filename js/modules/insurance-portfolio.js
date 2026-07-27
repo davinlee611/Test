@@ -17,6 +17,8 @@ import {
 
 import { readPolicyFormData } from "./insurance/policy-form-data.js";
 
+import { buildPolicyData } from "./insurance/policy-data-builder.js";
+
 import { createPolicyModal } from "./insurance/policy-modal.js";
 
 import { getCompletePolicyValidationItems } from "./insurance/policy-validation.js";
@@ -453,25 +455,11 @@ function savePolicy() {
     return;
   }
 
-  const policyData = {
-    policyName: formData.policyName,
-
-    policyType: formData.policyType,
-
-    longTermCareBasePlan: formData.longTermCareBasePlan,
-
-    insurer: formData.insurer,
-
-    policyNumber: formData.policyNumber,
-
-    lifeAssured: formData.lifeAssured,
-
-    status: formData.status,
-
-    premium: getPolicyPremium(formData),
+  const policyData = buildPolicyData({
+    formData,
 
     benefits: draftBenefits,
-  };
+  });
 
   if (editingPolicyId) {
     updatePolicy(editingPolicyId, policyData);
@@ -589,20 +577,6 @@ function renderPolicyValidation() {
 
     hasBenefits: draftBenefits.length > 0,
   });
-}
-
-function getPolicyPremium(formData) {
-  if (formData.status === "paid_up") {
-    return {
-      amount: 0,
-      frequency: null,
-    };
-  }
-
-  return {
-    amount: formData.premiumAmount,
-    frequency: formData.premiumFrequency,
-  };
 }
 
 function showPolicyFormMessage(message) {
