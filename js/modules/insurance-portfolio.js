@@ -1,10 +1,5 @@
 "use strict";
 
-import {
-  closeModalOnOverlayClick,
-  closeModalOnEscape,
-} from "../utils/modal.js";
-
 import { getAssets, getClientProfile } from "../state/client-plan.js";
 
 import {
@@ -33,6 +28,12 @@ import { createPolicyFormController } from "./insurance/policy-form-controller.j
 
 import { renderInsurancePortfolioView } from "./insurance/portfolio-renderer.js";
 
+import { getInsuranceElements } from "./insurance/insurance-elements.js";
+
+import { bindInsuranceEvents } from "./insurance/insurance-event-binder.js";
+
+import { validatePolicyDraft } from "./insurance/policy-form-validator.js";
+
 /* ========================================
    MODULE STATE
 ======================================== */
@@ -60,8 +61,24 @@ let previousPolicyType = "";
 ======================================== */
 
 export function initializeInsurancePortfolio() {
-  cacheInsuranceElements();
+  elements = getInsuranceElements();
 
+  createInsuranceControllers();
+
+  if (!moduleInitialized) {
+    bindModuleEvents();
+
+    moduleInitialized = true;
+  }
+
+  renderInsurancePortfolio();
+}
+
+/* ========================================
+   CONTROLLER CREATION
+======================================== */
+
+function createInsuranceControllers() {
   benefitEditor = createBenefitEditor({
     elements,
 
@@ -179,14 +196,6 @@ export function initializeInsurancePortfolio() {
 
     getLifeAssuredFromBenefits,
   });
-
-  if (!moduleInitialized) {
-    bindInsuranceEvents();
-
-    moduleInitialized = true;
-  }
-
-  renderInsurancePortfolio();
 }
 
 /* ========================================
@@ -199,7 +208,10 @@ export function resetInsurancePortfolio() {
   draftBenefits = [];
 
   editingBenefitId = null;
+
   editingPolicyId = null;
+
+  previousPolicyType = "";
 
   policyModal?.close();
 
@@ -207,235 +219,73 @@ export function resetInsurancePortfolio() {
 }
 
 /* ========================================
-   CACHE ELEMENTS
-======================================== */
-
-function cacheInsuranceElements() {
-  elements = {
-    portfolioValidationSummary: document.getElementById(
-      "portfolioValidationSummary",
-    ),
-
-    portfolioErrorButton: document.getElementById("portfolioErrorButton"),
-
-    portfolioErrorCount: document.getElementById("portfolioErrorCount"),
-
-    portfolioReviewButton: document.getElementById("portfolioReviewButton"),
-
-    portfolioReviewCount: document.getElementById("portfolioReviewCount"),
-
-    portfolioPassCount: document.getElementById("portfolioPassCount"),
-
-    policyList: document.getElementById("policyList"),
-
-    emptyPolicyMessage: document.getElementById("emptyPolicyMessage"),
-
-    addPolicyButton: document.getElementById("addPolicyButton"),
-
-    policyModal: document.getElementById("policyModal"),
-
-    policyModalTitle: document.getElementById("policyModalTitle"),
-
-    closePolicyModalButton: document.getElementById("closePolicyModalButton"),
-
-    cancelPolicyButton: document.getElementById("cancelPolicyButton"),
-
-    savePolicyButton: document.getElementById("savePolicyButton"),
-
-    policyNameInput: document.getElementById("policyNameInput"),
-
-    policyTypeSelect: document.getElementById("policyTypeSelect"),
-
-    longTermCareBasePlanGroup: document.getElementById(
-      "longTermCareBasePlanGroup",
-    ),
-
-    longTermCareBasePlanSelect: document.getElementById(
-      "longTermCareBasePlanSelect",
-    ),
-
-    policyLifeAssuredInput: document.getElementById("policyLifeAssuredInput"),
-
-    insurerSelect: document.getElementById("insurerSelect"),
-
-    otherInsurerGroup: document.getElementById("otherInsurerGroup"),
-
-    otherInsurerInput: document.getElementById("otherInsurerInput"),
-
-    policyNumberInput: document.getElementById("policyNumberInput"),
-
-    policyStatusSelect: document.getElementById("policyStatusSelect"),
-
-    premiumAmountGroup: document.getElementById("premiumAmountGroup"),
-
-    premiumFrequencyGroup: document.getElementById("premiumFrequencyGroup"),
-
-    premiumInput: document.getElementById("premiumInput"),
-
-    premiumFrequencySelect: document.getElementById("premiumFrequencySelect"),
-
-    policyFormMessage: document.getElementById("policyFormMessage"),
-
-    addBenefitButton: document.getElementById("addBenefitButton"),
-
-    benefitEditor: document.getElementById("benefitEditor"),
-
-    benefitEditorTitle: document.getElementById("benefitEditorTitle"),
-
-    closeBenefitEditorButton: document.getElementById(
-      "closeBenefitEditorButton",
-    ),
-
-    benefitTypeSelect: document.getElementById("benefitTypeSelect"),
-
-    benefitLifeAssuredInput: document.getElementById("benefitLifeAssuredInput"),
-
-    benefitLifeAssuredGroup: document.getElementById("benefitLifeAssuredGroup"),
-
-    benefitCustomNameGroup: document.getElementById("benefitCustomNameGroup"),
-
-    benefitCustomNameInput: document.getElementById("benefitCustomNameInput"),
-
-    benefitAmountGroup: document.getElementById("benefitAmountGroup"),
-
-    benefitAmountLabel: document.getElementById("benefitAmountLabel"),
-
-    benefitAmountInput: document.getElementById("benefitAmountInput"),
-
-    benefitPayoutTermGroup: document.getElementById("benefitPayoutTermGroup"),
-
-    benefitPayoutTermSelect: document.getElementById("benefitPayoutTermSelect"),
-
-    benefitPayoutDurationGroup: document.getElementById(
-      "benefitPayoutDurationGroup",
-    ),
-
-    benefitPayoutDurationInput: document.getElementById(
-      "benefitPayoutDurationInput",
-    ),
-
-    benefitPayoutTypeGroup: document.getElementById("benefitPayoutTypeGroup"),
-
-    benefitPayoutTypeSelect: document.getElementById("benefitPayoutTypeSelect"),
-
-    benefitHospitalClassGroup: document.getElementById(
-      "benefitHospitalClassGroup",
-    ),
-
-    benefitHospitalClassSelect: document.getElementById(
-      "benefitHospitalClassSelect",
-    ),
-
-    benefitHospitalRiderGroup: document.getElementById(
-      "benefitHospitalRiderGroup",
-    ),
-
-    benefitHospitalRiderSelect: document.getElementById(
-      "benefitHospitalRiderSelect",
-    ),
-
-    benefitAdlRequirementGroup: document.getElementById(
-      "benefitAdlRequirementGroup",
-    ),
-
-    benefitAdlRequirementSelect: document.getElementById(
-      "benefitAdlRequirementSelect",
-    ),
-
-    benefitNotesInput: document.getElementById("benefitNotesInput"),
-
-    benefitFormMessage: document.getElementById("benefitFormMessage"),
-
-    cancelBenefitButton: document.getElementById("cancelBenefitButton"),
-
-    saveBenefitButton: document.getElementById("saveBenefitButton"),
-
-    policyBenefitList: document.getElementById("policyBenefitList"),
-
-    emptyPolicyBenefitMessage: document.getElementById(
-      "emptyPolicyBenefitMessage",
-    ),
-
-    policyValidationSection: document.getElementById("policyValidationSection"),
-
-    policyValidationList: document.getElementById("policyValidationList"),
-  };
-}
-
-/* ========================================
    EVENT BINDING
 ======================================== */
 
-function bindInsuranceEvents() {
-  elements.portfolioErrorButton?.addEventListener("click", function () {
-    scrollToFirstPolicyWithSeverity("error");
+function bindModuleEvents() {
+  bindInsuranceEvents({
+    elements,
+
+    onPortfolioErrorClick() {
+      scrollToFirstPolicyWithSeverity("error");
+    },
+
+    onPortfolioReviewClick() {
+      scrollToFirstPolicyWithSeverity("review");
+    },
+
+    onAddPolicy() {
+      policyModal.openAdd();
+    },
+
+    onClosePolicy() {
+      policyModal.close();
+    },
+
+    onSavePolicy() {
+      savePolicy();
+    },
+
+    onInsurerChange() {
+      policyFormController.handleInsurerChange();
+    },
+
+    onPolicyStatusChange() {
+      policyFormController.updatePremiumFields();
+    },
+
+    onPolicyTypeChange() {
+      policyFormController.handlePolicyTypeChange();
+    },
+
+    onLongTermCareBasePlanChange() {
+      policyFormController.handleLongTermCareBasePlanChange();
+    },
+
+    onPolicyLifeAssuredInput() {
+      policyFormController.syncSuggestedBenefitLifeAssured();
+    },
+
+    onAddBenefit() {
+      benefitEditor.openAdd();
+    },
+
+    onCloseBenefit() {
+      benefitEditor.close();
+    },
+
+    onBenefitPayoutTermChange() {
+      benefitEditor.updatePayoutDurationField();
+    },
+
+    onBenefitTypeChange() {
+      benefitEditor.updateBenefitFields();
+    },
+
+    onSaveBenefit() {
+      benefitEditor.save();
+    },
   });
-
-  elements.portfolioReviewButton?.addEventListener("click", function () {
-    scrollToFirstPolicyWithSeverity("review");
-  });
-
-  elements.addPolicyButton?.addEventListener("click", function () {
-    policyModal.openAdd();
-  });
-
-  elements.closePolicyModalButton?.addEventListener("click", function () {
-    policyModal.close();
-  });
-
-  elements.cancelPolicyButton?.addEventListener("click", function () {
-    policyModal.close();
-  });
-
-  elements.savePolicyButton?.addEventListener("click", savePolicy);
-
-  elements.insurerSelect?.addEventListener("change", function () {
-    policyFormController.handleInsurerChange();
-  });
-
-  elements.policyStatusSelect?.addEventListener("change", function () {
-    policyFormController.updatePremiumFields();
-  });
-
-  elements.addBenefitButton?.addEventListener("click", function () {
-    benefitEditor.openAdd();
-  });
-
-  elements.closeBenefitEditorButton?.addEventListener("click", function () {
-    benefitEditor.close();
-  });
-
-  elements.cancelBenefitButton?.addEventListener("click", function () {
-    benefitEditor.close();
-  });
-
-  elements.policyTypeSelect?.addEventListener("change", function () {
-    policyFormController.handlePolicyTypeChange();
-  });
-
-  elements.longTermCareBasePlanSelect?.addEventListener("change", function () {
-    policyFormController.handleLongTermCareBasePlanChange();
-  });
-
-  elements.benefitPayoutTermSelect?.addEventListener("change", function () {
-    benefitEditor.updatePayoutDurationField();
-  });
-
-  elements.benefitTypeSelect?.addEventListener("change", function () {
-    benefitEditor.updateBenefitFields();
-  });
-
-  elements.saveBenefitButton?.addEventListener("click", function () {
-    benefitEditor.save();
-  });
-
-  elements.policyLifeAssuredInput?.addEventListener("input", function () {
-    policyFormController.syncSuggestedBenefitLifeAssured();
-  });
-
-  closeModalOnOverlayClick(elements.policyModal);
-
-  closeModalOnEscape(elements.policyModal);
 }
 
 /* ========================================
@@ -454,7 +304,9 @@ function savePolicy() {
 
     editingPolicyId,
 
-    validate: validatePolicyForm,
+    validate() {
+      return validateCurrentPolicyDraft(formData);
+    },
 
     createPolicy,
 
@@ -472,64 +324,29 @@ function savePolicy() {
   policyModal.close();
 }
 
-function validatePolicyForm(formData) {
-  if (!formData.policyName) {
-    return "Enter the policy name.";
-  }
+/* ========================================
+   POLICY FORM VALIDATION
+======================================== */
 
-  if (!formData.policyType) {
-    return "Select a policy type.";
-  }
-
-  if (
-    formData.policyType === "long_term_care" &&
-    !formData.longTermCareBasePlan
-  ) {
-    return "Select the Long-Term Care base plan.";
-  }
-
-  if (!formData.lifeAssured) {
-    return "Enter the life assured.";
-  }
-
-  if (!elements.insurerSelect.value) {
-    return "Select an insurer.";
-  }
-
-  if (elements.insurerSelect.value === "other" && !formData.insurer) {
-    return "Enter the insurer name.";
-  }
-
-  if (!formData.status) {
-    return "Select the policy status.";
-  }
-
-  if (formData.status === "active") {
-    if (formData.premiumAmount <= 0) {
-      return "Enter the policy premium.";
-    }
-
-    if (!formData.premiumFrequency) {
-      return "Select the premium frequency.";
-    }
-  }
-
-  if (draftBenefits.length === 0) {
-    return "Add at least one benefit to the policy.";
-  }
-
-  const firstError = getCurrentDraftPolicyValidationItems({
+function validateCurrentPolicyDraft(formData) {
+  const validationItems = getCurrentDraftPolicyValidationItems({
     lifeAssured: formData.lifeAssured,
-  }).find(function (item) {
-    return item.severity === "error" && !item.valid;
   });
 
-  if (firstError) {
-    return firstError.message;
-  }
+  return validatePolicyDraft({
+    formData,
 
-  return "";
+    insurerSelection: elements.insurerSelect.value,
+
+    draftBenefits,
+
+    validationItems,
+  });
 }
+
+/* ========================================
+   POLICY VALIDATION DATA
+======================================== */
 
 function getCurrentDraftPolicyValidationItems({
   lifeAssured = elements.policyLifeAssuredInput.value.trim(),
@@ -557,6 +374,10 @@ function getCurrentDraftPolicyValidationItems({
   });
 }
 
+/* ========================================
+   POLICY VALIDATION RENDERING
+======================================== */
+
 function renderPolicyValidation() {
   const validationItems = getCurrentDraftPolicyValidationItems();
 
@@ -579,7 +400,15 @@ function renderPolicyValidation() {
   });
 }
 
+/* ========================================
+   POLICY FORM MESSAGE
+======================================== */
+
 function showPolicyFormMessage(message) {
+  if (!elements.policyFormMessage) {
+    return;
+  }
+
   elements.policyFormMessage.textContent = message;
 
   elements.policyFormMessage.scrollIntoView({
@@ -590,6 +419,10 @@ function showPolicyFormMessage(message) {
 }
 
 function clearPolicyFormMessage() {
+  if (!elements.policyFormMessage) {
+    return;
+  }
+
   elements.policyFormMessage.textContent = "";
 }
 
@@ -616,7 +449,7 @@ function renderDraftBenefits() {
 }
 
 /* ========================================
-   POLICY LIST RENDERING
+   PORTFOLIO RENDERING
 ======================================== */
 
 function renderInsurancePortfolio() {
@@ -644,6 +477,10 @@ function renderInsurancePortfolio() {
     },
   });
 }
+
+/* ========================================
+   DELETE POLICY
+======================================== */
 
 function confirmDeletePolicy(policy) {
   const confirmed = window.confirm(
@@ -694,6 +531,7 @@ function scrollToFirstPolicyWithSeverity(severity) {
 
   matchingPolicy.scrollIntoView({
     behavior: "smooth",
+
     block: "center",
   });
 
@@ -703,7 +541,11 @@ function scrollToFirstPolicyWithSeverity(severity) {
     matchingPolicy.classList.add("policy-item--highlighted");
   });
 
-  window.setTimeout(function () {
-    matchingPolicy.classList.remove("policy-item--highlighted");
-  }, 1800);
+  window.setTimeout(
+    function () {
+      matchingPolicy.classList.remove("policy-item--highlighted");
+    },
+
+    1800,
+  );
 }
