@@ -1,19 +1,61 @@
 "use strict";
 
+import { createEmptyClientPlan } from "../state/client-plan.js";
+
+import { createPlannerId } from "./client-utils.js";
+
 /**
- * Enable or disable development data.
+ * Set this to false when you no longer want the
+ * planner to load with demonstration data.
  */
 export const DEV_MODE = true;
+
+/* ========================================
+   COMPLETE DEMO SCENARIO
+======================================== */
+
+export function resetDemoScenario() {
+  if (!DEV_MODE) {
+    return null;
+  }
+
+  const demoPlan = createEmptyClientPlan();
+
+  demoPlan.profile = seedClientProfile();
+
+  demoPlan.priorities = {
+    ...demoPlan.priorities,
+
+    selectedWealthTypes: seedSelectedWealthTypes(),
+
+    assets: {
+      ...seedAssetsAndIncome(),
+
+      properties: seedProperties(),
+    },
+
+    expenses: seedExpenses(),
+
+    commitments: seedCommitments(),
+
+    goals: seedGoals(),
+
+    liabilities: seedLiabilities(),
+
+    /*
+     * Insurance will remain empty for now.
+     */
+    policies: [],
+  };
+
+  return demoPlan;
+}
 
 /* ========================================
    CLIENT PROFILE
 ======================================== */
 
 export function seedClientProfile() {
-  if (!DEV_MODE) {
-    return null;
-  }
-
   return {
     fullName: "John Tan",
 
@@ -27,7 +69,7 @@ export function seedClientProfile() {
 
     employmentStatus: "full_time_employed",
 
-    phoneNumber: "91234567",
+    phone: "91234567",
 
     email: "john.tan@email.com",
 
@@ -36,51 +78,116 @@ export function seedClientProfile() {
 }
 
 /* ========================================
-   ASSETS & INCOME
+   WEALTH TYPES
+======================================== */
+
+export function seedSelectedWealthTypes() {
+  return ["accumulation", "protection"];
+}
+
+/* ========================================
+   ASSETS AND INCOME
 ======================================== */
 
 export function seedAssetsAndIncome() {
-  if (!DEV_MODE) {
-    return null;
-  }
-
   return {
-    withdrawableAssets: 100000,
+    liquidAssets: {
+      cashInBank: 50000,
 
-    monthlyEmploymentIncome: 10000,
+      fixedDeposits: 20000,
 
-    annualBonus: 20000,
+      tBills: 10000,
 
-    monthlyOtherIncome: 1,
+      investments: 20000,
+
+      others: 0,
+    },
+
+    income: {
+      monthlyEmployment: 10000,
+
+      annualBonus: 20000,
+
+      otherMonthly: 1,
+    },
 
     cpf: {
-      ordinaryAccount: 10000,
-      specialAccount: 10000,
-      medisaveAccount: 10000,
+      oa: 10000,
+
+      sa: 10000,
+
+      ma: 10000,
+
+      ra: 0,
     },
   };
 }
 
 /* ========================================
-   PROPERTY
+   PROPERTIES
 ======================================== */
 
 export function seedProperties() {
-  if (!DEV_MODE) {
-    return [];
-  }
-
   return [
     {
-      type: "hdb",
+      id: createPlannerId(),
 
-      name: "4-Room HDB",
+      type: "HDB",
 
       marketValue: 100000,
 
-      outstandingLoan: 90000,
-
       ownershipPercentage: 100,
+    },
+  ];
+}
+
+/* ========================================
+   EXPENSES
+======================================== */
+
+export function seedExpenses() {
+  return {
+    household: 1200,
+
+    transport: 400,
+
+    subscriptionsLifestyle: 200,
+
+    parentsDependantsSupport: 500,
+
+    otherRecurringExpenses: 700,
+  };
+}
+
+/* ========================================
+   COMMITMENTS
+======================================== */
+
+export function seedCommitments() {
+  return {
+    /*
+     * Insurance will be added later.
+     */
+    insurancePremiums: 0,
+  };
+}
+
+/* ========================================
+   GOALS
+======================================== */
+
+export function seedGoals() {
+  return [
+    {
+      id: createPlannerId(),
+
+      type: "education",
+
+      name: "Children’s Education",
+
+      targetAmount: 50000,
+
+      targetDate: createFutureDateString(10),
     },
   ];
 }
@@ -90,12 +197,10 @@ export function seedProperties() {
 ======================================== */
 
 export function seedLiabilities() {
-  if (!DEV_MODE) {
-    return [];
-  }
-
   return [
     {
+      id: createPlannerId(),
+
       type: "property_loan",
 
       name: "HDB Property Loan",
@@ -104,7 +209,7 @@ export function seedLiabilities() {
 
       interestRate: 2.5,
 
-      repaymentEndDate: "2036-07-31",
+      repaymentEndDate: createFutureDateString(10),
 
       monthlyRepayment: 850,
 
@@ -116,74 +221,19 @@ export function seedLiabilities() {
 }
 
 /* ========================================
-   GOALS
+   DATE HELPER
 ======================================== */
 
-export function seedGoals() {
-  if (!DEV_MODE) {
-    return [];
-  }
+function createFutureDateString(yearsFromNow) {
+  const date = new Date();
+
+  date.setFullYear(date.getFullYear() + yearsFromNow);
 
   return [
-    {
-      category: "education",
+    date.getFullYear(),
 
-      name: "Children's Education",
+    String(date.getMonth() + 1).padStart(2, "0"),
 
-      targetAmount: 50000,
-
-      targetDate: "2036-07-01",
-    },
-  ];
-}
-
-/* ========================================
-   EXPENSES
-======================================== */
-
-export function seedExpenses() {
-  if (!DEV_MODE) {
-    return {
-      categories: [],
-    };
-  }
-
-  return {
-    categories: [
-      {
-        name: "Household & Utilities",
-        monthlyAmount: 1200,
-      },
-      {
-        name: "Food & Groceries",
-        monthlyAmount: 700,
-      },
-      {
-        name: "Transport",
-        monthlyAmount: 400,
-      },
-      {
-        name: "Family Support",
-        monthlyAmount: 500,
-      },
-      {
-        name: "Lifestyle",
-        monthlyAmount: 200,
-      },
-    ],
-  };
-}
-
-/* ========================================
-   COMMITMENTS
-======================================== */
-
-export function seedCommitments() {
-  if (!DEV_MODE) {
-    return null;
-  }
-
-  return {
-    insurancePremiums: 0,
-  };
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
 }

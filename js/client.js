@@ -1,6 +1,8 @@
 "use strict";
 
-import { resetClientPlan } from "./state/client-plan.js";
+import { replaceClientPlan, resetClientPlan } from "./state/client-plan.js";
+
+import { DEV_MODE, resetDemoScenario } from "./utils/dev-seed.js";
 
 import { initializeProfile, resetProfile } from "./modules/client-profile.js";
 
@@ -47,6 +49,27 @@ import { on } from "./events/event-bus.js";
 import { EVENTS } from "./events/events.js";
 
 const supabaseClient = window.supabaseClient;
+
+/* ========================================
+   DEVELOPMENT DATA
+======================================== */
+
+loadDevelopmentScenario();
+
+function loadDevelopmentScenario() {
+  if (!DEV_MODE) {
+    return;
+  }
+
+  const demoPlan =
+    resetDemoScenario();
+
+  if (!demoPlan) {
+    return;
+  }
+
+  replaceClientPlan(demoPlan);
+}
 
 /* ========================================
    PAGE ELEMENTS

@@ -2,8 +2,6 @@
 
 import { clientPlan } from "../state/client-plan.js";
 
-import { DEV_MODE, seedClientProfile } from "../utils/dev-seed.js";
-
 import { getTodayDate, isValidEmail } from "../utils/client-utils.js";
 
 import { emit } from "../events/event-bus.js";
@@ -299,9 +297,6 @@ export function getClientAge() {
 ======================================== */
 
 export function renderProfile() {
-  if (DEV_MODE && !clientPlan.profile.fullName) {
-    Object.assign(clientPlan.profile, seedClientProfile());
-  }
 
   const profile = clientPlan.profile;
 
