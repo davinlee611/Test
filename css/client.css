@@ -1808,8 +1808,30 @@ button.insurance-validation-count:disabled {
 }
 
 .policy-card-validation--pass {
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 10px;
   color: #027a48;
-  background: #ecfdf3;
+  border: 1px solid #abefc6;
+  border-radius: 999px;
+  background: #f0fdf4;
+}
+
+.policy-card-validation--pass
+  .policy-card-validation__status {
+  gap: 6px;
+}
+
+.policy-card-validation--pass
+  .policy-card-validation__status
+  strong {
+  font-size: 0.8rem;
+}
+
+.policy-card-validation--pass
+  .policy-card-validation__status
+  i {
+  font-size: 0.8rem;
 }
 
 .policy-card-validation__status {
@@ -1987,66 +2009,154 @@ button.insurance-validation-count:disabled {
    POLICY TYPE COLOURS
 ======================================== */
 
-.policy-card-content {
+.policy-item {
   --policy-accent: #64748b;
-  --policy-accent-soft: #f1f5f9;
+  --policy-accent-soft: #f8fafc;
   --policy-accent-border: #cbd5e1;
 
   position: relative;
+  overflow: hidden;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
-.policy-card-content--hospitalisation {
+/* Hospitalisation */
+
+.policy-item[
+  data-policy-type="hospitalisation"
+] {
   --policy-accent: #2563eb;
   --policy-accent-soft: #eff6ff;
   --policy-accent-border: #bfdbfe;
 }
 
-.policy-card-content--life {
+/* Whole Life */
+
+.policy-item[
+  data-policy-type="whole_life"
+] {
   --policy-accent: #7c3aed;
   --policy-accent-soft: #f5f3ff;
   --policy-accent-border: #ddd6fe;
 }
 
-.policy-card-content--critical-illness {
+/* Term / Critical Illness */
+
+.policy-item[
+  data-policy-type="term"
+] {
   --policy-accent: #db2777;
   --policy-accent-soft: #fdf2f8;
   --policy-accent-border: #fbcfe8;
 }
 
-.policy-card-content--disability {
+/* Disability Income */
+
+.policy-item[
+  data-policy-type="disability_income"
+] {
   --policy-accent: #0f766e;
   --policy-accent-soft: #f0fdfa;
   --policy-accent-border: #99f6e4;
 }
 
-.policy-card-content--accident {
+/* Personal Accident */
+
+.policy-item[
+  data-policy-type="personal_accident"
+] {
   --policy-accent: #c2410c;
   --policy-accent-soft: #fff7ed;
   --policy-accent-border: #fed7aa;
 }
 
-.policy-card-content--investment {
+/* Investment-Linked Plan */
+
+.policy-item[
+  data-policy-type="ilp_protection"
+] {
   --policy-accent: #4f46e5;
   --policy-accent-soft: #eef2ff;
   --policy-accent-border: #c7d2fe;
 }
 
-.policy-card-content--endowment {
+/* Endowment */
+
+.policy-item[
+  data-policy-type="endowment"
+] {
   --policy-accent: #a16207;
   --policy-accent-soft: #fefce8;
   --policy-accent-border: #fde68a;
 }
 
-.policy-card-content--long-term-care {
+/* Long-Term Care */
+
+.policy-item[
+  data-policy-type="long_term_care"
+] {
   --policy-accent: #15803d;
   --policy-accent-soft: #f0fdf4;
   --policy-accent-border: #bbf7d0;
 }
 
-.policy-card-content--other {
-  --policy-accent: #475569;
-  --policy-accent-soft: #f8fafc;
-  --policy-accent-border: #cbd5e1;
+.policy-item::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  background: var(--policy-accent);
+  content: "";
+}
+
+.policy-item:hover {
+  border-color:
+    var(--policy-accent-border);
+  box-shadow:
+    0 10px 26px
+    rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.policy-item
+  .planning-card-icon {
+  color: var(--policy-accent);
+  border: 1px solid
+    var(--policy-accent-border);
+  background:
+    var(--policy-accent-soft);
+}
+
+.policy-item
+  .policy-coverage-summary__title {
+  color: var(--policy-accent);
+}
+
+.policy-item
+  .policy-coverage-summary__list {
+  border-color:
+    var(--policy-accent-border);
+}
+
+.policy-item
+  .policy-coverage-summary__row {
+  background: linear-gradient(
+    90deg,
+    var(--policy-accent-soft)
+      0%,
+    #ffffff
+      48%
+  );
+}
+
+.policy-item
+  .policy-coverage-summary__row
+  + .policy-coverage-summary__row {
+  border-top-color:
+    var(--policy-accent-border);
 }
 
 /* ========================================

@@ -46,16 +46,26 @@ export function updateDraftBenefit(benefits, benefitId, formData) {
 
     const normalizedBenefit = normalizeBenefitLifecycle(benefit);
 
+    const updatedSource =
+      normalizedBenefit.source === BENEFIT_SOURCE.SUGGESTED
+        ? BENEFIT_SOURCE.USER_ADDED
+        : normalizedBenefit.source;
+
     return normalizeBenefitLifecycle({
       ...normalizedBenefit,
 
       ...formData,
 
       /*
-       * Editing any benefit form and
-       * clicking Save Changes counts as
-       * deliberate user interaction.
+       * Once the user deliberately edits
+       * a suggested benefit, it becomes a
+       * confirmed user benefit.
+       *
+       * Base-plan benefits retain their
+       * base-plan source.
        */
+      source: updatedSource,
+
       hasUserInput: true,
     });
   });

@@ -154,6 +154,8 @@ function createPolicyElement({
 
   policyElement.dataset.policyId = policy.id;
 
+  policyElement.dataset.policyType = policy.policyType || "other";
+
   return policyElement;
 }
 
