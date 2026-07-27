@@ -253,7 +253,7 @@ export function createLiabilityModal({ elements }) {
     if (repaymentSource === LIABILITY_REPAYMENT_SOURCES.CALCULATED) {
       return (
         "Estimated from the outstanding balance, " +
-        "interest rate and repayment date."
+        "interest rate and Repay By date."
       );
     }
 

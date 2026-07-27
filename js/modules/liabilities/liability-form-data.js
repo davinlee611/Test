@@ -8,6 +8,8 @@ import {
   PROPERTY_LOAN_TYPE,
 } from "./liability-config.js";
 
+import { normalizeRepaymentEndDate } from "./liability-calculator.js";
+
 /* ========================================
    READ FORM
 ======================================== */
@@ -36,7 +38,9 @@ export function readLiabilityFormData(elements) {
 
     interestRate: Number(elements.liabilityInterestRateInput?.value) || 0,
 
-    repaymentEndDate: elements.liabilityRepaymentEndDateInput?.value || "",
+    repaymentEndDate: normalizeRepaymentEndDate(
+      elements.liabilityRepaymentEndDateInput?.value || "",
+    ),
 
     monthlyRepayment,
 
@@ -95,8 +99,9 @@ export function writeLiabilityFormData(elements, liability) {
   }
 
   if (elements.liabilityRepaymentEndDateInput) {
-    elements.liabilityRepaymentEndDateInput.value =
-      liability?.repaymentEndDate || "";
+    elements.liabilityRepaymentEndDateInput.value = normalizeRepaymentEndDate(
+      liability?.repaymentEndDate,
+    );
   }
 
   if (elements.liabilityMonthlyRepaymentInput) {

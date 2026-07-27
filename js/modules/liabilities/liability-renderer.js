@@ -168,15 +168,26 @@ function updateLiabilityTotal(totalElement, liabilities) {
 }
 
 function formatRepaymentDate(value) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) {
-    return value || "";
+  if (typeof value !== "string") {
+    return "";
   }
 
-  const [year, month, day] = value.split("-").map(Number);
+  const normalizedValue = /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? value.slice(0, 7)
+    : value;
+
+  if (!/^\d{4}-\d{2}$/.test(normalizedValue)) {
+    return value;
+  }
+
+  const [year, month] = normalizedValue.split("-").map(Number);
+
+  if (month < 1 || month > 12) {
+    return value;
+  }
 
   return new Intl.DateTimeFormat("en-SG", {
-    day: "numeric",
     month: "short",
     year: "numeric",
-  }).format(new Date(year, month - 1, day));
+  }).format(new Date(year, month - 1, 1));
 }

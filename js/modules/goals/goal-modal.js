@@ -2,10 +2,7 @@
 
 import { clearGoalForm, writeGoalFormData } from "./goal-form-data.js";
 
-import {
-  getGoalMinimumMonthForEdit,
-  getMinimumGoalMonth,
-} from "./goal-date.js";
+import { getGoalMinimumDateForEdit, getMinimumGoalDate } from "./goal-date.js";
 
 /* ========================================
    GOAL MODAL
@@ -27,7 +24,7 @@ export function createGoalModal({ elements }) {
 
     setTitle("Add Goal");
 
-    setMinimumMonth(getMinimumGoalMonth());
+    setMinimumDate(getMinimumGoalDate());
 
     show();
   }
@@ -47,7 +44,7 @@ export function createGoalModal({ elements }) {
 
     setTitle("Edit Goal");
 
-    setMinimumMonth(getGoalMinimumMonthForEdit(goal));
+    setMinimumDate(getGoalMinimumDateForEdit(goal));
 
     show();
   }
@@ -122,7 +119,7 @@ export function createGoalModal({ elements }) {
     }
   }
 
-  function setMinimumMonth(value) {
+  function setMinimumDate(value) {
     if (elements.goalTargetDateInput) {
       elements.goalTargetDateInput.min = value;
     }

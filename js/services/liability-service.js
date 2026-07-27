@@ -13,6 +13,8 @@ import { createPlannerId } from "../utils/client-utils.js";
 
 import { PROPERTY_LOAN_TYPE } from "../modules/liabilities/liability-config.js";
 
+import { normalizeRepaymentEndDate } from "../modules/liabilities/liability-calculator.js";
+
 /* ========================================
    LIABILITY QUERIES
 ======================================== */
@@ -73,7 +75,8 @@ export function updateLiability(
 
         outstandingBalance,
         interestRate,
-        repaymentEndDate,
+
+        repaymentEndDate: normalizeRepaymentEndDate(repaymentEndDate),
 
         monthlyRepayment,
         monthlyRepaymentSource,
@@ -130,7 +133,8 @@ function createLiabilityRecord({
 
     outstandingBalance,
     interestRate,
-    repaymentEndDate,
+    
+    repaymentEndDate: normalizeRepaymentEndDate(repaymentEndDate),
 
     monthlyRepayment,
     monthlyRepaymentSource,

@@ -34,42 +34,110 @@ export function getLiabilityMonthlyCashRepayment(liability) {
    REPAYMENT DATE
 ======================================== */
 
+export function normalizeRepaymentEndDate(
+  value,
+) {
+  if (
+    typeof value !== "string"
+  ) {
+    return "";
+  }
+
+  if (
+    /^\d{4}-\d{2}$/.test(value)
+  ) {
+    return isValidMonthString(value)
+      ? value
+      : "";
+  }
+
+  /*
+   * Compatibility with older liabilities
+   * that stored a full YYYY-MM-DD date.
+   */
+  if (
+    /^\d{4}-\d{2}-\d{2}$/.test(
+      value,
+    )
+  ) {
+    const monthValue =
+      value.slice(0, 7);
+
+    return isValidMonthString(
+      monthValue,
+    )
+      ? monthValue
+      : "";
+  }
+
+  return "";
+}
+
 export function getRemainingRepaymentMonths(
   repaymentEndDate,
   referenceDate = new Date(),
 ) {
-  const endDate = parseDateOnly(repaymentEndDate);
+  const normalizedDate =
+    normalizeRepaymentEndDate(
+      repaymentEndDate,
+    );
 
-  if (!endDate) {
+  if (!normalizedDate) {
     return 0;
   }
 
-  const startDate = new Date(
-    referenceDate.getFullYear(),
-    referenceDate.getMonth(),
-    referenceDate.getDate(),
+  const [targetYear, targetMonth] =
+    normalizedDate
+      .split("-")
+      .map(Number);
+
+  const currentYear =
+    referenceDate.getFullYear();
+
+  const currentMonth =
+    referenceDate.getMonth() + 1;
+
+  const monthDifference =
+    (targetYear - currentYear) *
+      12 +
+    (targetMonth - currentMonth);
+
+  /*
+   * Include the selected repayment month.
+   *
+   * July 2026 to July 2036 is treated as
+   * 121 monthly repayment periods.
+   */
+  return Math.max(
+    monthDifference + 1,
+    0,
   );
-
-  if (endDate <= startDate) {
-    return 0;
-  }
-
-  let months =
-    (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-    (endDate.getMonth() - startDate.getMonth());
-
-  if (endDate.getDate() > startDate.getDate()) {
-    months += 1;
-  }
-
-  return Math.max(months, 1);
 }
 
 export function isRepaymentEndDateInFuture(
   repaymentEndDate,
   referenceDate = new Date(),
 ) {
-  return getRemainingRepaymentMonths(repaymentEndDate, referenceDate) > 0;
+  const normalizedDate =
+    normalizeRepaymentEndDate(
+      repaymentEndDate,
+    );
+
+  if (!normalizedDate) {
+    return false;
+  }
+
+  const currentMonth =
+    [
+      referenceDate.getFullYear(),
+
+      String(
+        referenceDate.getMonth() + 1,
+      ).padStart(2, "0"),
+    ].join("-");
+
+  return normalizedDate >
+    currentMonth;
 }
 
 /* ========================================
@@ -158,25 +226,17 @@ export function calculateTotalMonthlyCashRepayments(liabilities) {
 }
 
 /* ========================================
-   PRIVATE DATE PARSER
+   PRIVATE DATE VALIDATION
 ======================================== */
 
-function parseDateOnly(value) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) {
-    return null;
-  }
+function isValidMonthString(value) {
+  const [year, month] =
+    value.split("-").map(Number);
 
-  const [year, month, day] = value.split("-").map(Number);
-
-  const date = new Date(year, month - 1, day);
-
-  if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
-  ) {
-    return null;
-  }
-
-  return date;
+  return (
+    Number.isInteger(year) &&
+    Number.isInteger(month) &&
+    month >= 1 &&
+    month <= 12
+  );
 }

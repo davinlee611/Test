@@ -2174,7 +2174,7 @@
             </div>
 
             <div class="form-group">
-              <label for="goalTargetDate"> Target Month </label>
+              <label for="goalTargetDate"> Target Date </label>
 
               <input
                 id="goalTargetDate"
@@ -2182,6 +2182,10 @@
                 type="month"
                 required
               />
+
+              <p class="form-helper-text">
+                Select the month and year the goal is expected to be reached.
+              </p>
             </div>
           </div>
 
@@ -2319,11 +2323,12 @@
               <input
                 id="liabilityRepaymentEndDate"
                 class="form-control"
-                type="date"
+                type="month"
               />
 
               <p class="form-helper-text">
-                Optional. Used to estimate the monthly repayment.
+                Optional. Select the month and year the liability is expected to
+                be repaid.
               </p>
             </div>
 

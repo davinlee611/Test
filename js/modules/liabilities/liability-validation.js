@@ -53,7 +53,7 @@ export function validateLiabilityDraft(formData) {
   ) {
     return createInvalidResult(
       "repaymentEndDate",
-      "Repay By must be a future date.",
+      "Repay By must be a future month and year.",
     );
   }
 

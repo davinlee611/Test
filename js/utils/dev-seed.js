@@ -187,7 +187,7 @@ export function seedGoals() {
 
       targetAmount: 50000,
 
-      targetDate: createFutureDateString(10),
+      targetDate: createFutureMonthString(10),
     },
   ];
 }
@@ -209,7 +209,7 @@ export function seedLiabilities() {
 
       interestRate: 2.5,
 
-      repaymentEndDate: createFutureDateString(10),
+      repaymentEndDate: createFutureMonthString(10),
 
       monthlyRepayment: 850,
 
@@ -224,7 +224,7 @@ export function seedLiabilities() {
    DATE HELPER
 ======================================== */
 
-function createFutureDateString(yearsFromNow) {
+function createFutureMonthString(yearsFromNow) {
   const date = new Date();
 
   date.setFullYear(date.getFullYear() + yearsFromNow);
@@ -233,7 +233,5 @@ function createFutureDateString(yearsFromNow) {
     date.getFullYear(),
 
     String(date.getMonth() + 1).padStart(2, "0"),
-
-    String(date.getDate()).padStart(2, "0"),
   ].join("-");
 }

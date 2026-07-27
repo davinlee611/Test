@@ -5,13 +5,24 @@
 ======================================== */
 
 export function getSavedGoalDate(goal) {
-  if (goal?.targetDate) {
+  if (isMonthString(goal?.targetDate)) {
     return goal.targetDate;
   }
 
   /*
-   * Compatibility with older goal records
-   * that only stored targetYear.
+   * Compatibility with records that stored
+   * a full YYYY-MM-DD date.
+   */
+  if (
+    typeof goal?.targetDate === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(goal.targetDate)
+  ) {
+    return goal.targetDate.slice(0, 7);
+  }
+
+  /*
+   * Compatibility with older records that
+   * stored only a target year.
    */
   if (goal?.targetYear) {
     return `${goal.targetYear}-01`;
@@ -25,21 +36,18 @@ export function getSavedGoalDate(goal) {
 ======================================== */
 
 export function formatGoalDate(targetDate) {
-  if (!targetDate) {
+  const normalizedDate = normalizeMonthString(targetDate);
+
+  if (!normalizedDate) {
     return "No target date";
   }
 
-  const [year, month] = targetDate.split("-");
+  const [year, month] = normalizedDate.split("-").map(Number);
 
-  const date = new Date(Number(year), Number(month) - 1, 1);
-
-  if (Number.isNaN(date.getTime())) {
-    return targetDate;
-  }
+  const date = new Date(year, month - 1, 1);
 
   return new Intl.DateTimeFormat("en-SG", {
     month: "long",
-
     year: "numeric",
   }).format(date);
 }
@@ -48,36 +56,71 @@ export function formatGoalDate(targetDate) {
    MINIMUM DATE
 ======================================== */
 
-export function getMinimumGoalMonth(referenceDate = new Date()) {
-  const minimumDate = new Date(referenceDate);
+export function getMinimumGoalDate(referenceDate = new Date()) {
+  const minimumDate = new Date(
+    referenceDate.getFullYear(),
+    referenceDate.getMonth() + 1,
+    1,
+  );
 
-  minimumDate.setDate(1);
-
-  minimumDate.setMonth(minimumDate.getMonth() + 1);
-
-  const year = minimumDate.getFullYear();
-
-  const month = String(minimumDate.getMonth() + 1).padStart(2, "0");
-
-  return `${year}-${month}`;
+  return toMonthString(minimumDate);
 }
 
 /* ========================================
    EDIT DATE
 ======================================== */
 
-export function getGoalMinimumMonthForEdit(goal, referenceDate = new Date()) {
+export function getGoalMinimumDateForEdit(goal, referenceDate = new Date()) {
   const savedTargetDate = getSavedGoalDate(goal);
 
-  const minimumFutureMonth = getMinimumGoalMonth(referenceDate);
+  const minimumFutureDate = getMinimumGoalDate(referenceDate);
 
   /*
    * Preserve an existing past target date
    * while editing.
    */
-  if (savedTargetDate && savedTargetDate < minimumFutureMonth) {
+  if (savedTargetDate && savedTargetDate < minimumFutureDate) {
     return savedTargetDate;
   }
 
-  return minimumFutureMonth;
+  return minimumFutureDate;
+}
+
+/* ========================================
+   NORMALISATION
+======================================== */
+
+export function normalizeMonthString(value) {
+  if (isMonthString(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value.slice(0, 7);
+  }
+
+  return "";
+}
+
+function isMonthString(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}$/.test(value)) {
+    return false;
+  }
+
+  const [year, month] = value.split("-").map(Number);
+
+  return (
+    Number.isInteger(year) &&
+    Number.isInteger(month) &&
+    month >= 1 &&
+    month <= 12
+  );
+}
+
+function toMonthString(date) {
+  return [
+    date.getFullYear(),
+
+    String(date.getMonth() + 1).padStart(2, "0"),
+  ].join("-");
 }

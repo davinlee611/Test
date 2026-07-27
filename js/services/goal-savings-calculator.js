@@ -48,7 +48,7 @@ export function calculateGoalSavings(goals, calculationDate = new Date()) {
 function calculateSingleGoalSavings(goal, calculationDate) {
   const targetAmount = getValidAmount(goal?.targetAmount);
 
-  const targetDate = parseTargetMonth(getGoalTargetDate(goal));
+  const targetDate = parseTargetDate(getGoalTargetDate(goal));
 
   const baseResult = {
     id: goal?.id || "",
@@ -74,7 +74,7 @@ function calculateSingleGoalSavings(goal, calculationDate) {
   if (!targetDate) {
     return {
       ...baseResult,
-      message: "Target month is missing or invalid.",
+      message: "Target date is missing or invalid.",
     };
   }
 
@@ -87,7 +87,7 @@ function calculateSingleGoalSavings(goal, calculationDate) {
     return {
       ...baseResult,
       status: "review",
-      message: "Target month has passed.",
+      message: "Target date has passed.",
     };
   }
 
@@ -130,7 +130,7 @@ function calculateInclusiveMonths(calculationDate, targetDate) {
   return monthDifference + 1;
 }
 
-function parseTargetMonth(value) {
+function parseTargetDate(value) {
   if (typeof value !== "string" || !/^\d{4}-\d{2}$/.test(value)) {
     return null;
   }
@@ -163,12 +163,26 @@ function parseTargetMonth(value) {
 ======================================== */
 
 function getGoalTargetDate(goal) {
-  if (goal?.targetDate) {
+  if (
+    typeof goal?.targetDate === "string" &&
+    /^\d{4}-\d{2}$/.test(goal.targetDate)
+  ) {
     return goal.targetDate;
   }
 
   /*
-   * Supports older goal records that stored
+   * Supports records that stored a full
+   * YYYY-MM-DD date.
+   */
+  if (
+    typeof goal?.targetDate === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(goal.targetDate)
+  ) {
+    return goal.targetDate.slice(0, 7);
+  }
+
+  /*
+   * Supports older records that stored
    * only targetYear.
    */
   if (goal?.targetYear) {
