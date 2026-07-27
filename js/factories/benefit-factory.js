@@ -2,15 +2,31 @@
 
 import { createPlannerId } from "../utils/client-utils.js";
 
+import {
+  BENEFIT_SOURCE,
+  BENEFIT_STATUS,
+} from "../modules/insurance/benefit-lifecycle.js";
+
 /* ========================================
-   BENEFIT FACTORIES
+   SUGGESTED BENEFIT
 ======================================== */
 
-export function createEmptyBenefit(benefitType,lifeAssured) {
+export function createEmptyBenefit(benefitType, lifeAssured) {
   return {
     id: createPlannerId(),
 
+    source: BENEFIT_SOURCE.SUGGESTED,
+
+    status: BENEFIT_STATUS.NEW,
+
+    hasUserInput: false,
+
+    /*
+     * Compatibility flags.
+     */
     isSuggested: true,
+
+    isBasePlanBenefit: false,
 
     type: benefitType,
 
@@ -36,11 +52,28 @@ export function createEmptyBenefit(benefitType,lifeAssured) {
   };
 }
 
-export function createLongTermCareBaseBenefit(basePlanValue, basePlan, lifeAssured) {
+/* ========================================
+   LONG-TERM CARE BASE BENEFIT
+======================================== */
+
+export function createLongTermCareBaseBenefit(
+  basePlanValue,
+  basePlan,
+  lifeAssured,
+) {
   return {
     id: createPlannerId(),
 
-    isSuggested: true,
+    source: BENEFIT_SOURCE.BASE_PLAN,
+
+    status: BENEFIT_STATUS.NEW,
+
+    hasUserInput: false,
+
+    /*
+     * Compatibility flags.
+     */
+    isSuggested: false,
 
     isBasePlanBenefit: true,
 

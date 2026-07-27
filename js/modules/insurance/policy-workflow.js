@@ -16,6 +16,8 @@ import { validatePolicyDraft } from "./policy-form-validator.js";
 
 import { savePolicyDraft } from "./policy-save-service.js";
 
+import { cleanBenefitsForSave } from "./benefit-cleanup.js";
+
 /* ========================================
    POLICY WORKFLOW
 ======================================== */
@@ -43,7 +45,11 @@ export function createPolicyWorkflow({
      CURRENT DRAFT VALIDATION
   ======================================== */
 
-  function getDraftValidationItems({ lifeAssured = "" } = {}) {
+  function getDraftValidationItems({
+    lifeAssured = "",
+
+    benefits = getDraftBenefits(),
+  } = {}) {
     const assets = getAssets();
 
     const editingPolicyId = getEditingPolicyId() || "";
@@ -53,7 +59,7 @@ export function createPolicyWorkflow({
 
       policyLifeAssured: lifeAssured,
 
-      benefits: getDraftBenefits(),
+      benefits,
 
       includeDraftBenefits: true,
 
@@ -75,9 +81,13 @@ export function createPolicyWorkflow({
     formData,
 
     insurerSelection,
+
+    benefits = getDraftBenefits(),
   }) {
     const validationItems = getDraftValidationItems({
       lifeAssured: formData.lifeAssured,
+
+      benefits,
     });
 
     return validatePolicyDraft({
@@ -85,7 +95,7 @@ export function createPolicyWorkflow({
 
       insurerSelection,
 
-      draftBenefits: getDraftBenefits(),
+      draftBenefits: benefits,
 
       validationItems,
     });
@@ -100,10 +110,12 @@ export function createPolicyWorkflow({
 
     insurerSelection,
   }) {
+    const benefits = cleanBenefitsForSave(getDraftBenefits());
+
     return savePolicyDraft({
       formData,
 
-      draftBenefits: getDraftBenefits(),
+      draftBenefits: benefits,
 
       editingPolicyId: getEditingPolicyId(),
 
@@ -112,6 +124,8 @@ export function createPolicyWorkflow({
           formData,
 
           insurerSelection,
+
+          benefits,
         });
       },
 

@@ -8,15 +8,24 @@ import { buildPolicyData } from "./policy-data-builder.js";
 
 export function savePolicyDraft({
   formData,
+
   draftBenefits,
+
   editingPolicyId,
 
   validate,
 
   createPolicy,
+
   updatePolicy,
 }) {
-  const validationMessage = validate(formData);
+  /*
+   * Validation must use the same cleaned
+   * benefit array that will be saved.
+   */
+  const validationMessage = validate({
+    benefits: draftBenefits,
+  });
 
   if (validationMessage) {
     return {

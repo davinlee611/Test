@@ -10,6 +10,8 @@ import {
   createLongTermCareBaseBenefit,
 } from "../../factories/benefit-factory.js";
 
+import { BENEFIT_SOURCE } from "./benefit-lifecycle.js";
+
 export function createPolicyFormController({
   elements,
 
@@ -81,15 +83,19 @@ export function createPolicyFormController({
 
   function handleLongTermCareBasePlanChange() {
     /*
-     * Changing the base plan invalidates the
-     * previously entered supplementary benefits
-     * because their payout options depend on the
-     * selected base plan.
+     * Changing the base plan invalidates
+     * the previous LTC base benefit and
+     * supplementary benefits.
      *
-     * Keep only untouched suggested benefits.
+     * Retain only untouched optional
+     * suggestions that are unrelated to
+     * the generated base plan.
      */
     const retainedBenefits = getDraftBenefits().filter(function (benefit) {
-      return benefit.isSuggested && !benefit.isBasePlanBenefit;
+      return (
+        benefit.source === BENEFIT_SOURCE.SUGGESTED &&
+        benefit.hasUserInput !== true
+      );
     });
 
     setDraftBenefits(retainedBenefits);
@@ -173,7 +179,10 @@ export function createPolicyFormController({
     }
 
     return draftBenefits.every(function (benefit) {
-      return benefit.isSuggested;
+      return (
+        benefit.source === BENEFIT_SOURCE.SUGGESTED &&
+        benefit.hasUserInput !== true
+      );
     });
   }
 
@@ -185,12 +194,24 @@ export function createPolicyFormController({
     const lifeAssured = elements.policyLifeAssuredInput.value.trim();
 
     const updatedBenefits = getDraftBenefits().map(function (benefit) {
-      if (!benefit.isSuggested) {
+      /*
+       * Only update untouched suggestions.
+       *
+       * A suggestion the adviser already
+       * edited may contain an intentionally
+       * different life assured.
+       */
+      const isUntouchedSuggestion =
+        benefit.source === BENEFIT_SOURCE.SUGGESTED &&
+        benefit.hasUserInput !== true;
+
+      if (!isUntouchedSuggestion) {
         return benefit;
       }
 
       return {
         ...benefit,
+
         lifeAssured,
       };
     });

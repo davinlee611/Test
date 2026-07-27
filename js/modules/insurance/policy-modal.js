@@ -10,6 +10,8 @@ import { getPolicyById } from "../../services/policy-service.js";
 
 import { writePolicyFormData } from "./policy-form-writer.js";
 
+import { markBenefitsAsExisting } from "./benefit-lifecycle.js";
+
 export function createPolicyModal({
   elements,
 
@@ -79,7 +81,7 @@ export function createPolicyModal({
 
     updateLongTermCareBasePlanField();
 
-    setDraftBenefits(cloneBenefits(policy.benefits));
+    setDraftBenefits(markBenefitsAsExisting(cloneBenefits(policy.benefits)));
 
     updatePremiumFields();
 

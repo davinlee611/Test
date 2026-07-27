@@ -2,22 +2,41 @@
 
 import { createPlannerId } from "../../utils/client-utils.js";
 
+import {
+  BENEFIT_SOURCE,
+  BENEFIT_STATUS,
+  normalizeBenefitLifecycle,
+} from "./benefit-lifecycle.js";
+
 /* ========================================
-   DRAFT BENEFIT COLLECTION
+   ADD BENEFIT
 ======================================== */
 
 export function addDraftBenefit(benefits, formData) {
   return [
     ...benefits,
-    {
+
+    normalizeBenefitLifecycle({
       id: createPlannerId(),
+
+      ...formData,
+
+      source: BENEFIT_SOURCE.USER_ADDED,
+
+      status: BENEFIT_STATUS.NEW,
+
+      hasUserInput: true,
 
       isSuggested: false,
 
-      ...formData,
-    },
+      isBasePlanBenefit: false,
+    }),
   ];
 }
+
+/* ========================================
+   UPDATE BENEFIT
+======================================== */
 
 export function updateDraftBenefit(benefits, benefitId, formData) {
   return benefits.map(function (benefit) {
@@ -25,15 +44,26 @@ export function updateDraftBenefit(benefits, benefitId, formData) {
       return benefit;
     }
 
-    return {
-      ...benefit,
+    const normalizedBenefit = normalizeBenefitLifecycle(benefit);
+
+    return normalizeBenefitLifecycle({
+      ...normalizedBenefit,
 
       ...formData,
 
-      isSuggested: false,
-    };
+      /*
+       * Editing any benefit form and
+       * clicking Save Changes counts as
+       * deliberate user interaction.
+       */
+      hasUserInput: true,
+    });
   });
 }
+
+/* ========================================
+   REMOVE BENEFIT
+======================================== */
 
 export function removeDraftBenefit(benefits, benefitId) {
   return benefits.filter(function (benefit) {
