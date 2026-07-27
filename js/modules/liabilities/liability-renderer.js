@@ -11,7 +11,11 @@ import {
 
 import { formatCurrency } from "../../utils/client-utils.js";
 
-import { calculateTotalLiabilities } from "./liability-calculator.js";
+import {
+  calculateTotalLiabilities,
+  getLiabilityMonthlyCashRepayment,
+  getLiabilityMonthlyCpfPayment,
+} from "./liability-calculator.js";
 
 import {
   getLiabilityIconClass,
@@ -24,15 +28,10 @@ import {
 
 export function renderLiabilityList({
   list,
-
   emptyMessage,
-
   totalElement,
-
   liabilities,
-
   onEditLiability,
-
   onDeleteLiability,
 }) {
   const safeLiabilities = Array.isArray(liabilities) ? liabilities : [];
@@ -46,13 +45,7 @@ export function renderLiabilityList({
   list.innerHTML = "";
 
   if (safeLiabilities.length === 0) {
-    renderPlanningEmptyState(
-      list,
-
-      "No liabilities added yet.",
-
-      emptyMessage,
-    );
+    renderPlanningEmptyState(list, "No liabilities added yet.", emptyMessage);
 
     return;
   }
@@ -61,24 +54,16 @@ export function renderLiabilityList({
     list.appendChild(
       createLiabilityItem({
         liability,
-
         onEditLiability,
-
         onDeleteLiability,
       }),
     );
   });
 }
 
-/* ========================================
-   LIABILITY ITEM
-======================================== */
-
 function createLiabilityItem({
   liability,
-
   onEditLiability,
-
   onDeleteLiability,
 }) {
   return createPlanningCard({
@@ -90,17 +75,11 @@ function createLiabilityItem({
 
     actions: createLiabilityActions({
       liability,
-
       onEditLiability,
-
       onDeleteLiability,
     }),
   });
 }
-
-/* ========================================
-   LIABILITY DETAILS
-======================================== */
 
 function createLiabilityDetails(liability) {
   return createPlanningCardDetails({
@@ -121,22 +100,28 @@ function createLiabilityDescription(liability) {
     parts.push(`${formatCurrency(liability.monthlyRepayment)} monthly`);
   }
 
-  if (Number(liability.interestRate) > 0) {
-    parts.push(`${liability.interestRate}% interest`);
+  if (Number(liability.interestRate) >= 0) {
+    parts.push(`${Number(liability.interestRate) || 0}% interest`);
+  }
+
+  if (liability.repaymentEndDate) {
+    parts.push(`repay by ${formatRepaymentDate(liability.repaymentEndDate)}`);
+  }
+
+  if (liability.usesCpf) {
+    parts.push(
+      `${formatCurrency(getLiabilityMonthlyCpfPayment(liability))} CPF`,
+
+      `${formatCurrency(getLiabilityMonthlyCashRepayment(liability))} cash`,
+    );
   }
 
   return parts.join(" · ");
 }
 
-/* ========================================
-   LIABILITY ACTIONS
-======================================== */
-
 function createLiabilityActions({
   liability,
-
   onEditLiability,
-
   onDeleteLiability,
 }) {
   const actions = createPlanningCardActions();
@@ -168,16 +153,26 @@ function createLiabilityActions({
   return actions;
 }
 
-/* ========================================
-   LIABILITY TOTAL
-======================================== */
-
 function updateLiabilityTotal(totalElement, liabilities) {
   if (!totalElement) {
     return;
   }
 
-  const total = calculateTotalLiabilities(liabilities);
+  totalElement.textContent = formatCurrency(
+    calculateTotalLiabilities(liabilities),
+  );
+}
 
-  totalElement.textContent = formatCurrency(total);
+function formatRepaymentDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) {
+    return value || "";
+  }
+
+  const [year, month, day] = value.split("-").map(Number);
+
+  return new Intl.DateTimeFormat("en-SG", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(year, month - 1, day));
 }

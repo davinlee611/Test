@@ -30,12 +30,42 @@ export function getLiabilityElements() {
       "liabilityOutstandingBalance",
     ),
 
+    liabilityInterestRateInput: document.getElementById(
+      "liabilityInterestRate",
+    ),
+
+    liabilityRepaymentEndDateInput: document.getElementById(
+      "liabilityRepaymentEndDate",
+    ),
+
     liabilityMonthlyRepaymentInput: document.getElementById(
       "liabilityMonthlyRepayment",
     ),
 
-    liabilityInterestRateInput: document.getElementById(
-      "liabilityInterestRate",
+    liabilityMonthlyRepaymentSourceInput: document.getElementById(
+      "liabilityMonthlyRepaymentSource",
+    ),
+
+    liabilityRepaymentHelper: document.getElementById(
+      "liabilityRepaymentHelper",
+    ),
+
+    useEstimatedRepaymentButton: document.getElementById(
+      "useEstimatedRepaymentButton",
+    ),
+
+    liabilityCpfPanel: document.getElementById("liabilityCpfPanel"),
+
+    liabilityUsesCpfInput: document.getElementById("liabilityUsesCpf"),
+
+    liabilityCpfAmountGroup: document.getElementById("liabilityCpfAmountGroup"),
+
+    liabilityMonthlyCpfPaymentInput: document.getElementById(
+      "liabilityMonthlyCpfPayment",
+    ),
+
+    liabilityMonthlyCashRepaymentValue: document.getElementById(
+      "liabilityMonthlyCashRepaymentValue",
     ),
 
     liabilityFormMessage: document.getElementById("liabilityFormMessage"),

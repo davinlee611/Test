@@ -41,8 +41,12 @@ export function updateLiability(
     liabilityType,
     liabilityName,
     outstandingBalance,
-    monthlyRepayment,
     interestRate,
+    repaymentEndDate,
+    monthlyRepayment,
+    monthlyRepaymentSource,
+    usesCpf,
+    monthlyCpfPayment,
   },
 ) {
   const { items, updatedItem } = updateItemById(
@@ -50,11 +54,20 @@ export function updateLiability(
     liabilityId,
     (liability) => ({
       ...liability,
+
       type: liabilityType,
       name: liabilityName,
+
       outstandingBalance,
-      monthlyRepayment,
       interestRate,
+      repaymentEndDate,
+
+      monthlyRepayment,
+      monthlyRepaymentSource,
+
+      usesCpf: Boolean(usesCpf),
+
+      monthlyCpfPayment: usesCpf ? monthlyCpfPayment : 0,
     }),
   );
 
@@ -91,15 +104,28 @@ function createLiabilityRecord({
   liabilityType,
   liabilityName,
   outstandingBalance,
-  monthlyRepayment,
   interestRate,
+  repaymentEndDate,
+  monthlyRepayment,
+  monthlyRepaymentSource,
+  usesCpf,
+  monthlyCpfPayment,
 }) {
   return {
     id: createPlannerId(),
+
     type: liabilityType,
     name: liabilityName,
+
     outstandingBalance,
-    monthlyRepayment,
     interestRate,
+    repaymentEndDate,
+
+    monthlyRepayment,
+    monthlyRepaymentSource,
+
+    usesCpf: Boolean(usesCpf),
+
+    monthlyCpfPayment: usesCpf ? monthlyCpfPayment : 0,
   };
 }

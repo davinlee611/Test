@@ -95,5 +95,17 @@ function bindModuleEvents() {
     onSubmitLiability: liabilityController.submitLiability,
 
     onCloseLiability: liabilityController.closeLiability,
+
+    onLiabilityTypeChange: liabilityController.handleLiabilityTypeChange,
+
+    onRepaymentInputsChange: liabilityController.handleRepaymentInputsChange,
+
+    onMonthlyRepaymentInput: liabilityController.handleMonthlyRepaymentInput,
+
+    onUseEstimatedRepayment: liabilityController.useEstimatedRepayment,
+
+    onCpfUsageChange: liabilityController.handleCpfUsageChange,
+
+    onCpfAmountInput: liabilityController.handleCpfAmountInput,
   });
 }

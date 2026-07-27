@@ -3281,3 +3281,122 @@ button.insurance-validation-count:disabled {
 }
 
 }
+
+
+/* ========================================
+   LIABILITY REPAYMENT AND CPF FIELDS
+======================================== */
+
+.liability-form-group--full {
+  grid-column: 1 / -1;
+}
+
+.liability-repayment-support {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.liability-repayment-support .form-helper-text {
+  margin: 0;
+}
+
+.liability-use-estimate {
+  flex: 0 0 auto;
+  padding: 0;
+  color: var(--primary-color);
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.liability-use-estimate:hover {
+  text-decoration: underline;
+}
+
+.liability-use-estimate i {
+  margin-right: 5px;
+}
+
+.liability-cpf-panel {
+  padding: 18px;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+}
+
+.liability-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.liability-checkbox-row input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.liability-checkbox-row span {
+  display: grid;
+  gap: 4px;
+}
+
+.liability-checkbox-row small {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.liability-cpf-amount-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.liability-cpf-amount-grid[hidden] {
+  display: none;
+}
+
+.liability-cash-preview {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  min-height: var(--input-height);
+  padding: 14px 16px;
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+
+.liability-cash-preview span {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.liability-cash-preview strong {
+  color: var(--text-primary);
+  font-size: 18px;
+}
+
+@media (max-width: 640px) {
+  .liability-repayment-support {
+    flex-direction: column;
+  }
+
+  .liability-cpf-amount-grid {
+    grid-template-columns: 1fr;
+  }
+}

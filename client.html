@@ -2246,19 +2246,15 @@
               <select id="liabilityType" class="form-control" required>
                 <option value="">Select liability type</option>
 
-                <option value="mortgage">Mortgage</option>
+                <option value="property_loan">Property Loan</option>
 
                 <option value="car_loan">Car Loan</option>
 
                 <option value="personal_loan">Personal Loan</option>
 
-                <option value="education_loan">Education Loan</option>
-
-                <option value="credit_card">Credit Card</option>
-
                 <option value="business_loan">Business Loan</option>
 
-                <option value="other">Other</option>
+                <option value="other">Other Liability</option>
               </select>
             </div>
 
@@ -2270,7 +2266,7 @@
                 class="form-control"
                 type="text"
                 maxlength="100"
-                placeholder="For example, DBS Home Loan"
+                placeholder="For example, HDB Home Loan"
                 required
               />
             </div>
@@ -2297,25 +2293,9 @@
             </div>
 
             <div class="form-group">
-              <label for="liabilityMonthlyRepayment"> Monthly Repayment </label>
-
-              <div class="currency-input">
-                <span>$</span>
-
-                <input
-                  id="liabilityMonthlyRepayment"
-                  class="form-control"
-                  type="number"
-                  min="0"
-                  step="1"
-                  inputmode="numeric"
-                  placeholder="0"
-                />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="liabilityInterestRate"> Interest Rate </label>
+              <label for="liabilityInterestRate">
+                Interest Rate (% p.a.)
+              </label>
 
               <div class="percentage-input">
                 <input
@@ -2332,6 +2312,107 @@
                 <span>%</span>
               </div>
             </div>
+
+            <div class="form-group">
+              <label for="liabilityRepaymentEndDate"> Repay By </label>
+
+              <input
+                id="liabilityRepaymentEndDate"
+                class="form-control"
+                type="date"
+              />
+
+              <p class="form-helper-text">
+                Optional. Used to estimate the monthly repayment.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="liabilityMonthlyRepayment"> Monthly Repayment </label>
+
+              <div class="currency-input">
+                <span>$</span>
+
+                <input
+                  id="liabilityMonthlyRepayment"
+                  class="form-control"
+                  type="number"
+                  min="1"
+                  step="1"
+                  inputmode="numeric"
+                  placeholder="0"
+                  required
+                />
+              </div>
+
+              <input id="liabilityMonthlyRepaymentSource" type="hidden" />
+
+              <div class="liability-repayment-support">
+                <p id="liabilityRepaymentHelper" class="form-helper-text"></p>
+
+                <button
+                  id="useEstimatedRepaymentButton"
+                  class="liability-use-estimate"
+                  type="button"
+                  hidden
+                >
+                  <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+
+                  Use Estimated
+                </button>
+              </div>
+            </div>
+
+            <section
+              id="liabilityCpfPanel"
+              class="liability-cpf-panel liability-form-group--full"
+              hidden
+            >
+              <label class="liability-checkbox-row" for="liabilityUsesCpf">
+                <input id="liabilityUsesCpf" type="checkbox" />
+
+                <span>
+                  <strong> Use CPF for monthly repayment </strong>
+
+                  <small>
+                    Record the amount paid from CPF OA so cash flow and CPF
+                    projections can be separated later.
+                  </small>
+                </span>
+              </label>
+
+              <div
+                id="liabilityCpfAmountGroup"
+                class="liability-cpf-amount-grid"
+                hidden
+              >
+                <div class="form-group">
+                  <label for="liabilityMonthlyCpfPayment">
+                    Monthly CPF Payment
+                  </label>
+
+                  <div class="currency-input">
+                    <span>$</span>
+
+                    <input
+                      id="liabilityMonthlyCpfPayment"
+                      class="form-control"
+                      type="number"
+                      min="1"
+                      step="1"
+                      inputmode="numeric"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                <div class="liability-cash-preview">
+                  <span> Estimated Monthly Cash Payment </span>
+
+                  <strong id="liabilityMonthlyCashRepaymentValue"> $0 </strong>
+                </div>
+              </div>
+            </section>
           </div>
 
           <p

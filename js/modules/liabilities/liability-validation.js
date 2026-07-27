@@ -3,9 +3,13 @@
 import {
   MAXIMUM_INTEREST_RATE,
   MINIMUM_INTEREST_RATE,
+  MINIMUM_MONTHLY_CPF_PAYMENT,
   MINIMUM_MONTHLY_REPAYMENT,
   MINIMUM_OUTSTANDING_BALANCE,
+  PROPERTY_LOAN_TYPE,
 } from "./liability-config.js";
+
+import { isRepaymentEndDateInFuture } from "./liability-calculator.js";
 
 /* ========================================
    LIABILITY VALIDATION
@@ -33,13 +37,6 @@ export function validateLiabilityDraft(formData) {
     );
   }
 
-  if (formData.monthlyRepayment < MINIMUM_MONTHLY_REPAYMENT) {
-    return createInvalidResult(
-      "monthlyRepayment",
-      "Monthly repayment cannot be negative.",
-    );
-  }
-
   if (
     formData.interestRate < MINIMUM_INTEREST_RATE ||
     formData.interestRate > MAXIMUM_INTEREST_RATE
@@ -47,6 +44,50 @@ export function validateLiabilityDraft(formData) {
     return createInvalidResult(
       "interestRate",
       "Interest rate must be between 0% and 100%.",
+    );
+  }
+
+  if (
+    formData.repaymentEndDate &&
+    !isRepaymentEndDateInFuture(formData.repaymentEndDate)
+  ) {
+    return createInvalidResult(
+      "repaymentEndDate",
+      "Repay By must be a future date.",
+    );
+  }
+
+  if (formData.monthlyRepayment < MINIMUM_MONTHLY_REPAYMENT) {
+    return createInvalidResult(
+      "monthlyRepayment",
+      "Please enter the monthly repayment or provide a Repay By date so it can be estimated.",
+    );
+  }
+
+  if (formData.usesCpf && formData.liabilityType !== PROPERTY_LOAN_TYPE) {
+    return createInvalidResult(
+      "usesCpf",
+      "CPF usage is only available for property loans.",
+    );
+  }
+
+  if (
+    formData.usesCpf &&
+    formData.monthlyCpfPayment < MINIMUM_MONTHLY_CPF_PAYMENT
+  ) {
+    return createInvalidResult(
+      "monthlyCpfPayment",
+      "Please enter the monthly CPF payment.",
+    );
+  }
+
+  if (
+    formData.usesCpf &&
+    formData.monthlyCpfPayment > formData.monthlyRepayment
+  ) {
+    return createInvalidResult(
+      "monthlyCpfPayment",
+      "Monthly CPF payment cannot exceed the monthly repayment.",
     );
   }
 
