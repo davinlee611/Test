@@ -3,7 +3,9 @@
 import { formatCurrency } from "../../utils/client-utils.js";
 
 import {
+  BENEFIT_LABELS,
   LONG_TERM_CARE_BASE_PLANS,
+  PAYOUT_TYPE_LABELS,
   POLICY_STATUS_LABELS,
   POLICY_TYPE_LABELS,
   PREMIUM_FREQUENCY_LABELS,
@@ -36,9 +38,13 @@ function createPolicyCardContent(policy, validationSummary) {
 
   content.className = "policy-card-content";
 
-  content.appendChild(createPolicyMetadata(policy));
+  content.append(
+    createPolicyMetadata(policy),
 
-  content.appendChild(createPolicyValidationPreview(validationSummary));
+    createPolicyValidationPreview(validationSummary),
+
+    createPolicyCoverageSummary(policy),
+  );
 
   return content;
 }
@@ -52,6 +58,7 @@ function createPolicyValidationPreview(validationSummary) {
 
   container.className = [
     "policy-card-validation",
+
     `policy-card-validation--${validationSummary.highestSeverity}`,
   ].join(" ");
 
@@ -118,6 +125,216 @@ function createPolicyValidationPreview(validationSummary) {
 }
 
 /* ========================================
+   COVERAGE SUMMARY
+======================================== */
+
+function createPolicyCoverageSummary(policy) {
+  const section = document.createElement("section");
+
+  section.className = "policy-coverage-summary";
+
+  const heading = document.createElement("h5");
+
+  heading.className = "policy-coverage-summary__title";
+
+  heading.textContent = "Coverage Summary";
+
+  section.appendChild(heading);
+
+  const benefits = Array.isArray(policy.benefits) ? policy.benefits : [];
+
+  if (benefits.length === 0) {
+    const emptyMessage = document.createElement("p");
+
+    emptyMessage.className = "policy-coverage-summary__empty";
+
+    emptyMessage.textContent = "No benefits added.";
+
+    section.appendChild(emptyMessage);
+
+    return section;
+  }
+
+  const list = document.createElement("div");
+
+  list.className = "policy-coverage-summary__list";
+
+  benefits.forEach(function (benefit) {
+    list.appendChild(createCoverageSummaryRow(benefit, policy));
+  });
+
+  section.appendChild(list);
+
+  return section;
+}
+
+function createCoverageSummaryRow(benefit, policy) {
+  const row = document.createElement("div");
+
+  row.className = [
+    "policy-coverage-summary__row",
+
+    benefit.isSuggested ? "policy-coverage-summary__row--suggested" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const information = document.createElement("div");
+
+  information.className = "policy-coverage-summary__information";
+
+  const labelRow = document.createElement("div");
+
+  labelRow.className = "policy-coverage-summary__label-row";
+
+  const label = document.createElement("span");
+
+  label.className = "policy-coverage-summary__label";
+
+  label.textContent = getBenefitDisplayName(benefit);
+
+  labelRow.appendChild(label);
+
+  if (benefit.isSuggested) {
+    const suggestedBadge = document.createElement("span");
+
+    suggestedBadge.className = "policy-coverage-summary__suggested-badge";
+
+    suggestedBadge.textContent = "Suggested";
+
+    labelRow.appendChild(suggestedBadge);
+  }
+
+  information.appendChild(labelRow);
+
+  const detail = getBenefitDetail(benefit, policy);
+
+  if (detail) {
+    const detailElement = document.createElement("span");
+
+    detailElement.className = "policy-coverage-summary__detail";
+
+    detailElement.textContent = detail;
+
+    information.appendChild(detailElement);
+  }
+
+  row.appendChild(information);
+
+  const amount = getBenefitAmount(benefit);
+
+  if (amount) {
+    const amountElement = document.createElement("strong");
+
+    amountElement.className = "policy-coverage-summary__amount";
+
+    amountElement.textContent = amount;
+
+    row.appendChild(amountElement);
+  }
+
+  return row;
+}
+
+/* ========================================
+   BENEFIT DISPLAY
+======================================== */
+
+function getBenefitDisplayName(benefit) {
+  if (benefit.isBasePlanBenefit) {
+    return benefit.customName || "Long-Term Care Base Plan";
+  }
+
+  if (benefit.type === "other") {
+    return benefit.customName || "Other Benefit";
+  }
+
+  return BENEFIT_LABELS[benefit.type] || "Benefit";
+}
+
+function getBenefitAmount(benefit) {
+  /*
+   * Hospitalisation is intentionally
+   * displayed without hospital class,
+   * rider information or a monetary value.
+   */
+  if (benefit.type === "hospitalisation") {
+    return "";
+  }
+
+  const amount = Number(benefit.amount) || 0;
+
+  if (amount <= 0) {
+    return "";
+  }
+
+  const formattedAmount = formatCurrency(amount);
+
+  switch (benefit.type) {
+    case "hospital_cash":
+      return `${formattedAmount} / day`;
+
+    case "disability_income":
+    case "long_term_care_income":
+    case "monthly_benefit":
+      return `${formattedAmount} / month`;
+
+    case "medical_reimbursement":
+      return `${formattedAmount} / event`;
+
+    default:
+      return formattedAmount;
+  }
+}
+
+function getBenefitDetail(benefit, policy) {
+  const details = [];
+
+  const payoutTypeLabel = PAYOUT_TYPE_LABELS[benefit.payoutType];
+
+  if (payoutTypeLabel) {
+    details.push(payoutTypeLabel);
+  }
+
+  if (benefit.type === "long_term_care_income") {
+    appendLongTermCareDetails(details, benefit);
+  }
+
+  /*
+   * Show the life assured only when it
+   * differs from the policy-level
+   * life assured.
+   */
+  if (benefit.lifeAssured && benefit.lifeAssured !== policy.lifeAssured) {
+    details.push(`Life Assured: ${benefit.lifeAssured}`);
+  }
+
+  return details.join(" · ");
+}
+
+function appendLongTermCareDetails(details, benefit) {
+  if (benefit.payoutTerm === "extend_10_years") {
+    details.push("10-year total payout");
+  }
+
+  if (benefit.payoutTerm === "lifetime") {
+    details.push("Lifetime payout");
+  }
+
+  if (benefit.payoutTerm === "limited" && Number(benefit.payoutDuration) > 0) {
+    const duration = Number(benefit.payoutDuration);
+
+    details.push(`${duration} ${duration === 1 ? "month" : "months"} payout`);
+  }
+
+  if (Number(benefit.adlRequirement) > 0) {
+    const adlRequirement = Number(benefit.adlRequirement);
+
+    details.push(adlRequirement === 1 ? "1 ADL" : `${adlRequirement} ADLs`);
+  }
+}
+
+/* ========================================
    POLICY METADATA
 ======================================== */
 
@@ -128,10 +345,15 @@ function createPolicyMetadata(policy) {
 
   appendMetadataItem(
     metadata,
+
     POLICY_STATUS_LABELS[policy.status] || "Status not specified",
   );
 
-  appendMetadataItem(metadata, getPremiumDescription(policy.premium));
+  appendMetadataItem(
+    metadata,
+
+    getPremiumDescription(policy.premium),
+  );
 
   if (policy.policyType === "long_term_care" && policy.longTermCareBasePlan) {
     const basePlanLabel = getLongTermCareBasePlanLabel(
@@ -139,7 +361,11 @@ function createPolicyMetadata(policy) {
     );
 
     if (basePlanLabel) {
-      appendMetadataItem(metadata, `Base Plan: ${basePlanLabel}`);
+      appendMetadataItem(
+        metadata,
+
+        `Base Plan: ${basePlanLabel}`,
+      );
     }
   }
 
@@ -149,11 +375,16 @@ function createPolicyMetadata(policy) {
 
   appendMetadataItem(
     metadata,
+
     benefitCount === 1 ? "1 benefit" : `${benefitCount} benefits`,
   );
 
   if (policy.policyNumber) {
-    appendMetadataItem(metadata, `Policy No: ${policy.policyNumber}`);
+    appendMetadataItem(
+      metadata,
+
+      `Policy No: ${policy.policyNumber}`,
+    );
   }
 
   return metadata;
@@ -168,7 +399,7 @@ function getPremiumDescription(premium) {
     return "Premium not provided";
   }
 
-  if (premium.amount <= 0) {
+  if (Number(premium.amount) <= 0) {
     return "Paid-up";
   }
 
@@ -180,7 +411,7 @@ function getPremiumDescription(premium) {
 
 function getLongTermCareBasePlanLabel(basePlanValue) {
   if (basePlanValue === "supplement_only") {
-    return "Supplement Only / Other Base Plan";
+    return "Supplement Only / " + "Other Base Plan";
   }
 
   return LONG_TERM_CARE_BASE_PLANS[basePlanValue]?.name || "";
