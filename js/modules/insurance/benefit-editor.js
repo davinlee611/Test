@@ -80,7 +80,7 @@ export function createBenefitEditor({
 
     elements.benefitFormMessage.textContent = "";
 
-    updateBenefitFields();
+    updateBenefitFields(benefit.payoutTerm || "");
 
     elements.benefitEditor.hidden = false;
 
@@ -185,7 +185,9 @@ export function createBenefitEditor({
     elements.benefitTypeSelect.disabled = !policyType;
   }
 
-  function updateBenefitFields() {
+  function updateBenefitFields(
+    selectedPayoutTerm = elements.benefitPayoutTermSelect.value,
+  ) {
     const benefitType = elements.benefitTypeSelect.value;
 
     hideBenefitSpecificFields();
@@ -230,8 +232,6 @@ export function createBenefitEditor({
         elements.benefitPayoutTermGroup.hidden = false;
 
         elements.benefitAdlRequirementGroup.hidden = false;
-
-        const selectedPayoutTerm = elements.benefitPayoutTermSelect.value;
 
         updateLongTermCarePayoutTermOptions(selectedPayoutTerm);
 
