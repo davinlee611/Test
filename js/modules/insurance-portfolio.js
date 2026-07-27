@@ -7,11 +7,6 @@ import {
   closeModalOnEscape,
 } from "../utils/modal.js";
 
-import {
-  LONG_TERM_CARE_BASE_PLANS,
-  POLICY_TYPE_DEFAULT_BENEFITS,
-} from "../constants/insurance.js";
-
 import { getAssets, getClientProfile } from "../state/client-plan.js";
 
 import {
@@ -22,11 +17,6 @@ import {
   clearPolicies,
 } from "../services/policy-service.js";
 
-import {
-  createEmptyBenefit,
-  createLongTermCareBaseBenefit,
-} from "../factories/benefit-factory.js";
-
 import { readPolicyFormData } from "./insurance/policy-form-data.js";
 
 import { createPolicyModal } from "./insurance/policy-modal.js";
@@ -36,6 +26,8 @@ import { getCompletePolicyValidationItems } from "./insurance/policy-validation.
 import { renderDraftBenefitList } from "./insurance/draft-benefit-renderer.js";
 
 import { createBenefitEditor } from "./insurance/benefit-editor.js";
+
+import { createPolicyFormController } from "./insurance/policy-form-controller.js";
 
 import { renderInsurancePortfolioView } from "./insurance/portfolio-renderer.js";
 
@@ -50,6 +42,8 @@ let elements = {};
 let policyModal = null;
 
 let benefitEditor = null;
+
+let policyFormController = null;
 
 let draftBenefits = [];
 
@@ -106,6 +100,40 @@ export function initializeInsurancePortfolio() {
     },
   });
 
+  policyFormController = createPolicyFormController({
+    elements,
+
+    getDraftBenefits() {
+      return draftBenefits;
+    },
+
+    setDraftBenefits(updatedBenefits) {
+      draftBenefits = updatedBenefits;
+    },
+
+    getPreviousPolicyType() {
+      return previousPolicyType;
+    },
+
+    setPreviousPolicyType(policyType) {
+      previousPolicyType = policyType;
+    },
+
+    getDefaultLifeAssured() {
+      return getClientProfile().fullName || "";
+    },
+
+    closeBenefitEditor() {
+      benefitEditor.close();
+    },
+
+    populateBenefitTypeOptions(selectedBenefitType) {
+      benefitEditor.populateBenefitTypeOptions(selectedBenefitType);
+    },
+
+    renderDraftBenefits,
+  });
+
   policyModal = createPolicyModal({
     elements,
 
@@ -129,11 +157,17 @@ export function initializeInsurancePortfolio() {
       benefitEditor.populateBenefitTypeOptions(selectedBenefitType);
     },
 
-    updateLongTermCareBasePlanField,
+    updateLongTermCareBasePlanField() {
+      policyFormController.updateLongTermCareBasePlanField();
+    },
 
-    updatePremiumFields,
+    updatePremiumFields() {
+      policyFormController.updatePremiumFields();
+    },
 
-    handleInsurerChange,
+    handleInsurerChange() {
+      policyFormController.handleInsurerChange();
+    },
 
     closeBenefitEditor() {
       benefitEditor.close();
@@ -353,9 +387,13 @@ function bindInsuranceEvents() {
 
   elements.savePolicyButton?.addEventListener("click", savePolicy);
 
-  elements.insurerSelect?.addEventListener("change", handleInsurerChange);
+  elements.insurerSelect?.addEventListener("change", function () {
+    policyFormController.handleInsurerChange();
+  });
 
-  elements.policyStatusSelect?.addEventListener("change", updatePremiumFields);
+  elements.policyStatusSelect?.addEventListener("change", function () {
+    policyFormController.updatePremiumFields();
+  });
 
   elements.addBenefitButton?.addEventListener("click", function () {
     benefitEditor.openAdd();
@@ -369,12 +407,13 @@ function bindInsuranceEvents() {
     benefitEditor.close();
   });
 
-  elements.policyTypeSelect?.addEventListener("change", handlePolicyTypeChange);
+  elements.policyTypeSelect?.addEventListener("change", function () {
+    policyFormController.handlePolicyTypeChange();
+  });
 
-  elements.longTermCareBasePlanSelect?.addEventListener(
-    "change",
-    handleLongTermCareBasePlanChange,
-  );
+  elements.longTermCareBasePlanSelect?.addEventListener("change", function () {
+    policyFormController.handleLongTermCareBasePlanChange();
+  });
 
   elements.benefitPayoutTermSelect?.addEventListener("change", function () {
     benefitEditor.updatePayoutDurationField();
@@ -388,103 +427,13 @@ function bindInsuranceEvents() {
     benefitEditor.save();
   });
 
-  elements.policyLifeAssuredInput?.addEventListener(
-    "input",
-    syncSuggestedBenefitLifeAssured,
-  );
+  elements.policyLifeAssuredInput?.addEventListener("input", function () {
+    policyFormController.syncSuggestedBenefitLifeAssured();
+  });
 
   closeModalOnOverlayClick(elements.policyModal);
 
   closeModalOnEscape(elements.policyModal);
-}
-
-function syncSuggestedBenefitLifeAssured() {
-  const lifeAssured = elements.policyLifeAssuredInput.value.trim();
-
-  draftBenefits.forEach(function (benefit) {
-    if (benefit.isSuggested) {
-      benefit.lifeAssured = lifeAssured;
-    }
-  });
-
-  renderDraftBenefits();
-}
-
-/* ========================================
-   POLICY MODAL
-======================================== */
-
-function handleInsurerChange() {
-  const isOtherSelected = elements.insurerSelect.value === "other";
-
-  elements.otherInsurerGroup.hidden = !isOtherSelected;
-
-  elements.otherInsurerInput.required = isOtherSelected;
-
-  if (!isOtherSelected) {
-    elements.otherInsurerInput.value = "";
-  }
-}
-
-function updateLongTermCareBasePlanField() {
-  const isLongTermCarePolicy =
-    elements.policyTypeSelect.value === "long_term_care";
-
-  elements.longTermCareBasePlanGroup.hidden = !isLongTermCarePolicy;
-
-  if (!isLongTermCarePolicy) {
-    elements.longTermCareBasePlanSelect.value = "";
-  }
-}
-
-function handleLongTermCareBasePlanChange() {
-  /*
-   * Changing the base plan invalidates the previously
-   * entered supplementary benefits because their payout
-   * options depend on the selected base plan.
-   *
-   * Keep only untouched suggested benefits.
-   */
-  draftBenefits = draftBenefits.filter(function (benefit) {
-    return benefit.isSuggested && !benefit.isBasePlanBenefit;
-  });
-
-  benefitEditor.close();
-
-  const selectedBasePlan = elements.longTermCareBasePlanSelect.value;
-
-  const basePlan = LONG_TERM_CARE_BASE_PLANS[selectedBasePlan];
-
-  if (basePlan) {
-    const lifeAssured =
-      elements.policyLifeAssuredInput.value.trim() ||
-      getClientProfile().fullName ||
-      "";
-
-    draftBenefits.unshift(
-      createLongTermCareBaseBenefit(selectedBasePlan, basePlan, lifeAssured),
-    );
-  }
-
-  renderDraftBenefits();
-}
-
-function updatePremiumFields() {
-  const isPaidUp = elements.policyStatusSelect.value === "paid_up";
-
-  elements.premiumAmountGroup.hidden = isPaidUp;
-
-  elements.premiumFrequencyGroup.hidden = isPaidUp;
-
-  elements.premiumInput.required = !isPaidUp;
-
-  elements.premiumFrequencySelect.required = !isPaidUp;
-
-  if (isPaidUp) {
-    elements.premiumInput.value = "";
-
-    elements.premiumFrequencySelect.value = "";
-  }
 }
 
 /* ========================================
@@ -718,68 +667,6 @@ function showPolicyFormMessage(message) {
 function clearPolicyFormMessage() {
   elements.policyFormMessage.textContent = "";
 }
-
-/* ========================================
-   BENEFIT EDITOR
-======================================== */
-
-function hasOnlySuggestedBenefits() {
-  if (draftBenefits.length === 0) {
-    return true;
-  }
-
-  return draftBenefits.every(function (benefit) {
-    return benefit.isSuggested;
-  });
-}
-
-function handlePolicyTypeChange() {
-  const policyType = elements.policyTypeSelect.value;
-
-  benefitEditor.populateBenefitTypeOptions();
-
-  benefitEditor.close();
-
-  if (!hasOnlySuggestedBenefits()) {
-    const confirmed = window.confirm(
-      "Changing the policy type will replace the current benefits. Continue?",
-    );
-
-    if (!confirmed) {
-      elements.policyTypeSelect.value = previousPolicyType;
-
-      benefitEditor.populateBenefitTypeOptions();
-
-      updateLongTermCareBasePlanField();
-
-      renderDraftBenefits();
-
-      return;
-    }
-  }
-
-  previousPolicyType = policyType;
-
-  draftBenefits = [];
-
-  elements.longTermCareBasePlanSelect.value = "";
-
-  updateLongTermCareBasePlanField();
-
-  const defaultBenefitTypes = POLICY_TYPE_DEFAULT_BENEFITS[policyType] ?? [];
-
-  const lifeAssured =
-    elements.policyLifeAssuredInput.value.trim() ||
-    getClientProfile().fullName ||
-    "";
-
-  draftBenefits = defaultBenefitTypes.map(function (benefitType) {
-    return createEmptyBenefit(benefitType, lifeAssured);
-  });
-
-  renderDraftBenefits();
-}
-
 
 /* ========================================
    DRAFT BENEFIT RENDERING
