@@ -11,6 +11,8 @@ import {
 
 import { createPlannerId } from "../utils/client-utils.js";
 
+import { PROPERTY_LOAN_TYPE } from "../modules/liabilities/liability-config.js";
+
 /* ========================================
    LIABILITY QUERIES
 ======================================== */
@@ -45,30 +47,40 @@ export function updateLiability(
     repaymentEndDate,
     monthlyRepayment,
     monthlyRepaymentSource,
-    usesCpf,
     monthlyCpfPayment,
   },
 ) {
+  const normalizedCpfPayment = normalizeMonthlyCpfPayment({
+    liabilityType,
+    monthlyCpfPayment,
+  });
+
   const { items, updatedItem } = updateItemById(
     getLiabilities(),
     liabilityId,
-    (liability) => ({
-      ...liability,
+    (liability) => {
+      /*
+       * Remove the obsolete usesCpf property
+       * from older saved liability objects.
+       */
+      const { usesCpf, ...existingLiability } = liability;
 
-      type: liabilityType,
-      name: liabilityName,
+      return {
+        ...existingLiability,
 
-      outstandingBalance,
-      interestRate,
-      repaymentEndDate,
+        type: liabilityType,
+        name: liabilityName,
 
-      monthlyRepayment,
-      monthlyRepaymentSource,
+        outstandingBalance,
+        interestRate,
+        repaymentEndDate,
 
-      usesCpf: Boolean(usesCpf),
+        monthlyRepayment,
+        monthlyRepaymentSource,
 
-      monthlyCpfPayment: usesCpf ? monthlyCpfPayment : 0,
-    }),
+        monthlyCpfPayment: normalizedCpfPayment,
+      };
+    },
   );
 
   if (!updatedItem) {
@@ -108,7 +120,6 @@ function createLiabilityRecord({
   repaymentEndDate,
   monthlyRepayment,
   monthlyRepaymentSource,
-  usesCpf,
   monthlyCpfPayment,
 }) {
   return {
@@ -124,8 +135,27 @@ function createLiabilityRecord({
     monthlyRepayment,
     monthlyRepaymentSource,
 
-    usesCpf: Boolean(usesCpf),
-
-    monthlyCpfPayment: usesCpf ? monthlyCpfPayment : 0,
+    monthlyCpfPayment: normalizeMonthlyCpfPayment({
+      liabilityType,
+      monthlyCpfPayment,
+    }),
   };
+}
+
+/* ========================================
+   CPF NORMALISATION
+======================================== */
+
+function normalizeMonthlyCpfPayment({ liabilityType, monthlyCpfPayment }) {
+  if (liabilityType !== PROPERTY_LOAN_TYPE) {
+    return 0;
+  }
+
+  const amount = Number(monthlyCpfPayment);
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return 0;
+  }
+
+  return Math.round(amount);
 }

@@ -24,6 +24,8 @@ import { on, emit } from "../events/event-bus.js";
 
 import { EVENTS } from "../events/events.js";
 
+import { getLiabilityMonthlyCashRepayment } from "./liabilities/liability-calculator.js";
+
 /* ========================================
    PAGE ELEMENTS
 ======================================== */
@@ -825,7 +827,7 @@ function calculateCurrentIncomeSummary() {
 
 function calculateTotalMonthlyLiabilityRepayments() {
   return getLiabilities().reduce(function (runningTotal, liability) {
-    return runningTotal + getValidAmount(liability?.monthlyRepayment);
+    return runningTotal + getLiabilityMonthlyCashRepayment(liability);
   }, 0);
 }
 

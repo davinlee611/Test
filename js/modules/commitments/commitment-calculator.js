@@ -1,5 +1,7 @@
 "use strict";
 
+import { getLiabilityMonthlyCashRepayment } from "../liabilities/liability-calculator.js";
+
 /* ========================================
    LIABILITY REPAYMENTS
 ======================================== */
@@ -10,7 +12,7 @@ export function calculateMonthlyLiabilityRepayments(liabilities) {
   }
 
   return liabilities.reduce(function (total, liability) {
-    return total + getValidCommitmentAmount(liability?.monthlyRepayment);
+    return total + getLiabilityMonthlyCashRepayment(liability);
   }, 0);
 }
 

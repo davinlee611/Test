@@ -348,17 +348,19 @@ export function createLiabilityModal({ elements }) {
       return;
     }
 
+    const cpfPaymentEnabled =
+      isPropertyLoanSelected() &&
+      Boolean(elements.liabilityUsesCpfInput?.checked);
+
     const liabilityPreview = {
       monthlyRepayment: getMonthlyRepaymentInputValue(),
 
-      usesCpf:
-        isPropertyLoanSelected() &&
-        Boolean(elements.liabilityUsesCpfInput?.checked),
-
-      monthlyCpfPayment: Math.max(
-        Number(elements.liabilityMonthlyCpfPaymentInput?.value) || 0,
-        0,
-      ),
+      monthlyCpfPayment: cpfPaymentEnabled
+        ? Math.max(
+            Number(elements.liabilityMonthlyCpfPaymentInput?.value) || 0,
+            0,
+          )
+        : 0,
     };
 
     const monthlyCashRepayment =
@@ -419,8 +421,6 @@ export function createLiabilityModal({ elements }) {
       repaymentEndDate: elements.liabilityRepaymentEndDateInput,
 
       monthlyRepayment: elements.liabilityMonthlyRepaymentInput,
-
-      usesCpf: elements.liabilityUsesCpfInput,
 
       monthlyCpfPayment: elements.liabilityMonthlyCpfPaymentInput,
     };

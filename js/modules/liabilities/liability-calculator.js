@@ -19,10 +19,6 @@ export function getLiabilityMonthlyRepayment(liability) {
 }
 
 export function getLiabilityMonthlyCpfPayment(liability) {
-  if (!liability?.usesCpf) {
-    return 0;
-  }
-
   return getWholeNumber(liability?.monthlyCpfPayment);
 }
 
@@ -171,6 +167,7 @@ function parseDateOnly(value) {
   }
 
   const [year, month, day] = value.split("-").map(Number);
+
   const date = new Date(year, month - 1, day);
 
   if (

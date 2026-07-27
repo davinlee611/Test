@@ -64,15 +64,17 @@ export function validateLiabilityDraft(formData) {
     );
   }
 
-  if (formData.usesCpf && formData.liabilityType !== PROPERTY_LOAN_TYPE) {
+  const cpfPaymentSelected = formData.monthlyCpfPayment !== null;
+
+  if (cpfPaymentSelected && formData.liabilityType !== PROPERTY_LOAN_TYPE) {
     return createInvalidResult(
-      "usesCpf",
-      "CPF usage is only available for property loans.",
+      "monthlyCpfPayment",
+      "CPF payment is only available for property loans.",
     );
   }
 
   if (
-    formData.usesCpf &&
+    cpfPaymentSelected &&
     formData.monthlyCpfPayment < MINIMUM_MONTHLY_CPF_PAYMENT
   ) {
     return createInvalidResult(
@@ -82,7 +84,7 @@ export function validateLiabilityDraft(formData) {
   }
 
   if (
-    formData.usesCpf &&
+    cpfPaymentSelected &&
     formData.monthlyCpfPayment > formData.monthlyRepayment
   ) {
     return createInvalidResult(

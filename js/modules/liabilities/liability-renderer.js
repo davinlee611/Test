@@ -90,6 +90,10 @@ function createLiabilityDetails(liability) {
 }
 
 function createLiabilityDescription(liability) {
+  const monthlyCpfPayment = getLiabilityMonthlyCpfPayment(liability);
+
+  const monthlyCashRepayment = getLiabilityMonthlyCashRepayment(liability);
+
   const parts = [
     getLiabilityTypeLabel(liability.type),
 
@@ -108,11 +112,11 @@ function createLiabilityDescription(liability) {
     parts.push(`repay by ${formatRepaymentDate(liability.repaymentEndDate)}`);
   }
 
-  if (liability.usesCpf) {
+  if (monthlyCpfPayment > 0) {
     parts.push(
-      `${formatCurrency(getLiabilityMonthlyCpfPayment(liability))} CPF`,
+      `${formatCurrency(monthlyCpfPayment)} CPF`,
 
-      `${formatCurrency(getLiabilityMonthlyCashRepayment(liability))} cash`,
+      `${formatCurrency(monthlyCashRepayment)} cash`,
     );
   }
 

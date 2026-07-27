@@ -21,7 +21,7 @@ export function readLiabilityFormData(elements) {
     elements.liabilityMonthlyRepaymentInput?.value,
   );
 
-  const usesCpf =
+  const cpfPaymentEnabled =
     liabilityType === PROPERTY_LOAN_TYPE &&
     Boolean(elements.liabilityUsesCpfInput?.checked);
 
@@ -44,11 +44,14 @@ export function readLiabilityFormData(elements) {
       elements.liabilityMonthlyRepaymentSourceInput?.value ||
       (monthlyRepayment > 0 ? LIABILITY_REPAYMENT_SOURCES.MANUAL : ""),
 
-    usesCpf,
-
-    monthlyCpfPayment: usesCpf
+    /*
+     * null means CPF payment was not selected.
+     * 0 means it was selected but no valid amount
+     * was entered, allowing validation to catch it.
+     */
+    monthlyCpfPayment: cpfPaymentEnabled
       ? getWholeNumber(elements.liabilityMonthlyCpfPaymentInput?.value)
-      : 0,
+      : null,
   };
 }
 
@@ -61,12 +64,14 @@ export function writeLiabilityFormData(elements, liability) {
 
   const monthlyRepayment = getWholeNumber(liability?.monthlyRepayment);
 
+  const monthlyCpfPayment = getWholeNumber(liability?.monthlyCpfPayment);
+
   const repaymentSource =
     liability?.monthlyRepaymentSource ||
     (monthlyRepayment > 0 ? LIABILITY_REPAYMENT_SOURCES.MANUAL : "");
 
-  const usesCpf =
-    liabilityType === PROPERTY_LOAN_TYPE && Boolean(liability?.usesCpf);
+  const hasCpfPayment =
+    liabilityType === PROPERTY_LOAN_TYPE && monthlyCpfPayment > 0;
 
   if (elements.editingLiabilityIdInput) {
     elements.editingLiabilityIdInput.value = liability?.id || "";
@@ -103,12 +108,12 @@ export function writeLiabilityFormData(elements, liability) {
   }
 
   if (elements.liabilityUsesCpfInput) {
-    elements.liabilityUsesCpfInput.checked = usesCpf;
+    elements.liabilityUsesCpfInput.checked = hasCpfPayment;
   }
 
   if (elements.liabilityMonthlyCpfPaymentInput) {
-    elements.liabilityMonthlyCpfPaymentInput.value = usesCpf
-      ? getWholeNumber(liability?.monthlyCpfPayment) || ""
+    elements.liabilityMonthlyCpfPaymentInput.value = hasCpfPayment
+      ? monthlyCpfPayment
       : "";
   }
 }
