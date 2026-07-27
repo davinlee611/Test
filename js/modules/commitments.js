@@ -17,7 +17,10 @@ import {
   createEmptyCommitments,
 } from "./commitments/commitment-config.js";
 
-import { calculateTotalMonthlyCommitments } from "./commitments/commitment-calculator.js";
+import {
+  calculateTotalMonthlyCommitments,
+  calculateTotalMonthlyCpfCommitments,
+} from "./commitments/commitment-calculator.js";
 
 /* ========================================
    COMMITMENT ELEMENTS
@@ -157,6 +160,12 @@ function getTotalMonthlyCommitments() {
   });
 }
 
+function getTotalMonthlyCpfCommitments() {
+  return calculateTotalMonthlyCpfCommitments({
+    liabilities: getLiabilities(),
+  });
+}
+
 /* ========================================
    RENDERING
 ======================================== */
@@ -166,8 +175,25 @@ function renderTotalMonthlyCommitments() {
     return;
   }
 
-  totalMonthlyCommitmentsElement.textContent = formatCurrency(
-    getTotalMonthlyCommitments(),
+  const cashCommitments = getTotalMonthlyCommitments();
+
+  const cpfCommitments = getTotalMonthlyCpfCommitments();
+
+  totalMonthlyCommitmentsElement.textContent = formatCommitmentTotal({
+    cashCommitments,
+    cpfCommitments,
+  });
+}
+
+function formatCommitmentTotal({ cashCommitments, cpfCommitments }) {
+  const formattedCashCommitments = formatCurrency(cashCommitments);
+
+  if (cpfCommitments <= 0) {
+    return formattedCashCommitments;
+  }
+
+  return (
+    `${formattedCashCommitments} ` + `(+${formatCurrency(cpfCommitments)} CPF)`
   );
 }
 
@@ -182,6 +208,8 @@ function emitCommitmentsChanged() {
     },
 
     totalMonthlyCommitments: getTotalMonthlyCommitments(),
+
+    totalMonthlyCpfCommitments: getTotalMonthlyCpfCommitments(),
   });
 }
 

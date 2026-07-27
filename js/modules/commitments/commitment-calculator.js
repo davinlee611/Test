@@ -1,19 +1,20 @@
 "use strict";
 
-import { getLiabilityMonthlyCashRepayment } from "../liabilities/liability-calculator.js";
+import {
+  calculateTotalMonthlyCashRepayments,
+  calculateTotalMonthlyCpfRepayments,
+} from "../liabilities/liability-calculator.js";
 
 /* ========================================
    LIABILITY REPAYMENTS
 ======================================== */
 
 export function calculateMonthlyLiabilityRepayments(liabilities) {
-  if (!Array.isArray(liabilities)) {
-    return 0;
-  }
+  return calculateTotalMonthlyCashRepayments(liabilities);
+}
 
-  return liabilities.reduce(function (total, liability) {
-    return total + getLiabilityMonthlyCashRepayment(liability);
-  }, 0);
+export function calculateMonthlyCpfLiabilityRepayments(liabilities) {
+  return calculateTotalMonthlyCpfRepayments(liabilities);
 }
 
 /* ========================================
@@ -27,6 +28,10 @@ export function calculateTotalMonthlyCommitments({ commitments, liabilities }) {
   );
 }
 
+export function calculateTotalMonthlyCpfCommitments({ liabilities }) {
+  return calculateMonthlyCpfLiabilityRepayments(liabilities);
+}
+
 /* ========================================
    TOTAL ANNUAL COMMITMENTS
 ======================================== */
@@ -35,6 +40,14 @@ export function calculateTotalAnnualCommitments({ commitments, liabilities }) {
   return (
     calculateTotalMonthlyCommitments({
       commitments,
+      liabilities,
+    }) * 12
+  );
+}
+
+export function calculateTotalAnnualCpfCommitments({ liabilities }) {
+  return (
+    calculateTotalMonthlyCpfCommitments({
       liabilities,
     }) * 12
   );
