@@ -1,6 +1,6 @@
 "use strict";
 
-import { escapeHtml, formatCurrency } from "../utils/client-utils.js";
+import { escapeHtml } from "../utils/client-utils.js";
 
 import {
   closeModalOnOverlayClick,
@@ -31,25 +31,13 @@ import { readPolicyFormData } from "./insurance/policy-form-data.js";
 
 import { createPolicyModal } from "./insurance/policy-modal.js";
 
-import {
-  getCompletePolicyValidationItems,
-  getPolicyValidationSummary,
-  getPortfolioValidationSummary,
-} from "./insurance/policy-validation.js";
-
-import { createPolicyDetails } from "./insurance/policy-renderer.js";
+import { getCompletePolicyValidationItems } from "./insurance/policy-validation.js";
 
 import { renderDraftBenefitList } from "./insurance/draft-benefit-renderer.js";
 
 import { createBenefitEditor } from "./insurance/benefit-editor.js";
 
-import {
-  createPlanningCard,
-  createPlanningCardIcon,
-  createPlanningCardActions,
-  createPlanningCardButton,
-  renderPlanningEmptyState,
-} from "../components/planning-card.js";
+import { renderInsurancePortfolioView } from "./insurance/portfolio-renderer.js";
 
 /* ========================================
    MODULE STATE
@@ -822,132 +810,24 @@ function renderDraftBenefits() {
 function renderInsurancePortfolio() {
   const policies = getAllPolicies();
 
-  renderPortfolioValidationSummary(policies);
-
-  renderPolicies(policies);
-}
-
-function renderPortfolioValidationSummary(policies) {
-  if (!elements.portfolioValidationSummary) {
-    return;
-  }
-
-  if (policies.length === 0) {
-    elements.portfolioValidationSummary.hidden = true;
-
-    return;
-  }
-
   const assets = getAssets();
 
-  const summary = getPortfolioValidationSummary(policies, {
-    monthlyEmploymentIncome: assets.income.monthlyEmployment,
+  renderInsurancePortfolioView({
+    elements,
 
-    annualBonus: assets.income.annualBonus,
-  });
+    policies,
 
-  elements.portfolioErrorCount.textContent = summary.errorCount;
+    validationContext: {
+      monthlyEmploymentIncome: assets.income.monthlyEmployment,
 
-  elements.portfolioReviewCount.textContent = summary.reviewCount;
-
-  elements.portfolioPassCount.textContent = summary.passCount;
-
-  elements.portfolioErrorButton.disabled = summary.errorCount === 0;
-
-  elements.portfolioReviewButton.disabled = summary.reviewCount === 0;
-
-  elements.portfolioValidationSummary.hidden = false;
-}
-
-function renderPolicies(policies = getAllPolicies()) {
-  if (!elements.policyList) {
-    return;
-  }
-
-  elements.policyList.innerHTML = "";
-
-  if (policies.length === 0) {
-    renderPlanningEmptyState(
-      elements.policyList,
-      "No policies added yet.",
-      elements.emptyPolicyMessage,
-    );
-
-    return;
-  }
-
-  policies.forEach(function (policy) {
-    elements.policyList.appendChild(createPolicyElement(policy));
-  });
-}
-
-function createPolicyElement(policy) {
-  const assets = getAssets();
-
-  const validationSummary = getPolicyValidationSummary(policy, {
-    allPolicies: getAllPolicies(),
-
-    monthlyEmploymentIncome: assets.income.monthlyEmployment,
-
-    annualBonus: assets.income.annualBonus,
-  });
-
-  const policyElement = createPlanningCard({
-    itemClass: [
-      "policy-item",
-      `policy-item--${validationSummary.highestSeverity}`,
-    ].join(" "),
-
-    icon: createPolicyIcon(),
-
-    details: createPolicyDetails(policy, validationSummary),
-
-    actions: createPolicyActions(policy),
-  });
-
-  policyElement.dataset.validationSeverity = validationSummary.highestSeverity;
-
-  policyElement.dataset.policyId = policy.id;
-
-  return policyElement;
-}
-
-function createPolicyIcon() {
-  return createPlanningCardIcon("fa-solid fa-shield-halved");
-}
-
-function createPolicyActions(policy) {
-  const actions = createPlanningCardActions();
-
-  actions.append(
-    createPolicyEditButton(policy),
-    createPolicyDeleteButton(policy),
-  );
-
-  return actions;
-}
-
-function createPolicyEditButton(policy) {
-  return createPlanningCardButton({
-    iconClass: "fa-solid fa-pen",
-
-    label: `Edit ${policy.policyName || "policy"}`,
-
-    onClick() {
-      policyModal.openEdit(policy.id);
+      annualBonus: assets.income.annualBonus,
     },
-  });
-}
 
-function createPolicyDeleteButton(policy) {
-  return createPlanningCardButton({
-    iconClass: "fa-solid fa-trash",
+    onEditPolicy(policyId) {
+      policyModal.openEdit(policyId);
+    },
 
-    variant: "delete",
-
-    label: `Delete ${policy.policyName || "policy"}`,
-
-    onClick() {
+    onDeletePolicy(policy) {
       confirmDeletePolicy(policy);
     },
   });
