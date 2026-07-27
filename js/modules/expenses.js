@@ -2,47 +2,28 @@
 
 import { getExpenses, updateExpenses } from "../state/client-plan.js";
 
-import { getInputWholeNumber, formatCurrency } from "../utils/client-utils.js";
+import { formatCurrency, getInputWholeNumber } from "../utils/client-utils.js";
 
 import { emit } from "../events/event-bus.js";
 
 import { EVENTS } from "../events/events.js";
 
+import {
+  createEmptyExpenses,
+  EXPENSE_FIELDS,
+} from "./expenses/expense-config.js";
+
+import { calculateTotalMonthlyExpenses } from "./expenses/expense-calculator.js";
+
 /* ========================================
    EXPENSE ELEMENTS
 ======================================== */
 
-const householdExpenseInput = document.getElementById("householdExpense");
-
-const transportExpenseInput = document.getElementById("transportExpense");
-
-const subscriptionsLifestyleExpenseInput = document.getElementById(
-  "subscriptionsLifestyleExpense",
-);
-
-const parentsDependantsSupportExpenseInput = document.getElementById(
-  "parentsDependantsSupportExpense",
-);
-
-const otherRecurringExpensesInput = document.getElementById(
-  "otherRecurringExpenses",
-);
+const expenseElements = createExpenseElementMap();
 
 const totalMonthlyExpensesElement = document.getElementById(
   "totalMonthlyExpenses",
 );
-
-/* ========================================
-   EXPENSE INPUTS
-======================================== */
-
-const expenseInputs = [
-  householdExpenseInput,
-  transportExpenseInput,
-  subscriptionsLifestyleExpenseInput,
-  parentsDependantsSupportExpenseInput,
-  otherRecurringExpensesInput,
-];
 
 /* ========================================
    MODULE STATE
@@ -56,14 +37,26 @@ let moduleInitialized = false;
 
 export function initializeExpenses() {
   if (moduleInitialized) {
+    syncExpenseInputs();
+    renderExpenses();
+
     return;
   }
 
   attachExpenseListeners();
+
   syncExpenseInputs();
-  renderExpenseTotal();
+  renderExpenses();
 
   moduleInitialized = true;
+}
+
+/* ========================================
+   PUBLIC RENDER
+======================================== */
+
+export function renderExpenses() {
+  renderExpenseTotal();
 }
 
 /* ========================================
@@ -74,7 +67,7 @@ export function resetExpenses() {
   updateExpenses(createEmptyExpenses());
 
   syncExpenseInputs();
-  renderExpenseTotal();
+  renderExpenses();
 
   emitExpensesChanged();
 }
@@ -84,18 +77,16 @@ export function resetExpenses() {
 ======================================== */
 
 function attachExpenseListeners() {
-  expenseInputs.forEach(function (input) {
-    if (!input) {
-      return;
-    }
+  EXPENSE_FIELDS.forEach(function (field) {
+    const input = expenseElements[field.key];
 
-    input.addEventListener("input", handleExpenseInput);
+    input?.addEventListener("input", handleExpenseInput);
   });
 }
 
 function handleExpenseInput() {
   saveExpenseInputs();
-  renderExpenseTotal();
+  renderExpenses();
   emitExpensesChanged();
 }
 
@@ -104,45 +95,27 @@ function handleExpenseInput() {
 ======================================== */
 
 function saveExpenseInputs() {
-  updateExpenses({
-    household: getInputWholeNumber(householdExpenseInput),
+  const expenses = EXPENSE_FIELDS.reduce(function (updatedExpenses, field) {
+    updatedExpenses[field.key] = getInputWholeNumber(
+      expenseElements[field.key],
+    );
 
-    transport: getInputWholeNumber(transportExpenseInput),
+    return updatedExpenses;
+  }, {});
 
-    subscriptionsLifestyle: getInputWholeNumber(
-      subscriptionsLifestyleExpenseInput,
-    ),
-
-    parentsDependantsSupport: getInputWholeNumber(
-      parentsDependantsSupportExpenseInput,
-    ),
-
-    otherRecurringExpenses: getInputWholeNumber(otherRecurringExpensesInput),
-  });
+  updateExpenses(expenses);
 }
 
 /* ========================================
-   INPUT SYNCHRONIZATION
+   INPUT SYNCHRONISATION
 ======================================== */
 
 function syncExpenseInputs() {
   const expenses = getExpenses();
 
-  setInputValue(householdExpenseInput, expenses.household);
-
-  setInputValue(transportExpenseInput, expenses.transport);
-
-  setInputValue(
-    subscriptionsLifestyleExpenseInput,
-    expenses.subscriptionsLifestyle,
-  );
-
-  setInputValue(
-    parentsDependantsSupportExpenseInput,
-    expenses.parentsDependantsSupport,
-  );
-
-  setInputValue(otherRecurringExpensesInput, expenses.otherRecurringExpenses);
+  EXPENSE_FIELDS.forEach(function (field) {
+    setInputValue(expenseElements[field.key], expenses[field.key]);
+  });
 }
 
 function setInputValue(input, value) {
@@ -156,28 +129,6 @@ function setInputValue(input, value) {
 }
 
 /* ========================================
-   CALCULATIONS
-======================================== */
-
-function calculateTotalMonthlyExpenses() {
-  const expenses = getExpenses();
-
-  return (
-    getValidAmount(expenses.household) +
-    getValidAmount(expenses.transport) +
-    getValidAmount(expenses.subscriptionsLifestyle) +
-    getValidAmount(expenses.parentsDependantsSupport) +
-    getValidAmount(expenses.otherRecurringExpenses)
-  );
-}
-
-function getValidAmount(value) {
-  const amount = Number(value);
-
-  return Number.isFinite(amount) && amount > 0 ? amount : 0;
-}
-
-/* ========================================
    RENDERING
 ======================================== */
 
@@ -187,7 +138,7 @@ function renderExpenseTotal() {
   }
 
   totalMonthlyExpensesElement.textContent = formatCurrency(
-    calculateTotalMonthlyExpenses(),
+    calculateTotalMonthlyExpenses(getExpenses()),
   );
 }
 
@@ -196,25 +147,25 @@ function renderExpenseTotal() {
 ======================================== */
 
 function emitExpensesChanged() {
+  const expenses = getExpenses();
+
   emit(EVENTS.EXPENSES_CHANGED, {
     expenses: {
-      ...getExpenses(),
+      ...expenses,
     },
 
-    totalMonthlyExpenses: calculateTotalMonthlyExpenses(),
+    totalMonthlyExpenses: calculateTotalMonthlyExpenses(expenses),
   });
 }
 
 /* ========================================
-   FACTORY
+   ELEMENT FACTORY
 ======================================== */
 
-function createEmptyExpenses() {
-  return {
-    household: 0,
-    transport: 0,
-    subscriptionsLifestyle: 0,
-    parentsDependantsSupport: 0,
-    otherRecurringExpenses: 0,
-  };
+function createExpenseElementMap() {
+  return EXPENSE_FIELDS.reduce(function (elements, field) {
+    elements[field.key] = document.getElementById(field.elementId);
+
+    return elements;
+  }, {});
 }

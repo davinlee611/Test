@@ -8,17 +8,22 @@ import {
 
 import { formatCurrency, getInputWholeNumber } from "../utils/client-utils.js";
 
-import { on, emit } from "../events/event-bus.js";
+import { emit, on } from "../events/event-bus.js";
 
 import { EVENTS } from "../events/events.js";
 
+import {
+  COMMITMENT_FIELDS,
+  createEmptyCommitments,
+} from "./commitments/commitment-config.js";
+
+import { calculateTotalMonthlyCommitments } from "./commitments/commitment-calculator.js";
+
 /* ========================================
-   DOM REFERENCES
+   COMMITMENT ELEMENTS
 ======================================== */
 
-const generalInsurancePremiumInput = document.getElementById(
-  "generalInsurancePremium",
-);
+const commitmentElements = createCommitmentElementMap();
 
 const totalMonthlyCommitmentsElement = document.getElementById(
   "totalMonthlyCommitmentsValue",
@@ -37,7 +42,8 @@ let moduleInitialized = false;
 export function initializeCommitments() {
   if (moduleInitialized) {
     syncCommitmentInputs();
-    renderTotalMonthlyCommitments();
+    renderCommitments();
+
     return;
   }
 
@@ -45,9 +51,17 @@ export function initializeCommitments() {
   attachApplicationListeners();
 
   syncCommitmentInputs();
-  renderTotalMonthlyCommitments();
+  renderCommitments();
 
   moduleInitialized = true;
+}
+
+/* ========================================
+   PUBLIC RENDER
+======================================== */
+
+export function renderCommitments() {
+  renderTotalMonthlyCommitments();
 }
 
 /* ========================================
@@ -58,7 +72,7 @@ export function resetCommitments() {
   updateCommitments(createEmptyCommitments());
 
   syncCommitmentInputs();
-  renderTotalMonthlyCommitments();
+  renderCommitments();
 
   emitCommitmentsChanged();
 }
@@ -68,21 +82,25 @@ export function resetCommitments() {
 ======================================== */
 
 function attachCommitmentListeners() {
-  generalInsurancePremiumInput?.addEventListener(
-    "input",
-    handleCommitmentInput,
-  );
+  COMMITMENT_FIELDS.forEach(function (field) {
+    const input = commitmentElements[field.key];
+
+    input?.addEventListener("input", handleCommitmentInput);
+  });
 }
 
 function attachApplicationListeners() {
-  on(EVENTS.LIABILITIES_CHANGED, function () {
-    renderTotalMonthlyCommitments();
-  });
+  on(EVENTS.LIABILITIES_CHANGED, handleLiabilitiesChanged);
 }
 
 function handleCommitmentInput() {
   saveCommitmentInputs();
-  renderTotalMonthlyCommitments();
+  renderCommitments();
+  emitCommitmentsChanged();
+}
+
+function handleLiabilitiesChanged() {
+  renderCommitments();
   emitCommitmentsChanged();
 }
 
@@ -91,9 +109,18 @@ function handleCommitmentInput() {
 ======================================== */
 
 function saveCommitmentInputs() {
-  updateCommitments({
-    insurancePremiums: getInputWholeNumber(generalInsurancePremiumInput),
-  });
+  const commitments = COMMITMENT_FIELDS.reduce(function (
+    updatedCommitments,
+    field,
+  ) {
+    updatedCommitments[field.key] = getInputWholeNumber(
+      commitmentElements[field.key],
+    );
+
+    return updatedCommitments;
+  }, {});
+
+  updateCommitments(commitments);
 }
 
 /* ========================================
@@ -103,7 +130,9 @@ function saveCommitmentInputs() {
 function syncCommitmentInputs() {
   const commitments = getCommitments();
 
-  setInputValue(generalInsurancePremiumInput, commitments.insurancePremiums);
+  COMMITMENT_FIELDS.forEach(function (field) {
+    setInputValue(commitmentElements[field.key], commitments[field.key]);
+  });
 }
 
 function setInputValue(input, value) {
@@ -120,25 +149,12 @@ function setInputValue(input, value) {
    CALCULATIONS
 ======================================== */
 
-function calculateMonthlyLiabilityRepayments() {
-  return getLiabilities().reduce(function (runningTotal, liability) {
-    return runningTotal + getValidAmount(liability?.monthlyRepayment);
-  }, 0);
-}
+function getTotalMonthlyCommitments() {
+  return calculateTotalMonthlyCommitments({
+    commitments: getCommitments(),
 
-function calculateTotalMonthlyCommitments() {
-  const commitments = getCommitments();
-
-  return (
-    getValidAmount(commitments.insurancePremiums) +
-    calculateMonthlyLiabilityRepayments()
-  );
-}
-
-function getValidAmount(value) {
-  const amount = Number(value);
-
-  return Number.isFinite(amount) && amount > 0 ? amount : 0;
+    liabilities: getLiabilities(),
+  });
 }
 
 /* ========================================
@@ -151,7 +167,7 @@ function renderTotalMonthlyCommitments() {
   }
 
   totalMonthlyCommitmentsElement.textContent = formatCurrency(
-    calculateTotalMonthlyCommitments(),
+    getTotalMonthlyCommitments(),
   );
 }
 
@@ -165,16 +181,18 @@ function emitCommitmentsChanged() {
       ...getCommitments(),
     },
 
-    totalMonthlyCommitments: calculateTotalMonthlyCommitments(),
+    totalMonthlyCommitments: getTotalMonthlyCommitments(),
   });
 }
 
 /* ========================================
-   FACTORY
+   ELEMENT FACTORY
 ======================================== */
 
-function createEmptyCommitments() {
-  return {
-    insurancePremiums: 0,
-  };
+function createCommitmentElementMap() {
+  return COMMITMENT_FIELDS.reduce(function (elements, field) {
+    elements[field.key] = document.getElementById(field.elementId);
+
+    return elements;
+  }, {});
 }
