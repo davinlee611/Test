@@ -17,7 +17,7 @@ import {
 
 import { readPolicyFormData } from "./insurance/policy-form-data.js";
 
-import { buildPolicyData } from "./insurance/policy-data-builder.js";
+import { savePolicyDraft } from "./insurance/policy-save-service.js";
 
 import { createPolicyModal } from "./insurance/policy-modal.js";
 
@@ -447,24 +447,24 @@ function savePolicy() {
 
   const formData = readPolicyFormData(elements);
 
-  const validationMessage = validatePolicyForm(formData);
-
-  if (validationMessage) {
-    showPolicyFormMessage(validationMessage);
-
-    return;
-  }
-
-  const policyData = buildPolicyData({
+  const result = savePolicyDraft({
     formData,
 
-    benefits: draftBenefits,
+    draftBenefits,
+
+    editingPolicyId,
+
+    validate: validatePolicyForm,
+
+    createPolicy,
+
+    updatePolicy,
   });
 
-  if (editingPolicyId) {
-    updatePolicy(editingPolicyId, policyData);
-  } else {
-    createPolicy(policyData);
+  if (!result.success) {
+    showPolicyFormMessage(result.message);
+
+    return;
   }
 
   renderInsurancePortfolio();
