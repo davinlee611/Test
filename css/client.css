@@ -3292,35 +3292,46 @@ button.insurance-validation-count:disabled {
 }
 
 .liability-repayment-support {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
 }
 
 .liability-repayment-support .form-helper-text {
-  margin: 0;
+    flex: 1;
+    margin: 0;
 }
 
 .liability-use-estimate {
-  flex: 0 0 auto;
-  padding: 0;
-  color: var(--primary-color);
-  background: transparent;
-  border: 0;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    flex: 0 0 auto;
+    width: auto;
+    min-width: auto;
+
+    padding: 0;
+
+    background: none;
+    border: none;
+
+    color: var(--primary-color);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
 }
 
 .liability-use-estimate:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .liability-use-estimate i {
-  margin-right: 5px;
+    font-size: 12px;
 }
 
 .liability-cpf-panel {
