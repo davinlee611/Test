@@ -42,10 +42,7 @@ export function resetDemoScenario() {
 
     liabilities: seedLiabilities(),
 
-    /*
-     * Insurance will remain empty for now.
-     */
-    policies: [],
+    policies: seedPolicies(),
   };
 
   return demoPlan;
@@ -218,6 +215,449 @@ export function seedLiabilities() {
       monthlyCpfPayment: 450,
     },
   ];
+}
+
+/* ========================================
+   INSURANCE POLICIES
+======================================== */
+
+export function seedPolicies() {
+  const lifeAssured = "John Tan";
+
+  return [
+    {
+      id: createPlannerId(),
+
+      policyName:
+        "Singlife Shield Plan 1 + Rider",
+
+      policyType:
+        "hospitalisation",
+
+      longTermCareBasePlan: null,
+
+      insurer: "Singlife",
+
+      policyNumber: "SL-HS-100001",
+
+      lifeAssured,
+
+      status: "active",
+
+      premium: {
+        amount: 450,
+
+        frequency: "monthly",
+      },
+
+      benefits: [
+        createSeedBenefit({
+          type: "hospitalisation",
+
+          lifeAssured,
+
+          hospitalClass: "private",
+
+          notes:
+            "Integrated Shield Plan with rider.",
+        }),
+      ],
+    },
+
+    {
+      id: createPlannerId(),
+
+      policyName:
+        "Participating Whole Life Plan",
+
+      policyType: "whole_life",
+
+      longTermCareBasePlan: null,
+
+      insurer: "Great Eastern",
+
+      policyNumber: "GE-WL-100002",
+
+      lifeAssured,
+
+      status: "active",
+
+      premium: {
+        amount: 600,
+
+        frequency: "monthly",
+      },
+
+      benefits: [
+        createSeedBenefit({
+          type: "death",
+
+          lifeAssured,
+
+          amount: 500000,
+        }),
+
+        createSeedBenefit({
+          type: "tpd",
+
+          lifeAssured,
+
+          amount: 500000,
+        }),
+
+        createSeedBenefit({
+          type: "critical_illness",
+
+          lifeAssured,
+
+          amount: 200000,
+
+          payoutType: "accelerated",
+        }),
+
+        createSeedBenefit({
+          type: "early_critical_illness",
+
+          lifeAssured,
+
+          amount: 100000,
+
+          payoutType: "accelerated",
+        }),
+      ],
+    },
+
+    {
+      id: createPlannerId(),
+
+      policyName:
+        "Standalone Critical Illness Plan",
+
+      policyType: "term",
+
+      longTermCareBasePlan: null,
+
+      insurer: "AIA",
+
+      policyNumber: "AIA-CI-100003",
+
+      lifeAssured,
+
+      status: "active",
+
+      premium: {
+        amount: 900,
+
+        frequency: "quarterly",
+      },
+
+      benefits: [
+        createSeedBenefit({
+          type: "critical_illness",
+
+          lifeAssured,
+
+          amount: 300000,
+
+          payoutType: "standalone",
+        }),
+      ],
+    },
+
+    {
+      id: createPlannerId(),
+
+      policyName:
+        "Disability Income Protection",
+
+      policyType:
+        "disability_income",
+
+      longTermCareBasePlan: null,
+
+      insurer: "Aviva",
+
+      policyNumber: "AV-DI-100004",
+
+      lifeAssured,
+
+      status: "active",
+
+      premium: {
+        amount: 350,
+
+        frequency: "monthly",
+      },
+
+      benefits: [
+        createSeedBenefit({
+          type: "disability_income",
+
+          lifeAssured,
+
+          amount: 5000,
+
+          payoutTerm: "limited",
+
+          payoutDuration: 60,
+
+          notes:
+            "Monthly disability income benefit.",
+        }),
+      ],
+    },
+
+    {
+      id: createPlannerId(),
+
+      policyName:
+        "Personal Accident Plan",
+
+      policyType:
+        "personal_accident",
+
+      longTermCareBasePlan: null,
+
+      insurer: "Income Insurance",
+
+      policyNumber: "NTUC-PA-100005",
+
+      lifeAssured,
+
+      status: "active",
+
+      premium: {
+        amount: 1200,
+
+        frequency: "annual",
+      },
+
+      benefits: [
+        createSeedBenefit({
+          type: "death",
+
+          lifeAssured,
+
+          amount: 300000,
+        }),
+
+        createSeedBenefit({
+          type: "tpd",
+
+          lifeAssured,
+
+          amount: 300000,
+        }),
+
+        createSeedBenefit({
+          type: "medical_reimbursement",
+
+          lifeAssured,
+
+          amount: 5000,
+        }),
+      ],
+    },
+
+    {
+      id: createPlannerId(),
+
+      policyName:
+        "Investment-Linked Protection Plan",
+
+      policyType:
+        "ilp_protection",
+
+      longTermCareBasePlan: null,
+
+      insurer: "Prudential",
+
+      policyNumber: "PRU-ILP-100006",
+
+      lifeAssured,
+
+      status: "active",
+
+      premium: {
+        amount: 19200,
+
+        frequency: "annual",
+      },
+
+      benefits: [
+        createSeedBenefit({
+          type: "death",
+
+          lifeAssured,
+
+          amount: 250000,
+        }),
+
+        createSeedBenefit({
+          type: "tpd",
+
+          lifeAssured,
+
+          amount: 250000,
+        }),
+      ],
+    },
+
+    {
+      id: createPlannerId(),
+
+      policyName:
+        "Child Education Endowment",
+
+      policyType: "endowment",
+
+      longTermCareBasePlan: null,
+
+      insurer: "Manulife",
+
+      policyNumber: "MAN-END-100007",
+
+      lifeAssured: "Emily Tan",
+
+      status: "paid_up",
+
+      premium: {
+        amount: 0,
+
+        frequency: null,
+      },
+
+      benefits: [
+        createSeedBenefit({
+          type: "death",
+
+          lifeAssured: "Emily Tan",
+
+          amount: 50000,
+        }),
+
+        createSeedBenefit({
+          type: "other",
+
+          customName: "Maturity Benefit",
+
+          lifeAssured: "Emily Tan",
+
+          amount: 80000,
+
+          notes:
+            "Estimated maturity value for education funding.",
+        }),
+      ],
+    },
+
+    {
+      id: createPlannerId(),
+
+      policyName:
+        "Paid-Up Whole Life Plan",
+
+      policyType: "whole_life",
+
+      longTermCareBasePlan: null,
+
+      insurer: "NTUC Income",
+
+      policyNumber: "NTUC-WL-100008",
+
+      lifeAssured,
+
+      status: "paid_up",
+
+      premium: {
+        amount: 0,
+
+        frequency: null,
+      },
+
+      benefits: [
+        createSeedBenefit({
+          type: "death",
+
+          lifeAssured,
+
+          amount: 100000,
+        }),
+
+        createSeedBenefit({
+          type: "tpd",
+
+          lifeAssured,
+
+          amount: 100000,
+        }),
+      ],
+    },
+  ];
+}
+
+/* ========================================
+   INSURANCE BENEFIT FACTORY
+======================================== */
+
+function createSeedBenefit({
+  type,
+
+  customName = "",
+
+  lifeAssured,
+
+  amount = 0,
+
+  payoutType = null,
+
+  payoutTerm = null,
+
+  payoutDuration = null,
+
+  hospitalClass = "",
+
+  riderType = "",
+
+  adlRequirement = null,
+
+  notes = "",
+}) {
+  return {
+    id: createPlannerId(),
+
+    type,
+
+    customName,
+
+    lifeAssured,
+
+    amount,
+
+    payoutType,
+
+    payoutTerm,
+
+    payoutDuration,
+
+    hospitalClass,
+
+    riderType,
+
+    adlRequirement,
+
+    notes,
+
+    source: "user-added",
+
+    status: "existing",
+
+    hasUserInput: true,
+
+    isSuggested: false,
+
+    isBasePlanBenefit: false,
+  };
 }
 
 /* ========================================
