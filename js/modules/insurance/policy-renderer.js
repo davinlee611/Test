@@ -27,7 +27,11 @@ export function createPolicyDetails(policy, validationSummary) {
   return createPlanningCardDetails({
     title: policyName,
 
-    description: `${insurer} · ${policyType}`,
+    description: createPolicyDescription({
+      insurer,
+      policyType,
+      lifeAssured: policy.lifeAssured,
+    }),
 
     content: createPolicyCardContent(policy, validationSummary),
   });
@@ -388,6 +392,29 @@ function createPolicyMetadata(policy) {
   }
 
   return metadata;
+}
+
+/* ========================================
+   POLICY DESCRIPTION
+======================================== */
+
+function createPolicyDescription({
+  insurer,
+  policyType,
+  lifeAssured,
+}) {
+  const descriptionParts = [
+    insurer,
+    policyType,
+  ];
+
+  if (lifeAssured) {
+    descriptionParts.push(
+      `Life Assured: ${lifeAssured}`,
+    );
+  }
+
+  return descriptionParts.join(" · ");
 }
 
 /* ========================================
