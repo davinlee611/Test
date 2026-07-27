@@ -40,7 +40,12 @@ export function createPolicyDetails(policy, validationSummary) {
 function createPolicyCardContent(policy, validationSummary) {
   const content = document.createElement("div");
 
-  content.className = "policy-card-content";
+  content.className = [
+    "policy-card-content",
+    getPolicyTypeClass(policy.policyType),
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   content.append(
     createPolicyMetadata(policy),
@@ -415,6 +420,45 @@ function createPolicyDescription({
   }
 
   return descriptionParts.join(" · ");
+}
+
+/* ========================================
+   POLICY TYPE CLASS
+======================================== */
+
+function getPolicyTypeClass(
+  policyType,
+) {
+  const policyTypeClasses = {
+    hospitalisation:
+      "policy-card-content--hospitalisation",
+
+    whole_life:
+      "policy-card-content--life",
+
+    term:
+      "policy-card-content--critical-illness",
+
+    disability_income:
+      "policy-card-content--disability",
+
+    personal_accident:
+      "policy-card-content--accident",
+
+    ilp_protection:
+      "policy-card-content--investment",
+
+    endowment:
+      "policy-card-content--endowment",
+
+    long_term_care:
+      "policy-card-content--long-term-care",
+  };
+
+  return (
+    policyTypeClasses[policyType] ||
+    "policy-card-content--other"
+  );
 }
 
 /* ========================================
