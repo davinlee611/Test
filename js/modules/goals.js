@@ -1,64 +1,14 @@
 "use strict";
 
-import {
-  getAllGoals,
-  getGoalById,
-  createGoal,
-  updateGoal,
-  removeGoal,
-  clearGoals,
-} from "../services/goal-service.js";
-
 import { emit } from "../events/event-bus.js";
-
 import { EVENTS } from "../events/events.js";
 
-import { formatCurrency, getWholeNumber } from "../utils/client-utils.js";
-
-import {
-  createPlanningCard,
-  createPlanningCardIcon,
-  createPlanningCardDetails,
-  createPlanningCardActions,
-  createPlanningCardButton,
-  renderPlanningEmptyState,
-} from "../components/planning-card.js";
-
-import { calculateGoalSavings } from "../services/goal-savings-calculator.js";
-
-/* ========================================
-   DOM REFERENCES
-======================================== */
-
-const addGoalButton = document.getElementById("addGoalButton");
-
-const emptyGoalMessage = document.getElementById("emptyGoalMessage");
-
-const goalsList = document.getElementById("goalsList");
-
-const goalModal = document.getElementById("goalModal");
-
-const goalForm = document.getElementById("goalForm");
-
-const goalModalTitle = document.getElementById("goalModalTitle");
-
-const editingGoalIdInput = document.getElementById("editingGoalId");
-
-const goalTypeInput = document.getElementById("goalType");
-
-const goalNameInput = document.getElementById("goalName");
-
-const goalTargetAmountInput = document.getElementById("goalTargetAmount");
-
-const goalTargetDateInput = document.getElementById("goalTargetDate");
-
-const goalFormMessage = document.getElementById("goalFormMessage");
-
-const closeGoalModalButton = document.getElementById("closeGoalModalButton");
-
-const cancelGoalButton = document.getElementById("cancelGoalButton");
-
-const goalModalBackdrop = document.querySelector("[data-close-goal-modal]");
+import { getGoalElements } from "./goals/goal-elements.js";
+import { readGoalFormData } from "./goals/goal-form-data.js";
+import { bindGoalEvents } from "./goals/goal-event-binder.js";
+import { createGoalModal } from "./goals/goal-modal.js";
+import { renderGoalList } from "./goals/goal-renderer.js";
+import { createGoalWorkflow } from "./goals/goal-workflow.js";
 
 /* ========================================
    MODULE STATE
@@ -66,20 +16,28 @@ const goalModalBackdrop = document.querySelector("[data-close-goal-modal]");
 
 let moduleInitialized = false;
 
+let elements = {};
+
+let goalModal = null;
+
+let goalWorkflow = null;
+
 /* ========================================
    INITIALIZATION
 ======================================== */
 
 export function initializeGoals() {
-  if (moduleInitialized) {
-    renderGoals();
-    return;
+  elements = getGoalElements();
+
+  createGoalComponents();
+
+  if (!moduleInitialized) {
+    bindModuleEvents();
+
+    moduleInitialized = true;
   }
 
-  attachGoalListeners();
   renderGoals();
-
-  moduleInitialized = true;
 }
 
 /* ========================================
@@ -87,133 +45,69 @@ export function initializeGoals() {
 ======================================== */
 
 export function resetGoals() {
-  clearGoals();
+  goalWorkflow?.resetGoals();
 
-  closeGoalModal();
+  goalModal?.close();
+
   renderGoals();
+
   emitGoalsChanged();
 }
 
 /* ========================================
-   EVENT LISTENERS
+   RENDERING
 ======================================== */
 
-function attachGoalListeners() {
-  if (addGoalButton) {
-    addGoalButton.addEventListener("click", openAddGoalModal);
+export function renderGoals() {
+  if (!goalWorkflow) {
+    return;
   }
 
-  if (goalForm) {
-    goalForm.addEventListener("submit", handleGoalSubmit);
-  }
+  renderGoalList({
+    list: elements.goalsList,
 
-  if (closeGoalModalButton) {
-    closeGoalModalButton.addEventListener("click", closeGoalModal);
-  }
+    emptyMessage: elements.emptyGoalMessage,
 
-  if (cancelGoalButton) {
-    cancelGoalButton.addEventListener("click", closeGoalModal);
-  }
+    goals: goalWorkflow.getGoals(),
 
-  if (goalModalBackdrop) {
-    goalModalBackdrop.addEventListener("click", closeGoalModal);
-  }
+    onEditGoal: openEditGoal,
 
-  document.addEventListener("keydown", handleDocumentKeydown);
-}
-
-function handleDocumentKeydown(event) {
-  if (event.key === "Escape" && goalModal && !goalModal.hidden) {
-    closeGoalModal();
-  }
+    onDeleteGoal: confirmDeleteGoal,
+  });
 }
 
 /* ========================================
-   MODAL
+   COMPONENT CREATION
 ======================================== */
 
-function openAddGoalModal() {
-  if (!goalModal || !goalForm) {
-    return;
-  }
+function createGoalComponents() {
+  goalWorkflow = createGoalWorkflow();
 
-  goalForm.reset();
-  setMinimumGoalMonth();
-
-  if (editingGoalIdInput) {
-    editingGoalIdInput.value = "";
-  }
-
-  clearGoalFormMessage();
-
-  if (goalModalTitle) {
-    goalModalTitle.textContent = "Add Goal";
-  }
-
-  goalModal.hidden = false;
-
-  document.body.classList.add("goal-modal-open");
-
-  goalTypeInput?.focus();
+  goalModal = createGoalModal({
+    elements,
+  });
 }
 
-function openEditGoalModal(goalId) {
-  const goal = getGoalById(goalId);
+/* ========================================
+   EVENT BINDING
+======================================== */
 
-  if (!goal || !goalModal) {
-    return;
-  }
+function bindModuleEvents() {
+  bindGoalEvents({
+    elements,
 
-  if (editingGoalIdInput) {
-    editingGoalIdInput.value = goal.id;
-  }
+    onAddGoal() {
+      goalModal.openAdd();
+    },
 
-  if (goalTypeInput) {
-    goalTypeInput.value = goal.type || "";
-  }
+    onSubmitGoal: handleGoalSubmit,
 
-  if (goalNameInput) {
-    goalNameInput.value = goal.name || "";
-  }
-
-  if (goalTargetAmountInput) {
-    goalTargetAmountInput.value = goal.targetAmount || "";
-  }
-
-  if (goalTargetDateInput) {
-    goalTargetDateInput.value = getSavedGoalDate(goal);
-  }
-
-  clearGoalFormMessage();
-
-  if (goalModalTitle) {
-    goalModalTitle.textContent = "Edit Goal";
-  }
-
-  setMinimumGoalMonthForEdit(goal);
-  goalModal.hidden = false;
-
-  document.body.classList.add("goal-modal-open");
-
-  goalTypeInput?.focus();
-}
-
-function closeGoalModal() {
-  if (!goalModal) {
-    return;
-  }
-
-  goalModal.hidden = true;
-
-  document.body.classList.remove("goal-modal-open");
-
-  clearGoalFormMessage();
-}
-
-function clearGoalFormMessage() {
-  if (goalFormMessage) {
-    goalFormMessage.textContent = "";
-  }
+    onCloseGoal() {
+      if (goalModal.isOpen()) {
+        goalModal.close();
+      }
+    },
+  });
 }
 
 /* ========================================
@@ -223,397 +117,67 @@ function clearGoalFormMessage() {
 function handleGoalSubmit(event) {
   event.preventDefault();
 
-  const goalType = goalTypeInput?.value || "";
+  goalModal.clearMessage();
 
-  const goalName = goalNameInput?.value.trim() || "";
+  const editingGoalId = elements.editingGoalIdInput?.value || "";
 
-  const targetAmount = getWholeNumber(goalTargetAmountInput?.value);
+  const formData = readGoalFormData(elements);
 
-  const targetDate = goalTargetDateInput?.value || "";
+  const result = goalWorkflow.save({
+    formData,
 
-  const editingGoalId = editingGoalIdInput?.value || "";
-
-  clearGoalFormMessage();
-
-  const validationResult = validateGoal({
-    goalType,
-    goalName,
-    targetAmount,
-    targetDate,
     editingGoalId,
   });
 
-  if (!validationResult.isValid) {
-    showGoalFormMessage(validationResult.message);
+  if (!result.success) {
+    goalModal.showMessage(result.validation.message);
 
-    validationResult.element?.focus();
+    goalModal.focusField(result.validation.field);
 
     return;
   }
 
-  if (editingGoalId) {
-    updateGoal(editingGoalId, {
-      goalType,
-      goalName,
-      targetAmount,
-      targetDate,
-    });
-  } else {
-    createGoal({
-      goalType,
-      goalName,
-      targetAmount,
-      targetDate,
-    });
-  }
-
   renderGoals();
-  closeGoalModal();
+
+  goalModal.close();
+
   emitGoalsChanged();
 }
 
-function validateGoal({
-  goalType,
-  goalName,
-  targetAmount,
-  targetDate,
-  editingGoalId,
-}) {
-  if (!goalType) {
-    return {
-      isValid: false,
-      message: "Please select a goal type.",
-      element: goalTypeInput,
-    };
+/* ========================================
+   EDITING
+======================================== */
+
+function openEditGoal(goalId) {
+  const goal = goalWorkflow.getGoal(goalId);
+
+  if (!goal) {
+    return;
   }
 
-  if (!goalName) {
-    return {
-      isValid: false,
-      message: "Please enter a goal name.",
-      element: goalNameInput,
-    };
-  }
-
-  if (targetAmount <= 0) {
-    return {
-      isValid: false,
-      message: "Please enter the target amount.",
-      element: goalTargetAmountInput,
-    };
-  }
-
-  if (!targetDate) {
-    return {
-      isValid: false,
-      message: "Please select the target month and year.",
-      element: goalTargetDateInput,
-    };
-  }
-
-  const minimumTargetDate = getMinimumGoalMonth();
-
-  if (!editingGoalId) {
-    if (targetDate < minimumTargetDate) {
-      return {
-        isValid: false,
-        message: "The target month must be in the future.",
-        element: goalTargetDateInput,
-      };
-    }
-
-    return {
-      isValid: true,
-    };
-  }
-
-  const existingGoal = getGoalById(editingGoalId);
-
-  const existingTargetDate = existingGoal ? getSavedGoalDate(existingGoal) : "";
-
-  const dateWasChanged = targetDate !== existingTargetDate;
-
-  /*
-   * An existing past date may remain unchanged.
-   * If the user changes the date, the new date
-   * must be in the future.
-   */
-  if (dateWasChanged && targetDate < minimumTargetDate) {
-    return {
-      isValid: false,
-      message: "The new target month must be in the future.",
-      element: goalTargetDateInput,
-    };
-  }
-
-  return {
-    isValid: true,
-  };
-}
-
-function showGoalFormMessage(message) {
-  if (goalFormMessage) {
-    goalFormMessage.textContent = message;
-  }
+  goalModal.openEdit(goal);
 }
 
 /* ========================================
-   GOAL DELETION
+   DELETION
 ======================================== */
 
-function handleDeleteGoal(goalId) {
+function confirmDeleteGoal(goalId) {
   const shouldDelete = window.confirm("Delete this goal?");
 
   if (!shouldDelete) {
     return;
   }
 
-  const wasRemoved = removeGoal(goalId);
+  const wasRemoved = goalWorkflow.deleteGoal(goalId);
 
   if (!wasRemoved) {
     return;
   }
 
   renderGoals();
+
   emitGoalsChanged();
-}
-
-/* ========================================
-   RENDERING
-======================================== */
-
-export function renderGoals() {
-  if (!goalsList) {
-    return;
-  }
-
-  const goals = getAllGoals();
-
-  goalsList.innerHTML = "";
-
-  if (goals.length === 0) {
-    renderPlanningEmptyState(
-      goalsList,
-      "No goals added yet.",
-      emptyGoalMessage,
-    );
-
-    return;
-  }
-
-  goals.forEach(function (goal) {
-    goalsList.appendChild(createGoalItem(goal));
-  });
-}
-
-function createGoalItem(goal) {
-  const goalIcon = createPlanningCardIcon(getGoalIconClass(goal.type));
-
-  const goalDetails = createGoalDetails(goal);
-
-  const goalActions = createGoalActions(goal);
-
-  return createPlanningCard({
-    itemClass: "goal-item",
-
-    icon: goalIcon,
-
-    details: goalDetails,
-
-    actions: goalActions,
-  });
-}
-
-function createGoalDetails(goal) {
-  const calculation = calculateGoalSavings([goal]);
-
-  const goalResult = calculation.goals[0];
-
-  const descriptionParts = [
-    getGoalTypeLabel(goal.type),
-
-    `${formatCurrency(goal.targetAmount)} target amount`,
-
-    `${formatGoalDate(getSavedGoalDate(goal))} target date`,
-  ];
-
-  if (goalResult?.status === "valid") {
-    descriptionParts.push(
-      `${formatCurrency(goalResult.monthlySavings)} per month required`,
-    );
-  }
-
-  if (goalResult?.status === "review") {
-    descriptionParts.push("Review required");
-  }
-
-  if (goalResult?.status === "incomplete") {
-    descriptionParts.push("Incomplete goal details");
-  }
-
-  return createPlanningCardDetails({
-    title: goal.name || "Unnamed Goal",
-
-    description: descriptionParts.join(" · "),
-  });
-}
-
-function createGoalActions(goal) {
-  const actions = createPlanningCardActions();
-
-  actions.append(createEditButton(goal), createDeleteButton(goal));
-
-  return actions;
-}
-
-function createEditButton(goal) {
-  return createPlanningCardButton({
-    iconClass: "fa-solid fa-pen",
-
-    label: `Edit ${goal.name}`,
-
-    onClick() {
-      openEditGoalModal(goal.id);
-    },
-  });
-}
-
-function createDeleteButton(goal) {
-  return createPlanningCardButton({
-    iconClass: "fa-solid fa-trash",
-
-    variant: "delete",
-
-    label: `Delete ${goal.name}`,
-
-    onClick() {
-      handleDeleteGoal(goal.id);
-    },
-  });
-}
-
-/* ========================================
-   DATE HELPERS
-======================================== */
-
-function getSavedGoalDate(goal) {
-  if (goal.targetDate) {
-    return goal.targetDate;
-  }
-
-  /*
-   * Compatibility with goals created before
-   * targetDate was introduced.
-   */
-  if (goal.targetYear) {
-    return `${goal.targetYear}-01`;
-  }
-
-  return "";
-}
-
-function formatGoalDate(targetDate) {
-  if (!targetDate) {
-    return "No target date";
-  }
-
-  const [year, month] = targetDate.split("-");
-
-  const date = new Date(Number(year), Number(month) - 1, 1);
-
-  if (Number.isNaN(date.getTime())) {
-    return targetDate;
-  }
-
-  return new Intl.DateTimeFormat("en-SG", {
-    month: "long",
-    year: "numeric",
-  }).format(date);
-}
-
-function getMinimumGoalMonth() {
-  const today = new Date();
-
-  today.setDate(1);
-
-  today.setMonth(today.getMonth() + 1);
-
-  const year = today.getFullYear();
-
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-
-  return `${year}-${month}`;
-}
-
-function setMinimumGoalMonth() {
-  if (!goalTargetDateInput) {
-    return;
-  }
-
-  goalTargetDateInput.min = getMinimumGoalMonth();
-}
-
-function setMinimumGoalMonthForEdit(goal) {
-  if (!goalTargetDateInput) {
-    return;
-  }
-
-  const savedTargetDate = getSavedGoalDate(goal);
-
-  const minimumFutureMonth = getMinimumGoalMonth();
-
-  /*
-   * Preserve an existing past month as a
-   * valid selectable value while editing.
-   */
-  if (savedTargetDate && savedTargetDate < minimumFutureMonth) {
-    goalTargetDateInput.min = savedTargetDate;
-
-    return;
-  }
-
-  goalTargetDateInput.min = minimumFutureMonth;
-}
-
-/* ========================================
-   DISPLAY HELPERS
-======================================== */
-
-function getGoalTypeLabel(goalType) {
-  const labels = {
-    retirement: "Retirement",
-    education: "Children’s Education",
-    property: "Property Purchase",
-    emergency_fund: "Emergency Fund",
-    wedding: "Wedding",
-    travel: "Travel",
-    legacy: "Legacy",
-    other: "Others",
-  };
-
-  return labels[goalType] || "Goal";
-}
-
-function getGoalIconClass(goalType) {
-  const icons = {
-    retirement: "fa-solid fa-umbrella-beach",
-
-    education: "fa-solid fa-graduation-cap",
-
-    property: "fa-solid fa-house",
-
-    emergency_fund: "fa-solid fa-shield-halved",
-
-    wedding: "fa-solid fa-ring",
-
-    travel: "fa-solid fa-plane",
-
-    legacy: "fa-solid fa-hand-holding-heart",
-
-    other: "fa-solid fa-bullseye",
-  };
-
-  return icons[goalType] || icons.other;
 }
 
 /* ========================================
@@ -622,6 +186,6 @@ function getGoalIconClass(goalType) {
 
 function emitGoalsChanged() {
   emit(EVENTS.GOALS_CHANGED, {
-    goals: [...getAllGoals()],
+    goals: [...goalWorkflow.getGoals()],
   });
 }
