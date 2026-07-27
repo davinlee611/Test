@@ -1,7 +1,5 @@
 "use strict";
 
-import { escapeHtml } from "../utils/client-utils.js";
-
 import {
   closeModalOnOverlayClick,
   closeModalOnEscape,
@@ -24,6 +22,8 @@ import { createPolicyModal } from "./insurance/policy-modal.js";
 import { getCompletePolicyValidationItems } from "./insurance/policy-validation.js";
 
 import { renderDraftBenefitList } from "./insurance/draft-benefit-renderer.js";
+
+import { renderPolicyValidationItems } from "./insurance/validation-renderer.js";
 
 import { createBenefitEditor } from "./insurance/benefit-editor.js";
 
@@ -530,26 +530,8 @@ function validatePolicyForm(formData) {
     return "Add at least one benefit to the policy.";
   }
 
-  const assets = getAssets();
-
-  const firstError = getCompletePolicyValidationItems({
-    policyId: editingPolicyId || "",
-
-    policyLifeAssured: formData.lifeAssured,
-
-    benefits: draftBenefits,
-
-    includeDraftBenefits: true,
-
-    context: {
-      editingPolicyId: editingPolicyId || "",
-
-      allPolicies: getAllPolicies(),
-
-      monthlyEmploymentIncome: assets.income.monthlyEmployment,
-
-      annualBonus: assets.income.annualBonus,
-    },
+  const firstError = getCurrentDraftPolicyValidationItems({
+    lifeAssured: formData.lifeAssured,
   }).find(function (item) {
     return item.severity === "error" && !item.valid;
   });
@@ -561,17 +543,15 @@ function validatePolicyForm(formData) {
   return "";
 }
 
-function renderPolicyValidation() {
-  if (!elements.policyValidationSection || !elements.policyValidationList) {
-    return;
-  }
-
+function getCurrentDraftPolicyValidationItems({
+  lifeAssured = elements.policyLifeAssuredInput.value.trim(),
+} = {}) {
   const assets = getAssets();
 
-  const validationItems = getCompletePolicyValidationItems({
+  return getCompletePolicyValidationItems({
     policyId: editingPolicyId || "",
 
-    policyLifeAssured: elements.policyLifeAssuredInput.value.trim(),
+    policyLifeAssured: lifeAssured,
 
     benefits: draftBenefits,
 
@@ -587,56 +567,27 @@ function renderPolicyValidation() {
       annualBonus: assets.income.annualBonus,
     },
   });
+}
+
+function renderPolicyValidation() {
+  const validationItems = getCurrentDraftPolicyValidationItems();
 
   const hasErrors = validationItems.some(function (item) {
     return item.severity === "error" && !item.valid;
   });
 
   if (!hasErrors) {
-    elements.policyFormMessage.textContent = "";
+    clearPolicyFormMessage();
   }
 
-  elements.policyValidationList.innerHTML = "";
+  renderPolicyValidationItems({
+    section: elements.policyValidationSection,
 
-  if (draftBenefits.length === 0) {
-    elements.policyValidationSection.hidden = true;
+    list: elements.policyValidationList,
 
-    return;
-  }
+    validationItems,
 
-  elements.policyValidationSection.hidden = false;
-
-  validationItems.forEach(function (item) {
-    const validationItem = document.createElement("div");
-
-    let stateClass = "policy-validation-item--valid";
-
-    let iconClass = "fa-solid fa-circle-check";
-
-    if (item.severity === "error") {
-      stateClass = "policy-validation-item--invalid";
-
-      iconClass = "fa-solid fa-circle-exclamation";
-    } else if (item.severity === "review") {
-      stateClass = "policy-validation-item--review";
-
-      iconClass = "fa-solid fa-triangle-exclamation";
-    }
-
-    validationItem.className = `policy-validation-item ${stateClass}`;
-
-    validationItem.innerHTML = `
-      <i
-        class="${iconClass}"
-        aria-hidden="true"
-      ></i>
-
-      <span>
-        ${escapeHtml(item.message)}
-      </span>
-    `;
-
-    elements.policyValidationList.appendChild(validationItem);
+    hasBenefits: draftBenefits.length > 0,
   });
 }
 
