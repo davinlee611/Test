@@ -3327,6 +3327,8 @@ button.insurance-validation-count:disabled {
 }
 
 .liability-use-estimate:hover {
+    background: transparent;
+    color: var(--primary-color);
     text-decoration: underline;
 }
 
