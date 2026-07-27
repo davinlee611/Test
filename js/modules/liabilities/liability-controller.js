@@ -1,23 +1,177 @@
-return {
-  render,
+"use strict";
 
-  reset,
+import { emit } from "../../events/event-bus.js";
 
-  openAddLiability,
+import { EVENTS } from "../../events/events.js";
 
-  submitLiability,
+import { readLiabilityFormData } from "./liability-form-data.js";
 
-  closeLiability,
+import { renderLiabilityList } from "./liability-renderer.js";
 
-  handleLiabilityTypeChange: modal.handleLiabilityTypeChange,
+/* ========================================
+   LIABILITY CONTROLLER
+======================================== */
 
-  handleRepaymentInputsChange: modal.handleRepaymentInputsChange,
+export function createLiabilityController({
+  elements,
 
-  handleMonthlyRepaymentInput: modal.handleMonthlyRepaymentInput,
+  modal,
 
-  useEstimatedRepayment: modal.useEstimatedRepayment,
+  workflow,
+}) {
+  /* ========================================
+     RENDER
+  ======================================== */
 
-  handleCpfUsageChange: modal.handleCpfUsageChange,
+  function render() {
+    renderLiabilityList({
+      list: elements.liabilitiesList,
 
-  handleCpfAmountInput: modal.handleCpfAmountInput,
-};
+      emptyMessage: elements.emptyLiabilityMessage,
+
+      totalElement: elements.totalLiabilitiesValue,
+
+      liabilities: workflow.getLiabilities(),
+
+      onEditLiability: openEditLiability,
+
+      onDeleteLiability: confirmDeleteLiability,
+    });
+  }
+
+  /* ========================================
+     ADD
+  ======================================== */
+
+  function openAddLiability() {
+    modal.openAdd();
+  }
+
+  /* ========================================
+     EDIT
+  ======================================== */
+
+  function openEditLiability(liabilityId) {
+    const liability = workflow.getLiability(liabilityId);
+
+    if (!liability) {
+      return;
+    }
+
+    modal.openEdit(liability);
+  }
+
+  /* ========================================
+     SAVE
+  ======================================== */
+
+  function submitLiability(event) {
+    event.preventDefault();
+
+    modal.clearMessage();
+
+    const editingLiabilityId = elements.editingLiabilityIdInput?.value || "";
+
+    const formData = readLiabilityFormData(elements);
+
+    const result = workflow.save({
+      formData,
+
+      editingLiabilityId,
+    });
+
+    if (!result.success) {
+      modal.showMessage(result.validation.message);
+
+      modal.focusField(result.validation.field);
+
+      return;
+    }
+
+    render();
+
+    modal.close();
+
+    emitLiabilitiesChanged();
+  }
+
+  /* ========================================
+     DELETE
+  ======================================== */
+
+  function confirmDeleteLiability(liabilityId) {
+    const shouldDelete = window.confirm("Delete this liability?");
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    const wasRemoved = workflow.deleteLiability(liabilityId);
+
+    if (!wasRemoved) {
+      return;
+    }
+
+    render();
+
+    emitLiabilitiesChanged();
+  }
+
+  /* ========================================
+     CLOSE
+  ======================================== */
+
+  function closeLiability() {
+    if (modal.isOpen()) {
+      modal.close();
+    }
+  }
+
+  /* ========================================
+     RESET
+  ======================================== */
+
+  function reset() {
+    workflow.resetLiabilities();
+
+    modal.close();
+
+    render();
+
+    emitLiabilitiesChanged();
+  }
+
+  /* ========================================
+     EVENTS
+  ======================================== */
+
+  function emitLiabilitiesChanged() {
+    emit(EVENTS.LIABILITIES_CHANGED, {
+      liabilities: [...workflow.getLiabilities()],
+    });
+  }
+
+    return {
+      render,
+
+      reset,
+
+      openAddLiability,
+
+      submitLiability,
+
+      closeLiability,
+
+      handleLiabilityTypeChange: modal.handleLiabilityTypeChange,
+
+      handleRepaymentInputsChange: modal.handleRepaymentInputsChange,
+
+      handleMonthlyRepaymentInput: modal.handleMonthlyRepaymentInput,
+
+      useEstimatedRepayment: modal.useEstimatedRepayment,
+
+      handleCpfUsageChange: modal.handleCpfUsageChange,
+
+      handleCpfAmountInput: modal.handleCpfAmountInput,
+    };
+}
