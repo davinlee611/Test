@@ -3998,11 +3998,3 @@ button.insurance-validation-count:disabled {
     overflow-x: auto;
   }
 }
-
-@media (min-width: 1200px) {
-  .cost-of-wants-cpf-grid {
-    grid-template-columns:
-      minmax(420px, 0.95fr)
-      minmax(520px, 1.2fr);
-  }
-}
