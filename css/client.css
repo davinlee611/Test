@@ -1675,6 +1675,7 @@ body.liability-modal-open {
   border-radius: var(--border-radius);
   background: var(--surface-color, #ffffff);
   box-shadow: none;
+  border: 1px solid var(--border-color);
 }
 
 .insurance-validation-summary__header {
