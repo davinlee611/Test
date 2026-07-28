@@ -33,10 +33,8 @@ import { getLiabilityMonthlyCashRepayment } from "./liabilities/liability-calcul
 const DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE =
   3.5;
 
-const LATEST_OFFICIAL_FRS_YEAR = 2027;
-
-const CPF_RETIREMENT_SUM_BASE_FRS =
-  228200;
+const LATEST_OFFICIAL_FRS_YEAR =
+  2027;
 
 const OFFICIAL_RETIREMENT_SUMS = {
   2025: {
@@ -54,6 +52,11 @@ const OFFICIAL_RETIREMENT_SUMS = {
     frs: 228200,
   },
 };
+
+const LATEST_OFFICIAL_FRS =
+  OFFICIAL_RETIREMENT_SUMS[
+    LATEST_OFFICIAL_FRS_YEAR
+  ].frs;
 
 /* ========================================
    PAGE ELEMENTS
@@ -272,11 +275,15 @@ export function resetCostOfWants() {
 
   selectedCpfRetirementOption = "frs";
 
+  if (cpfGrowthRateInput) {
+    cpfGrowthRateInput.value = String(DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE);
+  }
+
   renderCpfRetirementOptionSelection();
 
   clearValidationMessage();
 
-  renderCostOfWants();  
+  renderCostOfWants();
   collapseCalculatedBreakdown();
 
   emitCostOfWantsChanged();
@@ -374,6 +381,7 @@ function handleProjectionRequest() {
 function attachApplicationListeners() {
   on(EVENTS.PROFILE_CHANGED, function () {
     renderClientDetails();
+    renderProjectedCpfRetirementSums();
     validateCostOfWants();
     renderFloatingSummary();
   });
@@ -1110,14 +1118,24 @@ function renderProjectedCpfRetirementSums() {
   );
 
   if (cpfProjectionCaptionElement) {
-    cpfProjectionCaptionElement.textContent =
-      [
-        `Client turns 55 in ${projection.yearTurning55}.`,
-        `Figures use an annual retirement-sum increase`,
-        `of ${formatPercentage(
-          projection.annualGrowthRate,
-        )}.`,
+    if (projection.basis === "official") {
+      cpfProjectionCaptionElement.textContent = [
+        `Client turns 55 in`,
+        `${projection.yearTurning55}.`,
+        `Published CPF Retirement`,
+        `Sums are used.`,
       ].join(" ");
+
+      return;
+    }
+
+    cpfProjectionCaptionElement.textContent = [
+      `Client turns 55 in`,
+      `${projection.yearTurning55}.`,
+      `Figures assume an annual`,
+      `retirement-sum increase of`,
+      `${formatPercentage(projection.annualGrowthRate)}.`,
+    ].join(" ");
   }
 }
 
@@ -1154,20 +1172,18 @@ function calculateClientCpfRetirementSums() {
 
   const annualGrowthRate = getCpfRetirementSumGrowthRate();
 
-  const frsProjection = calculateProjectedFrs({
+  const retirementSums = calculateCpfRetirementSums({
     yearTurning55,
     annualGrowthRate,
   });
 
-  if (!Number.isFinite(frsProjection.amount) || frsProjection.amount <= 0) {
+  if (!Number.isFinite(retirementSums.frs) || retirementSums.frs <= 0) {
     return {
       isValid: false,
 
       message: "Unable to calculate the projected CPF Retirement Sums.",
     };
   }
-
-  const projectedFrs = roundCpfProjectionAmount(frsProjection.amount);
 
   return {
     isValid: true,
@@ -1176,47 +1192,58 @@ function calculateClientCpfRetirementSums() {
 
     annualGrowthRate,
 
-    basis: frsProjection.basis,
+    basis: retirementSums.basis,
 
-    brs: roundCpfProjectionAmount(projectedFrs / 2),
+    brs: roundCpfProjectionAmount(retirementSums.brs),
 
-    frs: projectedFrs,
+    frs: roundCpfProjectionAmount(retirementSums.frs),
 
-    /*
-     * ERS is four times BRS,
-     * which equals twice FRS.
-     */
-    ers: roundCpfProjectionAmount(projectedFrs * 2),
+    ers: roundCpfProjectionAmount(retirementSums.ers),
   };
 }
 
-function calculateProjectedFrs({ yearTurning55, annualGrowthRate }) {
-  const officialFrs = OFFICIAL_FRS_BY_YEAR[yearTurning55];
+function calculateCpfRetirementSums({ yearTurning55, annualGrowthRate }) {
+  const officialRetirementSums = OFFICIAL_RETIREMENT_SUMS[yearTurning55];
 
-  if (Number.isFinite(officialFrs)) {
+  if (officialRetirementSums) {
     return {
-      amount: officialFrs,
+      brs: officialRetirementSums.brs,
+
+      frs: officialRetirementSums.frs,
+
+      /*
+       * ERS is four times BRS,
+       * which equals twice FRS.
+       */
+      ers: officialRetirementSums.frs * 2,
+
       basis: "official",
     };
   }
 
-  if (yearTurning55 < CPF_RETIREMENT_SUM_BASE_YEAR) {
+  if (yearTurning55 < LATEST_OFFICIAL_FRS_YEAR) {
     return {
-      amount: 0,
+      brs: 0,
+      frs: 0,
+      ers: 0,
       basis: "unavailable",
     };
   }
 
-  const projectionYears = yearTurning55 - CPF_RETIREMENT_SUM_BASE_YEAR;
+  const projectionYears = yearTurning55 - LATEST_OFFICIAL_FRS_YEAR;
 
   const decimalGrowthRate = annualGrowthRate / 100;
 
-  const projectedAmount =
-    CPF_RETIREMENT_SUM_BASE_FRS *
-    Math.pow(1 + decimalGrowthRate, projectionYears);
+  const projectedFrs =
+    LATEST_OFFICIAL_FRS * Math.pow(1 + decimalGrowthRate, projectionYears);
 
   return {
-    amount: projectedAmount,
+    brs: projectedFrs / 2,
+
+    frs: projectedFrs,
+
+    ers: projectedFrs * 2,
+
     basis: "projected",
   };
 }
@@ -1243,7 +1270,13 @@ function getClientYearTurning55() {
 }
 
 function getCpfRetirementSumGrowthRate() {
-  const enteredRate = Number(cpfGrowthRateInput?.value);
+  const enteredValue = cpfGrowthRateInput?.value.trim();
+
+  if (!enteredValue) {
+    return DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE;
+  }
+
+  const enteredRate = Number(enteredValue);
 
   if (!Number.isFinite(enteredRate)) {
     return DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE;
