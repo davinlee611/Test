@@ -3706,10 +3706,16 @@ button.insurance-validation-count:disabled {
 .cost-of-wants-cpf-grid {
   display: grid;
   grid-template-columns:
-    minmax(460px, 0.9fr)
-    minmax(560px, 1.1fr);
+    repeat(2, minmax(0, 1fr));
   align-items: start;
   gap: 24px;
+}
+
+.cost-of-wants-cpf-grid
+  > .cost-of-wants-cpf-card {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
 }
 
 .cost-of-wants-cpf-card {
