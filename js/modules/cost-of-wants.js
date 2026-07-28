@@ -539,7 +539,9 @@ function attachApplicationListeners() {
   on(EVENTS.PROFILE_CHANGED, function () {
     renderClientDetails();
     renderProjectedCpfRetirementSums();
-    validateCostOfWants();
+
+    clearValidationMessage();
+
     renderFloatingSummary();
   });
 
@@ -1688,6 +1690,15 @@ function validateFybcAge() {
   if (currentAge === null || currentAge <= 0) {
     showValidationMessage(
       "Complete the client's date of birth before generating projections.",
+    );
+
+    return false;
+  }
+
+  if (desiredFybcAge <= 0) {
+    showValidationMessage(
+      "Please enter the age you want to FYB.",
+      desiredFybcAgeInput,
     );
 
     return false;
