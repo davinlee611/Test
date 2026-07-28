@@ -1872,159 +1872,204 @@
                 </div>
               </aside>
             </div>
-          </section>
 
-          <section class="cost-of-wants-cpf-section">
+            <section class="cost-of-wants-cpf-section">
+              <div class="section-heading">
+                <h3>CPF Projections</h3>
 
-    <div class="section-heading">
+                <p>
+                  Estimate the client's CPF Retirement Account at age 55 and
+                  projected CPF LIFE monthly payouts from age 65.
+                </p>
+              </div>
 
-        <h3>CPF Projections</h3>
+              <div class="cost-of-wants-cpf-grid">
+                <!-- Left -->
 
-        <p>
-            Estimate the client's CPF Retirement Account at age 55
-            and projected CPF LIFE monthly payouts from age 65.
-        </p>
+                <article class="cost-of-wants-cpf-card">
+                  <header class="cost-of-wants-cpf-card-header">
+                    <h4>
+                      Projected CPF Sums (Age 55) & CPF LIFE Payouts (Age 65)
+                    </h4>
+                  </header>
 
-    </div>
-
-    <div class="cost-of-wants-cpf-grid">
-
-        <!-- Left -->
-
-        <article class="cost-of-wants-cpf-card">
-
-            <header class="cost-of-wants-cpf-card-header">
-
-                <h4>
-                    Projected CPF Sums (Age 55) &
-                    CPF LIFE Payouts (Age 65)
-                </h4>
-
-            </header>
-
-            <table class="cost-of-wants-cpf-table">
-
-                <thead>
-
-                    <tr>
-
+                  <table class="cost-of-wants-cpf-table">
+                    <thead>
+                      <tr>
                         <th>Scheme</th>
 
                         <th>Retirement Sum</th>
 
                         <th>CPF LIFE / Month</th>
+                      </tr>
+                    </thead>
 
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <tr>
-
+                    <tbody>
+                      <tr>
                         <td>BRS</td>
 
                         <td>--</td>
 
                         <td>--</td>
+                      </tr>
 
-                    </tr>
-
-                    <tr>
-
+                      <tr>
                         <td>FRS</td>
 
                         <td>--</td>
 
                         <td>--</td>
+                      </tr>
 
-                    </tr>
-
-                    <tr>
-
+                      <tr>
                         <td>ERS</td>
 
                         <td>--</td>
 
                         <td>--</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </article>
 
-                    </tr>
+                <!-- Right -->
 
-                </tbody>
+                <article class="cost-of-wants-cpf-card">
+                  <header class="cost-of-wants-cpf-card-header">
+                    <h4>Select Your Assumed CPF Retirement Scheme</h4>
 
-            </table>
+                    <p>
+                      Select the Retirement Account target to use for the
+                      projection.
+                    </p>
+                  </header>
 
-        </article>
+                  <div class="cpf-retirement-options-field">
+                    <div
+                      class="cpf-retirement-options"
+                      role="radiogroup"
+                      aria-label="Assumed CPF retirement scheme"
+                    >
+                      <button
+                        class="cpf-retirement-option selected"
+                        type="button"
+                        data-cpf-retirement-option="brs"
+                        role="radio"
+                        aria-checked="true"
+                      >
+                        <span
+                          class="cpf-retirement-option-icon"
+                          aria-hidden="true"
+                        >
+                          <i class="fa-solid fa-house"></i>
+                        </span>
 
-        <!-- Right -->
+                        <span class="cpf-retirement-option-content">
+                          <strong>BRS</strong>
 
-        <article class="cost-of-wants-cpf-card">
+                          <span> Basic Retirement Sum </span>
+                        </span>
+                      </button>
 
-            <header class="cost-of-wants-cpf-card-header">
+                      <button
+                        class="cpf-retirement-option"
+                        type="button"
+                        data-cpf-retirement-option="frs"
+                        role="radio"
+                        aria-checked="false"
+                      >
+                        <span
+                          class="cpf-retirement-option-icon"
+                          aria-hidden="true"
+                        >
+                          <i class="fa-solid fa-circle-check"></i>
+                        </span>
 
-                <h4>
-                    Assumed CPF Retirement Scheme
-                </h4>
+                        <span class="cpf-retirement-option-content">
+                          <strong>FRS</strong>
 
-            </header>
+                          <span> Full Retirement Sum </span>
+                        </span>
+                      </button>
 
-            <div class="cpf-retirement-options">
+                      <button
+                        class="cpf-retirement-option"
+                        type="button"
+                        data-cpf-retirement-option="ers"
+                        role="radio"
+                        aria-checked="false"
+                      >
+                        <span
+                          class="cpf-retirement-option-icon"
+                          aria-hidden="true"
+                        >
+                          <i class="fa-solid fa-arrow-trend-up"></i>
+                        </span>
 
-                <button
-                    class="cpf-retirement-option selected"
-                    type="button">
+                        <span class="cpf-retirement-option-content">
+                          <strong>ERS</strong>
 
-                    <strong>BRS</strong>
+                          <span> Enhanced Retirement Sum </span>
+                        </span>
+                      </button>
 
-                    <span>
-                        Basic Retirement Sum
-                    </span>
+                      <button
+                        class="cpf-retirement-option"
+                        type="button"
+                        data-cpf-retirement-option="custom"
+                        role="radio"
+                        aria-checked="false"
+                      >
+                        <span
+                          class="cpf-retirement-option-icon"
+                          aria-hidden="true"
+                        >
+                          <i class="fa-solid fa-sliders"></i>
+                        </span>
 
-                </button>
+                        <span class="cpf-retirement-option-content">
+                          <strong> Custom Retirement Sum </strong>
 
-                <button
-                    class="cpf-retirement-option"
-                    type="button">
+                          <span>
+                            Enter a custom Retirement Account target
+                          </span>
+                        </span>
+                      </button>
+                    </div>
 
-                    <strong>FRS</strong>
+                    <div
+                      id="costOfWantsCustomRetirementSumField"
+                      class="cpf-custom-retirement-sum"
+                      hidden
+                    >
+                      <label for="costOfWantsCustomRetirementSum">
+                        Custom Retirement Sum
+                      </label>
 
-                    <span>
-                        Full Retirement Sum
-                    </span>
+                      <div class="currency-input">
+                        <span>$</span>
 
-                </button>
+                        <input
+                          id="costOfWantsCustomRetirementSum"
+                          class="form-control"
+                          type="number"
+                          min="0"
+                          step="1"
+                          inputmode="numeric"
+                          placeholder="Enter retirement sum"
+                        />
+                      </div>
 
-                <button
-                    class="cpf-retirement-option"
-                    type="button">
-
-                    <strong>ERS</strong>
-
-                    <span>
-                        Enhanced Retirement Sum
-                    </span>
-
-                </button>
-
-                <button
-                    class="cpf-retirement-option"
-                    type="button">
-
-                    <strong>Self-employed</strong>
-
-                    <span>
-                        Voluntary RA Top-ups
-                    </span>
-
-                </button>
-
-            </div>
-
-        </article>
-
-    </div>
-
-</section>
+                      <span class="form-helper-text">
+                        Enter the assumed amount available in the Retirement
+                        Account.
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </section>
 
           <!-- Protection -->
           <section class="workspace-section" data-content="protection">
