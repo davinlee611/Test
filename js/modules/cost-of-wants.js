@@ -176,11 +176,17 @@ const availableSurplusElement = document.getElementById(
   "costOfWantsAvailableSurplus",
 );
 
+const cpfRetirementOptionButtons = document.querySelectorAll(
+  "[data-cpf-retirement-option]",
+);
+
 /* ========================================
    MODULE STATE
 ======================================== */
 
 let moduleInitialized = false;
+
+let selectedCpfRetirementOption = getSelectedCpfRetirementOption();
 
 /* ========================================
    INITIALIZATION
@@ -197,6 +203,7 @@ export function initializeCostOfWants() {
   attachSummaryListeners();
   attachProjectionListeners();
   attachApplicationListeners();
+  initializeCpfRetirementOptions();
 
   renderCostOfWants();
 
@@ -210,9 +217,13 @@ export function initializeCostOfWants() {
 export function resetCostOfWants() {
   resetCostOfWantsState();
 
+  selectedCpfRetirementOption = "frs";
+
+  renderCpfRetirementOptionSelection();
+
   clearValidationMessage();
 
-  renderCostOfWants();
+  renderCostOfWants();  
   collapseCalculatedBreakdown();
 
   emitCostOfWantsChanged();
@@ -418,6 +429,8 @@ function renderCostOfWants() {
   renderSelectedIncome();
   renderMonthlySpendingBreakdown();
   renderFloatingSummary();
+
+  renderCpfRetirementOptionSelection();
 }
 
 function renderClientDetails() {
@@ -925,6 +938,80 @@ function getValidAmount(value) {
   const amount = Number(value);
 
   return Number.isFinite(amount) && amount > 0 ? amount : 0;
+}
+
+/* ========================================
+   CPF RETIREMENT OPTIONS
+======================================== */
+
+function initializeCpfRetirementOptions() {
+  cpfRetirementOptionButtons.forEach(
+    function (button) {
+      button.addEventListener(
+        "click",
+        handleCpfRetirementOptionClick,
+      );
+    },
+  );
+}
+
+function handleCpfRetirementOptionClick(
+  event,
+) {
+  const selectedButton =
+    event.currentTarget;
+
+  const selectedOption =
+    selectedButton.dataset
+      .cpfRetirementOption;
+
+  if (!selectedOption) {
+    return;
+  }
+
+  selectedCpfRetirementOption =
+    selectedOption;
+
+  renderCpfRetirementOptionSelection();
+
+  console.log(
+    "Selected CPF retirement assumption:",
+    selectedCpfRetirementOption,
+  );
+}
+
+function renderCpfRetirementOptionSelection() {
+  cpfRetirementOptionButtons.forEach(
+    function (button) {
+      const isSelected =
+        button.dataset
+          .cpfRetirementOption ===
+        selectedCpfRetirementOption;
+
+      button.classList.toggle(
+        "selected",
+        isSelected,
+      );
+
+      button.setAttribute(
+        "aria-checked",
+        String(isSelected),
+      );
+    },
+  );
+}
+
+function getSelectedCpfRetirementOption() {
+  const selectedButton =
+    document.querySelector(
+      '[data-cpf-retirement-option][aria-checked="true"]',
+    );
+
+  return (
+    selectedButton?.dataset
+      .cpfRetirementOption ||
+    "brs"
+  );
 }
 
 /* ========================================
