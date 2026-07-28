@@ -79,7 +79,7 @@ export function seedClientProfile() {
 ======================================== */
 
 export function seedSelectedWealthTypes() {
-  return ["accumulation", "protection"];
+  return ["preservation", "accumulation", "protection", "distribution"];
 }
 
 /* ========================================
