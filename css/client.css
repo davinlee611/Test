@@ -3799,6 +3799,20 @@ button.insurance-validation-count:disabled {
   text-align: right;
 }
 
+.cost-of-wants-cpf-table td.is-official,
+.cost-of-wants-cpf-table td.is-projected {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.cost-of-wants-cpf-table td.is-official {
+  color: var(--success-color, #15803d);
+}
+
+.cost-of-wants-cpf-table td.is-projected {
+  color: var(--text-light);
+}
+
 .cpf-projection-assumption__helper {
   margin: 4px 0 0;
   color: var(--text-light);

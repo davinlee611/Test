@@ -33,16 +33,26 @@ import { getLiabilityMonthlyCashRepayment } from "./liabilities/liability-calcul
 const DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE =
   3.5;
 
-const CPF_RETIREMENT_SUM_BASE_YEAR =
-  2027;
+const LATEST_OFFICIAL_FRS_YEAR = 2027;
 
 const CPF_RETIREMENT_SUM_BASE_FRS =
   228200;
 
-const OFFICIAL_FRS_BY_YEAR = {
-  2025: 213000,
-  2026: 220400,
-  2027: 228200,
+const OFFICIAL_RETIREMENT_SUMS = {
+  2025: {
+    brs: 106500,
+    frs: 213000,
+  },
+
+  2026: {
+    brs: 110200,
+    frs: 220400,
+  },
+
+  2027: {
+    brs: 114100,
+    frs: 228200,
+  },
 };
 
 /* ========================================
@@ -211,6 +221,18 @@ const cpfProjectionCaptionElement = document.getElementById(
   "costOfWantsCpfProjectionCaption",
 );
 
+const projectedBrsBasisElement = document.getElementById(
+  "costOfWantsProjectedBrsBasis",
+);
+
+const projectedFrsBasisElement = document.getElementById(
+  "costOfWantsProjectedFrsBasis",
+);
+
+const projectedErsBasisElement = document.getElementById(
+  "costOfWantsProjectedErsBasis",
+);
+
 /* ========================================
    MODULE STATE
 ======================================== */
@@ -294,9 +316,9 @@ function attachInputListeners() {
     input.addEventListener("input", handleCostOfWantsInput);
 
     input.addEventListener("blur", handleCostOfWantsBlur);
-
-    cpfGrowthRateInput?.addEventListener("input", handleCpfGrowthRateInput);
   });
+
+  cpfGrowthRateInput?.addEventListener("input", handleCpfGrowthRateInput);
 
   customIncomeInput?.addEventListener("input", handleCustomIncomeInput);
 }
@@ -468,6 +490,7 @@ function renderCostOfWants() {
   renderFloatingSummary();
 
   renderCpfRetirementOptionSelection();
+  renderProjectedCpfRetirementSums();
 }
 
 function renderClientDetails() {
@@ -1048,6 +1071,253 @@ function getSelectedCpfRetirementOption() {
     selectedButton?.dataset
       .cpfRetirementOption ||
     "brs"
+  );
+}
+
+/* ========================================
+   PROJECTED CPF RETIREMENT SUMS
+======================================== */
+
+function renderProjectedCpfRetirementSums() {
+  const projection =
+    calculateClientCpfRetirementSums();
+
+  if (!projection.isValid) {
+    renderEmptyCpfRetirementSums(
+      projection.message,
+    );
+
+    return;
+  }
+
+  if (projectedBrsElement) {
+    projectedBrsElement.textContent =
+      formatCurrency(projection.brs);
+  }
+
+  if (projectedFrsElement) {
+    projectedFrsElement.textContent =
+      formatCurrency(projection.frs);
+  }
+
+  if (projectedErsElement) {
+    projectedErsElement.textContent =
+      formatCurrency(projection.ers);
+  }
+
+  renderCpfProjectionBasis(
+    projection.basis,
+  );
+
+  if (cpfProjectionCaptionElement) {
+    cpfProjectionCaptionElement.textContent =
+      [
+        `Client turns 55 in ${projection.yearTurning55}.`,
+        `Figures use an annual retirement-sum increase`,
+        `of ${formatPercentage(
+          projection.annualGrowthRate,
+        )}.`,
+      ].join(" ");
+  }
+}
+
+function calculateClientCpfRetirementSums() {
+  const currentAge = getClientAge();
+
+  if (currentAge === null) {
+    return {
+      isValid: false,
+
+      message:
+        "Complete the client's date of birth to calculate the projection.",
+    };
+  }
+
+  if (currentAge >= 55) {
+    return {
+      isValid: false,
+
+      message:
+        "CPF Retirement Sum projections currently support clients below age 55.",
+    };
+  }
+
+  const yearTurning55 = getClientYearTurning55();
+
+  if (!yearTurning55) {
+    return {
+      isValid: false,
+
+      message: "Unable to determine the year the client turns 55.",
+    };
+  }
+
+  const annualGrowthRate = getCpfRetirementSumGrowthRate();
+
+  const frsProjection = calculateProjectedFrs({
+    yearTurning55,
+    annualGrowthRate,
+  });
+
+  if (!Number.isFinite(frsProjection.amount) || frsProjection.amount <= 0) {
+    return {
+      isValid: false,
+
+      message: "Unable to calculate the projected CPF Retirement Sums.",
+    };
+  }
+
+  const projectedFrs = roundCpfProjectionAmount(frsProjection.amount);
+
+  return {
+    isValid: true,
+
+    yearTurning55,
+
+    annualGrowthRate,
+
+    basis: frsProjection.basis,
+
+    brs: roundCpfProjectionAmount(projectedFrs / 2),
+
+    frs: projectedFrs,
+
+    /*
+     * ERS is four times BRS,
+     * which equals twice FRS.
+     */
+    ers: roundCpfProjectionAmount(projectedFrs * 2),
+  };
+}
+
+function calculateProjectedFrs({ yearTurning55, annualGrowthRate }) {
+  const officialFrs = OFFICIAL_FRS_BY_YEAR[yearTurning55];
+
+  if (Number.isFinite(officialFrs)) {
+    return {
+      amount: officialFrs,
+      basis: "official",
+    };
+  }
+
+  if (yearTurning55 < CPF_RETIREMENT_SUM_BASE_YEAR) {
+    return {
+      amount: 0,
+      basis: "unavailable",
+    };
+  }
+
+  const projectionYears = yearTurning55 - CPF_RETIREMENT_SUM_BASE_YEAR;
+
+  const decimalGrowthRate = annualGrowthRate / 100;
+
+  const projectedAmount =
+    CPF_RETIREMENT_SUM_BASE_FRS *
+    Math.pow(1 + decimalGrowthRate, projectionYears);
+
+  return {
+    amount: projectedAmount,
+    basis: "projected",
+  };
+}
+
+function getClientYearTurning55() {
+  const profile = getClientProfile();
+
+  const dateOfBirth = profile?.dateOfBirth;
+
+  if (
+    typeof dateOfBirth !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)
+  ) {
+    return null;
+  }
+
+  const birthYear = Number(dateOfBirth.slice(0, 4));
+
+  if (!Number.isInteger(birthYear) || birthYear <= 0) {
+    return null;
+  }
+
+  return birthYear + 55;
+}
+
+function getCpfRetirementSumGrowthRate() {
+  const enteredRate = Number(cpfGrowthRateInput?.value);
+
+  if (!Number.isFinite(enteredRate)) {
+    return DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE;
+  }
+
+  return Math.min(Math.max(enteredRate, 0), 10);
+}
+
+function renderEmptyCpfRetirementSums(message) {
+  if (projectedBrsElement) {
+    projectedBrsElement.textContent = "--";
+  }
+
+  if (projectedFrsElement) {
+    projectedFrsElement.textContent = "--";
+  }
+
+  if (projectedErsElement) {
+    projectedErsElement.textContent = "--";
+  }
+
+  if (projectedBrsBasisElement) {
+    projectedBrsBasisElement.textContent = "--";
+  }
+
+  if (projectedFrsBasisElement) {
+    projectedFrsBasisElement.textContent = "--";
+  }
+
+  if (projectedErsBasisElement) {
+    projectedErsBasisElement.textContent = "--";
+  }
+
+  if (cpfProjectionCaptionElement) {
+    cpfProjectionCaptionElement.textContent = message;
+  }
+}
+
+function renderCpfProjectionBasis(basis) {
+  const label = basis === "official" ? "Official" : "Projected";
+
+  const basisElements = [
+    projectedBrsBasisElement,
+    projectedFrsBasisElement,
+    projectedErsBasisElement,
+  ];
+
+  basisElements.forEach(function (element) {
+    if (!element) {
+      return;
+    }
+
+    element.textContent = label;
+
+    element.classList.toggle("is-official", basis === "official");
+
+    element.classList.toggle("is-projected", basis === "projected");
+  });
+}
+
+function roundCpfProjectionAmount(value) {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+
+  return Math.round(value / 100) * 100;
+}
+
+function formatPercentage(value) {
+  return (
+    new Intl.NumberFormat("en-SG", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    }).format(value) + "%"
   );
 }
 
