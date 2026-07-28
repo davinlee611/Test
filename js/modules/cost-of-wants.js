@@ -27,6 +27,25 @@ import { EVENTS } from "../events/events.js";
 import { getLiabilityMonthlyCashRepayment } from "./liabilities/liability-calculator.js";
 
 /* ========================================
+   CPF RETIREMENT SUM CONFIGURATION
+======================================== */
+
+const DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE =
+  3.5;
+
+const CPF_RETIREMENT_SUM_BASE_YEAR =
+  2027;
+
+const CPF_RETIREMENT_SUM_BASE_FRS =
+  228200;
+
+const OFFICIAL_FRS_BY_YEAR = {
+  2025: 213000,
+  2026: 220400,
+  2027: 228200,
+};
+
+/* ========================================
    PAGE ELEMENTS
 ======================================== */
 
@@ -180,6 +199,18 @@ const cpfRetirementOptionButtons = document.querySelectorAll(
   "[data-cpf-retirement-option]",
 );
 
+const cpfGrowthRateInput = document.getElementById("costOfWantsCpfGrowthRate");
+
+const projectedBrsElement = document.getElementById("costOfWantsProjectedBrs");
+
+const projectedFrsElement = document.getElementById("costOfWantsProjectedFrs");
+
+const projectedErsElement = document.getElementById("costOfWantsProjectedErs");
+
+const cpfProjectionCaptionElement = document.getElementById(
+  "costOfWantsCpfProjectionCaption",
+);
+
 /* ========================================
    MODULE STATE
 ======================================== */
@@ -263,9 +294,15 @@ function attachInputListeners() {
     input.addEventListener("input", handleCostOfWantsInput);
 
     input.addEventListener("blur", handleCostOfWantsBlur);
+
+    cpfGrowthRateInput?.addEventListener("input", handleCpfGrowthRateInput);
   });
 
   customIncomeInput?.addEventListener("input", handleCustomIncomeInput);
+}
+
+function handleCpfGrowthRateInput() {
+  renderProjectedCpfRetirementSums();
 }
 
 function attachLifestyleListeners() {

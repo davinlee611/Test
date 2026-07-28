@@ -3799,6 +3799,21 @@ button.insurance-validation-count:disabled {
   text-align: right;
 }
 
+.cpf-projection-assumption__helper {
+  margin: 4px 0 0;
+  color: var(--text-light);
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.cpf-projection-caption {
+  margin: -8px 0 0;
+  color: var(--text-light);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
 /* Grey retirement-option field */
 
 .cpf-retirement-options-field {

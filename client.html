@@ -1900,9 +1900,9 @@
                           Projected annual retirement-sum increase
                         </label>
 
-                        <p>
-                          Used to estimate retirement sums beyond the latest
-                          figures published by CPF Board.
+                        <p class="cpf-projection-assumption__helper">
+                          Adjust the assumed annual increase used for future CPF
+                          Retirement Sums.
                         </p>
                       </div>
 
@@ -1924,21 +1924,22 @@
                       </div>
                     </div>
 
-                    <p class="cpf-projection-assumption__warning">
-                      <i
-                        class="fa-solid fa-triangle-exclamation"
-                        aria-hidden="true"
-                      ></i>
-
-                      <span>
-                        This is a planning assumption. Actual CPF Retirement
-                        Sums may differ from the projected figures.
-                      </span>
+                    <p class="cpf-projection-assumption__helper">
+                      Planning assumption only. Actual CPF Retirement Sums may
+                      differ.
                     </p>
                   </div>
 
                   <table class="cost-of-wants-cpf-table">
                     <thead>
+                      
+                      <p
+                        id="costOfWantsCpfProjectionCaption"
+                        class="cpf-projection-caption"
+                      >
+                        Complete the client's date of birth to calculate the
+                        projection.
+                      </p>
                       <tr>
                         <th>Scheme</th>
 
@@ -1952,25 +1953,25 @@
                       <tr>
                         <td>BRS</td>
 
-                        <td>--</td>
+                        <td id="costOfWantsProjectedBrs">--</td>
 
-                        <td>--</td>
+                        <td id="costOfWantsProjectedBrsPayout">--</td>
                       </tr>
 
                       <tr>
                         <td>FRS</td>
 
-                        <td>--</td>
+                        <td id="costOfWantsProjectedFrs">--</td>
 
-                        <td>--</td>
+                        <td id="costOfWantsProjectedFrsPayout">--</td>
                       </tr>
 
                       <tr>
                         <td>ERS</td>
 
-                        <td>--</td>
+                        <td id="costOfWantsProjectedErs">--</td>
 
-                        <td>--</td>
+                        <td id="costOfWantsProjectedErsPayout">--</td>
                       </tr>
                     </tbody>
                   </table>
