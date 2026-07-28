@@ -2556,10 +2556,14 @@ button.insurance-validation-count:disabled {
 .cost-of-wants-layout {
   display: grid;
   grid-template-columns:
-    minmax(620px, 1.35fr)
-    minmax(400px, 0.9fr);
+    repeat(2, minmax(0, 1fr));
   align-items: start;
   gap: 24px;
+}
+
+.cost-of-wants-layout > * {
+  min-width: 0;
+  width: 100%;
 }
 
 .cost-of-wants-main {
