@@ -3,13 +3,17 @@
 ======================================== */
 
 body {
-  padding: var(--space-7);
+  padding:
+    var(--space-7)
+    var(--page-gutter)
+    var(--space-8);
 }
 
 .client-workspace {
   width: 100%;
-  max-width: var(--workspace-max-width);
-  margin: 0 auto;
+  max-width:
+    var(--workspace-max-width);
+  margin-inline: auto;
 }
 
 .workspace-layout {
@@ -35,7 +39,10 @@ body {
 
 .workspace-content {
   min-width: 0;
-  padding: 38px;
+  padding:
+    40px
+    clamp(32px, 3vw, 52px)
+    48px;
   background: var(--surface-color);
   border-radius:
     0

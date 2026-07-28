@@ -2555,7 +2555,9 @@ button.insurance-validation-count:disabled {
 
 .cost-of-wants-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns:
+    minmax(620px, 1.35fr)
+    minmax(400px, 0.9fr);
   align-items: start;
   gap: 24px;
 }
@@ -2934,13 +2936,10 @@ button.insurance-validation-count:disabled {
     font-size: 13px;
     font-weight: 700;
 }
-@media (max-width: 1100px) {
+
+@media (max-width: 1250px) {
   .cost-of-wants-layout {
     grid-template-columns: 1fr;
-  }
-
-  .cost-of-wants-projection-card {
-    min-height: auto;
   }
 }
 
@@ -3225,41 +3224,6 @@ button.insurance-validation-count:disabled {
   color: var(--primary-color);
   font-size: 22px;
   font-weight: 700;
-}
-
-.client-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.client-title-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-
-  flex: 1;
-  min-width: 0;
-}
-
-.client-title-row > div:last-child {
-  min-width: 0;
-}
-
-.client-title-row h1 {
-  margin: 0;
-  font-size: clamp(24px, 3vw, 34px);
-  line-height: 1.15;
-  overflow-wrap: anywhere;
-}
-
-.client-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  flex-shrink: 0;
 }
 
 @media (max-width: 1200px) {
@@ -3738,10 +3702,10 @@ button.insurance-validation-count:disabled {
 .cost-of-wants-cpf-grid {
   display: grid;
   grid-template-columns:
-    minmax(0, 1fr)
-    minmax(420px, 1.15fr);
+    minmax(460px, 0.9fr)
+    minmax(560px, 1.1fr);
   align-items: start;
-  gap: 20px;
+  gap: 24px;
 }
 
 .cost-of-wants-cpf-card {
@@ -3909,19 +3873,20 @@ button.insurance-validation-count:disabled {
   display: grid;
   min-width: 0;
   gap: 5px;
+  overflow-wrap: anywhere;
 }
 
 .cpf-retirement-option-content
   strong {
   color: inherit;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   line-height: 1.35;
 }
 
 .cpf-retirement-option-content
   > span {
   color: var(--text-light);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   line-height: 1.4;
 }
 
@@ -3934,18 +3899,6 @@ button.insurance-validation-count:disabled {
   .cpf-retirement-option-content
   > span {
   color: #6257b8;
-}
-
-.cpf-retirement-option-content {
-  overflow-wrap: anywhere;
-}
-
-.cpf-retirement-option-content strong {
-  font-size: 0.82rem;
-}
-
-.cpf-retirement-option-content > span {
-  font-size: 0.72rem;
 }
 
 /* Custom retirement sum */
@@ -3970,7 +3923,7 @@ button.insurance-validation-count:disabled {
 
 /* Responsive */
 
-@media (max-width: 1050px) {
+@media (max-width: 1250px) {
   .cost-of-wants-cpf-grid {
     grid-template-columns: 1fr;
   }
