@@ -3813,6 +3813,11 @@ button.insurance-validation-count:disabled {
   color: var(--text-light);
 }
 
+.cost-of-wants-cpf-table td.is-mixed {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .cpf-projection-assumption__helper {
   margin: 4px 0 0;
   color: var(--text-light);

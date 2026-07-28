@@ -27,36 +27,181 @@ import { EVENTS } from "../events/events.js";
 import { getLiabilityMonthlyCashRepayment } from "./liabilities/liability-calculator.js";
 
 /* ========================================
-   CPF RETIREMENT SUM CONFIGURATION
+   CPF RETIREMENT CONFIGURATION
 ======================================== */
 
-const DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE =
-  3.5;
+const DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE = 3.5;
 
-const LATEST_OFFICIAL_FRS_YEAR =
-  2027;
+const LATEST_OFFICIAL_RETIREMENT_SUM_YEAR = 2027;
 
+/*
+ * CPF Retirement Sums applicable when the member turns 55.
+ *
+ * ERS:
+ * - 2022 to 2024: 1.5 times FRS
+ * - 2025 onwards: 2 times FRS
+ *
+ * Store official ERS amounts explicitly so historical policy changes
+ * are not lost by deriving ERS from the current rule.
+ */
 const OFFICIAL_RETIREMENT_SUMS = {
+  2022: {
+    brs: 96000,
+    frs: 192000,
+    ers: 288000,
+  },
+
+  2023: {
+    brs: 99400,
+    frs: 198800,
+    ers: 298200,
+  },
+
+  2024: {
+    brs: 102900,
+    frs: 205800,
+    ers: 308700,
+  },
+
   2025: {
     brs: 106500,
     frs: 213000,
+    ers: 426000,
   },
 
   2026: {
     brs: 110200,
     frs: 220400,
+    ers: 440800,
   },
 
   2027: {
     brs: 114100,
     frs: 228200,
+    ers: 456400,
   },
 };
 
 const LATEST_OFFICIAL_FRS =
   OFFICIAL_RETIREMENT_SUMS[
-    LATEST_OFFICIAL_FRS_YEAR
+    LATEST_OFFICIAL_RETIREMENT_SUM_YEAR
   ].frs;
+
+/*
+ * CPF LIFE payout figures obtained from the available CPF LIFE
+ * calculator cohorts.
+ *
+ * These are used directly when a matching cohort is available.
+ * Later cohorts use the locked 2026 conversion relationship.
+ */
+const OFFICIAL_CPF_LIFE_PAYOUTS = {
+  2022: {
+    male: {
+      brs: 720,
+      frs: 1320,
+      ers: 1940,
+    },
+
+    female: {
+      brs: 670,
+      frs: 1230,
+      ers: 1810,
+    },
+  },
+
+  2023: {
+    male: {
+      brs: 750,
+      frs: 1420,
+      ers: 2100,
+    },
+
+    female: {
+      brs: 700,
+      frs: 1330,
+      ers: 1950,
+    },
+  },
+
+  2024: {
+    male: {
+      brs: 820,
+      frs: 1520,
+      ers: 2250,
+    },
+
+    female: {
+      brs: 770,
+      frs: 1420,
+      ers: 2100,
+    },
+  },
+
+  2025: {
+    male: {
+      brs: 880,
+      frs: 1650,
+      ers: 3210,
+    },
+
+    female: {
+      brs: 820,
+      frs: 1540,
+      ers: 2990,
+    },
+  },
+
+  2026: {
+    male: {
+      brs: 930,
+      frs: 1750,
+      ers: 3410,
+    },
+
+    female: {
+      brs: 890,
+      frs: 1640,
+      ers: 3180,
+    },
+  },
+};
+
+/*
+ * Locked future CPF LIFE payout model.
+ *
+ * Male:
+ * monthly payout = 100 + RA at 65 × 0.00507067220929381
+ *
+ * Female:
+ * monthly payout = 120 + RA at 65 × 0.004685336151938148
+ *
+ * The model is based on the relationship between the 2026 BRS,
+ * FRS and ERS RA balances and their corresponding payouts.
+ */
+const CPF_LIFE_PAYOUT_MODEL = {
+  basisYear: 2026,
+
+  male: {
+    fixedAmount: 100,
+    raFactor: 0.00507067220929381,
+  },
+
+  female: {
+    fixedAmount: 120,
+    raFactor: 0.004685336151938148,
+  },
+
+  roundingIncrement: 10,
+};
+
+/*
+ * Retirement Sums are assumed to remain in the RA from age 55 to
+ * age 65 and compound at 4% per year for 10 years.
+ *
+ * 1.04 ^ 10 = approximately 1.4802442849
+ */
+const CPF_RA_INTEREST_RATE = 4;
+const CPF_RA_COMPOUNDING_YEARS = 10;
 
 /* ========================================
    PAGE ELEMENTS
@@ -219,6 +364,18 @@ const projectedBrsElement = document.getElementById("costOfWantsProjectedBrs");
 const projectedFrsElement = document.getElementById("costOfWantsProjectedFrs");
 
 const projectedErsElement = document.getElementById("costOfWantsProjectedErs");
+
+const projectedBrsPayoutElement = document.getElementById(
+  "costOfWantsProjectedBrsPayout",
+);
+
+const projectedFrsPayoutElement = document.getElementById(
+  "costOfWantsProjectedFrsPayout",
+);
+
+const projectedErsPayoutElement = document.getElementById(
+  "costOfWantsProjectedErsPayout",
+);
 
 const cpfProjectionCaptionElement = document.getElementById(
   "costOfWantsCpfProjectionCaption",
@@ -1087,65 +1244,105 @@ function getSelectedCpfRetirementOption() {
 ======================================== */
 
 function renderProjectedCpfRetirementSums() {
-  const projection =
-    calculateClientCpfRetirementSums();
+  const projection = calculateClientCpfRetirementProjection();
 
   if (!projection.isValid) {
-    renderEmptyCpfRetirementSums(
-      projection.message,
-    );
-
+    renderEmptyCpfRetirementSums(projection.message);
     return;
   }
 
   if (projectedBrsElement) {
-    projectedBrsElement.textContent =
-      formatCurrency(projection.brs);
+    projectedBrsElement.textContent = formatCurrency(
+      projection.retirementSums.brs,
+    );
   }
 
   if (projectedFrsElement) {
-    projectedFrsElement.textContent =
-      formatCurrency(projection.frs);
+    projectedFrsElement.textContent = formatCurrency(
+      projection.retirementSums.frs,
+    );
   }
 
   if (projectedErsElement) {
-    projectedErsElement.textContent =
-      formatCurrency(projection.ers);
+    projectedErsElement.textContent = formatCurrency(
+      projection.retirementSums.ers,
+    );
   }
 
-  renderCpfProjectionBasis(
-    projection.basis,
-  );
+  if (projectedBrsPayoutElement) {
+    projectedBrsPayoutElement.textContent = formatCurrency(
+      projection.monthlyPayouts.brs,
+    );
+  }
 
-  if (cpfProjectionCaptionElement) {
-    if (projection.basis === "official") {
-      cpfProjectionCaptionElement.textContent = [
-        `Client turns 55 in`,
-        `${projection.yearTurning55}.`,
-        `Published CPF Retirement`,
-        `Sums are used.`,
-      ].join(" ");
+  if (projectedFrsPayoutElement) {
+    projectedFrsPayoutElement.textContent = formatCurrency(
+      projection.monthlyPayouts.frs,
+    );
+  }
 
-      return;
-    }
+  if (projectedErsPayoutElement) {
+    projectedErsPayoutElement.textContent = formatCurrency(
+      projection.monthlyPayouts.ers,
+    );
+  }
 
+  renderCpfProjectionBasis({
+    retirementSumBasis: projection.retirementSumBasis,
+    payoutBasis: projection.payoutBasis,
+  });
+
+  if (!cpfProjectionCaptionElement) {
+    return;
+  }
+
+  const genderLabel = projection.gender === "male" ? "male" : "female";
+
+  if (
+    projection.retirementSumBasis === "official" &&
+    projection.payoutBasis === "official"
+  ) {
     cpfProjectionCaptionElement.textContent = [
-      `Client turns 55 in`,
-      `${projection.yearTurning55}.`,
-      `Figures assume an annual`,
-      `retirement-sum increase of`,
-      `${formatPercentage(projection.annualGrowthRate)}.`,
+      `Client turns 55 in ${projection.yearTurning55}.`,
+      `Published Retirement Sums and available ${genderLabel}`,
+      `CPF LIFE payout figures are used.`,
     ].join(" ");
+
+    return;
   }
+
+  if (
+    projection.retirementSumBasis === "official" &&
+    projection.payoutBasis === "projected"
+  ) {
+    cpfProjectionCaptionElement.textContent = [
+      `Client turns 55 in ${projection.yearTurning55}.`,
+      `Published CPF Retirement Sums are used.`,
+      `CPF LIFE payouts are estimated using the locked`,
+      `${CPF_LIFE_PAYOUT_MODEL.basisYear} ${genderLabel}`,
+      `payout relationship and a projected RA balance at age 65.`,
+    ].join(" ");
+
+    return;
+  }
+
+  cpfProjectionCaptionElement.textContent = [
+    `Client turns 55 in ${projection.yearTurning55}.`,
+    `Retirement Sums assume an annual increase of`,
+    `${formatPercentage(projection.annualGrowthRate)}.`,
+    `CPF LIFE payouts are estimated using the locked`,
+    `${CPF_LIFE_PAYOUT_MODEL.basisYear} ${genderLabel}`,
+    `payout relationship and a projected RA balance at age 65.`,
+  ].join(" ");
 }
 
-function calculateClientCpfRetirementSums() {
+function calculateClientCpfRetirementProjection() {
   const currentAge = getClientAge();
+  const profile = getClientProfile();
 
   if (currentAge === null) {
     return {
       isValid: false,
-
       message:
         "Complete the client's date of birth to calculate the projection.",
     };
@@ -1154,9 +1351,18 @@ function calculateClientCpfRetirementSums() {
   if (currentAge >= 55) {
     return {
       isValid: false,
-
       message:
-        "CPF Retirement Sum projections currently support clients below age 55.",
+        "CPF Retirement projections currently support clients below age 55.",
+    };
+  }
+
+  const gender = profile?.gender;
+
+  if (gender !== "male" && gender !== "female") {
+    return {
+      isValid: false,
+      message:
+        "Select the client's gender to calculate the estimated CPF LIFE payout.",
     };
   }
 
@@ -1165,40 +1371,69 @@ function calculateClientCpfRetirementSums() {
   if (!yearTurning55) {
     return {
       isValid: false,
-
       message: "Unable to determine the year the client turns 55.",
     };
   }
 
   const annualGrowthRate = getCpfRetirementSumGrowthRate();
 
-  const retirementSums = calculateCpfRetirementSums({
+  const calculatedRetirementSums = calculateCpfRetirementSums({
     yearTurning55,
     annualGrowthRate,
   });
 
-  if (!Number.isFinite(retirementSums.frs) || retirementSums.frs <= 0) {
+  if (
+    !Number.isFinite(calculatedRetirementSums.frs) ||
+    calculatedRetirementSums.frs <= 0
+  ) {
     return {
       isValid: false,
-
-      message: "Unable to calculate the projected CPF Retirement Sums.",
+      message: "Unable to calculate the CPF Retirement Sums.",
     };
   }
+
+  /*
+   * Use the same rounded Retirement Sums shown to the user when
+   * calculating the RA-at-65 balances and payout estimates.
+   */
+  const retirementSums = {
+    brs: roundCpfProjectionAmount(calculatedRetirementSums.brs),
+
+    frs: roundCpfProjectionAmount(calculatedRetirementSums.frs),
+
+    ers: roundCpfProjectionAmount(calculatedRetirementSums.ers),
+  };
+
+  const raAt65 = {
+    brs: calculateCpfRaAt65(retirementSums.brs),
+    frs: calculateCpfRaAt65(retirementSums.frs),
+    ers: calculateCpfRaAt65(retirementSums.ers),
+  };
+
+  const cpfLifeProjection = calculateCpfLifePayouts({
+    yearTurning55,
+    gender,
+    raAt65,
+  });
 
   return {
     isValid: true,
 
     yearTurning55,
 
+    gender,
+
     annualGrowthRate,
 
-    basis: retirementSums.basis,
+    retirementSumBasis: calculatedRetirementSums.basis,
 
-    brs: roundCpfProjectionAmount(retirementSums.brs),
+    payoutBasis: cpfLifeProjection.basis,
 
-    frs: roundCpfProjectionAmount(retirementSums.frs),
+    retirementSums,
 
-    ers: roundCpfProjectionAmount(retirementSums.ers),
+    raAt65,
+
+    monthlyPayouts: cpfLifeProjection.monthlyPayouts,
   };
 }
 
@@ -1208,20 +1443,13 @@ function calculateCpfRetirementSums({ yearTurning55, annualGrowthRate }) {
   if (officialRetirementSums) {
     return {
       brs: officialRetirementSums.brs,
-
       frs: officialRetirementSums.frs,
-
-      /*
-       * ERS is four times BRS,
-       * which equals twice FRS.
-       */
-      ers: officialRetirementSums.frs * 2,
-
+      ers: officialRetirementSums.ers,
       basis: "official",
     };
   }
 
-  if (yearTurning55 < LATEST_OFFICIAL_FRS_YEAR) {
+  if (yearTurning55 < LATEST_OFFICIAL_RETIREMENT_SUM_YEAR) {
     return {
       brs: 0,
       frs: 0,
@@ -1230,7 +1458,7 @@ function calculateCpfRetirementSums({ yearTurning55, annualGrowthRate }) {
     };
   }
 
-  const projectionYears = yearTurning55 - LATEST_OFFICIAL_FRS_YEAR;
+  const projectionYears = yearTurning55 - LATEST_OFFICIAL_RETIREMENT_SUM_YEAR;
 
   const decimalGrowthRate = annualGrowthRate / 100;
 
@@ -1239,13 +1467,82 @@ function calculateCpfRetirementSums({ yearTurning55, annualGrowthRate }) {
 
   return {
     brs: projectedFrs / 2,
-
     frs: projectedFrs,
-
     ers: projectedFrs * 2,
-
     basis: "projected",
   };
+}
+
+function calculateCpfRaAt65(retirementSumAt55) {
+  if (!Number.isFinite(retirementSumAt55) || retirementSumAt55 <= 0) {
+    return 0;
+  }
+
+  const decimalInterestRate = CPF_RA_INTEREST_RATE / 100;
+
+  return (
+    retirementSumAt55 *
+    Math.pow(1 + decimalInterestRate, CPF_RA_COMPOUNDING_YEARS)
+  );
+}
+
+function calculateCpfLifePayouts({ yearTurning55, gender, raAt65 }) {
+  const officialPayouts = OFFICIAL_CPF_LIFE_PAYOUTS[yearTurning55]?.[gender];
+
+  if (officialPayouts) {
+    return {
+      basis: "official",
+
+      monthlyPayouts: {
+        brs: officialPayouts.brs,
+        frs: officialPayouts.frs,
+        ers: officialPayouts.ers,
+      },
+    };
+  }
+
+  return {
+    basis: "projected",
+
+    monthlyPayouts: {
+      brs: calculateProjectedCpfLifePayout({
+        raAt65: raAt65.brs,
+        gender,
+      }),
+
+      frs: calculateProjectedCpfLifePayout({
+        raAt65: raAt65.frs,
+        gender,
+      }),
+
+      ers: calculateProjectedCpfLifePayout({
+        raAt65: raAt65.ers,
+        gender,
+      }),
+    },
+  };
+}
+
+function calculateProjectedCpfLifePayout({ raAt65, gender }) {
+  const model = CPF_LIFE_PAYOUT_MODEL[gender];
+
+  if (!model || !Number.isFinite(raAt65) || raAt65 <= 0) {
+    return 0;
+  }
+
+  const unroundedMonthlyPayout = model.fixedAmount + raAt65 * model.raFactor;
+
+  return roundCpfLifePayout(unroundedMonthlyPayout);
+}
+
+function roundCpfLifePayout(value) {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+
+  const increment = CPF_LIFE_PAYOUT_MODEL.roundingIncrement;
+
+  return Math.round(value / increment) * increment;
 }
 
 function getClientYearTurning55() {
@@ -1286,37 +1583,62 @@ function getCpfRetirementSumGrowthRate() {
 }
 
 function renderEmptyCpfRetirementSums(message) {
-  if (projectedBrsElement) {
-    projectedBrsElement.textContent = "--";
-  }
+  const retirementSumElements = [
+    projectedBrsElement,
+    projectedFrsElement,
+    projectedErsElement,
+  ];
 
-  if (projectedFrsElement) {
-    projectedFrsElement.textContent = "--";
-  }
+  const payoutElements = [
+    projectedBrsPayoutElement,
+    projectedFrsPayoutElement,
+    projectedErsPayoutElement,
+  ];
 
-  if (projectedErsElement) {
-    projectedErsElement.textContent = "--";
-  }
+  const basisElements = [
+    projectedBrsBasisElement,
+    projectedFrsBasisElement,
+    projectedErsBasisElement,
+  ];
 
-  if (projectedBrsBasisElement) {
-    projectedBrsBasisElement.textContent = "--";
-  }
+  retirementSumElements.forEach(function (element) {
+    if (element) {
+      element.textContent = "--";
+    }
+  });
 
-  if (projectedFrsBasisElement) {
-    projectedFrsBasisElement.textContent = "--";
-  }
+  payoutElements.forEach(function (element) {
+    if (element) {
+      element.textContent = "--";
+    }
+  });
 
-  if (projectedErsBasisElement) {
-    projectedErsBasisElement.textContent = "--";
-  }
+  basisElements.forEach(function (element) {
+    if (!element) {
+      return;
+    }
+
+    element.textContent = "--";
+
+    element.classList.remove("is-official", "is-projected", "is-mixed");
+  });
 
   if (cpfProjectionCaptionElement) {
     cpfProjectionCaptionElement.textContent = message;
   }
 }
 
-function renderCpfProjectionBasis(basis) {
-  const label = basis === "official" ? "Official" : "Projected";
+function renderCpfProjectionBasis({ retirementSumBasis, payoutBasis }) {
+  let label = "Projected";
+  let stateClass = "is-projected";
+
+  if (retirementSumBasis === "official" && payoutBasis === "official") {
+    label = "Official";
+    stateClass = "is-official";
+  } else if (retirementSumBasis === "official" && payoutBasis === "projected") {
+    label = "Official sum / Projected payout";
+    stateClass = "is-mixed";
+  }
 
   const basisElements = [
     projectedBrsBasisElement,
@@ -1331,9 +1653,9 @@ function renderCpfProjectionBasis(basis) {
 
     element.textContent = label;
 
-    element.classList.toggle("is-official", basis === "official");
+    element.classList.remove("is-official", "is-projected", "is-mixed");
 
-    element.classList.toggle("is-projected", basis === "projected");
+    element.classList.add(stateClass);
   });
 }
 
