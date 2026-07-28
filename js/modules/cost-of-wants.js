@@ -58,9 +58,9 @@ const selectedIncomeAmount = document.getElementById(
   "costOfWantsSelectedIncomeAmount",
 );
 
-const formMessage = document.getElementById("costOfWantsFormMessage");
-
-const fybcAgeErrorElement = document.getElementById("costOfWantsFybcAgeError");
+const validationMessageElement = document.getElementById(
+  "costOfWantsValidationMessage",
+);
 
 const projectionButton = document.getElementById("costOfWantsProjectionButton");
 
@@ -210,8 +210,7 @@ export function initializeCostOfWants() {
 export function resetCostOfWants() {
   resetCostOfWantsState();
 
-  clearFormMessage();
-  clearFybcAgeError();
+  clearValidationMessage();
 
   renderCostOfWants();
   collapseCalculatedBreakdown();
@@ -354,8 +353,7 @@ function handleCostOfWantsBlur() {
 function handleCostOfWantsInput() {
   saveCostOfWantsInputs();
 
-  clearFormMessage();
-  clearFybcAgeError();
+  clearValidationMessage();
 
   emitCostOfWantsChanged();
 }
@@ -939,7 +937,7 @@ function validateFybcAge() {
   const { desiredFybcAge, plannedMortalityAge } = getCostOfWants();
 
   if (currentAge === null || currentAge <= 0) {
-    showFybcAgeError(
+    showValidationMessage(
       "Complete the client's date of birth before generating projections.",
     );
 
@@ -947,53 +945,27 @@ function validateFybcAge() {
   }
 
   if (desiredFybcAge <= currentAge || desiredFybcAge >= plannedMortalityAge) {
-    showFybcAgeError(
-      `Desired FYBC Age must be between age ${currentAge + 1} and ${
+    showValidationMessage(
+      `Desired FYBC Age must be between ${currentAge + 1} and ${
         plannedMortalityAge - 1
       }.`,
+      desiredFybcAgeInput,
     );
 
     return false;
   }
 
-  clearFybcAgeError();
+  clearValidationMessage();
 
   return true;
 }
 
-function showFybcAgeError(message) {
-  if (!fybcAgeErrorElement) {
-    return;
-  }
-
-  fybcAgeErrorElement.textContent = message;
-
-  fybcAgeErrorElement.hidden = false;
-
-  desiredFybcAgeInput?.setAttribute("aria-invalid", "true");
-}
-
-function clearFybcAgeError() {
-  if (!fybcAgeErrorElement) {
-    return;
-  }
-
-  fybcAgeErrorElement.textContent = "";
-
-  fybcAgeErrorElement.hidden = true;
-
-  desiredFybcAgeInput?.removeAttribute("aria-invalid");
-}
-
 function validateCostOfWantsForProjection() {
-  clearFormMessage();
+  clearValidationMessage();
 
-  const isFybcAgeValid =
-  validateFybcAge();
-
-if (!isFybcAgeValid) {
-  return false;
-}
+  if (!validateFybcAge()) {
+    return false;
+  }
 
   const {
     plannedMortalityAge,
@@ -1004,36 +976,48 @@ if (!isFybcAgeValid) {
   } = getCostOfWants();
 
   if (plannedMortalityAge <= 0) {
-    showFormMessage("Enter a valid planned mortality age.");
+    showValidationMessage(
+      "Enter a valid planned mortality age.",
+      plannedMortalityAgeInput,
+    );
 
     return false;
   }
 
   if (inflationRate < 0) {
-    showFormMessage("Inflation rate cannot be negative.");
+    showValidationMessage(
+      "Inflation rate cannot be negative.",
+      inflationRateInput,
+    );
 
     return false;
   }
 
   if (postFybcReturnRate < 0) {
-    showFormMessage("Post-FYBC return rate cannot be negative.");
+    showValidationMessage(
+      "Post-FYBC return rate cannot be negative.",
+      postFybcReturnRateInput,
+    );
 
     return false;
   }
 
   if (!lifestyleOption) {
-    showFormMessage("Select an ideal monthly passive income.");
+    showValidationMessage("Please select your desired monthly passive income.");
 
     return false;
   }
 
   if (lifestyleOption === "custom" && customMonthlyIncome <= 0) {
-    showFormMessage("Enter a custom monthly passive income.");
+    showValidationMessage(
+      "Enter a custom monthly passive income.",
+      customIncomeInput,
+    );
 
     return false;
   }
 
-  clearFormMessage();
+  clearValidationMessage();
 
   return true;
 }
@@ -1053,24 +1037,33 @@ function validateCostOfWants() {
   }
 
   if (plannedMortalityAge <= 0) {
-    showFormMessage("Enter a valid planned mortality age.");
+    showValidationMessage(
+      "Enter a valid planned mortality age.",
+      plannedMortalityAgeInput,
+    );
 
     return false;
   }
 
   if (inflationRate < 0) {
-    showFormMessage("Inflation rate cannot be negative.");
+    showValidationMessage(
+      "Inflation rate cannot be negative.",
+      inflationRateInput,
+    );
 
     return false;
   }
 
   if (postFybcReturnRate < 0) {
-    showFormMessage("Post-retirement return rate cannot be negative.");
+    showValidationMessage(
+      "Post-FYBC return rate cannot be negative.",
+      postFybcReturnRateInput,
+    );
 
     return false;
   }
 
-  clearFormMessage();
+  clearValidationMessage();
 
   return true;
 }
@@ -1108,23 +1101,55 @@ function formatCurrency(value) {
 }
 
 /* ========================================
-   FORM MESSAGE
+   VALIDATION MESSAGE
 ======================================== */
 
-function showFormMessage(message) {
-  if (!formMessage) {
+function showValidationMessage(
+  message,
+  inputElement = null,
+) {
+  if (!validationMessageElement) {
     return;
   }
 
-  formMessage.textContent = message;
+  clearInvalidInputs();
+
+  validationMessageElement.textContent =
+    message;
+
+  validationMessageElement.hidden =
+    false;
+
+  inputElement?.setAttribute(
+    "aria-invalid",
+    "true",
+  );
 }
 
-function clearFormMessage() {
-  if (!formMessage) {
-    return;
+function clearValidationMessage() {
+  if (validationMessageElement) {
+    validationMessageElement.textContent =
+      "";
+
+    validationMessageElement.hidden =
+      true;
   }
 
-  formMessage.textContent = "";
+  clearInvalidInputs();
+}
+
+function clearInvalidInputs() {
+  [
+    desiredFybcAgeInput,
+    plannedMortalityAgeInput,
+    inflationRateInput,
+    postFybcReturnRateInput,
+    customIncomeInput,
+  ].forEach(function (input) {
+    input?.removeAttribute(
+      "aria-invalid",
+    );
+  });
 }
 
 /* ========================================
