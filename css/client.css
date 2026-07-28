@@ -3696,3 +3696,135 @@ button.insurance-validation-count:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================
+   CPF PROJECTIONS
+======================================== */
+
+.cost-of-wants-cpf-section {
+
+    display: grid;
+
+    gap: 24px;
+
+    margin-top: 36px;
+
+}
+
+.cost-of-wants-cpf-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 2fr)
+        minmax(280px, 1fr);
+
+    gap: 24px;
+
+}
+
+.cost-of-wants-cpf-card {
+
+    display: grid;
+
+    gap: 18px;
+
+    padding: 24px;
+
+    border: 1px solid var(--border-color);
+
+    border-radius: var(--border-radius);
+
+    background: var(--card-background);
+
+}
+
+.cost-of-wants-cpf-card-header h4 {
+
+    margin: 0;
+
+}
+
+.cost-of-wants-cpf-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+.cost-of-wants-cpf-table th,
+.cost-of-wants-cpf-table td {
+
+    padding: 14px 16px;
+
+    border-bottom: 1px solid var(--border-color);
+
+    text-align: left;
+
+}
+
+.cost-of-wants-cpf-table th:last-child,
+.cost-of-wants-cpf-table td:last-child {
+
+    text-align: right;
+
+}
+
+.cpf-retirement-options {
+
+    display: grid;
+
+    gap: 12px;
+
+}
+
+.cpf-retirement-option {
+
+    display: grid;
+
+    gap: 6px;
+
+    padding: 18px;
+
+    border: 1px solid var(--border-color);
+
+    border-radius: var(--border-radius);
+
+    background: #fff;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+.cpf-retirement-option:hover {
+
+    border-color: var(--primary-color);
+
+}
+
+.cpf-retirement-option.selected {
+
+    border-color: var(--primary-color);
+
+    background: rgba(99,102,241,.08);
+
+}
+
+.cpf-retirement-option strong {
+
+    font-size: .95rem;
+
+}
+
+.cpf-retirement-option span {
+
+    color: var(--text-light);
+
+    font-size: .82rem;
+
+}
