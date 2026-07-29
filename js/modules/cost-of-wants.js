@@ -548,6 +548,11 @@ function handleProjectionRequest() {
   renderProjection();
 }
 
+function renderProjection() {
+  renderFybcProjections();
+  renderProjectedCpfRetirementSums();
+}
+
 function attachApplicationListeners() {
   on(EVENTS.PROFILE_CHANGED, function () {
     renderClientDetails();
@@ -1737,24 +1742,13 @@ function renderFybcProjections() {
 
 function calculateFybcProjection() {
   const currentAge = getClientAge();
-
-  if (currentAge === null) {
-    return {
-      isValid: false,
-    };
-  }
-
   const desiredFybcAge = getDesiredFybcAge();
 
-  if (!desiredFybcAge) {
+  if (currentAge === null || !Number.isFinite(desiredFybcAge)) {
     return {
       isValid: false,
     };
   }
-
-  const inflation = getInflationRate() / 100;
-
-  const passiveIncome = getSelectedMonthlyPassiveIncome();
 
   const yearsRemaining = desiredFybcAge - currentAge;
 
@@ -1764,10 +1758,14 @@ function calculateFybcProjection() {
     };
   }
 
+  const inflation = getInflationRate() / 100;
+
+  const passiveIncome = getSelectedMonthlyPassiveIncome();
+
+  const yearsUntilCpfLife = Math.max(65 - currentAge, 0);
+
   const monthlyIncomeAtFybc =
     passiveIncome * Math.pow(1 + inflation, yearsRemaining);
-
-  const yearsUntilCpfLife = 65 - currentAge;
 
   const monthlyIncomeAtCpfLife =
     passiveIncome * Math.pow(1 + inflation, yearsUntilCpfLife);
@@ -1780,48 +1778,36 @@ function calculateFybcProjection() {
 
   return {
     isValid: true,
-
     yearsRemaining,
-
     monthlyIncomeAtFybc,
-
     monthlyIncomeAtCpfLife,
-
     amountRequired,
   };
 }
 
-function calculateProjectedFybcCost({
-  currentAge,
+function calculateProjectedFybcCost({ currentAge, desiredFybcAge, inflation }) {
+  const spendingBreakdown = calculateMonthlySpendingBreakdown();
 
-  desiredFybcAge,
+  const monthlySpending =
+    spendingBreakdown.totalMonthlyExpenses +
+    spendingBreakdown.totalMonthlyCommitments;
 
-  inflation,
-}) {
-  const monthlyExpenses = calculateTotalMonthlyExpenses();
+  const yearsUntilFybc = desiredFybcAge - currentAge;
 
-  const monthlyCommitments = calculateTotalMonthlyCommitments();
-
-  const monthlySpending = monthlyExpenses + monthlyCommitments;
-
-  let total = 0;
-
-  const yearsRemaining = desiredFybcAge - currentAge;
-
-  if (yearsRemaining <= 0) {
-    return {
-      isValid: false,
-    };
+  if (!Number.isFinite(yearsUntilFybc) || yearsUntilFybc <= 0) {
+    return 0;
   }
 
-  for (let year = 0; year < years; year++) {
+  let totalProjectedCost = 0;
+
+  for (let year = 0; year < yearsUntilFybc; year += 1) {
     const inflatedMonthlySpending =
       monthlySpending * Math.pow(1 + inflation, year);
 
-    total += inflatedMonthlySpending * 12;
+    totalProjectedCost += inflatedMonthlySpending * 12;
   }
 
-  return total;
+  return totalProjectedCost;
 }
 
 function calculateTotalMonthlyCommitments() {
