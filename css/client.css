@@ -2570,6 +2570,10 @@ button.insurance-validation-count:disabled {
   min-width: 0;
 }
 
+#costOfWantsFybcSection {
+  margin-bottom: 0;
+}
+
 /* ========================================
    COST OF WANTS ASSUMPTIONS
 ======================================== */
