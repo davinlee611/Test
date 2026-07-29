@@ -1859,15 +1859,17 @@
               <!-- Projection Column -->
               <aside class="cost-of-wants-projection">
                 <div class="planning-card cost-of-wants-projection-card">
-                  <div class="cost-of-wants-projection-icon">
-                    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
-                  </div>
+                  <header class="cost-of-wants-projection-header">
+                    <h3>Your Projections</h3>
+                  </header>
 
-                  <h3>Your FYBC Projections</h3>
-
-                  <p id="costOfWantsProjectionPlaceholder">
-                    Complete the planning inputs and select Generate Projections
-                    to view the results.
+                  <p
+                    id="costOfWantsProjectionPlaceholder"
+                    class="cost-of-wants-projection-placeholder"
+                  >
+                    Fill in your details on the left and click "Generate
+                    Projections" to see your financial independence projections
+                    here.
                   </p>
 
                   <div
@@ -1876,27 +1878,66 @@
                     hidden
                   >
                     <div class="cost-of-wants-projection-result">
-                      <span>Time Remaining to FYBC Age</span>
+                      <span class="cost-of-wants-projection-label">
+                        Time Remaining to FYBC Age:
+                      </span>
 
-                      <strong id="costOfWantsFybcYearsRemaining"> -- </strong>
+                      <strong
+                        id="costOfWantsFybcYearsRemaining"
+                        class="cost-of-wants-projection-value"
+                      >
+                        --
+                      </strong>
                     </div>
 
                     <div class="cost-of-wants-projection-result">
-                      <span>Monthly Income Needed at FYBC Age</span>
+                      <div class="cost-of-wants-projection-label-group">
+                        <span class="cost-of-wants-projection-label">
+                          Monthly Income Needed at FYBC Age:
+                        </span>
 
-                      <strong id="costOfWantsFybcIncome"> -- </strong>
+                        <small
+                          id="costOfWantsFybcInflationNote"
+                          class="cost-of-wants-projection-note"
+                        >
+                          Assuming 0% annual inflation
+                        </small>
+                      </div>
+
+                      <strong
+                        id="costOfWantsFybcIncome"
+                        class="cost-of-wants-projection-value"
+                      >
+                        --
+                      </strong>
                     </div>
 
                     <div class="cost-of-wants-projection-result">
-                      <span>Monthly Income Needed at CPF LIFE Age</span>
+                      <span class="cost-of-wants-projection-label">
+                        Monthly Income Needed at CPF LIFE Age (65):
+                      </span>
 
-                      <strong id="costOfWantsCpfLifeIncome"> -- </strong>
+                      <strong
+                        id="costOfWantsCpfLifeIncome"
+                        class="cost-of-wants-projection-value"
+                      >
+                        --
+                      </strong>
                     </div>
 
-                    <div class="cost-of-wants-projection-result">
-                      <span>How Much You Need to FYBC?</span>
+                    <div
+                      class="cost-of-wants-projection-result cost-of-wants-projection-result--highlight"
+                    >
+                      <span class="cost-of-wants-projection-label">
+                        How Much You Need to FYBC?
+                      </span>
 
-                      <strong id="costOfWantsFybcRequired"> -- </strong>
+                      <strong
+                        id="costOfWantsFybcRequired"
+                        class="cost-of-wants-projection-value"
+                      >
+                        --
+                      </strong>
                     </div>
                   </div>
                 </div>

@@ -399,6 +399,10 @@ const fybcYearsRemainingElement = document.getElementById(
 
 const fybcIncomeElement = document.getElementById("costOfWantsFybcIncome");
 
+const fybcInflationNoteElement = document.getElementById(
+  "costOfWantsFybcInflationNote",
+);
+
 const cpfLifeIncomeElement = document.getElementById(
   "costOfWantsCpfLifeIncome",
 );
@@ -1765,6 +1769,12 @@ function renderFybcProjections() {
     )} / month`;
   }
 
+  if (fybcInflationNoteElement) {
+    fybcInflationNoteElement.textContent = `Assuming ${formatPercentage(
+      projection.inflationRate,
+    )} annual inflation`;
+  }
+
   if (cpfLifeIncomeElement) {
     cpfLifeIncomeElement.textContent = `${formatCurrency(
       projection.monthlyIncomeAtCpfLife,
@@ -1835,6 +1845,7 @@ function calculateFybcProjection() {
   return {
     isValid: true,
     yearsRemaining,
+    inflationRate: inflation * 100,
     monthlyIncomeAtFybc,
     monthlyIncomeAtCpfLife,
     amountRequired,
@@ -1875,6 +1886,10 @@ function renderEmptyFybcProjection() {
 
   if (fybcIncomeElement) {
     fybcIncomeElement.textContent = "--";
+  }
+
+  if (fybcInflationNoteElement) {
+    fybcInflationNoteElement.textContent = "Assuming 0% annual inflation";
   }
 
   if (cpfLifeIncomeElement) {
