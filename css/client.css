@@ -2844,7 +2844,7 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-of-wants-projection-surround {
-  padding: 26px;
+  padding: 0px;
   border: 1px solid var(--border-color);
   border-radius: 18px;
   background: var(--background-color);
