@@ -2860,7 +2860,7 @@ button.insurance-validation-count:disabled {
   border-radius: 14px;
 }
 .cost-of-wants-projection-title {
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 
 .cost-of-wants-projection-wrapper {
@@ -2970,7 +2970,7 @@ button.insurance-validation-count:disabled {
   }
 }
 
-.cost-of-wants-coming-soon {
+/*.cost-of-wants-coming-soon {
   text-align: center;
 }
 
@@ -2991,7 +2991,7 @@ button.insurance-validation-count:disabled {
   color: var(--text-secondary);
   font-size: 13px;
   line-height: 1.6;
-}
+}*/
 
 .cost-of-wants-selected-income {
   display: flex;
