@@ -2170,7 +2170,7 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-of-wants-floating-summary {
-  position: sticky;
+  /*position: sticky;*/
   z-index: 20;
   top: 18px;
 
