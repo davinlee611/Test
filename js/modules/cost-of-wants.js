@@ -2002,6 +2002,26 @@ function formatCurrency(value) {
   }).format(Number(value) || 0);
 }
 
+function getDesiredFybcAge() {
+  if (!desiredFybcAgeInput) {
+    return null;
+  }
+
+  const value = parseInt(desiredFybcAgeInput.value, 10);
+
+  return Number.isFinite(value) ? value : null;
+}
+
+function getInflationRate() {
+  if (!inflationRateInput) {
+    return 0;
+  }
+
+  const value = parseFloat(inflationRateInput.value);
+
+  return Number.isFinite(value) ? value : 0;
+}
+
 /* ========================================
    VALIDATION MESSAGE
 ======================================== */
