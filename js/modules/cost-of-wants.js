@@ -1907,6 +1907,8 @@ function formatPercentage(value) {
 function renderFybcProjections() {
   const projection = calculateFybcProjection();
 
+  console.log(projection);
+
   if (!projection.isValid) {
     renderEmptyFybcProjection();
     return;
