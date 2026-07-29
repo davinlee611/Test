@@ -2870,13 +2870,6 @@ button.insurance-validation-count:disabled {
   border-radius: 18px;
 }
 
-.cost-of-wants-projection-results {
-  overflow: hidden;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-}
-
 .cost-of-wants-projection-placeholder {
   max-width: 420px;
   margin: 0 auto;
