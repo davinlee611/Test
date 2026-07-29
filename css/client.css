@@ -3927,14 +3927,6 @@ button.insurance-validation-count:disabled {
   border-top: 1px solid var(--border-color);
 }
 
-.cost-of-wants-projection-summary
-  > .cost-of-wants-cpf-methodology {
-  margin-top: 0;
-  padding: 14px 24px;
-  border-top: 1px solid var(--border-color);
-  background: #fff;
-}
-
 .cost-of-wants-cpf-payout-helper {
   margin: 0;
   color: var(--text-secondary);
