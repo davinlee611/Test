@@ -2170,7 +2170,7 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-of-wants-floating-summary {
-  /*position: sticky;*/
+  position: sticky;
   z-index: 20;
   top: 18px;
 
@@ -2863,6 +2863,15 @@ button.insurance-validation-count:disabled {
   border: 1px solid var(--border-color);
   border-radius: 14px;
 }
+
+.cost-of-wants-projection-summary
+  > .cost-of-wants-cpf-methodology {
+  margin-top: 0;
+  padding: 14px 24px;
+  border-top: 1px solid var(--border-color);
+  background: #fff;
+}
+
 .cost-of-wants-projection-title {
   margin-bottom: 0px;
 }
