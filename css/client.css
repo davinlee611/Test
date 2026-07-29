@@ -2845,22 +2845,25 @@ button.insurance-validation-count:disabled {
 
 .cost-of-wants-projection-card {
   min-height: 270px;
-  padding: 0;
-  overflow: hidden;
+  padding: 26px;
 }
 
-.cost-of-wants-projection-header {
-  padding: 24px;
+.cost-of-wants-projection-title {
+  margin-bottom: 20px;
+}
+
+.cost-of-wants-projection-wrapper {
+  padding: 26px;
   background: var(--background-color);
-  border-bottom: 1px solid var(--border-color);
-  text-align: center;
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
 }
 
-.cost-of-wants-projection-header h3 {
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 21px;
-  font-weight: 750;
+.cost-of-wants-projection-results {
+  overflow: hidden;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
 }
 
 .cost-of-wants-projection-placeholder {
@@ -2946,9 +2949,6 @@ button.insurance-validation-count:disabled {
 }
 
 @media (max-width: 700px) {
-  .cost-of-wants-projection-header {
-    padding: 20px;
-  }
 
   .cost-of-wants-projection-result {
     grid-template-columns: 1fr;
