@@ -4060,8 +4060,8 @@ button.insurance-validation-count:disabled {
 /* Responsive */
 
 @media (max-width: 1250px) {
-  .cost-of-wants-projection-card {
-    position: static;
+  .cost-of-wants-cpf-grid {
+    grid-template-columns: 1fr;
   }
 }
 
