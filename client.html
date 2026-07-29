@@ -1907,268 +1907,265 @@
               </aside>
             </div>
 
-            <section class="cost-of-wants-cpf-section">
-              <div class="section-heading">
-                <h3>CPF Projections</h3>
-
-                <p>
-                  Estimate the client's CPF Retirement Sum at age 55 and CPF
-                  LIFE monthly payout from age 65.
-                </p>
-              </div>
-
-              <div class="cost-of-wants-cpf-grid">
-                <!-- Left -->
-
-                <article class="cost-of-wants-cpf-card">
+            <div class="cost-of-wants-cpf-grid">
+              <!-- Left -->
+              <article class="cost-of-wants-cpf-panel">
+                <div class="cost-of-wants-cpf-card">
                   <header class="cost-of-wants-cpf-card-header">
-                    <h4>
-                      CPF Retirement Sums at Age 55 and Estimated CPF LIFE
-                      Payouts from Age 65
-                    </h4>
+                    <h3>CPF Retirement Projections</h3>
                   </header>
 
-                  <div class="cpf-projection-assumption">
-                    <div class="cpf-projection-assumption__heading">
-                      <div>
-                        <label for="costOfWantsCpfGrowthRate">
-                          Projected annual retirement-sum increase
-                        </label>
+                  <div class="cost-of-wants-cpf-card-divider"></div>
 
-                        <p class="cpf-projection-assumption__helper">
-                          Adjust the assumed annual increase used for future CPF
-                          Retirement Sums.
-                        </p>
+                  <div class="cost-of-wants-cpf-content">
+                    <div class="cpf-projection-assumption">
+                      <div class="cpf-projection-assumption__heading">
+                        <div>
+                          <label for="costOfWantsCpfGrowthRate">
+                            Projected annual retirement-sum increase
+                          </label>
+
+                          <p class="cpf-projection-assumption__helper">
+                            Adjust the assumed annual increase used for future
+                            CPF Retirement Sums.
+                          </p>
+                        </div>
+
+                        <div
+                          class="percentage-input cpf-projection-assumption__input"
+                        >
+                          <input
+                            id="costOfWantsCpfGrowthRate"
+                            class="form-control"
+                            type="number"
+                            min="0"
+                            max="10"
+                            step="0.1"
+                            value="3.5"
+                            inputmode="decimal"
+                          />
+
+                          <span>%</span>
+                        </div>
                       </div>
 
-                      <div
-                        class="percentage-input cpf-projection-assumption__input"
-                      >
-                        <input
-                          id="costOfWantsCpfGrowthRate"
-                          class="form-control"
-                          type="number"
-                          min="0"
-                          max="10"
-                          step="0.1"
-                          value="3.5"
-                          inputmode="decimal"
-                        />
-
-                        <span>%</span>
-                      </div>
+                      <p class="cpf-projection-assumption__helper">
+                        Planning assumption only. Actual CPF Retirement Sums may
+                        differ.
+                      </p>
                     </div>
 
-                    <p class="cpf-projection-assumption__helper">
-                      Planning assumption only. Actual CPF Retirement Sums may
-                      differ.
-                    </p>
-                  </div>
-
-                  <p
-                    id="costOfWantsCpfProjectionCaption"
-                    class="cpf-projection-caption"
-                  >
-                    Complete the client's date of birth to calculate the
-                    projection.
-                  </p>
-
-                  <table class="cost-of-wants-cpf-table">
-                    <thead>
-                      <tr>
-                        <th>Scheme</th>
-
-                        <th>Retirement Sum</th>
-
-                        <th>Basis</th>
-
-                        <th>Estimated CPF LIFE Payout Per Month</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      <tr>
-                        <td>BRS</td>
-
-                        <td id="costOfWantsProjectedBrs">--</td>
-
-                        <td id="costOfWantsProjectedBrsBasis">--</td>
-
-                        <td id="costOfWantsProjectedBrsPayout">--</td>
-                      </tr>
-
-                      <tr>
-                        <td>FRS</td>
-
-                        <td id="costOfWantsProjectedFrs">--</td>
-
-                        <td id="costOfWantsProjectedFrsBasis">--</td>
-
-                        <td id="costOfWantsProjectedFrsPayout">--</td>
-                      </tr>
-
-                      <tr>
-                        <td>ERS</td>
-
-                        <td id="costOfWantsProjectedErs">--</td>
-
-                        <td id="costOfWantsProjectedErsBasis">--</td>
-
-                        <td id="costOfWantsProjectedErsPayout">--</td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  <div class="cost-of-wants-cpf-methodology">
                     <p
-                      id="costOfWantsCpfPayoutHelper"
-                      class="cost-of-wants-cpf-payout-helper"
+                      id="costOfWantsCpfProjectionCaption"
+                      class="cpf-projection-caption"
                     >
-                      --
+                      Complete the client's date of birth to calculate the
+                      projection.
                     </p>
 
-                    <button
-                      id="costOfWantsCpfCalculationToggle"
-                      class="cost-of-wants-cpf-calculation-toggle"
-                      type="button"
-                      aria-expanded="false"
-                      aria-controls="costOfWantsCpfCalculationDetails"
-                    >
-                      <i
-                        class="fa-regular fa-circle-question"
-                        aria-hidden="true"
-                      ></i>
+                    <table class="cost-of-wants-cpf-table">
+                      <thead>
+                        <tr>
+                          <th>Scheme</th>
 
-                      <span>How is this calculated?</span>
+                          <th>Retirement Sum</th>
 
-                      <i
-                        id="costOfWantsCpfCalculationToggleIcon"
-                        class="fa-solid fa-chevron-down"
-                        aria-hidden="true"
-                      ></i>
-                    </button>
+                          <th>Basis</th>
 
-                    <div
-                      id="costOfWantsCpfCalculationDetails"
-                      class="cost-of-wants-cpf-calculation-details"
-                      hidden
-                    >
-                      <p id="costOfWantsCpfCalculationSummary">--</p>
+                          <th>Estimated CPF LIFE Payout Per Month</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td>BRS</td>
+
+                          <td id="costOfWantsProjectedBrs">--</td>
+
+                          <td id="costOfWantsProjectedBrsBasis">--</td>
+
+                          <td id="costOfWantsProjectedBrsPayout">--</td>
+                        </tr>
+
+                        <tr>
+                          <td>FRS</td>
+
+                          <td id="costOfWantsProjectedFrs">--</td>
+
+                          <td id="costOfWantsProjectedFrsBasis">--</td>
+
+                          <td id="costOfWantsProjectedFrsPayout">--</td>
+                        </tr>
+
+                        <tr>
+                          <td>ERS</td>
+
+                          <td id="costOfWantsProjectedErs">--</td>
+
+                          <td id="costOfWantsProjectedErsBasis">--</td>
+
+                          <td id="costOfWantsProjectedErsPayout">--</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <div class="cost-of-wants-cpf-methodology">
+                      <p
+                        id="costOfWantsCpfPayoutHelper"
+                        class="cost-of-wants-cpf-payout-helper"
+                      >
+                        --
+                      </p>
+
+                      <button
+                        id="costOfWantsCpfCalculationToggle"
+                        class="cost-of-wants-cpf-calculation-toggle"
+                        type="button"
+                        aria-expanded="false"
+                        aria-controls="costOfWantsCpfCalculationDetails"
+                      >
+                        <i
+                          class="fa-regular fa-circle-question"
+                          aria-hidden="true"
+                        ></i>
+
+                        <span>How is this calculated?</span>
+
+                        <i
+                          id="costOfWantsCpfCalculationToggleIcon"
+                          class="fa-solid fa-chevron-down"
+                          aria-hidden="true"
+                        ></i>
+                      </button>
 
                       <div
-                        id="costOfWantsCpfCalculationData"
-                        class="cost-of-wants-cpf-calculation-data"
-                      ></div>
+                        id="costOfWantsCpfCalculationDetails"
+                        class="cost-of-wants-cpf-calculation-details"
+                        hidden
+                      >
+                        <p id="costOfWantsCpfCalculationSummary">--</p>
+
+                        <div
+                          id="costOfWantsCpfCalculationData"
+                          class="cost-of-wants-cpf-calculation-data"
+                        ></div>
+                      </div>
                     </div>
                   </div>
-                </article>
+                </div>
+              </article>
 
-                <!-- Right -->
+              <!-- Right -->
 
-                <article class="cost-of-wants-cpf-card">
+              <article class="cost-of-wants-cpf-panel">
+                <div class="cost-of-wants-cpf-card">
                   <header class="cost-of-wants-cpf-card-header">
-                    <h4>Select Your Assumed CPF Retirement Scheme</h4>
+                    <h3>Select Your Assumed CPF Retirement Scheme</h3>
+                  </header>
 
-                    <p>
+                  <div class="cost-of-wants-cpf-card-divider"></div>
+
+                  <div class="cost-of-wants-cpf-content">
+                    <p class="cost-of-wants-cpf-card-description">
                       Select the Retirement Account target to use for the
                       projection.
                     </p>
-                  </header>
 
-                  <div class="cpf-retirement-options-field">
-                    <div
-                      class="cpf-retirement-options"
-                      role="radiogroup"
-                      aria-label="Assumed CPF retirement scheme"
-                    >
-                      <button
-                        class="cpf-retirement-option selected"
-                        type="button"
-                        data-cpf-retirement-option="brs"
-                        role="radio"
-                        aria-checked="false"
+                    <div class="cpf-retirement-options-field">
+                      <div
+                        class="cpf-retirement-options"
+                        role="radiogroup"
+                        aria-label="Assumed CPF retirement scheme"
                       >
-                        <span
-                          class="cpf-retirement-option-icon"
-                          aria-hidden="true"
+                        <button
+                          class="cpf-retirement-option selected"
+                          type="button"
+                          data-cpf-retirement-option="brs"
+                          role="radio"
+                          aria-checked="false"
                         >
-                          <i class="fa-solid fa-house"></i>
-                        </span>
+                          <span
+                            class="cpf-retirement-option-icon"
+                            aria-hidden="true"
+                          >
+                            <i class="fa-solid fa-house"></i>
+                          </span>
 
-                        <span class="cpf-retirement-option-content">
-                          <strong>BRS</strong>
+                          <span class="cpf-retirement-option-content">
+                            <strong>BRS</strong>
 
-                          <span>The House Upgraders</span>
-                        </span>
-                      </button>
+                            <span>The House Upgraders</span>
+                          </span>
+                        </button>
 
-                      <button
-                        class="cpf-retirement-option"
-                        type="button"
-                        data-cpf-retirement-option="frs"
-                        role="radio"
-                        aria-checked="true"
-                      >
-                        <span
-                          class="cpf-retirement-option-icon"
-                          aria-hidden="true"
+                        <button
+                          class="cpf-retirement-option"
+                          type="button"
+                          data-cpf-retirement-option="frs"
+                          role="radio"
+                          aria-checked="true"
                         >
-                          <i class="fa-solid fa-circle-check"></i>
-                        </span>
+                          <span
+                            class="cpf-retirement-option-icon"
+                            aria-hidden="true"
+                          >
+                            <i class="fa-solid fa-circle-check"></i>
+                          </span>
 
-                        <span class="cpf-retirement-option-content">
-                          <strong>FRS</strong>
+                          <span class="cpf-retirement-option-content">
+                            <strong>FRS</strong>
 
-                          <span>The Simple Lifestyle</span>
-                        </span>
-                      </button>
+                            <span>The Simple Lifestyle</span>
+                          </span>
+                        </button>
 
-                      <button
-                        class="cpf-retirement-option"
-                        type="button"
-                        data-cpf-retirement-option="ers"
-                        role="radio"
-                        aria-checked="false"
-                      >
-                        <span
-                          class="cpf-retirement-option-icon"
-                          aria-hidden="true"
+                        <button
+                          class="cpf-retirement-option"
+                          type="button"
+                          data-cpf-retirement-option="ers"
+                          role="radio"
+                          aria-checked="false"
                         >
-                          <i class="fa-solid fa-arrow-trend-up"></i>
-                        </span>
+                          <span
+                            class="cpf-retirement-option-icon"
+                            aria-hidden="true"
+                          >
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                          </span>
 
-                        <span class="cpf-retirement-option-content">
-                          <strong>ERS</strong>
+                          <span class="cpf-retirement-option-content">
+                            <strong>ERS</strong>
 
-                          <span>The Too Much Cash on Hand</span>
-                        </span>
-                      </button>
+                            <span>The Too Much Cash on Hand</span>
+                          </span>
+                        </button>
 
-                      <button
-                        class="cpf-retirement-option"
-                        type="button"
-                        data-cpf-retirement-option="self_employed"
-                        role="radio"
-                        aria-checked="false"
-                      >
-                        <span
-                          class="cpf-retirement-option-icon"
-                          aria-hidden="true"
+                        <button
+                          class="cpf-retirement-option"
+                          type="button"
+                          data-cpf-retirement-option="self_employed"
+                          role="radio"
+                          aria-checked="false"
                         >
-                          <i class="fa-solid fa-briefcase"></i>
-                        </span>
+                          <span
+                            class="cpf-retirement-option-icon"
+                            aria-hidden="true"
+                          >
+                            <i class="fa-solid fa-briefcase"></i>
+                          </span>
 
-                        <span class="cpf-retirement-option-content">
-                          <strong>The Self-employed</strong>
+                          <span class="cpf-retirement-option-content">
+                            <strong>The Self-employed</strong>
 
-                          <span>Voluntary Retirement Account top-ups</span>
-                        </span>
-                      </button>
+                            <span>Voluntary Retirement Account top-ups</span>
+                          </span>
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </article>
-              </div>
-            </section>
+                </div>
+              </article>
+            </div>
           </section>
 
           <!-- Protection -->
