@@ -3958,6 +3958,7 @@ button.insurance-validation-count:disabled {
 
 .cost-of-wants-cpf-calculation-toggle:hover {
   text-decoration: underline;
+  background: transparent;
 }
 
 .cost-of-wants-cpf-calculation-toggle
