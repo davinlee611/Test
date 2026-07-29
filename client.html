@@ -1860,15 +1860,45 @@
               <aside class="cost-of-wants-projection">
                 <div class="planning-card cost-of-wants-projection-card">
                   <div class="cost-of-wants-projection-icon">
-                    <i class="fa-solid fa-chart-line"></i>
+                    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
                   </div>
 
-                  <h3>Your Projections</h3>
+                  <h3>Your FYBC Projections</h3>
 
-                  <p>
-                    Retirement projections and the procrastination calculator
-                    will appear here after the planning inputs are completed.
+                  <p id="costOfWantsProjectionPlaceholder">
+                    Complete the planning inputs and select Generate Projections
+                    to view the results.
                   </p>
+
+                  <div
+                    id="costOfWantsProjectionResults"
+                    class="cost-of-wants-projection-results"
+                    hidden
+                  >
+                    <div class="cost-of-wants-projection-result">
+                      <span>Time Remaining to FYBC Age</span>
+
+                      <strong id="costOfWantsFybcYearsRemaining"> -- </strong>
+                    </div>
+
+                    <div class="cost-of-wants-projection-result">
+                      <span>Monthly Income Needed at FYBC Age</span>
+
+                      <strong id="costOfWantsFybcIncome"> -- </strong>
+                    </div>
+
+                    <div class="cost-of-wants-projection-result">
+                      <span>Monthly Income Needed at CPF LIFE Age</span>
+
+                      <strong id="costOfWantsCpfLifeIncome"> -- </strong>
+                    </div>
+
+                    <div class="cost-of-wants-projection-result">
+                      <span>How Much You Need to FYBC?</span>
+
+                      <strong id="costOfWantsFybcRequired"> -- </strong>
+                    </div>
+                  </div>
                 </div>
               </aside>
             </div>

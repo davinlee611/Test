@@ -405,6 +405,14 @@ const cpfLifeIncomeElement = document.getElementById(
 
 const fybcRequiredElement = document.getElementById("costOfWantsFybcRequired");
 
+const projectionPlaceholderElement = document.getElementById(
+  "costOfWantsProjectionPlaceholder",
+);
+
+const projectionResultsElement = document.getElementById(
+  "costOfWantsProjectionResults",
+);
+
 /* ========================================
    MODULE STATE
 ======================================== */
@@ -412,6 +420,8 @@ const fybcRequiredElement = document.getElementById("costOfWantsFybcRequired");
 let moduleInitialized = false;
 
 let selectedCpfRetirementOption = getSelectedCpfRetirementOption();
+
+let hasGeneratedFybcProjection = false;
 
 /* ========================================
    INITIALIZATION
@@ -443,6 +453,8 @@ export function resetCostOfWants() {
   resetCostOfWantsState();
 
   selectedCpfRetirementOption = "frs";
+
+  hasGeneratedFybcProjection = false;
 
   if (cpfGrowthRateInput) {
     cpfGrowthRateInput.value = String(DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE);
@@ -501,7 +513,6 @@ function attachInputListeners() {
 
 function handleCpfGrowthRateInput() {
   renderProjectedCpfRetirementSums();
-  renderFybcProjections();
 }
 
 function attachLifestyleListeners() {
@@ -549,6 +560,8 @@ function handleProjectionRequest() {
 }
 
 function renderProjection() {
+  hasGeneratedFybcProjection = true;
+
   renderFybcProjections();
   renderProjectedCpfRetirementSums();
 }
@@ -557,7 +570,8 @@ function attachApplicationListeners() {
   on(EVENTS.PROFILE_CHANGED, function () {
     renderClientDetails();
     renderProjectedCpfRetirementSums();
-    renderFybcProjections();
+
+    invalidateFybcProjection();
 
     clearValidationMessage();
 
@@ -571,21 +585,29 @@ function attachApplicationListeners() {
   on(EVENTS.EXPENSES_CHANGED, function () {
     renderMonthlySpendingBreakdown();
     renderFloatingSummary();
+
+    invalidateFybcProjection();
   });
 
   on(EVENTS.COMMITMENTS_CHANGED, function () {
     renderMonthlySpendingBreakdown();
     renderFloatingSummary();
+
+    invalidateFybcProjection();
   });
 
   on(EVENTS.LIABILITIES_CHANGED, function () {
     renderMonthlySpendingBreakdown();
     renderFloatingSummary();
+
+    invalidateFybcProjection();
   });
 
   on(EVENTS.POLICIES_CHANGED, function () {
     renderMonthlySpendingBreakdown();
     renderFloatingSummary();
+
+    invalidateFybcProjection();
   });
 
   on(EVENTS.GOALS_CHANGED, function () {
@@ -611,6 +633,8 @@ function handleCostOfWantsInput() {
 
   clearValidationMessage();
 
+  invalidateFybcProjection();
+
   emitCostOfWantsChanged();
 }
 
@@ -621,6 +645,8 @@ function handleCustomIncomeInput() {
 
   renderSelectedIncome();
   renderMonthlySpendingBreakdown();
+
+  invalidateFybcProjection();
 
   emitCostOfWantsChanged();
 }
@@ -643,6 +669,8 @@ function selectLifestyleOption(option) {
   renderLifestyleSelection();
   renderSelectedIncome();
   renderMonthlySpendingBreakdown();
+
+  invalidateFybcProjection();
 
   emitCostOfWantsChanged();
 
@@ -1711,6 +1739,11 @@ function formatPercentage(value) {
 ======================================== */
 
 function renderFybcProjections() {
+  if (!hasGeneratedFybcProjection) {
+    renderEmptyFybcProjection();
+    return;
+  }
+
   const projection = calculateFybcProjection();
 
   if (!projection.isValid) {
@@ -1718,25 +1751,48 @@ function renderFybcProjections() {
     return;
   }
 
+  showFybcProjectionResults();
+
   if (fybcYearsRemainingElement) {
-    fybcYearsRemainingElement.textContent =
-      projection.yearsRemaining + " Years";
+    const yearLabel = projection.yearsRemaining === 1 ? "Year" : "Years";
+
+    fybcYearsRemainingElement.textContent = `${projection.yearsRemaining} ${yearLabel}`;
   }
 
   if (fybcIncomeElement) {
-    fybcIncomeElement.textContent = formatCurrency(
+    fybcIncomeElement.textContent = `${formatCurrency(
       projection.monthlyIncomeAtFybc,
-    );
+    )} / month`;
   }
 
   if (cpfLifeIncomeElement) {
-    cpfLifeIncomeElement.textContent = formatCurrency(
+    cpfLifeIncomeElement.textContent = `${formatCurrency(
       projection.monthlyIncomeAtCpfLife,
-    );
+    )} / month`;
   }
 
   if (fybcRequiredElement) {
     fybcRequiredElement.textContent = formatCurrency(projection.amountRequired);
+  }
+}
+
+function showFybcProjectionResults() {
+  if (projectionPlaceholderElement) {
+    projectionPlaceholderElement.hidden = true;
+  }
+
+  if (projectionResultsElement) {
+    projectionResultsElement.hidden = false;
+  }
+}
+
+function hideFybcProjectionResults() {
+  if (projectionPlaceholderElement) {
+    projectionPlaceholderElement.hidden = false;
+  }
+
+  if (projectionResultsElement) {
+    projectionResultsElement.hidden = true;
   }
 }
 
@@ -1810,11 +1866,9 @@ function calculateProjectedFybcCost({ currentAge, desiredFybcAge, inflation }) {
   return totalProjectedCost;
 }
 
-function calculateTotalMonthlyCommitments() {
-  return calculateMonthlySpendingBreakdown().totalMonthlyCommitments;
-}
-
 function renderEmptyFybcProjection() {
+  hideFybcProjectionResults();
+
   if (fybcYearsRemainingElement) {
     fybcYearsRemainingElement.textContent = "--";
   }
@@ -1830,6 +1884,12 @@ function renderEmptyFybcProjection() {
   if (fybcRequiredElement) {
     fybcRequiredElement.textContent = "--";
   }
+}
+
+function invalidateFybcProjection() {
+  hasGeneratedFybcProjection = false;
+
+  renderEmptyFybcProjection();
 }
 
 /* ========================================
