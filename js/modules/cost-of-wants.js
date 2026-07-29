@@ -429,7 +429,25 @@ const cpfCalculationDataElement = document.getElementById(
   "costOfWantsCpfCalculationData",
 );
 
+const projectionCalculationToggleButton = document.getElementById(
+  "costOfWantsProjectionCalculationToggle",
+);
 
+const projectionCalculationToggleIcon = document.getElementById(
+  "costOfWantsProjectionCalculationToggleIcon",
+);
+
+const projectionCalculationDetailsElement = document.getElementById(
+  "costOfWantsProjectionCalculationDetails",
+);
+
+const projectionCalculationSummaryElement = document.getElementById(
+  "costOfWantsProjectionCalculationSummary",
+);
+
+const projectionCalculationDataElement = document.getElementById(
+  "costOfWantsProjectionCalculationData",
+);
 
 /* ========================================
    MODULE STATE
@@ -454,6 +472,7 @@ export function initializeCostOfWants() {
   attachSummaryListeners();
   attachApplicationListeners();
   attachCpfCalculationListeners();
+  attachProjectionCalculationListeners();
   initializeCpfRetirementOptions();
 
   renderCostOfWants();
@@ -1219,6 +1238,11 @@ function attachCpfCalculationListeners() {
     "click",
     toggleCpfCalculationDetails,
   );
+
+  projectionCalculationToggleButton?.addEventListener(
+    "click",
+    toggleProjectionCalculationDetails,
+  );
 }
 
 function toggleCpfCalculationDetails() {
@@ -1233,6 +1257,26 @@ function toggleCpfCalculationDetails() {
   cpfCalculationToggleButton.setAttribute("aria-expanded", String(willExpand));
 
   cpfCalculationToggleIcon?.classList.toggle("is-expanded", willExpand);
+}
+
+function toggleProjectionCalculationDetails() {
+  if (
+    !projectionCalculationToggleButton ||
+    !projectionCalculationDetailsElement
+  ) {
+    return;
+  }
+
+  const willExpand = projectionCalculationDetailsElement.hidden;
+
+  projectionCalculationDetailsElement.hidden = !willExpand;
+
+  projectionCalculationToggleButton.setAttribute(
+    "aria-expanded",
+    String(willExpand),
+  );
+
+  projectionCalculationToggleIcon?.classList.toggle("is-expanded", willExpand);
 }
 
 function renderCpfPayoutMethodology(projection) {
@@ -1951,6 +1995,73 @@ function renderFybcProjectionResults(projection) {
       projection.totalCapitalRequired,
     );
   }
+
+  renderFybcProjectionMethodology(projection);
+}
+
+function renderFybcProjectionMethodology(projection) {
+  if (
+    !projectionCalculationSummaryElement ||
+    !projectionCalculationDataElement
+  ) {
+    return;
+  }
+
+  projectionCalculationSummaryElement.textContent = [
+    "The Total Capital Required represents the estimated",
+    "retirement income needed from the selected FYBC age",
+    "until the planned mortality age.",
+    "The desired monthly passive income is adjusted for inflation.",
+    "From age 65 onward, the selected estimated CPF LIFE",
+    "monthly payout is deducted.",
+    "No investment growth is assumed.",
+  ].join(" ");
+
+  projectionCalculationDataElement.replaceChildren(
+    createCpfMethodologyRow("Current age", String(projection.currentAge)),
+
+    createCpfMethodologyRow(
+      "Desired FYBC age",
+      String(projection.desiredFybcAge),
+    ),
+
+    createCpfMethodologyRow(
+      "Planned mortality age",
+      String(projection.mortalityAge),
+    ),
+
+    createCpfMethodologyRow(
+      "Years until FYBC",
+      String(projection.yearsRemaining),
+    ),
+
+    createCpfMethodologyRow(
+      "Selected monthly income",
+      `${formatCurrency(projection.monthlyPassiveIncome)} in today's value`,
+    ),
+
+    createCpfMethodologyRow(
+      "Inflation assumption",
+      formatPercentage(projection.inflationRate * 100),
+    ),
+
+    createCpfMethodologyRow(
+      "Monthly income at FYBC",
+      formatCurrency(projection.monthlyIncomeAtFybc),
+    ),
+
+    createCpfMethodologyRow(
+      "Estimated CPF LIFE income",
+      `${formatCurrency(projection.cpfLifePayout)} per month from age 65`,
+    ),
+
+    createCpfMethodologyRow("Investment growth", "None assumed"),
+
+    createCpfMethodologyRow(
+      "Total Capital Required",
+      formatCurrency(projection.totalCapitalRequired),
+    ),
+  );
 }
 
 function calculateFybcProjection() {
@@ -2014,7 +2125,11 @@ function calculateFybcProjection() {
 
   return {
     isValid: true,
+    currentAge,
+    desiredFybcAge,
+    mortalityAge,
     yearsRemaining,
+    monthlyPassiveIncome,
     monthlyIncomeAtFybc,
     cpfLifePayout,
     monthlyIncomeAfterCpf,
@@ -2100,6 +2215,25 @@ function renderEmptyFybcProjection() {
   if (fybcRequiredElement) {
     fybcRequiredElement.textContent = "--";
   }
+
+  renderEmptyFybcProjectionMethodology();
+}
+
+function renderEmptyFybcProjectionMethodology() {
+  if (projectionCalculationSummaryElement) {
+    projectionCalculationSummaryElement.textContent =
+      "Complete the FYBC assumptions to view the calculation details.";
+  }
+
+  projectionCalculationDataElement?.replaceChildren();
+
+  if (projectionCalculationDetailsElement) {
+    projectionCalculationDetailsElement.hidden = true;
+  }
+
+  projectionCalculationToggleButton?.setAttribute("aria-expanded", "false");
+
+  projectionCalculationToggleIcon?.classList.remove("is-expanded");
 }
 
 /* ========================================
