@@ -417,6 +417,30 @@ const projectionResultsElement = document.getElementById(
   "costOfWantsProjectionResults",
 );
 
+const cpfPayoutHelperElement = document.getElementById(
+  "costOfWantsCpfPayoutHelper",
+);
+
+const cpfCalculationToggleButton = document.getElementById(
+  "costOfWantsCpfCalculationToggle",
+);
+
+const cpfCalculationToggleIcon = document.getElementById(
+  "costOfWantsCpfCalculationToggleIcon",
+);
+
+const cpfCalculationDetailsElement = document.getElementById(
+  "costOfWantsCpfCalculationDetails",
+);
+
+const cpfCalculationSummaryElement = document.getElementById(
+  "costOfWantsCpfCalculationSummary",
+);
+
+const cpfCalculationDataElement = document.getElementById(
+  "costOfWantsCpfCalculationData",
+);
+
 /* ========================================
    MODULE STATE
 ======================================== */
@@ -442,6 +466,7 @@ export function initializeCostOfWants() {
   attachSummaryListeners();
   attachProjectionListeners();
   attachApplicationListeners();
+  attachCpfCalculationListeners();
   initializeCpfRetirementOptions();
 
   renderCostOfWants();
@@ -1231,6 +1256,179 @@ function getValidAmount(value) {
    CPF RETIREMENT OPTIONS
 ======================================== */
 
+function attachCpfCalculationListeners() {
+  cpfCalculationToggleButton?.addEventListener(
+    "click",
+    toggleCpfCalculationDetails,
+  );
+}
+
+function toggleCpfCalculationDetails() {
+  if (!cpfCalculationToggleButton || !cpfCalculationDetailsElement) {
+    return;
+  }
+
+  const willExpand = cpfCalculationDetailsElement.hidden;
+
+  cpfCalculationDetailsElement.hidden = !willExpand;
+
+  cpfCalculationToggleButton.setAttribute("aria-expanded", String(willExpand));
+
+  cpfCalculationToggleIcon?.classList.toggle("is-expanded", willExpand);
+}
+
+function renderCpfPayoutMethodology(projection) {
+  if (
+    !cpfPayoutHelperElement ||
+    !cpfCalculationSummaryElement ||
+    !cpfCalculationDataElement
+  ) {
+    return;
+  }
+
+  if (projection.payoutBasis === "official") {
+    renderOfficialCpfPayoutMethodology(projection);
+    return;
+  }
+
+  renderProjectedCpfPayoutMethodology(projection);
+}
+
+function renderProjectedCpfPayoutMethodology(projection) {
+  const model = CPF_LIFE_PAYOUT_MODEL[projection.gender];
+
+  if (!model) {
+    renderEmptyCpfPayoutMethodology();
+    return;
+  }
+
+  const genderLabel = projection.gender === "male" ? "Male" : "Female";
+
+  const conversionFactor = model.raFactor * 100;
+
+  cpfPayoutHelperElement.textContent =
+    `RA payout projection using a conversion factor of ` +
+    `${formatCpfPayoutFactor(conversionFactor)}.`;
+
+  cpfCalculationSummaryElement.textContent = [
+    `The projected ${genderLabel.toLowerCase()} CPF LIFE payout`,
+    `uses the relationship observed from the 2026 BRS, FRS`,
+    `and ERS payout figures.`,
+    `A fixed monthly amount of ${formatCurrency(model.fixedAmount)}`,
+    `is added to ${formatCpfPayoutFactor(conversionFactor)}`,
+    `of the projected RA balance at age 65.`,
+  ].join(" ");
+
+  cpfCalculationDataElement.replaceChildren(
+    createCpfMethodologyRow(
+      "Model basis",
+      `${CPF_LIFE_PAYOUT_MODEL.basisYear} ${genderLabel} CPF LIFE figures`,
+    ),
+
+    createCpfMethodologyRow(
+      "Monthly payout formula",
+      `${formatCurrency(model.fixedAmount)} + RA at age 65 × ` +
+        `${formatCpfPayoutFactor(conversionFactor)}`,
+    ),
+
+    createCpfMethodologyRow(
+      "RA projection",
+      `Retirement Sum at age 55 compounded at ` +
+        `${formatPercentage(CPF_RA_INTEREST_RATE)} annually for ` +
+        `${CPF_RA_COMPOUNDING_YEARS} years`,
+    ),
+
+    createCpfMethodologyRow(
+      "RA compounding multiplier",
+      formatCpfMultiplier(
+        Math.pow(1 + CPF_RA_INTEREST_RATE / 100, CPF_RA_COMPOUNDING_YEARS),
+      ),
+    ),
+  );
+}
+
+function renderOfficialCpfPayoutMethodology(projection) {
+  cpfPayoutHelperElement.textContent =
+    "Published CPF LIFE payout figures are used for this cohort.";
+
+  cpfCalculationSummaryElement.textContent = [
+    `The client belongs to the ${projection.yearTurning55}`,
+    `CPF Retirement Sum cohort.`,
+    `The displayed monthly payouts are taken directly from`,
+    `the stored CPF LIFE figures for that cohort and gender.`,
+  ].join(" ");
+
+  cpfCalculationDataElement.replaceChildren(
+    createCpfMethodologyRow("Cohort year", String(projection.yearTurning55)),
+
+    createCpfMethodologyRow(
+      "Gender",
+      projection.gender === "male" ? "Male" : "Female",
+    ),
+
+    createCpfMethodologyRow("Retirement Sum basis", "Published cohort values"),
+
+    createCpfMethodologyRow(
+      "CPF LIFE payout basis",
+      "Published cohort payout figures",
+    ),
+  );
+}
+
+function createCpfMethodologyRow(label, value) {
+  const row = document.createElement("div");
+
+  row.className = "cost-of-wants-cpf-calculation-row";
+
+  const labelElement = document.createElement("span");
+
+  labelElement.textContent = label;
+
+  const valueElement = document.createElement("strong");
+
+  valueElement.textContent = value;
+
+  row.append(labelElement, valueElement);
+
+  return row;
+}
+
+function formatCpfPayoutFactor(value) {
+  return (
+    new Intl.NumberFormat("en-SG", {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
+    }).format(value) + "%"
+  );
+}
+
+function formatCpfMultiplier(value) {
+  return new Intl.NumberFormat("en-SG", {
+    minimumFractionDigits: 4,
+    maximumFractionDigits: 4,
+  }).format(value);
+}
+
+function renderEmptyCpfPayoutMethodology() {
+  if (cpfPayoutHelperElement) {
+    cpfPayoutHelperElement.textContent = "--";
+  }
+
+  if (cpfCalculationSummaryElement) {
+    cpfCalculationSummaryElement.textContent = "--";
+  }
+
+  cpfCalculationDataElement?.replaceChildren();
+
+  if (cpfCalculationDetailsElement) {
+    cpfCalculationDetailsElement.hidden = true;
+  }
+
+  cpfCalculationToggleButton?.setAttribute("aria-expanded", "false");
+
+  cpfCalculationToggleIcon?.classList.remove("is-expanded");
+}
+
 function initializeCpfRetirementOptions() {
   cpfRetirementOptionButtons.forEach(
     function (button) {
@@ -1355,6 +1553,8 @@ function renderProjectedCpfRetirementSums() {
     retirementSumBasis: projection.retirementSumBasis,
     payoutBasis: projection.payoutBasis,
   });
+
+  renderCpfPayoutMethodology(projection);
 
   if (!cpfProjectionCaptionElement) {
     return;
@@ -1656,6 +1856,9 @@ function getCpfRetirementSumGrowthRate() {
 }
 
 function renderEmptyCpfRetirementSums(message) {
+
+renderEmptyCpfPayoutMethodology();
+
   const retirementSumElements = [
     projectedBrsElement,
     projectedFrsElement,
