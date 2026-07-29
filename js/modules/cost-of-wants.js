@@ -393,6 +393,18 @@ const projectedErsBasisElement = document.getElementById(
   "costOfWantsProjectedErsBasis",
 );
 
+const fybcYearsRemainingElement = document.getElementById(
+  "costOfWantsFybcYearsRemaining",
+);
+
+const fybcIncomeElement = document.getElementById("costOfWantsFybcIncome");
+
+const cpfLifeIncomeElement = document.getElementById(
+  "costOfWantsCpfLifeIncome",
+);
+
+const fybcRequiredElement = document.getElementById("costOfWantsFybcRequired");
+
 /* ========================================
    MODULE STATE
 ======================================== */
@@ -489,6 +501,7 @@ function attachInputListeners() {
 
 function handleCpfGrowthRateInput() {
   renderProjectedCpfRetirementSums();
+  renderFybcProjections();
 }
 
 function attachLifestyleListeners() {
@@ -539,6 +552,7 @@ function attachApplicationListeners() {
   on(EVENTS.PROFILE_CHANGED, function () {
     renderClientDetails();
     renderProjectedCpfRetirementSums();
+    renderFybcProjections();
 
     clearValidationMessage();
 
@@ -658,6 +672,7 @@ function renderCostOfWants() {
 
   renderCpfRetirementOptionSelection();
   renderProjectedCpfRetirementSums();
+  renderFybcProjections();
 }
 
 function renderClientDetails() {
@@ -1676,6 +1691,133 @@ function formatPercentage(value) {
       maximumFractionDigits: 1,
     }).format(value) + "%"
   );
+}
+
+/* ========================================
+   FYBC PROJECTIONS
+======================================== */
+
+function renderFybcProjections() {
+  const projection = calculateFybcProjection();
+
+  if (!projection.isValid) {
+    renderEmptyFybcProjection();
+    return;
+  }
+
+  if (fybcYearsRemainingElement) {
+    fybcYearsRemainingElement.textContent =
+      projection.yearsRemaining + " Years";
+  }
+
+  if (fybcIncomeElement) {
+    fybcIncomeElement.textContent = formatCurrency(
+      projection.monthlyIncomeAtFybc,
+    );
+  }
+
+  if (cpfLifeIncomeElement) {
+    cpfLifeIncomeElement.textContent = formatCurrency(
+      projection.monthlyIncomeAtCpfLife,
+    );
+  }
+
+  if (fybcRequiredElement) {
+    fybcRequiredElement.textContent = formatCurrency(projection.amountRequired);
+  }
+}
+
+function calculateFybcProjection() {
+  const currentAge = getClientAge();
+
+  if (currentAge === null) {
+    return {
+      isValid: false,
+    };
+  }
+
+  const desiredFybcAge = getDesiredFybcAge();
+
+  if (!desiredFybcAge) {
+    return {
+      isValid: false,
+    };
+  }
+
+  const inflation = getInflationRate() / 100;
+
+  const passiveIncome = getSelectedMonthlyPassiveIncome();
+
+  const yearsRemaining = desiredFybcAge - currentAge;
+
+  const monthlyIncomeAtFybc =
+    passiveIncome * Math.pow(1 + inflation, yearsRemaining);
+
+  const monthlyIncomeAtCpfLife =
+    passiveIncome * Math.pow(1 + inflation, 65 - currentAge);
+
+  const amountRequired = calculateProjectedFybcCost({
+    currentAge,
+    desiredFybcAge,
+    inflation,
+  });
+
+  return {
+    isValid: true,
+
+    yearsRemaining,
+
+    monthlyIncomeAtFybc,
+
+    monthlyIncomeAtCpfLife,
+
+    amountRequired,
+  };
+}
+
+function calculateProjectedFybcCost({
+  currentAge,
+
+  desiredFybcAge,
+
+  inflation,
+}) {
+  const monthlyExpenses = calculateTotalMonthlyExpenses();
+
+  const monthlyCommitments = calculateTotalMonthlyCommitments();
+
+  const monthlySpending = monthlyExpenses + monthlyCommitments;
+
+  let total = 0;
+
+  const years = desiredFybcAge - currentAge;
+
+  for (let year = 0; year < years; year++) {
+    const inflatedMonthlySpending =
+      monthlySpending * Math.pow(1 + inflation, year);
+
+    total += inflatedMonthlySpending * 12;
+  }
+
+  return total;
+}
+
+function renderEmptyFybcProjection() {
+  if (fybcYearsRemainingElement) {
+    fybcYearsRemainingElement.textContent = "--";
+  }
+
+  if (fybcIncomeElement) {
+    fybcIncomeElement.textContent = "--";
+  }
+
+  if (cpfLifeIncomeElement) {
+    cpfLifeIncomeElement.textContent = "--";
+  }
+
+  if (fybcRequiredElement) {
+    fybcRequiredElement.textContent = "--";
+  }
 }
 
 /* ========================================
