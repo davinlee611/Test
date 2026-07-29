@@ -1575,36 +1575,6 @@
                             </div>
                           </div>
                         </div>
-
-                        <!-- Post-FYBC Return Rate -->
-                        <div class="cost-of-wants-field-row">
-                          <div class="cost-of-wants-field-content">
-                            <label for="postFybcReturnRate">
-                              Post-FYBC Return Rate (% p.a.)
-                            </label>
-
-                            <span class="form-helper-text">
-                              Expected annual return after FYB.
-                            </span>
-                          </div>
-
-                          <div class="cost-of-wants-field-input">
-                            <div class="percentage-input">
-                              <input
-                                id="postFybcReturnRate"
-                                class="form-control"
-                                type="number"
-                                min="0"
-                                max="100"
-                                step="0.1"
-                                inputmode="decimal"
-                                value="3.5"
-                              />
-
-                              <span>%</span>
-                            </div>
-                          </div>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -1837,19 +1807,6 @@
                           aria-live="polite"
                           hidden
                         ></p>
-
-                        <button
-                          id="costOfWantsProjectionButton"
-                          class="primary-button cost-of-wants-projection-button"
-                          type="button"
-                        >
-                          <i
-                            class="fa-solid fa-chart-line"
-                            aria-hidden="true"
-                          ></i>
-
-                          <span>Generate Projections</span>
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -1914,7 +1871,7 @@
 
                     <div class="cost-of-wants-projection-result">
                       <span class="cost-of-wants-projection-label">
-                        Monthly Income Needed at CPF LIFE Age (65):
+                        Monthly Income Needed at FYBC Age AFTER CPF LIFE Payout (65):
                       </span>
 
                       <strong
@@ -2057,47 +2014,47 @@
                   </table>
 
                   <div class="cost-of-wants-cpf-methodology">
-  <p
-    id="costOfWantsCpfPayoutHelper"
-    class="cost-of-wants-cpf-payout-helper"
-  >
-    --
-  </p>
+                    <p
+                      id="costOfWantsCpfPayoutHelper"
+                      class="cost-of-wants-cpf-payout-helper"
+                    >
+                      --
+                    </p>
 
-  <button
-    id="costOfWantsCpfCalculationToggle"
-    class="cost-of-wants-cpf-calculation-toggle"
-    type="button"
-    aria-expanded="false"
-    aria-controls="costOfWantsCpfCalculationDetails"
-  >
-    <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+                    <button
+                      id="costOfWantsCpfCalculationToggle"
+                      class="cost-of-wants-cpf-calculation-toggle"
+                      type="button"
+                      aria-expanded="false"
+                      aria-controls="costOfWantsCpfCalculationDetails"
+                    >
+                      <i
+                        class="fa-regular fa-circle-question"
+                        aria-hidden="true"
+                      ></i>
 
-    <span>How is this calculated?</span>
+                      <span>How is this calculated?</span>
 
-    <i
-      id="costOfWantsCpfCalculationToggleIcon"
-      class="fa-solid fa-chevron-down"
-      aria-hidden="true"
-    ></i>
-  </button>
+                      <i
+                        id="costOfWantsCpfCalculationToggleIcon"
+                        class="fa-solid fa-chevron-down"
+                        aria-hidden="true"
+                      ></i>
+                    </button>
 
-  <div
-    id="costOfWantsCpfCalculationDetails"
-    class="cost-of-wants-cpf-calculation-details"
-    hidden
-  >
-    <p id="costOfWantsCpfCalculationSummary">
-      --
-    </p>
+                    <div
+                      id="costOfWantsCpfCalculationDetails"
+                      class="cost-of-wants-cpf-calculation-details"
+                      hidden
+                    >
+                      <p id="costOfWantsCpfCalculationSummary">--</p>
 
-    <div
-      id="costOfWantsCpfCalculationData"
-      class="cost-of-wants-cpf-calculation-data"
-    ></div>
-  </div>
-</div>
-
+                      <div
+                        id="costOfWantsCpfCalculationData"
+                        class="cost-of-wants-cpf-calculation-data"
+                      ></div>
+                    </div>
+                  </div>
                 </article>
 
                 <!-- Right -->
