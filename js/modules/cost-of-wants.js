@@ -1943,14 +1943,12 @@ function renderFybcProjectionResults(projection) {
   }
 
   if (cpfLifeIncomeElement) {
-    cpfLifeIncomeElement.textContent = formatCurrency(
-      projection.monthlyIncomeAfterCpf,
-    );
+    cpfLifeIncomeElement.textContent = formatCurrency(projection.cpfLifePayout);
   }
 
   if (fybcRequiredElement) {
     fybcRequiredElement.textContent = formatCurrency(
-      projection.netFundNeeded,
+      projection.totalCapitalRequired,
     );
   }
 }
@@ -2006,12 +2004,13 @@ function calculateFybcProjection() {
       monthlyIncomeAtFybc - cpfLifePayout,
     );
 
-  const netFundNeeded =
-    calculateNetFundNeeded({
-      monthlyIncomeAfterCpf,
-      mortalityAge,
-      inflationRate,
-    });
+  const totalCapitalRequired = calculateTotalCapitalRequired({
+    monthlyIncomeAtFybc,
+    desiredFybcAge,
+    mortalityAge,
+    inflationRate,
+    cpfLifePayout,
+  });
 
   return {
     isValid: true,
@@ -2019,7 +2018,7 @@ function calculateFybcProjection() {
     monthlyIncomeAtFybc,
     cpfLifePayout,
     monthlyIncomeAfterCpf,
-    netFundNeeded,
+    totalCapitalRequired,
     inflationRate,
   };
 }
@@ -2042,41 +2041,42 @@ function getSelectedCpfLifeMonthlyPayout() {
     : 0;
 }
 
-function calculateNetFundNeeded({
-  monthlyIncomeAfterCpf,
+function calculateTotalCapitalRequired({
+  monthlyIncomeAtFybc,
+  desiredFybcAge,
   mortalityAge,
   inflationRate,
+  cpfLifePayout,
 }) {
   if (
-    !Number.isFinite(monthlyIncomeAfterCpf) ||
-    monthlyIncomeAfterCpf <= 0 ||
+    !Number.isFinite(monthlyIncomeAtFybc) ||
+    monthlyIncomeAtFybc <= 0 ||
+    !Number.isFinite(desiredFybcAge) ||
     !Number.isFinite(mortalityAge) ||
-    mortalityAge <= 65
+    mortalityAge <= desiredFybcAge
   ) {
     return 0;
   }
 
-  let total = 0;
+  let totalCapitalRequired = 0;
 
-  for (
-    let age = 65;
-    age < mortalityAge;
-    age += 1
-  ) {
-    const yearsSince65 = age - 65;
+  for (let age = desiredFybcAge; age < mortalityAge; age += 1) {
+    const yearsSinceFybc = age - desiredFybcAge;
 
-    const yearlyIncome =
-      monthlyIncomeAfterCpf *
-      Math.pow(
-        1 + inflationRate,
-        yearsSince65,
-      ) *
-      12;
+    const monthlyIncomeRequired =
+      monthlyIncomeAtFybc * Math.pow(1 + inflationRate, yearsSinceFybc);
 
-    total += yearlyIncome;
+    const monthlyCpfLifeIncome = age >= 65 ? cpfLifePayout : 0;
+
+    const monthlyCapitalRequired = Math.max(
+      0,
+      monthlyIncomeRequired - monthlyCpfLifeIncome,
+    );
+
+    totalCapitalRequired += monthlyCapitalRequired * 12;
   }
 
-  return total;
+  return totalCapitalRequired;
 }
 
 function renderEmptyFybcProjection() {
