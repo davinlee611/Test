@@ -2753,7 +2753,7 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-of-wants-lifestyle-name {
-  margin-bottom: 14px;
+  margin-bottom: 0px;
   color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
