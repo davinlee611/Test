@@ -1907,8 +1907,6 @@ function formatPercentage(value) {
 function renderFybcProjections() {
   const projection = calculateFybcProjection();
 
-  console.log(projection);
-
   if (!projection.isValid) {
     renderEmptyFybcProjection();
     return;
@@ -1918,6 +1916,15 @@ function renderFybcProjections() {
 }
 
 function renderFybcProjectionResults(projection) {
+
+console.log({
+  fybcYearsRemainingElement,
+  fybcIncomeElement,
+  fybcInflationNoteElement,
+  cpfLifeIncomeElement,
+  fybcRequiredElement,
+});
+
   if (fybcYearsRemainingElement) {
     const yearLabel =
       projection.yearsRemaining === 1
