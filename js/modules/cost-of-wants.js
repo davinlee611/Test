@@ -429,6 +429,8 @@ const cpfCalculationDataElement = document.getElementById(
   "costOfWantsCpfCalculationData",
 );
 
+
+
 /* ========================================
    MODULE STATE
 ======================================== */
@@ -1916,14 +1918,6 @@ function renderFybcProjections() {
 }
 
 function renderFybcProjectionResults(projection) {
-
-console.log({
-  fybcYearsRemainingElement,
-  fybcIncomeElement,
-  fybcInflationNoteElement,
-  cpfLifeIncomeElement,
-  fybcRequiredElement,
-});
 
   if (fybcYearsRemainingElement) {
     const yearLabel =
