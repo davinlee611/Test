@@ -2865,7 +2865,7 @@ button.insurance-validation-count:disabled {
   overflow: hidden;
   margin-top: 0;
   padding: 14px 24px;
-  border-radius: 14px;
+  
   border: 1px solid var(--border-color);
   border-top: 1px solid var(--border-color);
   background: #fff;
