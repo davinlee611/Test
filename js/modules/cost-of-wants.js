@@ -472,7 +472,6 @@ export function initializeCostOfWants() {
   attachSummaryListeners();
   attachApplicationListeners();
   attachCpfCalculationListeners();
-  attachProjectionCalculationListeners();
   initializeCpfRetirementOptions();
 
   renderCostOfWants();
