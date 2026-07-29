@@ -1683,7 +1683,7 @@ body.liability-modal-open {
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 18px;
+  margin-bottom: 0px;
 }
 
 .insurance-validation-summary__eyebrow {
