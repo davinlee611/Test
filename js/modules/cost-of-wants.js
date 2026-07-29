@@ -1313,6 +1313,8 @@ function renderProjectedCpfRetirementSums() {
     return;
   }
 
+  const cohortAgeText = getCpfCohortAgeText(projection.yearTurning55);
+
   if (projectedBrsElement) {
     projectedBrsElement.textContent = formatCurrency(
       projection.retirementSums.brs,
@@ -1365,7 +1367,7 @@ function renderProjectedCpfRetirementSums() {
     projection.payoutBasis === "official"
   ) {
     cpfProjectionCaptionElement.textContent = [
-      `Client turns 55 in ${projection.yearTurning55}.`,
+      cohortAgeText,
       `Published Retirement Sums and available ${genderLabel}`,
       `CPF LIFE payout figures are used.`,
     ].join(" ");
@@ -1378,7 +1380,7 @@ function renderProjectedCpfRetirementSums() {
     projection.payoutBasis === "projected"
   ) {
     cpfProjectionCaptionElement.textContent = [
-      `Client turns 55 in ${projection.yearTurning55}.`,
+      cohortAgeText,
       `Published CPF Retirement Sums are used.`,
       `CPF LIFE payouts are estimated using the locked`,
       `${CPF_LIFE_PAYOUT_MODEL.basisYear} ${genderLabel}`,
@@ -1389,7 +1391,7 @@ function renderProjectedCpfRetirementSums() {
   }
 
   cpfProjectionCaptionElement.textContent = [
-    `Client turns 55 in ${projection.yearTurning55}.`,
+    cohortAgeText,
     `Retirement Sums assume an annual increase of`,
     `${formatPercentage(projection.annualGrowthRate)}.`,
     `CPF LIFE payouts are estimated using the locked`,
@@ -1407,14 +1409,6 @@ function calculateClientCpfRetirementProjection() {
       isValid: false,
       message:
         "Complete the client's date of birth to calculate the projection.",
-    };
-  }
-
-  if (currentAge >= 55) {
-    return {
-      isValid: false,
-      message:
-        "CPF Retirement projections currently support clients below age 55.",
     };
   }
 
@@ -1437,6 +1431,21 @@ function calculateClientCpfRetirementProjection() {
     };
   }
 
+  const earliestOfficialRetirementSumYear = Math.min(
+    ...Object.keys(OFFICIAL_RETIREMENT_SUMS).map(Number),
+  );
+
+  if (yearTurning55 < earliestOfficialRetirementSumYear) {
+    return {
+      isValid: false,
+      message: [
+        `The client turned 55 in ${yearTurning55}.`,
+        `CPF Retirement Sum data is currently available from`,
+        `${earliestOfficialRetirementSumYear} onwards.`,
+      ].join(" "),
+    };
+  }
+
   const annualGrowthRate = getCpfRetirementSumGrowthRate();
 
   const calculatedRetirementSums = calculateCpfRetirementSums({
@@ -1454,10 +1463,6 @@ function calculateClientCpfRetirementProjection() {
     };
   }
 
-  /*
-   * Use the same rounded Retirement Sums shown to the user when
-   * calculating the RA-at-65 balances and payout estimates.
-   */
   const retirementSums = {
     brs: roundCpfProjectionAmount(calculatedRetirementSums.brs),
 
@@ -1480,21 +1485,13 @@ function calculateClientCpfRetirementProjection() {
 
   return {
     isValid: true,
-
     yearTurning55,
-
     gender,
-
     annualGrowthRate,
-
     retirementSumBasis: calculatedRetirementSums.basis,
-
     payoutBasis: cpfLifeProjection.basis,
-
     retirementSums,
-
     raAt65,
-
     monthlyPayouts: cpfLifeProjection.monthlyPayouts,
   };
 }
@@ -1605,6 +1602,20 @@ function roundCpfLifePayout(value) {
   const increment = CPF_LIFE_PAYOUT_MODEL.roundingIncrement;
 
   return Math.round(value / increment) * increment;
+}
+
+function getCpfCohortAgeText(yearTurning55) {
+  const currentYear = new Date().getFullYear();
+
+  if (yearTurning55 < currentYear) {
+    return `Client turned 55 in ${yearTurning55}.`;
+  }
+
+  if (yearTurning55 === currentYear) {
+    return `Client turns 55 in ${yearTurning55}.`;
+  }
+
+  return `Client will turn 55 in ${yearTurning55}.`;
 }
 
 function getClientYearTurning55() {
