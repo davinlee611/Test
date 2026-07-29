@@ -768,6 +768,10 @@ function getSelectedMonthlyIncome() {
   return LIFESTYLE_AMOUNTS[lifestyleOption] || 0;
 }
 
+function getSelectedMonthlyPassiveIncome() {
+  return getSelectedMonthlyIncome();
+}
+
 /* ========================================
    MONTHLY SPENDING BREAKDOWN
 ======================================== */
@@ -878,6 +882,10 @@ function calculateMonthlySpendingBreakdown() {
       totalMonthlyExpenses +
       totalMonthlyCommitments,
   };
+}
+
+function calculateTotalMonthlyExpenses() {
+  return calculateMonthlySpendingBreakdown().totalMonthlyExpenses;
 }
 
 function renderFloatingSummary() {
@@ -1750,11 +1758,19 @@ function calculateFybcProjection() {
 
   const yearsRemaining = desiredFybcAge - currentAge;
 
+  if (yearsRemaining <= 0) {
+    return {
+      isValid: false,
+    };
+  }
+
   const monthlyIncomeAtFybc =
     passiveIncome * Math.pow(1 + inflation, yearsRemaining);
 
+  const yearsUntilCpfLife = 65 - currentAge;
+
   const monthlyIncomeAtCpfLife =
-    passiveIncome * Math.pow(1 + inflation, 65 - currentAge);
+    passiveIncome * Math.pow(1 + inflation, yearsUntilCpfLife);
 
   const amountRequired = calculateProjectedFybcCost({
     currentAge,
@@ -1790,7 +1806,13 @@ function calculateProjectedFybcCost({
 
   let total = 0;
 
-  const years = desiredFybcAge - currentAge;
+  const yearsRemaining = desiredFybcAge - currentAge;
+
+  if (yearsRemaining <= 0) {
+    return {
+      isValid: false,
+    };
+  }
 
   for (let year = 0; year < years; year++) {
     const inflatedMonthlySpending =
@@ -1800,6 +1822,10 @@ function calculateProjectedFybcCost({
   }
 
   return total;
+}
+
+function calculateTotalMonthlyCommitments() {
+  return calculateMonthlySpendingBreakdown().totalMonthlyCommitments;
 }
 
 function renderEmptyFybcProjection() {
