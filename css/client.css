@@ -4350,7 +4350,7 @@ button.insurance-validation-count:disabled {
 .cost-of-wants-timeline-marker--goal
   .cost-of-wants-timeline-marker-copy {
   align-items: flex-end;
-  padding-right: 2px;
+  padding-right: 0;
   text-align: right;
 }
 
@@ -4391,13 +4391,14 @@ button.insurance-validation-count:disabled {
 .cost-of-wants-timeline-flag {
   position: absolute;
   top: 49px;
-  right: -2px;
+  left: 100%;
   display: grid;
-  width: 28px;
+  width: 24px;
   height: 32px;
   place-items: center;
   color: var(--primary-color);
   font-size: 20px;
+  transform: translateX(-3px);
 }
 
 .cost-of-wants-timeline-results {
