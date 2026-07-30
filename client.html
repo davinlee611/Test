@@ -106,6 +106,15 @@
             </button>
 
             <button
+              class="sidebar-item sidebar-item--subsection"
+              type="button"
+              data-section="cost-analysis"
+            >
+              <i class="fa-solid fa-chart-line"></i>
+              <span>Analyse Commitments &amp; Savings Plan</span>
+            </button>
+
+            <button
               class="sidebar-item"
               type="button"
               data-section="protection"
@@ -2405,6 +2414,270 @@
 
               <button
                 id="costOfWantsNextButton"
+                class="next-button"
+                type="button"
+              >
+                Next
+                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </button>
+            </div>
+          </section>
+
+          <!-- Analyse Commitments & Savings Plan -->
+          <section class="workspace-section" data-content="cost-analysis">
+            <div class="section-header">
+              <div>
+                <h2>Analyse Commitments &amp; Savings Plan</h2>
+
+                <p>
+                  Review the client's current cashflow and project withdrawable
+                  assets and CPF balances over the next 10 years.
+                </p>
+              </div>
+            </div>
+
+            <!-- Retirement Goal Summary -->
+            <section class="analysis-section-card">
+              <div class="analysis-section-heading">
+                <div>
+                  <span class="analysis-section-eyebrow">Cost of Wants</span>
+
+                  <h3>Retirement Goal Summary</h3>
+
+                  <p>
+                    A fixed summary of the retirement projection selected on the
+                    Cost of Wants page.
+                  </p>
+                </div>
+              </div>
+
+              <div class="analysis-goal-summary-grid">
+                <div class="analysis-summary-item">
+                  <span>Desired FYBC Age</span>
+                  <strong id="analysisDesiredFybcAge">—</strong>
+                </div>
+
+                <div class="analysis-summary-item">
+                  <span>Monthly Passive Income Needed</span>
+                  <strong id="analysisMonthlyIncomeNeeded">$0</strong>
+                </div>
+
+                <div class="analysis-summary-item">
+                  <span>Monthly Income Needed at 65</span>
+                  <strong id="analysisMonthlyIncomeAt65">$0</strong>
+                </div>
+
+                <div class="analysis-summary-item">
+                  <span>Estimated CPF LIFE Income</span>
+                  <strong id="analysisCpfLifeIncome">$0</strong>
+                </div>
+
+                <div class="analysis-summary-item">
+                  <span>Income Gap</span>
+                  <strong id="analysisIncomeGap">$0/mth</strong>
+                </div>
+
+                <div
+                  class="analysis-summary-item analysis-summary-item--primary"
+                >
+                  <span>Total Capital Needed</span>
+                  <strong id="analysisTotalCapitalNeeded">$0</strong>
+                </div>
+              </div>
+            </section>
+
+            <!-- Monthly Cashflow -->
+            <section class="analysis-section-card">
+              <div
+                class="analysis-section-heading analysis-section-heading--split"
+              >
+                <div>
+                  <span class="analysis-section-eyebrow">Current Position</span>
+
+                  <h3>Monthly Cashflow</h3>
+
+                  <p>
+                    Employment and bonus income are shown after the employee's
+                    CPF contribution.
+                  </p>
+                </div>
+
+                <label class="analysis-assumption-field">
+                  <span>Annual Employment Increment</span>
+
+                  <div class="analysis-percentage-input">
+                    <input
+                      id="analysisEmploymentIncrementInput"
+                      type="number"
+                      min="0"
+                      max="20"
+                      step="0.1"
+                      value="2"
+                    />
+
+                    <span>%</span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="analysis-cashflow-table-wrap">
+                <table class="analysis-cashflow-table">
+                  <tbody>
+                    <tr>
+                      <th colspan="2">Income</th>
+                    </tr>
+
+                    <tr>
+                      <td>Employment Income After CPF</td>
+                      <td id="analysisEmploymentIncomeAfterCpf">$0</td>
+                    </tr>
+
+                    <tr>
+                      <td>Annual Bonus After CPF</td>
+                      <td id="analysisBonusIncomeAfterCpf">
+                        $0/year · $0/month
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>Other Monthly Income</td>
+                      <td id="analysisOtherMonthlyIncome">$0</td>
+                    </tr>
+
+                    <tr class="analysis-table-total">
+                      <td>Total Monthly Income</td>
+                      <td id="analysisTotalMonthlyIncome">$0</td>
+                    </tr>
+
+                    <tr>
+                      <th colspan="2">Outflows</th>
+                    </tr>
+
+                    <tr>
+                      <td>Expenses</td>
+                      <td id="analysisMonthlyExpenses">-$0</td>
+                    </tr>
+
+                    <tr>
+                      <td>Commitments</td>
+                      <td id="analysisMonthlyCommitments">-$0</td>
+                    </tr>
+
+                    <tr class="analysis-table-result">
+                      <td>Remaining Surplus</td>
+                      <td id="analysisRemainingSurplus">$0</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- Projection -->
+            <section class="analysis-section-card">
+              <div
+                class="analysis-section-heading analysis-section-heading--split"
+              >
+                <div>
+                  <span class="analysis-section-eyebrow">10-Year Outlook</span>
+
+                  <h3>Monthly Cashflow Projection (10 Years)</h3>
+
+                  <p>
+                    Projects withdrawable assets and CPF balances using the
+                    latest 2027 CPF contribution and allocation rates.
+                  </p>
+                </div>
+
+                <div class="analysis-projection-legend">
+                  <span>
+                    <i class="fa-solid fa-wallet"></i>
+                    Cash
+                  </span>
+
+                  <span>
+                    <i class="fa-solid fa-building-columns"></i>
+                    CPF
+                  </span>
+                </div>
+              </div>
+
+              <div class="analysis-projection-note">
+                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+
+                <p>
+                  Draft assumptions: expenses remain unchanged, salary increases
+                  annually, CPF interest and investment growth are not included,
+                  and liabilities stop after their recorded repayment end dates.
+                </p>
+              </div>
+
+              <div class="analysis-projection-table-wrap">
+                <table class="analysis-projection-table">
+                  <thead>
+                    <tr>
+                      <th rowspan="2">Date</th>
+
+                      <th colspan="4">Withdrawable Assets</th>
+
+                      <th colspan="3">CPF Monthly Movement</th>
+
+                      <th colspan="3">CPF End Balance</th>
+                    </tr>
+
+                    <tr>
+                      <th>Start Balance</th>
+                      <th>Net Cashflow</th>
+                      <th>Big Ticket Outflow</th>
+                      <th>End Balance</th>
+
+                      <th>CPF Inflow</th>
+                      <th>OA Outflow</th>
+                      <th>Net CPF</th>
+
+                      <th>OA</th>
+                      <th>SA / RA</th>
+                      <th>MA</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="analysisProjectionTableBody"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- Placeholder -->
+            <section class="analysis-section-card analysis-placeholder-card">
+              <div class="analysis-placeholder-icon">
+                <i class="fa-solid fa-piggy-bank" aria-hidden="true"></i>
+              </div>
+
+              <div>
+                <span class="analysis-section-eyebrow">Next Stage</span>
+
+                <h3>Savings Plan Analysis</h3>
+
+                <p>
+                  This section will compare the client's projected assets
+                  against the Total Capital Needed and assess the required
+                  savings plan.
+                </p>
+              </div>
+
+              <span class="analysis-placeholder-badge">Coming Soon</span>
+            </section>
+
+            <div class="form-actions form-actions--between">
+              <button
+                id="costAnalysisBackButton"
+                class="header-button header-button-secondary"
+                type="button"
+              >
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Back
+              </button>
+
+              <button
+                id="costAnalysisNextButton"
                 class="next-button"
                 type="button"
               >

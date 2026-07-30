@@ -35,6 +35,14 @@ const costOfWantsReportButton = document.getElementById(
   "costOfWantsReportButton",
 );
 
+const costAnalysisBackButton = document.getElementById(
+  "costAnalysisBackButton",
+);
+
+const costAnalysisNextButton = document.getElementById(
+  "costAnalysisNextButton",
+);
+
 /* ========================================
    MODULE CONFIGURATION
 ======================================== */
@@ -116,13 +124,25 @@ function attachSectionNavigationListeners() {
 
   if (costOfWantsNextButton) {
     costOfWantsNextButton.addEventListener("click", function () {
-      navigateToSection("protection");
+      navigateToSection("cost-analysis");
     });
   }
 
   if (costOfWantsAnalyseButton) {
     costOfWantsAnalyseButton.addEventListener("click", function () {
-      navigateToSection("priorities");
+      navigateToSection("cost-analysis");
+    });
+  }
+
+  if (costAnalysisBackButton) {
+    costAnalysisBackButton.addEventListener("click", function () {
+      navigateToSection("cost");
+    });
+  }
+
+  if (costAnalysisNextButton) {
+    costAnalysisNextButton.addEventListener("click", function () {
+      navigateToSection("protection");
     });
   }
 

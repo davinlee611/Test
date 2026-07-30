@@ -44,6 +44,11 @@ import {
   resetCostOfWants,
 } from "./modules/cost-of-wants.js";
 
+import {
+  initializeCostAnalysis,
+  resetCostAnalysis,
+} from "./modules/cost-analysis.js";
+
 import { on } from "./events/event-bus.js";
 
 import { EVENTS } from "./events/events.js";
@@ -98,11 +103,16 @@ initializeExpenses();
 initializeCommitments();
 initializeInsurancePortfolio();
 initializeCostOfWants();
+initializeCostAnalysis();
 initializePage();
 
 on(EVENTS.SECTION_CHANGED, function ({ section }) {
   if (section === "insurance") {
     initializeInsurancePortfolio();
+  }
+
+  if (section === "cost-analysis") {
+    initializeCostAnalysis();
   }
 });
 
@@ -199,6 +209,11 @@ function clearFinancialPlan() {
    * Reset Cost of Wants.
    */
   resetCostOfWants();
+
+  /*
+   * Reset Cost Analysis.
+   */
+  resetCostAnalysis();
 
   /*
    * Return to the Client Profile section.
