@@ -2076,6 +2076,15 @@ function renderCostOfWantsTimeline(projection) {
       ? 0
       : (cpfProjection.monthlyPayouts[selectedCpfRetirementOption] ?? 0);
 
+  const payoutProgressPercentage =
+    incomeNeeded > 0
+      ? Math.min(100, Math.max(0, (selectedCpfPayout / incomeNeeded) * 100))
+      : 0;
+
+  if (timelineProgressElement) {
+    timelineProgressElement.style.width = `${payoutProgressPercentage}%`;
+  }
+
   timelineContentElement?.classList.add("is-ready");
 
   if (timelineBrsAmountElement) {
@@ -2552,6 +2561,10 @@ function renderEmptyCostOfWantsTimeline() {
 
   if (timelineTotalPayoutsElement) {
     timelineTotalPayoutsElement.textContent = "--";
+  }
+
+  if (timelineProgressElement) {
+    timelineProgressElement.style.width = "0%";
   }
 
   [
