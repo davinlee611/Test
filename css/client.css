@@ -4095,7 +4095,7 @@ button.insurance-validation-count:disabled {
   height: 58px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: end;
-  margin-top: 6px;
+  margin-top: -10px;
   color: var(--primary-color);
 }
 
