@@ -4008,13 +4008,6 @@ button.insurance-validation-count:disabled {
    YOUR PROJECTIONS CALCULATION FLOW
 ======================================== */
 
- .cost-of-wants-projection-methodology {
-  overflow: hidden;
-  margin-top: 0;
-  padding: 0px;
-  background: #ffffff;
-} 
-
 .cost-of-wants-projection-methodology
   .cost-of-wants-cpf-calculation-toggle {
   width: 100%;
