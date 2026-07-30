@@ -4215,18 +4215,6 @@ button.insurance-validation-count:disabled {
   }
 }
 
-/* Grey retirement-option field */
-
-.cpf-retirement-options-field {
-  display: grid;
-  gap: 16px;
-  padding: 16px;
-  border: 1px solid
-    var(--border-color);
-  border-radius: 12px;
-  background: #f4f6f8;
-}
-
 .cpf-retirement-options {
   display: grid;
   grid-template-columns:
@@ -4242,8 +4230,8 @@ button.insurance-validation-count:disabled {
     30px minmax(0, 1fr);
   align-items: start;
   gap: 9px;
-  min-height: 104px;
-  padding: 14px 12px;
+  min-height: 122px;
+  padding: 18px;
   color: var(--text-color);
   border: 1px solid
     var(--border-color);
@@ -4286,13 +4274,17 @@ button.insurance-validation-count:disabled {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
   color: var(--primary-color);
-  border-radius: 9px;
+  border-radius: 10px;
   background:
     rgba(91, 78, 246, 0.1);
+}
+
+.cpf-retirement-option-icon i {
+    font-size: 15px;
 }
 
 .cpf-retirement-option-content {
@@ -4305,15 +4297,15 @@ button.insurance-validation-count:disabled {
 .cpf-retirement-option-content
   strong {
   color: inherit;
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   line-height: 1.35;
 }
 
 .cpf-retirement-option-content
   > span {
   color: var(--text-light);
-  font-size: 0.72rem;
-  line-height: 1.4;
+  font-size: 0.78rem;
+  line-height: 1.5;
 }
 
 .cpf-retirement-option.selected
