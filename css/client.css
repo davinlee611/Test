@@ -4092,18 +4092,19 @@ button.insurance-validation-count:disabled {
 .cost-of-wants-projection-flow-branch {
   position: relative;
   display: grid;
-  height: 42px;
+  height: 58px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: end;
+  margin-top: 6px;
   color: var(--primary-color);
 }
 
 .cost-of-wants-projection-flow-branch span {
   position: absolute;
-  top: 0;
+  top: 24px;
   right: 25%;
   left: 25%;
-  height: 24px;
+  height: 20px;
   border-top: 1px solid var(--border-color);
   border-right: 1px solid var(--border-color);
   border-left: 1px solid var(--border-color);
@@ -4111,10 +4112,10 @@ button.insurance-validation-count:disabled {
 
 .cost-of-wants-projection-flow-branch span::before {
   position: absolute;
-  top: -18px;
+  top: -14px;
   left: 50%;
   width: 1px;
-  height: 18px;
+  height: 14px;
   background: var(--border-color);
   content: "";
   transform: translateX(-50%);
@@ -4124,6 +4125,7 @@ button.insurance-validation-count:disabled {
   position: relative;
   z-index: 1;
   justify-self: center;
+  margin-bottom: 1px;
   font-size: 11px;
 }
 
