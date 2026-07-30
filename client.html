@@ -1873,6 +1873,25 @@
                         <div class="cost-of-wants-projection-result">
                           <div class="cost-of-wants-projection-label-group">
                             <span class="cost-of-wants-projection-label">
+                              Monthly Passive Income Needed at 65:
+                            </span>
+
+                            <small class="cost-of-wants-projection-note">
+                              Before CPF LIFE income
+                            </small>
+                          </div>
+
+                          <strong
+                            id="costOfWantsIncomeAt65"
+                            class="cost-of-wants-projection-value"
+                          >
+                            --
+                          </strong>
+                        </div>
+
+                        <div class="cost-of-wants-projection-result">
+                          <div class="cost-of-wants-projection-label-group">
+                            <span class="cost-of-wants-projection-label">
                               Estimated CPF LIFE Income:
                             </span>
 
@@ -2111,99 +2130,273 @@
                       projection.
                     </p>
 
-                      <div
-                        class="cpf-retirement-options"
-                        role="radiogroup"
-                        aria-label="Assumed CPF retirement scheme"
+                    <div
+                      class="cpf-retirement-options"
+                      role="radiogroup"
+                      aria-label="Assumed CPF retirement scheme"
+                    >
+                      <button
+                        class="cpf-retirement-option selected"
+                        type="button"
+                        data-cpf-retirement-option="brs"
+                        role="radio"
+                        aria-checked="false"
                       >
-                        <button
-                          class="cpf-retirement-option selected"
-                          type="button"
-                          data-cpf-retirement-option="brs"
-                          role="radio"
-                          aria-checked="false"
+                        <span
+                          class="cpf-retirement-option-icon"
+                          aria-hidden="true"
                         >
-                          <span
-                            class="cpf-retirement-option-icon"
-                            aria-hidden="true"
-                          >
-                            <i class="fa-solid fa-house"></i>
-                          </span>
+                          <i class="fa-solid fa-house"></i>
+                        </span>
 
-                          <span class="cpf-retirement-option-content">
-                            <strong>BRS</strong>
+                        <span class="cpf-retirement-option-content">
+                          <strong>BRS</strong>
 
-                            <span>The House Upgraders</span>
-                          </span>
-                        </button>
+                          <span>The House Upgraders</span>
+                        </span>
+                      </button>
 
-                        <button
-                          class="cpf-retirement-option"
-                          type="button"
-                          data-cpf-retirement-option="frs"
-                          role="radio"
-                          aria-checked="true"
+                      <button
+                        class="cpf-retirement-option"
+                        type="button"
+                        data-cpf-retirement-option="frs"
+                        role="radio"
+                        aria-checked="true"
+                      >
+                        <span
+                          class="cpf-retirement-option-icon"
+                          aria-hidden="true"
                         >
-                          <span
-                            class="cpf-retirement-option-icon"
-                            aria-hidden="true"
-                          >
-                            <i class="fa-solid fa-circle-check"></i>
-                          </span>
+                          <i class="fa-solid fa-circle-check"></i>
+                        </span>
 
-                          <span class="cpf-retirement-option-content">
-                            <strong>FRS</strong>
+                        <span class="cpf-retirement-option-content">
+                          <strong>FRS</strong>
 
-                            <span>The Simple Lifestyle</span>
-                          </span>
-                        </button>
+                          <span>The Simple Lifestyle</span>
+                        </span>
+                      </button>
 
-                        <button
-                          class="cpf-retirement-option"
-                          type="button"
-                          data-cpf-retirement-option="ers"
-                          role="radio"
-                          aria-checked="false"
+                      <button
+                        class="cpf-retirement-option"
+                        type="button"
+                        data-cpf-retirement-option="ers"
+                        role="radio"
+                        aria-checked="false"
+                      >
+                        <span
+                          class="cpf-retirement-option-icon"
+                          aria-hidden="true"
                         >
-                          <span
-                            class="cpf-retirement-option-icon"
-                            aria-hidden="true"
-                          >
-                            <i class="fa-solid fa-arrow-trend-up"></i>
-                          </span>
+                          <i class="fa-solid fa-arrow-trend-up"></i>
+                        </span>
 
-                          <span class="cpf-retirement-option-content">
-                            <strong>ERS</strong>
+                        <span class="cpf-retirement-option-content">
+                          <strong>ERS</strong>
 
-                            <span>The Too Much Cash on Hand</span>
-                          </span>
-                        </button>
+                          <span>The Too Much Cash on Hand</span>
+                        </span>
+                      </button>
 
-                        <button
-                          class="cpf-retirement-option"
-                          type="button"
-                          data-cpf-retirement-option="self_employed"
-                          role="radio"
-                          aria-checked="false"
+                      <button
+                        class="cpf-retirement-option"
+                        type="button"
+                        data-cpf-retirement-option="self_employed"
+                        role="radio"
+                        aria-checked="false"
+                      >
+                        <span
+                          class="cpf-retirement-option-icon"
+                          aria-hidden="true"
                         >
-                          <span
-                            class="cpf-retirement-option-icon"
-                            aria-hidden="true"
-                          >
-                            <i class="fa-solid fa-briefcase"></i>
-                          </span>
+                          <i class="fa-solid fa-briefcase"></i>
+                        </span>
 
-                          <span class="cpf-retirement-option-content">
-                            <strong>The Self-employed</strong>
+                        <span class="cpf-retirement-option-content">
+                          <strong>The Self-employed</strong>
 
-                            <span>Voluntary Retirement Account top-ups</span>
-                          </span>
-                        </button>
-                      </div>
+                          <span>Voluntary Retirement Account top-ups</span>
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </article>
             </div>
+
+            <section
+  id="costOfWantsIncomeTimeline"
+  class="cost-of-wants-timeline-panel"
+>
+  <div class="cost-of-wants-timeline-card">
+    <header class="cost-of-wants-timeline-header">
+      <h3>How much does working hard pay you?</h3>
+
+      <p>
+        See how your desired passive income grows over time and how CPF LIFE
+        supports your income from age 65.
+      </p>
+    </header>
+
+    <div class="cost-of-wants-cpf-card-divider"></div>
+
+    <div
+      id="costOfWantsTimelineContent"
+      class="cost-of-wants-timeline-content"
+    >
+      <div class="cost-of-wants-timeline-main">
+        <div class="cost-of-wants-timeline-track">
+          <div
+            id="costOfWantsTimelineProgress"
+            class="cost-of-wants-timeline-progress"
+          ></div>
+
+          <div
+            id="costOfWantsTimelineCurrentMarker"
+            class="
+              cost-of-wants-timeline-marker
+              cost-of-wants-timeline-marker--current
+            "
+          >
+            <div class="cost-of-wants-timeline-marker-copy">
+              <strong>Now</strong>
+
+              <span id="costOfWantsTimelineCurrentAge">
+                Age --
+              </span>
+            </div>
+
+            <span class="cost-of-wants-timeline-dot"></span>
+          </div>
+
+          <div
+            id="costOfWantsTimelineFybcMarker"
+            class="
+              cost-of-wants-timeline-marker
+              cost-of-wants-timeline-marker--flag
+            "
+          >
+            <div class="cost-of-wants-timeline-marker-copy">
+              <strong id="costOfWantsTimelineFybcAge">
+                Age --
+              </strong>
+
+              <span>Your Financial Year of Birth</span>
+            </div>
+
+            <span class="cost-of-wants-timeline-flag">
+              <i class="fa-solid fa-flag"></i>
+            </span>
+          </div>
+
+          <div
+            id="costOfWantsTimelineCpfMarker"
+            class="
+              cost-of-wants-timeline-marker
+              cost-of-wants-timeline-marker--flag
+            "
+          >
+            <div class="cost-of-wants-timeline-marker-copy">
+              <strong>Age 65</strong>
+
+              <span>CPF LIFE Starts</span>
+            </div>
+
+            <span class="cost-of-wants-timeline-flag">
+              <i class="fa-solid fa-flag"></i>
+            </span>
+          </div>
+
+          <div
+            id="costOfWantsTimelineMortalityMarker"
+            class="
+              cost-of-wants-timeline-marker
+              cost-of-wants-timeline-marker--flag
+            "
+          >
+            <div class="cost-of-wants-timeline-marker-copy">
+              <strong id="costOfWantsTimelineMortalityAge">
+                Age --
+              </strong>
+
+              <span>Life Expectancy</span>
+            </div>
+
+            <span class="cost-of-wants-timeline-flag">
+              <i class="fa-solid fa-flag"></i>
+            </span>
+          </div>
+        </div>
+
+        <aside class="cost-of-wants-timeline-goal">
+          <span>Your Goal</span>
+
+          <strong>Passive Income Needed at 65</strong>
+
+          <b id="costOfWantsTimelineIncomeAt65">
+            --
+          </b>
+
+          <small>/mth before CPF LIFE</small>
+        </aside>
+      </div>
+
+      <div class="cost-of-wants-timeline-payouts">
+        <article
+          id="costOfWantsTimelineBrsCard"
+          class="cost-of-wants-timeline-payout"
+          data-timeline-cpf-option="brs"
+        >
+          <span>BRS Payout at 65</span>
+
+          <strong id="costOfWantsTimelineBrsPayout">
+            --
+          </strong>
+
+          <small>/mth</small>
+        </article>
+
+        <article
+          id="costOfWantsTimelineFrsCard"
+          class="cost-of-wants-timeline-payout"
+          data-timeline-cpf-option="frs"
+        >
+          <span>FRS Payout at 65</span>
+
+          <strong id="costOfWantsTimelineFrsPayout">
+            --
+          </strong>
+
+          <small>/mth</small>
+        </article>
+
+        <article
+          id="costOfWantsTimelineErsCard"
+          class="cost-of-wants-timeline-payout"
+          data-timeline-cpf-option="ers"
+        >
+          <span>ERS Payout at 65</span>
+
+          <strong id="costOfWantsTimelineErsPayout">
+            --
+          </strong>
+
+          <small>/mth</small>
+        </article>
+      </div>
+
+      <div class="cost-of-wants-timeline-information">
+        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+
+        <p>
+          CPF LIFE payout amounts are estimates based on the selected
+          retirement assumptions and are not guaranteed.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
           </section>
 
           <!-- Protection -->
