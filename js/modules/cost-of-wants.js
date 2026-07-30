@@ -397,28 +397,44 @@ const fybcIncomeElement = document.getElementById("costOfWantsFybcIncome");
 
 const incomeAt65Element = document.getElementById("costOfWantsIncomeAt65");
 
-const timelineCurrentAgeElement = document.getElementById(
-  "costOfWantsTimelineCurrentAge",
+const timelineBrsMarkerElement = document.getElementById(
+  "costOfWantsTimelineBrsMarker",
 );
 
-const timelineFybcAgeElement = document.getElementById(
-  "costOfWantsTimelineFybcAge",
+const timelineFrsMarkerElement = document.getElementById(
+  "costOfWantsTimelineFrsMarker",
 );
 
-const timelineMortalityAgeElement = document.getElementById(
-  "costOfWantsTimelineMortalityAge",
+const timelineErsMarkerElement = document.getElementById(
+  "costOfWantsTimelineErsMarker",
 );
 
-const timelineFybcMarkerElement = document.getElementById(
-  "costOfWantsTimelineFybcMarker",
+const timelineGoalMarkerElement = document.getElementById(
+  "costOfWantsTimelineGoalMarker",
 );
 
-const timelineCpfMarkerElement = document.getElementById(
-  "costOfWantsTimelineCpfMarker",
+const timelineBrsAmountElement = document.getElementById(
+  "costOfWantsTimelineBrsAmount",
 );
 
-const timelineMortalityMarkerElement = document.getElementById(
-  "costOfWantsTimelineMortalityMarker",
+const timelineFrsAmountElement = document.getElementById(
+  "costOfWantsTimelineFrsAmount",
+);
+
+const timelineErsAmountElement = document.getElementById(
+  "costOfWantsTimelineErsAmount",
+);
+
+const timelineGoalAmountElement = document.getElementById(
+  "costOfWantsTimelineGoalAmount",
+);
+
+const timelineIncomeNeededElement = document.getElementById(
+  "costOfWantsTimelineIncomeNeeded",
+);
+
+const timelineTotalPayoutsElement = document.getElementById(
+  "costOfWantsTimelineTotalPayouts",
 );
 
 const fybcInflationNoteElement = document.getElementById(
@@ -2043,76 +2059,91 @@ function renderCostOfWantsTimeline(projection) {
     return;
   }
 
+  const brsPayout = cpfProjection.monthlyPayouts.brs;
+
+  const frsPayout = cpfProjection.monthlyPayouts.frs;
+
+  const ersPayout = cpfProjection.monthlyPayouts.ers;
+
+  const incomeNeeded = projection.monthlyIncomeAt65;
+
+  const selectedCpfPayout =
+    selectedCpfRetirementOption === "self_employed"
+      ? 0
+      : (cpfProjection.monthlyPayouts[selectedCpfRetirementOption] ?? 0);
+
   timelineContentElement?.classList.add("is-ready");
 
-  if (timelineCurrentAgeElement) {
-    timelineCurrentAgeElement.textContent = `Age ${projection.currentAge}`;
+  if (timelineBrsAmountElement) {
+    timelineBrsAmountElement.textContent = `${formatCurrency(brsPayout)}/mth`;
   }
 
-  if (timelineFybcAgeElement) {
-    timelineFybcAgeElement.textContent = `Age ${projection.desiredFybcAge}`;
+  if (timelineFrsAmountElement) {
+    timelineFrsAmountElement.textContent = `${formatCurrency(frsPayout)}/mth`;
   }
 
-  if (timelineMortalityAgeElement) {
-    timelineMortalityAgeElement.textContent = `Age ${projection.mortalityAge}`;
+  if (timelineErsAmountElement) {
+    timelineErsAmountElement.textContent = `${formatCurrency(ersPayout)}/mth`;
   }
 
-  if (timelineBrsPayoutElement) {
-    timelineBrsPayoutElement.textContent = formatCurrency(
-      cpfProjection.monthlyPayouts.brs,
-    );
+  if (timelineGoalAmountElement) {
+    timelineGoalAmountElement.textContent = `${formatCurrency(incomeNeeded)}/mth`;
   }
 
-  if (timelineFrsPayoutElement) {
-    timelineFrsPayoutElement.textContent = formatCurrency(
-      cpfProjection.monthlyPayouts.frs,
-    );
+  if (timelineIncomeNeededElement) {
+    timelineIncomeNeededElement.textContent = `${formatCurrency(incomeNeeded)}/mth`;
   }
 
-  if (timelineErsPayoutElement) {
-    timelineErsPayoutElement.textContent = formatCurrency(
-      cpfProjection.monthlyPayouts.ers,
-    );
+  if (timelineTotalPayoutsElement) {
+    timelineTotalPayoutsElement.textContent = `${formatCurrency(selectedCpfPayout)}/mth`;
   }
 
-  positionCostOfWantsTimelineMarkers(projection);
-
-  timelineCpfOptionCards.forEach(function (card) {
-    const isSelected =
-      card.dataset.timelineCpfOption === selectedCpfRetirementOption;
-
-    card.classList.toggle("selected", isSelected);
+  positionCostOfWantsTimelineMarkers({
+    brsPayout,
+    frsPayout,
+    ersPayout,
+    incomeNeeded,
   });
 }
 
-function positionCostOfWantsTimelineMarkers(projection) {
-  const timelineStartAge = projection.currentAge;
-  const timelineEndAge = projection.mortalityAge;
-
-  const timelineDuration = timelineEndAge - timelineStartAge;
-
-  if (timelineDuration <= 0) {
+function positionCostOfWantsTimelineMarkers({
+  brsPayout,
+  frsPayout,
+  ersPayout,
+  incomeNeeded,
+}) {
+  if (!Number.isFinite(incomeNeeded) || incomeNeeded <= 0) {
     return;
   }
 
-  const getTimelinePosition = function (age) {
-    const position = ((age - timelineStartAge) / timelineDuration) * 100;
+  const getPayoutPosition = function (payout) {
+    if (!Number.isFinite(payout) || payout <= 0) {
+      return 0;
+    }
 
-    return Math.min(100, Math.max(0, position));
+    const percentage = (payout / incomeNeeded) * 100;
+
+    /*
+     * Keep payout indicators within the visible timeline.
+     * The goal flag remains fixed at 100%.
+     */
+    return Math.min(94, Math.max(4, percentage));
   };
 
-  if (timelineFybcMarkerElement) {
-    timelineFybcMarkerElement.style.left = `${getTimelinePosition(
-      projection.desiredFybcAge,
-    )}%`;
+  if (timelineBrsMarkerElement) {
+    timelineBrsMarkerElement.style.left = `${getPayoutPosition(brsPayout)}%`;
   }
 
-  if (timelineCpfMarkerElement) {
-    timelineCpfMarkerElement.style.left = `${getTimelinePosition(65)}%`;
+  if (timelineFrsMarkerElement) {
+    timelineFrsMarkerElement.style.left = `${getPayoutPosition(frsPayout)}%`;
   }
 
-  if (timelineMortalityMarkerElement) {
-    timelineMortalityMarkerElement.style.left = "100%";
+  if (timelineErsMarkerElement) {
+    timelineErsMarkerElement.style.left = `${getPayoutPosition(ersPayout)}%`;
+  }
+
+  if (timelineGoalMarkerElement) {
+    timelineGoalMarkerElement.style.left = "100%";
   }
 }
 
@@ -2495,17 +2526,38 @@ function renderEmptyFybcProjection() {
 function renderEmptyCostOfWantsTimeline() {
   timelineContentElement?.classList.remove("is-ready");
 
-  if (timelineCurrentAgeElement) {
-    timelineCurrentAgeElement.textContent = "Age --";
+  if (timelineBrsAmountElement) {
+    timelineBrsAmountElement.textContent = "--";
   }
 
-  if (timelineFybcAgeElement) {
-    timelineFybcAgeElement.textContent = "Age --";
+  if (timelineFrsAmountElement) {
+    timelineFrsAmountElement.textContent = "--";
   }
 
-  if (timelineMortalityAgeElement) {
-    timelineMortalityAgeElement.textContent = "Age --";
+  if (timelineErsAmountElement) {
+    timelineErsAmountElement.textContent = "--";
   }
+
+  if (timelineGoalAmountElement) {
+    timelineGoalAmountElement.textContent = "--";
+  }
+
+  if (timelineIncomeNeededElement) {
+    timelineIncomeNeededElement.textContent = "--";
+  }
+
+  if (timelineTotalPayoutsElement) {
+    timelineTotalPayoutsElement.textContent = "--";
+  }
+
+  [
+    timelineBrsMarkerElement,
+    timelineFrsMarkerElement,
+    timelineErsMarkerElement,
+    timelineGoalMarkerElement,
+  ].forEach(function (marker) {
+    marker?.style.removeProperty("left");
+  });
 }
 
 function renderEmptyFybcProjectionMethodology() {

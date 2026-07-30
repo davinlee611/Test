@@ -2225,134 +2225,117 @@
             </div>
 
             <section
-  id="costOfWantsIncomeTimeline"
-  class="cost-of-wants-timeline-panel"
->
-  <div class="cost-of-wants-timeline-card">
-    <header class="cost-of-wants-timeline-header">
-      <h3>How much does working hard pay you?</h3>
+              id="costOfWantsIncomeTimeline"
+              class="cost-of-wants-timeline-panel"
+            >
+              <div class="cost-of-wants-timeline-card">
+                <header class="cost-of-wants-timeline-header">
+                  <h3>How much does working hard pay you?</h3>
 
-      <p>
-        See how your desired passive income grows over time and how CPF LIFE
-        supports your income from age 65.
-      </p>
-    </header>
+                  <p>
+                    See how your desired passive income grows over time and how
+                    CPF LIFE supports your income from age 65.
+                  </p>
+                </header>
 
-    <div class="cost-of-wants-cpf-card-divider"></div>
+                <div class="cost-of-wants-cpf-card-divider"></div>
 
-    <div
-      id="costOfWantsTimelineContent"
-      class="cost-of-wants-timeline-content"
-    >
-      <div class="cost-of-wants-timeline-main">
-        <div class="cost-of-wants-timeline-track">
-          <div
-            id="costOfWantsTimelineProgress"
-            class="cost-of-wants-timeline-progress"
-          ></div>
+                <div
+                  id="costOfWantsTimelineContent"
+                  class="cost-of-wants-timeline-content"
+                >
+                  <div class="cost-of-wants-timeline-main">
+                    <div class="cost-of-wants-timeline-track">
+                      <div class="cost-of-wants-timeline-progress"></div>
 
-          <div
-            id="costOfWantsTimelineCurrentMarker"
-            class="
-              cost-of-wants-timeline-marker
-              cost-of-wants-timeline-marker--current
-            "
-          >
-            <div class="cost-of-wants-timeline-marker-copy">
-              <strong>Now</strong>
+                      <div class="cost-of-wants-timeline-zero">
+                        <span>$0</span>
+                        <i aria-hidden="true"></i>
+                      </div>
 
-              <span id="costOfWantsTimelineCurrentAge">
-                Age --
-              </span>
-            </div>
+                      <div
+                        id="costOfWantsTimelineBrsMarker"
+                        class="cost-of-wants-timeline-marker"
+                      >
+                        <div class="cost-of-wants-timeline-marker-copy">
+                          <strong>BRS</strong>
 
-            <span class="cost-of-wants-timeline-dot"></span>
-          </div>
+                          <span id="costOfWantsTimelineBrsAmount"> -- </span>
+                        </div>
 
-          <div
-            id="costOfWantsTimelineFybcMarker"
-            class="
-              cost-of-wants-timeline-marker
-              cost-of-wants-timeline-marker--flag
-            "
-          >
-            <div class="cost-of-wants-timeline-marker-copy">
-              <strong id="costOfWantsTimelineFybcAge">
-                Age --
-              </strong>
+                        <span class="cost-of-wants-timeline-dot"></span>
+                      </div>
 
-              <span>Your Financial Year of Birth</span>
-            </div>
+                      <div
+                        id="costOfWantsTimelineFrsMarker"
+                        class="cost-of-wants-timeline-marker"
+                      >
+                        <div class="cost-of-wants-timeline-marker-copy">
+                          <strong>FRS</strong>
 
-            <span class="cost-of-wants-timeline-flag">
-              <i class="fa-solid fa-flag"></i>
-            </span>
-          </div>
+                          <span id="costOfWantsTimelineFrsAmount"> -- </span>
+                        </div>
 
-          <div
-            id="costOfWantsTimelineCpfMarker"
-            class="
-              cost-of-wants-timeline-marker
-              cost-of-wants-timeline-marker--flag
-            "
-          >
-            <div class="cost-of-wants-timeline-marker-copy">
-              <strong>Age 65</strong>
+                        <span class="cost-of-wants-timeline-dot"></span>
+                      </div>
 
-              <span>CPF LIFE Starts</span>
-            </div>
+                      <div
+                        id="costOfWantsTimelineErsMarker"
+                        class="cost-of-wants-timeline-marker"
+                      >
+                        <div class="cost-of-wants-timeline-marker-copy">
+                          <strong>ERS</strong>
 
-            <span class="cost-of-wants-timeline-flag">
-              <i class="fa-solid fa-flag"></i>
-            </span>
-          </div>
+                          <span id="costOfWantsTimelineErsAmount"> -- </span>
+                        </div>
 
-          <div
-            id="costOfWantsTimelineMortalityMarker"
-            class="
-              cost-of-wants-timeline-marker
-              cost-of-wants-timeline-marker--flag
-            "
-          >
-            <div class="cost-of-wants-timeline-marker-copy">
-              <strong id="costOfWantsTimelineMortalityAge">
-                Age --
-              </strong>
+                        <span class="cost-of-wants-timeline-dot"></span>
+                      </div>
 
-              <span>Life Expectancy</span>
-            </div>
+                      <div
+                        id="costOfWantsTimelineGoalMarker"
+                        class="cost-of-wants-timeline-marker cost-of-wants-timeline-marker--goal"
+                      >
+                        <div class="cost-of-wants-timeline-marker-copy">
+                          <strong>Income Needed</strong>
 
-            <span class="cost-of-wants-timeline-flag">
-              <i class="fa-solid fa-flag"></i>
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="cost-of-wants-timeline-results">
-  <div class="cost-of-wants-timeline-result">
-    <span class="cost-of-wants-timeline-result-label">
-      Required Sum at Age 65
-    </span>
+                          <span id="costOfWantsTimelineGoalAmount"> -- </span>
+                        </div>
 
-    <strong id="costOfWantsTimelineRequiredSum">
-      --
-    </strong>
-  </div>
+                        <span class="cost-of-wants-timeline-flag">
+                          <i class="fa-solid fa-flag" aria-hidden="true"></i>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="cost-of-wants-timeline-results">
+                    <div class="cost-of-wants-timeline-result">
+                      <span class="cost-of-wants-timeline-result-label">
+                        Income Needed
+                      </span>
 
-  <div class="cost-of-wants-timeline-result">
-    <span class="cost-of-wants-timeline-result-label">
-      Projected Payout From Age 65
-    </span>
+                      <strong id="costOfWantsTimelineIncomeNeeded"> -- </strong>
 
-    <strong id="costOfWantsTimelineProjectedPayout">
-      --
-    </strong>
-  </div>
-</div>
-    </div>
-  </div>
-</section>
+                      <small class="cost-of-wants-timeline-result-note">
+                        Monthly passive income needed at age 65
+                      </small>
+                    </div>
 
+                    <div class="cost-of-wants-timeline-result">
+                      <span class="cost-of-wants-timeline-result-label">
+                        Total Payouts
+                      </span>
+
+                      <strong id="costOfWantsTimelineTotalPayouts"> -- </strong>
+
+                      <small class="cost-of-wants-timeline-result-note">
+                        Estimated CPF LIFE income from age 65
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </section>
 
           <!-- Protection -->
