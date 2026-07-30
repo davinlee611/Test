@@ -3919,12 +3919,6 @@ button.insurance-validation-count:disabled {
   line-height: 1.45;
 }
 
-.cost-of-wants-cpf-methodology {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border-color);
-}
-
 .cost-of-wants-cpf-payout-helper {
   margin: 0;
   color: var(--text-secondary);
