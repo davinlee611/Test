@@ -2006,61 +2006,212 @@ function renderFybcProjectionMethodology(projection) {
     return;
   }
 
-  projectionCalculationSummaryElement.textContent = [
-    "The Total Capital Required represents the estimated",
-    "retirement income needed from the selected FYBC age",
-    "until the planned mortality age.",
-    "The desired monthly passive income is adjusted for inflation.",
-    "From age 65 onward, the selected estimated CPF LIFE",
-    "monthly payout is deducted.",
-    "No investment growth is assumed.",
-  ].join(" ");
+  const cpfLifeStartAge = 65;
 
-  projectionCalculationDataElement.replaceChildren(
-    createCpfMethodologyRow("Current age", String(projection.currentAge)),
-
-    createCpfMethodologyRow(
-      "Desired FYBC age",
-      String(projection.desiredFybcAge),
-    ),
-
-    createCpfMethodologyRow(
-      "Planned mortality age",
-      String(projection.mortalityAge),
-    ),
-
-    createCpfMethodologyRow(
-      "Years until FYBC",
-      String(projection.yearsRemaining),
-    ),
-
-    createCpfMethodologyRow(
-      "Selected monthly income",
-      `${formatCurrency(projection.monthlyPassiveIncome)} in today's value`,
-    ),
-
-    createCpfMethodologyRow(
-      "Inflation assumption",
-      formatPercentage(projection.inflationRate * 100),
-    ),
-
-    createCpfMethodologyRow(
-      "Monthly income at FYBC",
-      formatCurrency(projection.monthlyIncomeAtFybc),
-    ),
-
-    createCpfMethodologyRow(
-      "Estimated CPF LIFE income",
-      `${formatCurrency(projection.cpfLifePayout)} per month from age 65`,
-    ),
-
-    createCpfMethodologyRow("Investment growth", "None assumed"),
-
-    createCpfMethodologyRow(
-      "Total Capital Required",
-      formatCurrency(projection.totalCapitalRequired),
-    ),
+  const yearsFromFybcToCpfLife = Math.max(
+    0,
+    cpfLifeStartAge - projection.desiredFybcAge,
   );
+
+  const monthlyIncomeAtCpfLifeStart =
+    projection.monthlyIncomeAtFybc *
+    Math.pow(1 + projection.inflationRate, yearsFromFybcToCpfLife);
+
+  const passiveIncomeNeededAfterCpf = Math.max(
+    0,
+    monthlyIncomeAtCpfLifeStart - projection.cpfLifePayout,
+  );
+
+  projectionCalculationSummaryElement.textContent =
+    "Your desired passive income is adjusted for inflation. " +
+    "Before age 65, the full amount must be funded privately. " +
+    "From age 65, estimated CPF LIFE income reduces the amount required.";
+
+  projectionCalculationDataElement.innerHTML = `
+    <div class="cost-of-wants-projection-flow">
+      <div class="cost-of-wants-projection-flow-step">
+        <span class="cost-of-wants-projection-flow-label">
+          Today's Desired Passive Income
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-value">
+          ${formatCurrency(projection.monthlyPassiveIncome)}/mth
+        </strong>
+      </div>
+
+      ${createProjectionFlowChevron()}
+
+      <div class="cost-of-wants-projection-flow-step">
+        <span class="cost-of-wants-projection-flow-label">
+          Inflation
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-value">
+          ${formatPercentage(projection.inflationRate * 100)}
+          p.a. for ${projection.yearsRemaining}
+          ${projection.yearsRemaining === 1 ? "year" : "years"}
+        </strong>
+      </div>
+
+      ${createProjectionFlowChevron()}
+
+      <div class="cost-of-wants-projection-flow-step">
+        <span class="cost-of-wants-projection-flow-label">
+          Projected Passive Income Needed at Age
+          ${projection.desiredFybcAge}
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-value">
+          ${formatCurrency(projection.monthlyIncomeAtFybc)}/mth
+        </strong>
+      </div>
+
+      ${
+        projection.desiredFybcAge < cpfLifeStartAge
+          ? createPreAndPostCpfProjectionFlow({
+              projection,
+              monthlyIncomeAtCpfLifeStart,
+              passiveIncomeNeededAfterCpf,
+            })
+          : createPostCpfOnlyProjectionFlow({
+              projection,
+              passiveIncomeNeededAfterCpf,
+            })
+      }
+
+      ${createProjectionFlowChevron()}
+
+      <div
+        class="
+          cost-of-wants-projection-flow-step
+          cost-of-wants-projection-flow-step--total
+        "
+      >
+        <span class="cost-of-wants-projection-flow-label">
+          Total Capital Required
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-total">
+          ${formatCurrency(projection.totalCapitalRequired)}
+        </strong>
+
+        <small class="cost-of-wants-projection-flow-note">
+          Annual income requirements are increased by inflation
+          until age ${projection.mortalityAge}. No investment growth
+          is assumed.
+        </small>
+      </div>
+    </div>
+  `;
+}
+
+function createProjectionFlowChevron() {
+  return `
+    <div
+      class="cost-of-wants-projection-flow-chevron"
+      aria-hidden="true"
+    >
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+  `;
+}
+
+function createPreAndPostCpfProjectionFlow({
+  projection,
+  monthlyIncomeAtCpfLifeStart,
+  passiveIncomeNeededAfterCpf,
+}) {
+  return `
+    <div
+      class="cost-of-wants-projection-flow-branch"
+      aria-hidden="true"
+    >
+      <span></span>
+      <i class="fa-solid fa-chevron-down"></i>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+
+    <div class="cost-of-wants-projection-flow-split">
+      <div class="cost-of-wants-projection-flow-period">
+        <span class="cost-of-wants-projection-flow-period-age">
+          Age ${projection.desiredFybcAge}–64
+        </span>
+
+        <span class="cost-of-wants-projection-flow-period-description">
+          CPF LIFE Not Yet Paid
+        </span>
+
+        <span class="cost-of-wants-projection-flow-label">
+          Passive Income Needed
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-value">
+          ${formatCurrency(projection.monthlyIncomeAtFybc)}/mth
+        </strong>
+
+        <small class="cost-of-wants-projection-flow-note">
+          Starting at age ${projection.desiredFybcAge}
+        </small>
+      </div>
+
+      <div class="cost-of-wants-projection-flow-period">
+        <span class="cost-of-wants-projection-flow-period-age">
+          Age 65–${projection.mortalityAge}
+        </span>
+
+        <span class="cost-of-wants-projection-flow-period-description">
+          CPF LIFE Starts
+        </span>
+
+        <span class="cost-of-wants-projection-flow-label">
+          Passive Income Needed
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-value">
+          ${formatCurrency(passiveIncomeNeededAfterCpf)}/mth
+        </strong>
+
+        <small class="cost-of-wants-projection-flow-note">
+          ${formatCurrency(monthlyIncomeAtCpfLifeStart)}
+          less ${formatCurrency(projection.cpfLifePayout)}
+          CPF LIFE
+        </small>
+      </div>
+    </div>
+  `;
+}
+
+function createPostCpfOnlyProjectionFlow({
+  projection,
+  passiveIncomeNeededAfterCpf,
+}) {
+  return `
+    ${createProjectionFlowChevron()}
+
+    <div class="cost-of-wants-projection-flow-period">
+      <span class="cost-of-wants-projection-flow-period-age">
+        Age ${projection.desiredFybcAge}–${projection.mortalityAge}
+      </span>
+
+      <span class="cost-of-wants-projection-flow-period-description">
+        CPF LIFE Included
+      </span>
+
+      <span class="cost-of-wants-projection-flow-label">
+        Passive Income Needed
+      </span>
+
+      <strong class="cost-of-wants-projection-flow-value">
+        ${formatCurrency(passiveIncomeNeededAfterCpf)}/mth
+      </strong>
+
+      <small class="cost-of-wants-projection-flow-note">
+        ${formatCurrency(projection.monthlyIncomeAtFybc)}
+        less ${formatCurrency(projection.cpfLifePayout)}
+        CPF LIFE
+      </small>
+    </div>
+  `;
 }
 
 function calculateFybcProjection() {
