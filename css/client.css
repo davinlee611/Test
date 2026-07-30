@@ -4012,7 +4012,6 @@ button.insurance-validation-count:disabled {
   overflow: hidden;
   margin-top: 0;
   padding: 4px;
-  border-top: 30px solid var(--border-color);
   background: #ffffff;
 } 
 
