@@ -3930,7 +3930,7 @@ button.insurance-validation-count:disabled {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  margin-top: 10px;
+  margin-top: 0px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -4004,8 +4004,9 @@ button.insurance-validation-count:disabled {
 
  .cost-of-wants-projection-methodology {
   overflow: hidden;
-  margin-top: 0;
-  padding: 0px;
+  margin: 0;
+  padding: 4px;
+  border: 0px;
   background: #ffffff;
 } 
 
