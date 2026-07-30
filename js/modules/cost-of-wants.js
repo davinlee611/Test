@@ -505,6 +505,10 @@ const remainingCapitalElement = document.getElementById(
   "costOfWantsRemainingCapital",
 );
 
+const capitalNeededHelperElement = document.getElementById(
+  "costOfWantsCapitalNeededHelper",
+);
+
 /* ========================================
    MODULE STATE
 ======================================== */
@@ -2057,6 +2061,10 @@ function renderFybcProjectionResults(projection) {
     );
   }
 
+  if (capitalNeededHelperElement) {
+    capitalNeededHelperElement.textContent = `After accounting monthly income needed until planned mortality age of ${projection.mortalityAge}`;
+  }
+
   renderFybcProjectionMethodology(projection);
   renderCostOfWantsTimeline(projection);
 }
@@ -2270,8 +2278,7 @@ function renderFybcProjectionMethodology(projection) {
 
         <small class="cost-of-wants-projection-flow-note">
           Annual income requirements are increased by inflation
-          until age ${projection.mortalityAge}. No investment growth
-          is assumed.
+          until age ${projection.mortalityAge}.
         </small>
       </div>
     </div>
@@ -2613,6 +2620,11 @@ function renderEmptyFybcProjectionMethodology() {
 
   if (projectionCalculationDetailsElement) {
     projectionCalculationDetailsElement.hidden = true;
+  }
+
+  if (capitalNeededHelperElement) {
+    capitalNeededHelperElement.textContent =
+      "After accounting monthly income needed until planned mortality age of --";
   }
 
   projectionCalculationToggleButton?.setAttribute("aria-expanded", "false");
