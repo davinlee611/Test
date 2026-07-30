@@ -409,10 +409,6 @@ const timelineMortalityAgeElement = document.getElementById(
   "costOfWantsTimelineMortalityAge",
 );
 
-const timelineIncomeAt65Element = document.getElementById(
-  "costOfWantsTimelineIncomeAt65",
-);
-
 const timelineFybcMarkerElement = document.getElementById(
   "costOfWantsTimelineFybcMarker",
 );
@@ -423,22 +419,6 @@ const timelineCpfMarkerElement = document.getElementById(
 
 const timelineMortalityMarkerElement = document.getElementById(
   "costOfWantsTimelineMortalityMarker",
-);
-
-const timelineBrsPayoutElement = document.getElementById(
-  "costOfWantsTimelineBrsPayout",
-);
-
-const timelineFrsPayoutElement = document.getElementById(
-  "costOfWantsTimelineFrsPayout",
-);
-
-const timelineErsPayoutElement = document.getElementById(
-  "costOfWantsTimelineErsPayout",
-);
-
-const timelineCpfOptionCards = document.querySelectorAll(
-  "[data-timeline-cpf-option]",
 );
 
 const fybcInflationNoteElement = document.getElementById(
@@ -493,6 +473,10 @@ const projectionCalculationSummaryElement = document.getElementById(
 
 const projectionCalculationDataElement = document.getElementById(
   "costOfWantsProjectionCalculationData",
+);
+
+const timelineContentElement = document.getElementById(
+  "costOfWantsTimelineContent",
 );
 
 /* ========================================
@@ -2059,6 +2043,8 @@ function renderCostOfWantsTimeline(projection) {
     return;
   }
 
+  timelineContentElement?.classList.add("is-ready");
+
   if (timelineCurrentAgeElement) {
     timelineCurrentAgeElement.textContent = `Age ${projection.currentAge}`;
   }
@@ -2513,6 +2499,8 @@ function renderEmptyFybcProjection() {
 }
 
 function renderEmptyCostOfWantsTimeline() {
+  timelineContentElement?.classList.remove("is-ready");
+
   if (timelineCurrentAgeElement) {
     timelineCurrentAgeElement.textContent = "Age --";
   }
@@ -2528,22 +2516,6 @@ function renderEmptyCostOfWantsTimeline() {
   if (timelineIncomeAt65Element) {
     timelineIncomeAt65Element.textContent = "--";
   }
-
-  if (timelineBrsPayoutElement) {
-    timelineBrsPayoutElement.textContent = "--";
-  }
-
-  if (timelineFrsPayoutElement) {
-    timelineFrsPayoutElement.textContent = "--";
-  }
-
-  if (timelineErsPayoutElement) {
-    timelineErsPayoutElement.textContent = "--";
-  }
-
-  timelineCpfOptionCards.forEach(function (card) {
-    card.classList.remove("selected");
-  });
 }
 
 function renderEmptyFybcProjectionMethodology() {
