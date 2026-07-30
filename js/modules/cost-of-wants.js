@@ -495,6 +495,10 @@ const timelineContentElement = document.getElementById(
   "costOfWantsTimelineContent",
 );
 
+const timelineProgressElement = document.getElementById(
+  "costOfWantsTimelineProgress",
+);
+
 /* ========================================
    MODULE STATE
 ======================================== */
