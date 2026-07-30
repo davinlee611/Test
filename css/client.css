@@ -4389,6 +4389,137 @@ button.insurance-validation-count:disabled {
   }
 }
 
+/* ========================================
+   COST OF WANTS OUTCOME SUMMARY
+======================================== */
+
+.cost-of-wants-outcome-panel {
+  margin-top: 32px;
+  padding: 26px;
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  background: var(--background-color);
+}
+
+.cost-of-wants-outcome-card {
+  display: grid;
+  gap: 24px;
+  padding: 26px;
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  background: var(--card-background);
+}
+
+.cost-of-wants-outcome-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.cost-of-wants-outcome-result {
+  display: flex;
+  min-height: 112px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px 24px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.cost-of-wants-outcome-result > span {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.cost-of-wants-outcome-result > small {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.cost-of-wants-outcome-result > strong {
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.cost-of-wants-outcome-result--gap {
+  border-color: #f5b7bd;
+  background: #fff1f2;
+}
+
+.cost-of-wants-outcome-result--gap > strong {
+  color: #b42318;
+}
+
+.cost-of-wants-outcome-result--capital {
+  border-color: #d7df9c;
+  background: #f7f9dc;
+}
+
+.cost-of-wants-outcome-result--capital > strong {
+  color: #526116;
+}
+
+/* Analysis actions */
+
+.cost-of-wants-analysis-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.cost-of-wants-analysis-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 0 20px;
+  color: #ffffff;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.cost-of-wants-analysis-button--commitments {
+  background: #0f766e;
+}
+
+.cost-of-wants-analysis-button--commitments:hover {
+  background: #115e59;
+}
+
+.cost-of-wants-analysis-button--report {
+  background: #4338ca;
+}
+
+.cost-of-wants-analysis-button--report:hover {
+  background: #3730a3;
+}
+
+@media (max-width: 700px) {
+  .cost-of-wants-outcome-panel,
+  .cost-of-wants-outcome-card {
+    padding: 18px;
+  }
+
+  .cost-of-wants-analysis-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cost-of-wants-analysis-button {
+    width: 100%;
+  }
+}
+
 .cpf-retirement-options {
   display: grid;
   flex: 1;

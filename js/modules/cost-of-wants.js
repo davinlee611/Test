@@ -499,6 +499,12 @@ const timelineProgressElement = document.getElementById(
   "costOfWantsTimelineProgress",
 );
 
+const incomeGapElement = document.getElementById("costOfWantsIncomeGap");
+
+const remainingCapitalElement = document.getElementById(
+  "costOfWantsRemainingCapital",
+);
+
 /* ========================================
    MODULE STATE
 ======================================== */
@@ -2076,6 +2082,18 @@ function renderCostOfWantsTimeline(projection) {
       ? 0
       : (cpfProjection.monthlyPayouts[selectedCpfRetirementOption] ?? 0);
 
+  const incomeGap = Math.max(0, incomeNeeded - selectedCpfPayout);
+
+  if (incomeGapElement) {
+    incomeGapElement.textContent = `${formatCurrency(incomeGap)}/mth`;
+  }
+
+  if (remainingCapitalElement) {
+    remainingCapitalElement.textContent = formatCurrency(
+      projection.totalCapitalRequired,
+    );
+  }
+
   const payoutProgressPercentage =
     incomeNeeded > 0
       ? Math.min(100, Math.max(0, (selectedCpfPayout / incomeNeeded) * 100))
@@ -2561,6 +2579,14 @@ function renderEmptyCostOfWantsTimeline() {
 
   if (timelineTotalPayoutsElement) {
     timelineTotalPayoutsElement.textContent = "--";
+  }
+
+  if (incomeGapElement) {
+    incomeGapElement.textContent = "--";
+  }
+
+  if (remainingCapitalElement) {
+    remainingCapitalElement.textContent = "--";
   }
 
   if (timelineProgressElement) {
