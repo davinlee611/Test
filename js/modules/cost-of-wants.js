@@ -2057,12 +2057,6 @@ function renderCostOfWantsTimeline(projection) {
     timelineMortalityAgeElement.textContent = `Age ${projection.mortalityAge}`;
   }
 
-  if (timelineIncomeAt65Element) {
-    timelineIncomeAt65Element.textContent = formatCurrency(
-      projection.monthlyIncomeAt65,
-    );
-  }
-
   if (timelineBrsPayoutElement) {
     timelineBrsPayoutElement.textContent = formatCurrency(
       cpfProjection.monthlyPayouts.brs,
@@ -2511,10 +2505,6 @@ function renderEmptyCostOfWantsTimeline() {
 
   if (timelineMortalityAgeElement) {
     timelineMortalityAgeElement.textContent = "Age --";
-  }
-
-  if (timelineIncomeAt65Element) {
-    timelineIncomeAt65Element.textContent = "--";
   }
 }
 
