@@ -1828,8 +1828,8 @@ function renderEmptyCostOfWantsTimeline() {
     elements.timeline.incomeNeeded.textContent = "--";
   }
 
-  if (timelineTotalPayoutsElement) {
-    timelineTotalPayoutsElement.textContent = "--";
+  if (elements.timeline.totalPayouts) {
+    elements.timeline.totalPayouts.textContent = "--";
   }
 
   if (incomeGapElement) {
