@@ -567,19 +567,28 @@ function renderFloatingSummary() {
     position.netSurplus,
   );
 
-  setCurrencyText(breakdownIncomeElement, position.monthlyTakeHomeIncome);
-
-  setDeductionCurrencyText(breakdownExpensesElement, position.monthlyExpenses);
+  setCurrencyText(
+    elements.floatingSummary.breakdownIncome,
+    position.monthlyTakeHomeIncome,
+  );
 
   setDeductionCurrencyText(
-    breakdownCommitmentsElement,
+    elements.floatingSummary.breakdownExpenses,
+    position.monthlyExpenses,
+  );
+
+  setDeductionCurrencyText(
+    elements.floatingSummary.breakdownCommitments,
     position.monthlyCommitments,
   );
 
-  setSignedCurrencyText(breakdownSurplusElement, position.monthlySurplus);
+  setSignedCurrencyText(
+    elements.floatingSummary.breakdownSurplus,
+    position.monthlySurplus,
+  );
 
   setDeductionCurrencyText(
-    breakdownGoalSavingsElement,
+    elements.floatingSummary.breakdownGoalSavings,
     position.minimumGoalSavings,
   );
 
@@ -587,7 +596,10 @@ function renderFloatingSummary() {
 
   renderGoalSavingsStatus(position.goalSavingsSummary);
 
-  setSignedCurrencyText(breakdownNetSurplusElement, position.netSurplus);
+  setSignedCurrencyText(
+    elements.floatingSummary.breakdownNetSurplus,
+    position.netSurplus,
+  );
 
   setSignedCurrencyText(
     elements.floatingSummary.availableSurplus,

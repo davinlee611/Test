@@ -79,6 +79,24 @@ export const costOfWantsElements = Object.freeze({
     goalSavingsList: document.getElementById("costOfWantsGoalSavingsList"),
 
     goalSavingsStatus: document.getElementById("costOfWantsGoalSavingsStatus"),
+
+    breakdownIncome: document.getElementById("costOfWantsBreakdownIncome"),
+
+    breakdownExpenses: document.getElementById("costOfWantsBreakdownExpenses"),
+
+    breakdownCommitments: document.getElementById(
+      "costOfWantsBreakdownCommitments",
+    ),
+
+    breakdownSurplus: document.getElementById("costOfWantsBreakdownSurplus"),
+
+    breakdownGoalSavings: document.getElementById(
+      "costOfWantsBreakdownGoalSavings",
+    ),
+
+    breakdownNetSurplus: document.getElementById(
+      "costOfWantsBreakdownNetSurplus",
+    ),
   }),
 
   cpf: Object.freeze({
