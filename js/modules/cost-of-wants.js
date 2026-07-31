@@ -552,11 +552,20 @@ function calculateTotalMonthlyExpenses() {
 function renderFloatingSummary() {
   const position = calculateMonthlyFinancialPosition();
 
-  setSignedCurrencyText(monthlySurplusElement, position.monthlySurplus);
+  setSignedCurrencyText(
+    elements.floatingSummary.monthlySurplus,
+    position.monthlySurplus,
+  );
 
-  setCurrencyText(goalSavingsElement, position.minimumGoalSavings);
+  setCurrencyText(
+    elements.floatingSummary.goalSavings,
+    position.minimumGoalSavings,
+  );
 
-  setSignedCurrencyText(netSurplusElement, position.netSurplus);
+  setSignedCurrencyText(
+    elements.floatingSummary.netSurplus,
+    position.netSurplus,
+  );
 
   setCurrencyText(breakdownIncomeElement, position.monthlyTakeHomeIncome);
 
@@ -580,7 +589,10 @@ function renderFloatingSummary() {
 
   setSignedCurrencyText(breakdownNetSurplusElement, position.netSurplus);
 
-  setSignedCurrencyText(availableSurplusElement, position.netSurplus);
+  setSignedCurrencyText(
+    elements.floatingSummary.availableSurplus,
+    position.netSurplus,
+  );
 
   applyFinancialPositionClass(
     elements.floatingSummary.container,
@@ -672,11 +684,14 @@ function renderGoalSavingsStatus(goalSavingsSummary) {
     );
   }
 
-  goalSavingsStatusElement.hidden = messages.length === 0;
+  elements.floatingSummary.goalSavingsStatus.hidden = messages.length === 0;
 
-  goalSavingsStatusElement.textContent = messages.join(" · ");
+  elements.floatingSummary.goalSavingsStatus.textContent = messages.join(" · ");
 
-  goalSavingsStatusElement.classList.toggle("is-review", messages.length > 0);
+  elements.floatingSummary.goalSavingsStatus.classList.toggle(
+    "is-review",
+    messages.length > 0,
+  );
 }
 
 /* ========================================
