@@ -864,7 +864,7 @@ function attachCpfCalculationListeners() {
     toggleCpfCalculationDetails,
   );
 
-  projectionCalculationToggleButton?.addEventListener(
+  elements.projection.calculationToggleButton?.addEventListener(
     "click",
     toggleProjectionCalculationDetails,
   );
@@ -895,22 +895,25 @@ function toggleCpfCalculationDetails() {
 
 function toggleProjectionCalculationDetails() {
   if (
-    !projectionCalculationToggleButton ||
-    !projectionCalculationDetailsElement
+    !elements.projection.calculationToggleButton ||
+    !elements.projection.calculationDetails
   ) {
     return;
   }
 
-  const willExpand = projectionCalculationDetailsElement.hidden;
+  const willExpand = elements.projection.calculationDetails.hidden;
 
-  projectionCalculationDetailsElement.hidden = !willExpand;
+  elements.projection.calculationDetails.hidden = !willExpand;
 
-  projectionCalculationToggleButton.setAttribute(
+  elements.projection.calculationToggleButton.setAttribute(
     "aria-expanded",
     String(willExpand),
   );
 
-  projectionCalculationToggleIcon?.classList.toggle("is-expanded", willExpand);
+  elements.projection.calculationToggleIcon?.classList.toggle(
+    "is-expanded",
+    willExpand,
+  );
 }
 
 function renderCpfPayoutMethodology(projection) {
@@ -1512,8 +1515,8 @@ function positionCostOfWantsTimelineMarkers({
 
 function renderFybcProjectionMethodology(projection) {
   if (
-    !projectionCalculationSummaryElement ||
-    !projectionCalculationDataElement
+    !elements.projection.calculationSummary ||
+    !elements.projection.calculationData
   ) {
     return;
   }
@@ -1527,12 +1530,12 @@ function renderFybcProjectionMethodology(projection) {
     monthlyIncomeAtCpfLifeStart - projection.cpfLifePayout,
   );
 
-  projectionCalculationSummaryElement.textContent =
+  elements.projection.calculationSummary.textContent =
     "Your desired passive income is adjusted for inflation. " +
     "Before age 65, the full amount must be funded privately. " +
     "From age 65, estimated CPF LIFE income reduces the amount required.";
 
-  projectionCalculationDataElement.innerHTML = `
+  elements.projection.calculationData.innerHTML = `
     <div class="cost-of-wants-projection-flow">
       <div class="cost-of-wants-projection-flow-step">
         <span class="cost-of-wants-projection-flow-label">
@@ -1828,15 +1831,15 @@ function renderEmptyCostOfWantsTimeline() {
 }
 
 function renderEmptyFybcProjectionMethodology() {
-  if (projectionCalculationSummaryElement) {
-    projectionCalculationSummaryElement.textContent =
+  if (elements.projection.calculationSummary) {
+    elements.projection.calculationSummary.textContent =
       "Complete the FYBC assumptions to view the calculation details.";
   }
 
-  projectionCalculationDataElement?.replaceChildren();
+  elements.projection.calculationData?.replaceChildren();
 
-  if (projectionCalculationDetailsElement) {
-    projectionCalculationDetailsElement.hidden = true;
+  if (elements.projection.calculationDetails) {
+    elements.projection.calculationDetails.hidden = true;
   }
 
   if (capitalNeededHelperElement) {
@@ -1844,9 +1847,12 @@ function renderEmptyFybcProjectionMethodology() {
       "After accounting monthly income needed until planned mortality age of --";
   }
 
-  projectionCalculationToggleButton?.setAttribute("aria-expanded", "false");
+  elements.projection.calculationToggleButton?.setAttribute(
+    "aria-expanded",
+    "false",
+  );
 
-  projectionCalculationToggleIcon?.classList.remove("is-expanded");
+  elements.projection.calculationToggleIcon?.classList.remove("is-expanded");
 }
 
 /* ========================================

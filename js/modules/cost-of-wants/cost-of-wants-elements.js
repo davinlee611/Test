@@ -125,7 +125,21 @@ export const costOfWantsElements = Object.freeze({
 
   timeline: Object.freeze({}),
 
-  projection: Object.freeze({}),
+  projection: Object.freeze({
+    calculationToggleButton: document.getElementById(
+      "projectionCalculationToggleButton",
+    ),
+
+    calculationToggleIcon: document.getElementById(
+      "projectionCalculationToggleIcon",
+    ),
+
+    calculationDetails: document.getElementById("projectionCalculationDetails"),
+
+    calculationSummary: document.getElementById("projectionCalculationSummary"),
+
+    calculationData: document.getElementById("projectionCalculationData"),
+  }),
 
   validation: Object.freeze({}),
 });
