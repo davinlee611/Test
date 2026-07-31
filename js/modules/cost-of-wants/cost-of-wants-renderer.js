@@ -309,15 +309,11 @@ function renderGoalSavingsStatus(goalSavingsSummary) {
 
 export function renderCpfRetirementOptionSelection(selectedOption) {
   elements.cpf.optionButtons.forEach(function (button) {
-    const isSelected =
-      button.dataset.cpfRetirementOption === selectedOption;
+    const isSelected = button.dataset.cpfRetirementOption === selectedOption;
 
     button.classList.toggle("selected", isSelected);
 
-    button.setAttribute(
-      "aria-checked",
-      String(isSelected),
-    );
+    button.setAttribute("aria-checked", String(isSelected));
   });
 }
 
@@ -328,32 +324,19 @@ export function renderCpfRetirementOptionSelection(selectedOption) {
 export function renderProjectedCpfRetirementSums(projection) {
   if (!projection?.isValid) {
     renderEmptyCpfRetirementSums(
-      projection?.message ||
-        "CPF retirement projection is unavailable.",
+      projection?.message || "CPF retirement projection is unavailable.",
     );
 
     return;
   }
 
-  const cohortAgeText =
-    getCpfCohortAgeText(
-      projection.yearTurning55,
-    );
+  const cohortAgeText = getCpfCohortAgeText(projection.yearTurning55);
 
-  setCurrencyText(
-    elements.cpf.projectedBrs,
-    projection.retirementSums.brs,
-  );
+  setCurrencyText(elements.cpf.projectedBrs, projection.retirementSums.brs);
 
-  setCurrencyText(
-    elements.cpf.projectedFrs,
-    projection.retirementSums.frs,
-  );
+  setCurrencyText(elements.cpf.projectedFrs, projection.retirementSums.frs);
 
-  setCurrencyText(
-    elements.cpf.projectedErs,
-    projection.retirementSums.ers,
-  );
+  setCurrencyText(elements.cpf.projectedErs, projection.retirementSums.ers);
 
   setCurrencyText(
     elements.cpf.projectedBrsPayout,
@@ -371,25 +354,18 @@ export function renderProjectedCpfRetirementSums(projection) {
   );
 
   renderCpfProjectionBasis({
-    retirementSumBasis:
-      projection.retirementSumBasis,
+    retirementSumBasis: projection.retirementSumBasis,
 
-    payoutBasis:
-      projection.payoutBasis,
+    payoutBasis: projection.payoutBasis,
   });
 
-  renderCpfPayoutMethodology(
-    projection,
-  );
+  renderCpfPayoutMethodology(projection);
 
   if (!elements.cpf.projectionCaption) {
     return;
   }
 
-  const genderLabel =
-    projection.gender === "male"
-      ? "male"
-      : "female";
+  const genderLabel = projection.gender === "male" ? "male" : "female";
 
   if (
     projection.retirementSumBasis === "official" &&
@@ -430,9 +406,7 @@ export function renderProjectedCpfRetirementSums(projection) {
 
     `Retirement Sums assume an annual increase of`,
 
-    `${formatPercentage(
-      projection.annualGrowthRate,
-    )}.`,
+    `${formatPercentage(projection.annualGrowthRate)}.`,
 
     `CPF LIFE payouts are estimated using the locked`,
 
@@ -456,44 +430,29 @@ function renderCpfPayoutMethodology(projection) {
   }
 
   if (projection.payoutBasis === "official") {
-    renderOfficialCpfPayoutMethodology(
-      projection,
-    );
+    renderOfficialCpfPayoutMethodology(projection);
 
     return;
   }
 
-  renderProjectedCpfPayoutMethodology(
-    projection,
-  );
+  renderProjectedCpfPayoutMethodology(projection);
 }
 
-function renderProjectedCpfPayoutMethodology(
-  projection,
-) {
-  const model =
-    CPF_LIFE_PAYOUT_MODEL[
-      projection.gender
-    ];
+function renderProjectedCpfPayoutMethodology(projection) {
+  const model = CPF_LIFE_PAYOUT_MODEL[projection.gender];
 
   if (!model) {
     renderEmptyCpfPayoutMethodology();
     return;
   }
 
-  const genderLabel =
-    projection.gender === "male"
-      ? "Male"
-      : "Female";
+  const genderLabel = projection.gender === "male" ? "Male" : "Female";
 
-  const conversionFactor =
-    model.raFactor * 100;
+  const conversionFactor = model.raFactor * 100;
 
   elements.cpf.payoutHelper.textContent =
     `RA payout projection using a conversion factor of ` +
-    `${formatCpfPayoutFactor(
-      conversionFactor,
-    )}.`;
+    `${formatCpfPayoutFactor(conversionFactor)}.`;
 
   elements.cpf.calculationSummary.textContent = [
     `The projected ${genderLabel.toLowerCase()} CPF LIFE payout`,
@@ -502,13 +461,9 @@ function renderProjectedCpfPayoutMethodology(
 
     `and ERS payout figures.`,
 
-    `A fixed monthly amount of ${formatCurrency(
-      model.fixedAmount,
-    )}`,
+    `A fixed monthly amount of ${formatCurrency(model.fixedAmount)}`,
 
-    `is added to ${formatCpfPayoutFactor(
-      conversionFactor,
-    )}`,
+    `is added to ${formatCpfPayoutFactor(conversionFactor)}`,
 
     `of the projected RA balance at age 65.`,
   ].join(" ");
@@ -523,21 +478,15 @@ function renderProjectedCpfPayoutMethodology(
     createCpfMethodologyRow(
       "Monthly payout formula",
 
-      `${formatCurrency(
-        model.fixedAmount,
-      )} + RA at age 65 × ` +
-        `${formatCpfPayoutFactor(
-          conversionFactor,
-        )}`,
+      `${formatCurrency(model.fixedAmount)} + RA at age 65 × ` +
+        `${formatCpfPayoutFactor(conversionFactor)}`,
     ),
 
     createCpfMethodologyRow(
       "RA projection",
 
       `Retirement Sum at age 55 compounded at ` +
-        `${formatPercentage(
-          CPF_RA_INTEREST_RATE,
-        )} annually for ` +
+        `${formatPercentage(CPF_RA_INTEREST_RATE)} annually for ` +
         `${CPF_RA_COMPOUNDING_YEARS} years`,
     ),
 
@@ -555,9 +504,7 @@ function renderProjectedCpfPayoutMethodology(
   );
 }
 
-function renderOfficialCpfPayoutMethodology(
-  projection,
-) {
+function renderOfficialCpfPayoutMethodology(projection) {
   elements.cpf.payoutHelper.textContent =
     "Published CPF LIFE payout figures are used for this cohort.";
 
@@ -581,9 +528,7 @@ function renderOfficialCpfPayoutMethodology(
     createCpfMethodologyRow(
       "Gender",
 
-      projection.gender === "male"
-        ? "Male"
-        : "Female",
+      projection.gender === "male" ? "Male" : "Female",
     ),
 
     createCpfMethodologyRow(
@@ -600,30 +545,20 @@ function renderOfficialCpfPayoutMethodology(
   );
 }
 
-function createCpfMethodologyRow(
-  label,
-  value,
-) {
-  const row =
-    document.createElement("div");
+function createCpfMethodologyRow(label, value) {
+  const row = document.createElement("div");
 
-  row.className =
-    "cost-of-wants-cpf-calculation-row";
+  row.className = "cost-of-wants-cpf-calculation-row";
 
-  const labelElement =
-    document.createElement("span");
+  const labelElement = document.createElement("span");
 
   labelElement.textContent = label;
 
-  const valueElement =
-    document.createElement("strong");
+  const valueElement = document.createElement("strong");
 
   valueElement.textContent = value;
 
-  row.append(
-    labelElement,
-    valueElement,
-  );
+  row.append(labelElement, valueElement);
 
   return row;
 }
@@ -653,95 +588,66 @@ function renderEmptyCpfRetirementSums(message) {
     elements.cpf.projectedErsBasis,
   ];
 
-  retirementSumElements.forEach(
-    function (element) {
-      if (element) {
-        element.textContent = "--";
-      }
-    },
-  );
-
-  payoutElements.forEach(
-    function (element) {
-      if (element) {
-        element.textContent = "--";
-      }
-    },
-  );
-
-  basisElements.forEach(
-    function (element) {
-      if (!element) {
-        return;
-      }
-
+  retirementSumElements.forEach(function (element) {
+    if (element) {
       element.textContent = "--";
+    }
+  });
 
-      element.classList.remove(
-        "is-official",
-        "is-projected",
-        "is-mixed",
-      );
-    },
-  );
+  payoutElements.forEach(function (element) {
+    if (element) {
+      element.textContent = "--";
+    }
+  });
+
+  basisElements.forEach(function (element) {
+    if (!element) {
+      return;
+    }
+
+    element.textContent = "--";
+
+    element.classList.remove("is-official", "is-projected", "is-mixed");
+  });
 
   if (elements.cpf.projectionCaption) {
-    elements.cpf.projectionCaption.textContent =
-      message;
+    elements.cpf.projectionCaption.textContent = message;
   }
 }
 
 function renderEmptyCpfPayoutMethodology() {
   if (elements.cpf.payoutHelper) {
-    elements.cpf.payoutHelper.textContent =
-      "--";
+    elements.cpf.payoutHelper.textContent = "--";
   }
 
   if (elements.cpf.calculationSummary) {
-    elements.cpf.calculationSummary.textContent =
-      "--";
+    elements.cpf.calculationSummary.textContent = "--";
   }
 
   elements.cpf.calculationData?.replaceChildren();
 
   if (elements.cpf.calculationDetails) {
-    elements.cpf.calculationDetails.hidden =
-      true;
+    elements.cpf.calculationDetails.hidden = true;
   }
 
-  elements.cpf.calculationToggleButton?.setAttribute(
-    "aria-expanded",
-    "false",
-  );
+  elements.cpf.calculationToggleButton?.setAttribute("aria-expanded", "false");
 
-  elements.cpf.calculationToggleIcon?.classList.remove(
-    "is-expanded",
-  );
+  elements.cpf.calculationToggleIcon?.classList.remove("is-expanded");
 }
 
 /* ========================================
    CPF PROJECTION BASIS
 ======================================== */
 
-function renderCpfProjectionBasis({
-  retirementSumBasis,
-  payoutBasis,
-}) {
+function renderCpfProjectionBasis({ retirementSumBasis, payoutBasis }) {
   let label = "Projected";
   let stateClass = "is-projected";
 
-  if (
-    retirementSumBasis === "official" &&
-    payoutBasis === "official"
-  ) {
+  if (retirementSumBasis === "official" && payoutBasis === "official") {
     label = "Official";
     stateClass = "is-official";
-  } else if (
-    retirementSumBasis === "official" &&
-    payoutBasis === "projected"
-  ) {
-    label =
-      "Official sum / Projected payout";
+  } else if (retirementSumBasis === "official" && payoutBasis === "projected") {
+    label = "Official sum / Projected payout";
 
     stateClass = "is-mixed";
   }
@@ -752,25 +658,17 @@ function renderCpfProjectionBasis({
     elements.cpf.projectedErsBasis,
   ];
 
-  basisElements.forEach(
-    function (element) {
-      if (!element) {
-        return;
-      }
+  basisElements.forEach(function (element) {
+    if (!element) {
+      return;
+    }
 
-      element.textContent = label;
+    element.textContent = label;
 
-      element.classList.remove(
-        "is-official",
-        "is-projected",
-        "is-mixed",
-      );
+    element.classList.remove("is-official", "is-projected", "is-mixed");
 
-      element.classList.add(
-        stateClass,
-      );
-    },
-  );
+    element.classList.add(stateClass);
+  });
 }
 
 /* ========================================
@@ -800,6 +698,542 @@ function formatPercentage(value) {
       maximumFractionDigits: 1,
     }).format(value) + "%"
   );
+}
+
+/* ========================================
+   FYBC PROJECTION
+======================================== */
+
+export function renderFybcProjection({
+  projection,
+  cpfProjection,
+  selectedCpfRetirementOption,
+}) {
+  if (!projection?.isValid) {
+    renderEmptyFybcProjection();
+    return;
+  }
+
+  renderFybcProjectionResults(projection);
+
+  renderFybcProjectionMethodology(projection);
+
+  renderCostOfWantsTimeline({
+    projection,
+    cpfProjection,
+    selectedCpfRetirementOption,
+  });
+}
+
+/* ========================================
+   FYBC RESULTS
+======================================== */
+
+function renderFybcProjectionResults(projection) {
+  if (elements.fybc.yearsRemaining) {
+    const yearLabel = projection.yearsRemaining === 1 ? "Year" : "Years";
+
+    elements.fybc.yearsRemaining.textContent = `${projection.yearsRemaining} ${yearLabel}`;
+  }
+
+  if (elements.fybc.income) {
+    elements.fybc.income.textContent = formatCurrency(
+      projection.monthlyIncomeAtFybc,
+    );
+  }
+
+  if (elements.fybc.incomeAt65) {
+    elements.fybc.incomeAt65.textContent = formatCurrency(
+      projection.monthlyIncomeAt65,
+    );
+  }
+
+  if (elements.fybc.inflationNote) {
+    elements.fybc.inflationNote.textContent = `Assuming ${formatPercentage(
+      projection.inflationRate * 100,
+    )} annual inflation`;
+  }
+
+  if (elements.fybc.cpfLifeIncome) {
+    elements.fybc.cpfLifeIncome.textContent = formatCurrency(
+      projection.cpfLifePayout,
+    );
+  }
+
+  if (elements.fybc.requiredCapital) {
+    elements.fybc.requiredCapital.textContent = formatCurrency(
+      projection.totalCapitalRequired,
+    );
+  }
+
+  if (elements.outcome.capitalNeededHelper) {
+    elements.outcome.capitalNeededHelper.textContent =
+      `After accounting monthly income needed until ` +
+      `planned mortality age of ${projection.mortalityAge}`;
+  }
+}
+
+/* ========================================
+   COST OF WANTS TIMELINE
+======================================== */
+
+function renderCostOfWantsTimeline({
+  projection,
+  cpfProjection,
+  selectedCpfRetirementOption,
+}) {
+  if (!cpfProjection?.isValid) {
+    renderEmptyCostOfWantsTimeline();
+    return;
+  }
+
+  const brsPayout = getValidNumber(cpfProjection.monthlyPayouts?.brs);
+
+  const frsPayout = getValidNumber(cpfProjection.monthlyPayouts?.frs);
+
+  const ersPayout = getValidNumber(cpfProjection.monthlyPayouts?.ers);
+
+  const incomeNeeded = getValidNumber(projection.monthlyIncomeAt65);
+
+  const selectedCpfPayout =
+    selectedCpfRetirementOption === "self_employed"
+      ? 0
+      : getValidNumber(
+          cpfProjection.monthlyPayouts?.[selectedCpfRetirementOption],
+        );
+
+  const incomeGap = Math.max(0, incomeNeeded - selectedCpfPayout);
+
+  if (elements.outcome.incomeGap) {
+    elements.outcome.incomeGap.textContent = `${formatCurrency(incomeGap)}/mth`;
+  }
+
+  if (elements.outcome.remainingCapital) {
+    elements.outcome.remainingCapital.textContent = formatCurrency(
+      projection.totalCapitalRequired,
+    );
+  }
+
+  const payoutProgressPercentage =
+    incomeNeeded > 0
+      ? Math.min(100, Math.max(0, (selectedCpfPayout / incomeNeeded) * 100))
+      : 0;
+
+  if (elements.timeline.progress) {
+    elements.timeline.progress.style.width = `${payoutProgressPercentage}%`;
+  }
+
+  elements.timeline.content?.classList.add("is-ready");
+
+  if (elements.timeline.brsAmount) {
+    elements.timeline.brsAmount.textContent = `${formatCurrency(brsPayout)}/mth`;
+  }
+
+  if (elements.timeline.frsAmount) {
+    elements.timeline.frsAmount.textContent = `${formatCurrency(frsPayout)}/mth`;
+  }
+
+  if (elements.timeline.ersAmount) {
+    elements.timeline.ersAmount.textContent = `${formatCurrency(ersPayout)}/mth`;
+  }
+
+  if (elements.timeline.goalAmount) {
+    elements.timeline.goalAmount.textContent = `${formatCurrency(incomeNeeded)}/mth`;
+  }
+
+  if (elements.timeline.incomeNeeded) {
+    elements.timeline.incomeNeeded.textContent = `${formatCurrency(incomeNeeded)}/mth`;
+  }
+
+  if (elements.timeline.totalPayouts) {
+    elements.timeline.totalPayouts.textContent = `${formatCurrency(
+      selectedCpfPayout,
+    )}/mth`;
+  }
+
+  positionCostOfWantsTimelineMarkers({
+    brsPayout,
+    frsPayout,
+    ersPayout,
+    incomeNeeded,
+  });
+}
+
+function positionCostOfWantsTimelineMarkers({
+  brsPayout,
+  frsPayout,
+  ersPayout,
+  incomeNeeded,
+}) {
+  if (!Number.isFinite(incomeNeeded) || incomeNeeded <= 0) {
+    return;
+  }
+
+  const getPayoutPosition = function (payout) {
+    if (!Number.isFinite(payout) || payout <= 0) {
+      return 0;
+    }
+
+    const percentage = (payout / incomeNeeded) * 100;
+
+    /*
+     * Keep payout indicators within the visible
+     * timeline. The goal flag remains fixed at 100%.
+     */
+    return Math.min(94, Math.max(4, percentage));
+  };
+
+  if (elements.timeline.brsMarker) {
+    elements.timeline.brsMarker.style.left = `${getPayoutPosition(brsPayout)}%`;
+  }
+
+  if (elements.timeline.frsMarker) {
+    elements.timeline.frsMarker.style.left = `${getPayoutPosition(frsPayout)}%`;
+  }
+
+  if (elements.timeline.ersMarker) {
+    elements.timeline.ersMarker.style.left = `${getPayoutPosition(ersPayout)}%`;
+  }
+
+  if (elements.timeline.goalMarker) {
+    elements.timeline.goalMarker.style.left = "100%";
+  }
+}
+
+/* ========================================
+   FYBC PROJECTION METHODOLOGY
+======================================== */
+
+function renderFybcProjectionMethodology(projection) {
+  if (
+    !elements.projection.calculationSummary ||
+    !elements.projection.calculationData
+  ) {
+    return;
+  }
+
+  const cpfLifeStartAge = 65;
+
+  const monthlyIncomeAtCpfLifeStart = projection.monthlyIncomeAt65;
+
+  const passiveIncomeNeededAfterCpf = Math.max(
+    0,
+    monthlyIncomeAtCpfLifeStart - projection.cpfLifePayout,
+  );
+
+  elements.projection.calculationSummary.textContent =
+    "Your desired passive income is adjusted for inflation. " +
+    "Before age 65, the full amount must be funded privately. " +
+    "From age 65, estimated CPF LIFE income reduces the " +
+    "amount required.";
+
+  elements.projection.calculationData.innerHTML = `
+    <div class="cost-of-wants-projection-flow">
+      <div class="cost-of-wants-projection-flow-step">
+        <span class="cost-of-wants-projection-flow-label">
+          Today's Desired Passive Income
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-value">
+          ${formatCurrency(projection.monthlyPassiveIncome)}/mth
+        </strong>
+      </div>
+
+      ${createProjectionFlowChevron()}
+
+      <div class="cost-of-wants-projection-flow-step">
+        <span class="cost-of-wants-projection-flow-label">
+          Inflation
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-value">
+          ${formatPercentage(projection.inflationRate * 100)}
+          p.a. for ${projection.yearsRemaining}
+          ${projection.yearsRemaining === 1 ? "year" : "years"}
+        </strong>
+      </div>
+
+      ${createProjectionFlowChevron()}
+
+      <div class="cost-of-wants-projection-flow-step">
+        <span class="cost-of-wants-projection-flow-label">
+          Projected Passive Income Needed at Age
+          ${projection.desiredFybcAge}
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-value">
+          ${formatCurrency(projection.monthlyIncomeAtFybc)}/mth
+        </strong>
+      </div>
+
+      ${
+        projection.desiredFybcAge < cpfLifeStartAge
+          ? createPreAndPostCpfProjectionFlow({
+              projection,
+              monthlyIncomeAtCpfLifeStart,
+              passiveIncomeNeededAfterCpf,
+            })
+          : createPostCpfOnlyProjectionFlow({
+              projection,
+              passiveIncomeNeededAfterCpf,
+            })
+      }
+
+      ${createProjectionFlowChevron()}
+
+      <div
+        class="
+          cost-of-wants-projection-flow-step
+          cost-of-wants-projection-flow-step--total
+        "
+      >
+        <span class="cost-of-wants-projection-flow-label">
+          Total Capital Required
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-total">
+          ${formatCurrency(projection.totalCapitalRequired)}
+        </strong>
+
+        <small class="cost-of-wants-projection-flow-note">
+          Annual income requirements are increased by inflation
+          until age ${projection.mortalityAge}.
+        </small>
+      </div>
+    </div>
+  `;
+}
+
+function createProjectionFlowChevron() {
+  return `
+    <div
+      class="cost-of-wants-projection-flow-chevron"
+      aria-hidden="true"
+    >
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+  `;
+}
+
+function createPreAndPostCpfProjectionFlow({
+  projection,
+  monthlyIncomeAtCpfLifeStart,
+  passiveIncomeNeededAfterCpf,
+}) {
+  return `
+    <div
+      class="cost-of-wants-projection-flow-branch"
+      aria-hidden="true"
+    >
+      <span></span>
+      <i class="fa-solid fa-chevron-down"></i>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+
+    <div class="cost-of-wants-projection-flow-split">
+      <div class="cost-of-wants-projection-flow-period">
+        <span class="cost-of-wants-projection-flow-period-age">
+          Age ${projection.desiredFybcAge}–64
+        </span>
+
+        <span
+          class="
+            cost-of-wants-projection-flow-period-description
+          "
+        >
+          CPF LIFE Not Yet Paid
+        </span>
+
+        <span class="cost-of-wants-projection-flow-label">
+          Passive Income Needed
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-value">
+          ${formatCurrency(projection.monthlyIncomeAtFybc)}/mth
+        </strong>
+
+        <small class="cost-of-wants-projection-flow-note">
+          Starting at age
+          ${projection.desiredFybcAge}
+        </small>
+      </div>
+
+      <div class="cost-of-wants-projection-flow-period">
+        <span class="cost-of-wants-projection-flow-period-age">
+          Age 65–${projection.mortalityAge}
+        </span>
+
+        <span
+          class="
+            cost-of-wants-projection-flow-period-description
+          "
+        >
+          CPF LIFE Starts
+        </span>
+
+        <span class="cost-of-wants-projection-flow-label">
+          Passive Income Needed
+        </span>
+
+        <strong class="cost-of-wants-projection-flow-value">
+          ${formatCurrency(passiveIncomeNeededAfterCpf)}/mth
+        </strong>
+
+        <small class="cost-of-wants-projection-flow-note">
+          ${formatCurrency(monthlyIncomeAtCpfLifeStart)}
+          less ${formatCurrency(projection.cpfLifePayout)}
+          CPF LIFE
+        </small>
+      </div>
+    </div>
+  `;
+}
+
+function createPostCpfOnlyProjectionFlow({
+  projection,
+  passiveIncomeNeededAfterCpf,
+}) {
+  return `
+    ${createProjectionFlowChevron()}
+
+    <div class="cost-of-wants-projection-flow-period">
+      <span class="cost-of-wants-projection-flow-period-age">
+        Age ${projection.desiredFybcAge}–${projection.mortalityAge}
+      </span>
+
+      <span
+        class="
+          cost-of-wants-projection-flow-period-description
+        "
+      >
+        CPF LIFE Included
+      </span>
+
+      <span class="cost-of-wants-projection-flow-label">
+        Passive Income Needed
+      </span>
+
+      <strong class="cost-of-wants-projection-flow-value">
+        ${formatCurrency(passiveIncomeNeededAfterCpf)}/mth
+      </strong>
+
+      <small class="cost-of-wants-projection-flow-note">
+        ${formatCurrency(projection.monthlyIncomeAtFybc)}
+        less ${formatCurrency(projection.cpfLifePayout)}
+        CPF LIFE
+      </small>
+    </div>
+  `;
+}
+
+/* ========================================
+   EMPTY FYBC PROJECTION
+======================================== */
+
+function renderEmptyFybcProjection() {
+  if (elements.fybc.yearsRemaining) {
+    elements.fybc.yearsRemaining.textContent = "--";
+  }
+
+  if (elements.fybc.income) {
+    elements.fybc.income.textContent = "--";
+  }
+
+  if (elements.fybc.inflationNote) {
+    elements.fybc.inflationNote.textContent =
+      "Enter the projection assumptions above";
+  }
+
+  if (elements.fybc.cpfLifeIncome) {
+    elements.fybc.cpfLifeIncome.textContent = "--";
+  }
+
+  if (elements.fybc.requiredCapital) {
+    elements.fybc.requiredCapital.textContent = "--";
+  }
+
+  if (elements.fybc.incomeAt65) {
+    elements.fybc.incomeAt65.textContent = "--";
+  }
+
+  renderEmptyCostOfWantsTimeline();
+
+  renderEmptyFybcProjectionMethodology();
+}
+
+function renderEmptyCostOfWantsTimeline() {
+  elements.timeline.content?.classList.remove("is-ready");
+
+  if (elements.timeline.brsAmount) {
+    elements.timeline.brsAmount.textContent = "--";
+  }
+
+  if (elements.timeline.frsAmount) {
+    elements.timeline.frsAmount.textContent = "--";
+  }
+
+  if (elements.timeline.ersAmount) {
+    elements.timeline.ersAmount.textContent = "--";
+  }
+
+  if (elements.timeline.goalAmount) {
+    elements.timeline.goalAmount.textContent = "--";
+  }
+
+  if (elements.timeline.incomeNeeded) {
+    elements.timeline.incomeNeeded.textContent = "--";
+  }
+
+  if (elements.timeline.totalPayouts) {
+    elements.timeline.totalPayouts.textContent = "--";
+  }
+
+  if (elements.outcome.incomeGap) {
+    elements.outcome.incomeGap.textContent = "--";
+  }
+
+  if (elements.outcome.remainingCapital) {
+    elements.outcome.remainingCapital.textContent = "--";
+  }
+
+  if (elements.timeline.progress) {
+    elements.timeline.progress.style.width = "0%";
+  }
+
+  [
+    elements.timeline.brsMarker,
+    elements.timeline.frsMarker,
+    elements.timeline.ersMarker,
+    elements.timeline.goalMarker,
+  ].forEach(function (marker) {
+    marker?.style.removeProperty("left");
+  });
+}
+
+function renderEmptyFybcProjectionMethodology() {
+  if (elements.projection.calculationSummary) {
+    elements.projection.calculationSummary.textContent =
+      "Complete the FYBC assumptions to view the " + "calculation details.";
+  }
+
+  elements.projection.calculationData?.replaceChildren();
+
+  if (elements.projection.calculationDetails) {
+    elements.projection.calculationDetails.hidden = true;
+  }
+
+  if (elements.outcome.capitalNeededHelper) {
+    elements.outcome.capitalNeededHelper.textContent =
+      "After accounting monthly income needed until " +
+      "planned mortality age of --";
+  }
+
+  elements.projection.calculationToggleButton?.setAttribute(
+    "aria-expanded",
+    "false",
+  );
+
+  elements.projection.calculationToggleIcon?.classList.remove("is-expanded");
 }
 
 /* ========================================
@@ -891,4 +1325,10 @@ function formatCurrency(value) {
     currency: "SGD",
     maximumFractionDigits: 0,
   }).format(Number(value) || 0);
+}
+
+function getValidNumber(value) {
+  const number = Number(value);
+
+  return Number.isFinite(number) ? number : 0;
 }
