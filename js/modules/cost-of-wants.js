@@ -139,7 +139,7 @@ function attachInputListeners() {
     handleCpfGrowthRateInput,
   );
 
-  elements.inputs.customIncomeInput?.addEventListener(
+  elements.inputs.customIncome?.addEventListener(
     "input",
     handleCustomIncomeInput,
   );
@@ -267,7 +267,7 @@ function handleCostOfWantsInput() {
 
 function handleCustomIncomeInput() {
   updateCostOfWants({
-    customMonthlyIncome: getWholeNumberInput(elements.inputs.customIncomeInput),
+    customMonthlyIncome: getWholeNumberInput(elements.inputs.customIncome),
   });
 
   renderSelectedIncome();
@@ -302,7 +302,7 @@ function selectLifestyleOption(option) {
   emitCostOfWantsChanged();
 
   if (option === "custom") {
-    elements.inputs.customIncomeInput?.focus();
+    elements.inputs.customIncome?.focus();
   }
 }
 
@@ -449,47 +449,53 @@ function getSelectedMonthlyPassiveIncome() {
 function renderMonthlySpendingBreakdown() {
   const breakdown = calculateMonthlySpendingBreakdown();
 
-  setCurrencyText(elements.householdAmount, breakdown.expenses.household);
-
-  setCurrencyText(elements.transportAmount, breakdown.expenses.transport);
+  setCurrencyText(
+    elements.spending.householdAmount,
+    breakdown.expenses.household,
+  );
 
   setCurrencyText(
-    elements.subscriptionsAmount,
+    elements.spending.transportAmount,
+    breakdown.expenses.transport,
+  );
+
+  setCurrencyText(
+    elements.spending.subscriptionsAmount,
     breakdown.expenses.subscriptionsLifestyle,
   );
 
   setCurrencyText(
-    elements.dependantsAmount,
+    elements.spending.dependantsAmount,
     breakdown.expenses.parentsDependantsSupport,
   );
 
   setCurrencyText(
-    elements.otherExpensesAmount,
+    elements.spending.otherExpensesAmount,
     breakdown.expenses.otherRecurringExpenses,
   );
 
   setCurrencyText(
-    elements.liabilityRepaymentsAmount,
+    elements.spending.liabilityRepayments,
     breakdown.commitments.liabilityRepayments,
   );
 
   setCurrencyText(
-    elements.insuranceAmount,
+    elements.spending.insuranceAmount,
     breakdown.commitments.insurancePremiums,
   );
 
   setCurrencyText(
-    elements.totalExpensesElement,
+    elements.spending.totalExpenses,
     breakdown.totalMonthlyExpenses,
   );
 
   setCurrencyText(
-    elements.totalCommitmentsElement,
+    elements.spending.totalCommitments,
     breakdown.totalMonthlyCommitments,
   );
 
   setCurrencyText(
-    elements.totalSpendingElement,
+    elements.spending.totalSpending,
     breakdown.totalMonthlyOutflow,
   );
 }
@@ -598,11 +604,6 @@ function renderFloatingSummary() {
   renderGoalSavingsBreakdown(position.goalSavingsSummary);
 
   renderGoalSavingsStatus(position.goalSavingsSummary);
-
-  setSignedCurrencyText(
-    elements.floatingSummary.breakdownNetSurplus,
-    position.netSurplus,
-  );
 
   setSignedCurrencyText(
     elements.floatingSummary.availableSurplus,
@@ -1409,8 +1410,8 @@ function renderFybcProjectionResults(projection) {
     );
   }
 
-  if (fybcRequiredElement) {
-    fybcRequiredElement.textContent = formatCurrency(
+  if (elements.fybc.requiredCapital) {
+    elements.fybc.requiredCapital.textContent = formatCurrency(
       projection.totalCapitalRequired,
     );
   }
@@ -2029,17 +2030,15 @@ function showValidationMessage(
   message,
   inputElement = null,
 ) {
-  if (!validationMessageElement) {
+  if (!elements.validation.message) {
     return;
   }
 
   clearInvalidInputs();
 
-  validationMessageElement.textContent =
-    message;
+  elements.validation.message.textContent = message;
 
-  validationMessageElement.hidden =
-    false;
+  elements.validation.message.hidden = false;
 
   inputElement?.setAttribute(
     "aria-invalid",
@@ -2048,12 +2047,10 @@ function showValidationMessage(
 }
 
 function clearValidationMessage() {
-  if (validationMessageElement) {
-    validationMessageElement.textContent =
-      "";
+  if (elements.validation.message) {
+    elements.validation.message.textContent = "";
 
-    validationMessageElement.hidden =
-      true;
+    elements.validation.message.hidden = true;
   }
 
   clearInvalidInputs();
@@ -2064,7 +2061,7 @@ function clearInvalidInputs() {
     elements.inputs.desiredFybcAge,
     elements.inputs.plannedMortalityAge,
     elements.inputs.inflationRate,
-    elements.inputs.customIncomeInput,
+    elements.inputs.customIncome,
   ].forEach(function (input) {
     input?.removeAttribute("aria-invalid");
   });
