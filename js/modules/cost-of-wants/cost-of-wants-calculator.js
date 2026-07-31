@@ -451,10 +451,12 @@ export function calculateFybcProjection({
 
   return {
     isValid: true,
+
     currentAge,
     desiredFybcAge,
     mortalityAge,
     yearsRemaining,
+    
     monthlyPassiveIncome,
     monthlyIncomeAtFybc,
     monthlyIncomeAt65,

@@ -720,10 +720,15 @@ function renderFybcProjections() {
 function calculateFybcProjection() {
   return calculateFybcProjectionValues({
     currentAge: getClientAge(),
+
     desiredFybcAge: getDesiredFybcAge(),
+
     mortalityAge: getPlannedMortalityAge(),
+
     inflationRatePercent: getInflationRate(),
+
     monthlyPassiveIncome: getSelectedMonthlyPassiveIncome(),
+
     cpfLifePayout: getSelectedCpfLifeMonthlyPayout(),
   });
 }
@@ -744,6 +749,14 @@ function getSelectedCpfLifeMonthlyPayout() {
   return Number.isFinite(selectedPayout)
     ? selectedPayout
     : 0;
+}
+
+function handleFybcAssumptionInput() {
+  clearValidationMessage();
+
+  renderFybcProjections();
+
+  emitCostOfWantsChanged();
 }
 
 /* ========================================
@@ -856,13 +869,9 @@ function formatCurrency(value) {
 }
 
 function getDesiredFybcAge() {
-  if (!elements.inputs.desiredFybcAge) {
-    return null;
-  }
+  const desiredFybcAge = Number(elements.inputs.desiredFybcAge?.value);
 
-  const value = parseInt(elements.inputs.desiredFybcAge.value, 10);
-
-  return Number.isFinite(value) ? value : null;
+  return Number.isFinite(desiredFybcAge) ? desiredFybcAge : 0;
 }
 
 function getInflationRate() {
