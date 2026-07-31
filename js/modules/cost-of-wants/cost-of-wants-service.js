@@ -284,8 +284,6 @@ export function calculateMonthlyFinancialPosition() {
 
   const netSurplus = monthlySurplus - minimumGoalSavings;
 
-  return result;
-
   return {
     monthlyTakeHomeIncome,
 
