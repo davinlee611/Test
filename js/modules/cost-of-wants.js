@@ -1,38 +1,29 @@
 "use strict";
 
 import {
-  getAssets,
   getClientProfile,
-  getCommitments,
   getCostOfWants,
-  getExpenses,
-  getLiabilities,
-  getPolicies,
   resetCostOfWantsState,
-  updateCostOfWants,
 } from "../state/client-plan.js";
 
 import { getClientAge } from "./client-profile.js";
-
-import { calculateIncomeSummary } from "../services/income-calculator.js";
-
-import { getAllGoals } from "../services/goal-service.js";
-
-import { calculateGoalSavings } from "../services/goal-savings-calculator.js";
 
 import { on, emit } from "../events/event-bus.js";
 
 import { EVENTS } from "../events/events.js";
 
-import { getLiabilityMonthlyCashRepayment } from "./liabilities/liability-calculator.js";
+import { DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE } from "./cost-of-wants/cost-of-wants-calculator.js";
 
 import {
-  DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE,
-  calculateClientCpfRetirementProjection as calculateCpfRetirementProjection,
-  calculateFybcProjection as calculateFybcProjectionValues,
-} from "./cost-of-wants/cost-of-wants-calculator.js";
-
-import { costOfWantsElements } from "./cost-of-wants/cost-of-wants-elements.js";
+  calculateClientCpfRetirementProjection,
+  calculateFybcProjection,
+  calculateMonthlyFinancialPosition,
+  calculateMonthlySpendingBreakdown,
+  getSelectedMonthlyIncome,
+  saveFybcAssumptions,
+  setCustomMonthlyIncome,
+  setLifestyleOption,
+} from "./cost-of-wants/cost-of-wants-service.js";
 
 import {
   renderClientDetails,
@@ -45,6 +36,8 @@ import {
   renderSelectedIncome,
   syncCostOfWantsInputs,
 } from "./cost-of-wants/cost-of-wants-renderer.js";
+
+import { costOfWantsElements } from "./cost-of-wants/cost-of-wants-elements.js";
 
 /* ========================================
    PAGE ELEMENTS
@@ -102,6 +95,7 @@ export function resetCostOfWants() {
   clearValidationMessage();
 
   renderCostOfWants();
+
   collapseCalculatedBreakdown();
 
   emitCostOfWantsChanged();
@@ -154,7 +148,11 @@ function attachInputListeners() {
 }
 
 function handleCpfGrowthRateInput() {
-  renderProjectedCpfRetirementSums(calculateClientCpfRetirementProjection());
+  const cpfProjection = calculateClientCpfRetirementProjection({
+    cpfGrowthRate: elements.inputs.cpfGrowthRate?.value,
+  });
+
+  renderProjectedCpfRetirementSums(cpfProjection);
 
   renderFybcProjections();
 }
@@ -204,15 +202,9 @@ function attachSummaryListeners() {
 
 function attachApplicationListeners() {
   on(EVENTS.PROFILE_CHANGED, function () {
-    renderClientDetails(getClientAge());
-
-    renderProjectedCpfRetirementSums(calculateClientCpfRetirementProjection());
-
-    renderFybcProjections();
+    renderCostOfWants();
 
     clearValidationMessage();
-
-    renderFloatingSummary(calculateMonthlyFinancialPosition());
   });
 
   on(EVENTS.INCOME_CHANGED, function () {
@@ -220,35 +212,19 @@ function attachApplicationListeners() {
   });
 
   on(EVENTS.EXPENSES_CHANGED, function () {
-    renderMonthlySpendingBreakdown(calculateMonthlySpendingBreakdown());
-
-    renderFloatingSummary(calculateMonthlyFinancialPosition());
-
-    renderFybcProjections();
+    renderSpendingAndProjection();
   });
 
   on(EVENTS.COMMITMENTS_CHANGED, function () {
-    renderMonthlySpendingBreakdown(calculateMonthlySpendingBreakdown());
-
-    renderFloatingSummary(calculateMonthlyFinancialPosition());
-
-    renderFybcProjections();
+    renderSpendingAndProjection();
   });
 
   on(EVENTS.LIABILITIES_CHANGED, function () {
-    renderMonthlySpendingBreakdown(calculateMonthlySpendingBreakdown());
-
-    renderFloatingSummary(calculateMonthlyFinancialPosition());
-
-    renderFybcProjections();
+    renderSpendingAndProjection();
   });
 
   on(EVENTS.POLICIES_CHANGED, function () {
-    renderMonthlySpendingBreakdown(calculateMonthlySpendingBreakdown());
-
-    renderFloatingSummary(calculateMonthlyFinancialPosition());
-
-    renderFybcProjections();
+    renderSpendingAndProjection();
   });
 
   on(EVENTS.GOALS_CHANGED, function () {
@@ -260,6 +236,14 @@ function attachApplicationListeners() {
       renderCostOfWants();
     }
   });
+}
+
+function renderSpendingAndProjection() {
+  renderMonthlySpendingBreakdown(calculateMonthlySpendingBreakdown());
+
+  renderFloatingSummary(calculateMonthlyFinancialPosition());
+
+  renderFybcProjections();
 }
 
 function handleCostOfWantsBlur() {
@@ -280,9 +264,7 @@ function handleCostOfWantsInput() {
 }
 
 function handleCustomIncomeInput() {
-  updateCostOfWants({
-    customMonthlyIncome: getWholeNumberInput(elements.inputs.customIncome),
-  });
+  setCustomMonthlyIncome(elements.inputs.customIncome?.value);
 
   renderSelectedIncome(getSelectedMonthlyIncome());
 
@@ -298,19 +280,19 @@ function handleCustomIncomeInput() {
 ======================================== */
 
 function selectLifestyleOption(option) {
-  const validOptions = ["basic", "average", "comfort", "custom"];
+  const optionWasUpdated = setLifestyleOption(option);
 
-  if (!validOptions.includes(option)) {
+  if (!optionWasUpdated) {
     return;
   }
 
-  updateCostOfWants({
-    lifestyleOption: option,
-  });
+  const costOfWants = getCostOfWants();
 
-  renderLifestyleSelection(getCostOfWants());
+  const selectedMonthlyIncome = getSelectedMonthlyIncome();
 
-  renderSelectedIncome(getSelectedMonthlyIncome());
+  renderLifestyleSelection(costOfWants);
+
+  renderSelectedIncome(selectedMonthlyIncome);
 
   renderMonthlySpendingBreakdown(calculateMonthlySpendingBreakdown());
 
@@ -324,12 +306,12 @@ function selectLifestyleOption(option) {
 }
 
 function saveCostOfWantsInputs() {
-  updateCostOfWants({
-    desiredFybcAge: getWholeNumberInput(elements.inputs.desiredFybcAge),
+  saveFybcAssumptions({
+    desiredFybcAge: elements.inputs.desiredFybcAge?.value,
 
-    plannedMortalityAge: getWholeNumberInput(elements.inputs.plannedMortalityAge),
+    plannedMortalityAge: elements.inputs.plannedMortalityAge?.value,
 
-    inflationRate: getDecimalInput(elements.inputs.inflationRate),
+    inflationRate: elements.inputs.inflationRate?.value,
   });
 }
 
@@ -340,17 +322,32 @@ function saveCostOfWantsInputs() {
 function renderCostOfWants() {
   const costOfWants = getCostOfWants();
 
+  const currentAge = getClientAge();
+
+  const selectedMonthlyIncome = getSelectedMonthlyIncome();
+
   const spendingBreakdown = calculateMonthlySpendingBreakdown();
 
   const financialPosition = calculateMonthlyFinancialPosition();
 
-  renderClientDetails(getClientAge());
+  const cpfGrowthRate = elements.inputs.cpfGrowthRate?.value;
+
+  const cpfProjection = calculateClientCpfRetirementProjection({
+    cpfGrowthRate,
+  });
+
+  const fybcProjection = calculateFybcProjection({
+    selectedCpfRetirementOption,
+    cpfGrowthRate,
+  });
+
+  renderClientDetails(currentAge);
 
   syncCostOfWantsInputs(costOfWants);
 
   renderLifestyleSelection(costOfWants);
 
-  renderSelectedIncome(getSelectedMonthlyIncome());
+  renderSelectedIncome(selectedMonthlyIncome);
 
   renderMonthlySpendingBreakdown(spendingBreakdown);
 
@@ -358,218 +355,15 @@ function renderCostOfWants() {
 
   renderCpfRetirementOptionSelection(selectedCpfRetirementOption);
 
-  renderProjectedCpfRetirementSums(calculateClientCpfRetirementProjection());
+  renderProjectedCpfRetirementSums(cpfProjection);
 
-  renderFybcProjections();
-}
+  renderFybcProjection({
+    projection: fybcProjection,
 
-/* ========================================
-   LIFESTYLE CALCULATION
-======================================== */
+    cpfProjection,
 
-function getSelectedMonthlyIncome() {
-  const {
-    lifestyleOption,
-    customMonthlyIncome,
-  } = getCostOfWants();
-
-  if (lifestyleOption === "custom") {
-    return Number(customMonthlyIncome) || 0;
-  }
-
-  return LIFESTYLE_AMOUNTS[lifestyleOption] || 0;
-}
-
-function getSelectedMonthlyPassiveIncome() {
-  return getSelectedMonthlyIncome();
-}
-
-/* ========================================
-   MONTHLY SPENDING BREAKDOWN
-======================================== */
-
-function calculateMonthlySpendingBreakdown() {
-  const expenses = getExpenses();
-
-  const monthlyExpenses = {
-    household: getValidAmount(
-      expenses.household,
-    ),
-
-    transport: getValidAmount(
-      expenses.transport,
-    ),
-
-    subscriptionsLifestyle: getValidAmount(
-      expenses.subscriptionsLifestyle,
-    ),
-
-    parentsDependantsSupport: getValidAmount(
-      expenses.parentsDependantsSupport,
-    ),
-
-    otherRecurringExpenses: getValidAmount(
-      expenses.otherRecurringExpenses,
-    ),
-  };
-
-  const monthlyCommitments = {
-    liabilityRepayments: calculateTotalMonthlyLiabilityRepayments(),
-
-    insurancePremiums: calculateMonthlyInsurancePremiums(),
-  };
-
-  const totalMonthlyExpenses =
-    monthlyExpenses.household +
-    monthlyExpenses.transport +
-    monthlyExpenses.subscriptionsLifestyle +
-    monthlyExpenses.parentsDependantsSupport +
-    monthlyExpenses.otherRecurringExpenses;
-
-  const totalMonthlyCommitments =
-    monthlyCommitments.liabilityRepayments +
-    monthlyCommitments.insurancePremiums;
-
-  return {
-    expenses: monthlyExpenses,
-    commitments: monthlyCommitments,
-    totalMonthlyExpenses,
-    totalMonthlyCommitments,
-
-    totalMonthlyOutflow:
-      totalMonthlyExpenses +
-      totalMonthlyCommitments,
-  };
-}
-
-function calculateTotalMonthlyExpenses() {
-  return calculateMonthlySpendingBreakdown().totalMonthlyExpenses;
-}
-
-/* ========================================
-   MONTHLY FINANCIAL POSITION
-======================================== */
-
-function calculateMonthlyFinancialPosition() {
-  const incomeSummary =
-    calculateCurrentIncomeSummary();
-
-  const spendingBreakdown =
-    calculateMonthlySpendingBreakdown();
-
-  const monthlyTakeHomeIncome =
-    getValidAmount(
-      incomeSummary.monthlyTakeHomeIncome,
-    );
-
-  const monthlyExpenses =
-    spendingBreakdown.totalMonthlyExpenses;
-
-  const monthlyCommitments =
-    spendingBreakdown.totalMonthlyCommitments;
-
-  const monthlySurplus =
-    monthlyTakeHomeIncome -
-    monthlyExpenses -
-    monthlyCommitments;
-
-  const goalSavingsSummary = calculateGoalSavings(getAllGoals());
-
-  const minimumGoalSavings = goalSavingsSummary.totalMonthlySavings;
-
-  const netSurplus =
-    monthlySurplus -
-    minimumGoalSavings;
-
-  return {
-    monthlyTakeHomeIncome,
-    monthlyExpenses,
-    monthlyCommitments,
-    monthlySurplus,
-    minimumGoalSavings,
-    netSurplus,
-    goalSavingsSummary,
-  };
-}
-
-function calculateCurrentIncomeSummary() {
-  const assets = getAssets();
-
-  const profile = getClientProfile();
-
-  const income = assets.income;
-
-  return calculateIncomeSummary({
-    monthlyEmploymentIncome:
-      income.monthlyEmployment,
-
-    annualBonus:
-      income.annualBonus,
-
-    monthlyOtherIncome:
-      income.otherMonthly,
-
-    employmentStatus:
-      profile.employmentStatus,
-
-    age:
-      getClientAge(),
+    selectedCpfRetirementOption,
   });
-}
-
-function calculateTotalMonthlyLiabilityRepayments() {
-  return getLiabilities().reduce(function (runningTotal, liability) {
-    return runningTotal + getLiabilityMonthlyCashRepayment(liability);
-  }, 0);
-}
-
-function calculateMonthlyInsurancePremiums() {
-  const portfolioMonthlyPremium = calculatePortfolioMonthlyPremium();
-
-  if (portfolioMonthlyPremium > 0) {
-    return portfolioMonthlyPremium;
-  }
-
-  const commitments = getCommitments();
-
-  return getValidAmount(commitments.insurancePremiums);
-}
-
-function calculatePortfolioMonthlyPremium() {
-  return getPolicies().reduce(function (runningTotal, policy) {
-    return runningTotal + convertPremiumToMonthly(policy?.premium);
-  }, 0);
-}
-
-function convertPremiumToMonthly(premium) {
-  const amount = getValidAmount(premium?.amount);
-
-  if (amount <= 0) {
-    return 0;
-  }
-
-  switch (premium?.frequency) {
-    case "monthly":
-      return amount;
-
-    case "quarterly":
-      return amount / 3;
-
-    case "half_yearly":
-      return amount / 6;
-
-    case "annual":
-      return amount / 12;
-
-    default:
-      return 0;
-  }
-}
-
-function getValidAmount(value) {
-  const amount = Number(value);
-
-  return Number.isFinite(amount) && amount > 0 ? amount : 0;
 }
 
 /* ========================================
@@ -659,99 +453,39 @@ function handleCpfRetirementOptionClick(event) {
 }
 
 function getSelectedCpfRetirementOption() {
-  const selectedButton =
-    document.querySelector(
-      '[data-cpf-retirement-option][aria-checked="true"]',
-    );
-
-  return (
-    selectedButton?.dataset
-      .cpfRetirementOption ||
-    "brs"
+  const selectedButton = document.querySelector(
+    '[data-cpf-retirement-option][aria-checked="true"]',
   );
+
+  return selectedButton?.dataset.cpfRetirementOption || "brs";
 }
-
-/* ========================================
-   PROJECTED CPF RETIREMENT SUMS
-======================================== */
-
-function calculateClientCpfRetirementProjection() {
-  const profile = getClientProfile();
-
-  return calculateCpfRetirementProjection({
-    currentAge: getClientAge(),
-    gender: profile?.gender,
-    dateOfBirth: profile?.dateOfBirth,
-    annualGrowthRate: getCpfRetirementSumGrowthRate(),
-  });
-}
-
-function getCpfRetirementSumGrowthRate() {
-  const enteredValue = elements.inputs.cpfGrowthRate?.value.trim();
-
-  if (!enteredValue) {
-    return DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE;
-  }
-
-  const enteredRate = Number(enteredValue);
-
-  if (!Number.isFinite(enteredRate)) {
-    return DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE;
-  }
-
-  return Math.min(Math.max(enteredRate, 0), 10);
-}
-
 
 /* ========================================
    FYBC PROJECTIONS
 ======================================== */
 
 function renderFybcProjections() {
+  const cpfGrowthRate = elements.inputs.cpfGrowthRate?.value;
+
+  const cpfProjection = calculateClientCpfRetirementProjection({
+    cpfGrowthRate,
+  });
+
+  const projection = calculateFybcProjection({
+    selectedCpfRetirementOption,
+    cpfGrowthRate,
+  });
+
   renderFybcProjection({
-    projection: calculateFybcProjection(),
-
-    cpfProjection: calculateClientCpfRetirementProjection(),
-
+    projection,
+    cpfProjection,
     selectedCpfRetirementOption,
   });
 }
 
-function calculateFybcProjection() {
-  return calculateFybcProjectionValues({
-    currentAge: getClientAge(),
-
-    desiredFybcAge: getDesiredFybcAge(),
-
-    mortalityAge: getPlannedMortalityAge(),
-
-    inflationRatePercent: getInflationRate(),
-
-    monthlyPassiveIncome: getSelectedMonthlyPassiveIncome(),
-
-    cpfLifePayout: getSelectedCpfLifeMonthlyPayout(),
-  });
-}
-
-function getSelectedCpfLifeMonthlyPayout() {
-  const cpfProjection =
-    calculateClientCpfRetirementProjection();
-
-  if (!cpfProjection.isValid) {
-    return 0;
-  }
-
-  const selectedPayout =
-    cpfProjection.monthlyPayouts[
-      selectedCpfRetirementOption
-    ];
-
-  return Number.isFinite(selectedPayout)
-    ? selectedPayout
-    : 0;
-}
-
 function handleFybcAssumptionInput() {
+  saveCostOfWantsInputs();
+
   clearValidationMessage();
 
   renderFybcProjections();
@@ -840,26 +574,6 @@ function validateCostOfWants() {
    INPUT HELPERS
 ======================================== */
 
-function getWholeNumberInput(input) {
-  const value = Number(input?.value);
-
-  if (!Number.isFinite(value) || value < 0) {
-    return 0;
-  }
-
-  return Math.trunc(value);
-}
-
-function getDecimalInput(input) {
-  const value = Number(input?.value);
-
-  if (!Number.isFinite(value) || value < 0) {
-    return 0;
-  }
-
-  return value;
-}
-
 function formatCurrency(value) {
   return new Intl.NumberFormat("en-SG", {
     style: "currency",
@@ -868,40 +582,11 @@ function formatCurrency(value) {
   }).format(Number(value) || 0);
 }
 
-function getDesiredFybcAge() {
-  const desiredFybcAge = Number(elements.inputs.desiredFybcAge?.value);
-
-  return Number.isFinite(desiredFybcAge) ? desiredFybcAge : 0;
-}
-
-function getInflationRate() {
-  if (!elements.inputs.inflationRate) {
-    return 0;
-  }
-
-  const value = parseFloat(elements.inputs.inflationRate.value);
-
-  return Number.isFinite(value) ? value : 0;
-}
-
-function getPlannedMortalityAge() {
-  if (!elements.inputs.plannedMortalityAge) {
-    return null;
-  }
-
-  const value = parseInt(elements.inputs.plannedMortalityAge.value, 10);
-
-  return Number.isFinite(value) ? value : null;
-}
-
 /* ========================================
    VALIDATION MESSAGE
 ======================================== */
 
-function showValidationMessage(
-  message,
-  inputElement = null,
-) {
+function showValidationMessage(message, inputElement = null) {
   if (!elements.validation.message) {
     return;
   }
@@ -912,10 +597,7 @@ function showValidationMessage(
 
   elements.validation.message.hidden = false;
 
-  inputElement?.setAttribute(
-    "aria-invalid",
-    "true",
-  );
+  inputElement?.setAttribute("aria-invalid", "true");
 }
 
 function clearValidationMessage() {
