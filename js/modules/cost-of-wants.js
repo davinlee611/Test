@@ -36,311 +36,13 @@ import {
   getCpfCohortAgeText,
 } from "./cost-of-wants/cost-of-wants-calculator.js";
 
+import { costOfWantsElements } from "./cost-of-wants/cost-of-wants-elements.js";
+
 /* ========================================
    PAGE ELEMENTS
 ======================================== */
 
-const currentAgeInput = document.getElementById("costOfWantsCurrentAge");
-
-const desiredFybcAgeInput = document.getElementById("desiredFybcAge");
-
-const plannedMortalityAgeInput = document.getElementById("plannedMortalityAge");
-
-const inflationRateInput = document.getElementById("costOfWantsInflationRate");
-
-const lifestyleOptionButtons = Array.from(
-  document.querySelectorAll("[data-lifestyle-option]"),
-);
-
-const customIncomeGroup = document.getElementById(
-  "costOfWantsCustomIncomeGroup",
-);
-
-const customIncomeInput = document.getElementById("costOfWantsCustomIncome");
-
-const selectedIncomeSummary = document.getElementById(
-  "costOfWantsSelectedIncome",
-);
-
-const selectedIncomeAmount = document.getElementById(
-  "costOfWantsSelectedIncomeAmount",
-);
-
-const validationMessageElement = document.getElementById(
-  "costOfWantsValidationMessage",
-);
-
-/* ========================================
-   SPENDING BREAKDOWN ELEMENTS
-======================================== */
-
-const householdAmountElement = document.getElementById(
-  "costOfWantsHouseholdAmount",
-);
-
-const transportAmountElement = document.getElementById(
-  "costOfWantsTransportAmount",
-);
-
-const subscriptionsAmountElement = document.getElementById(
-  "costOfWantsSubscriptionsAmount",
-);
-
-const dependantsAmountElement = document.getElementById(
-  "costOfWantsDependantsAmount",
-);
-
-const otherExpensesAmountElement = document.getElementById(
-  "costOfWantsOtherExpensesAmount",
-);
-
-const liabilityRepaymentsElement = document.getElementById(
-  "costOfWantsLiabilityRepayments",
-);
-
-const insuranceAmountElement = document.getElementById(
-  "costOfWantsInsuranceAmount",
-);
-
-const totalExpensesElement = document.getElementById(
-  "costOfWantsTotalExpenses",
-);
-
-const totalCommitmentsElement = document.getElementById(
-  "costOfWantsTotalCommitments",
-);
-
-const totalSpendingElement = document.getElementById(
-  "costOfWantsTotalSpending",
-);
-
-/* ========================================
-   FLOATING SUMMARY ELEMENTS
-======================================== */
-
-const floatingSummaryElement = document.getElementById(
-  "costOfWantsFloatingSummary",
-);
-
-const summaryToggleButton = document.getElementById(
-  "costOfWantsSummaryToggle",
-);
-
-const summaryToggleIcon = document.getElementById(
-  "costOfWantsSummaryToggleIcon",
-);
-
-const calculatedBreakdownElement = document.getElementById(
-  "costOfWantsCalculatedBreakdown",
-);
-
-const monthlySurplusElement = document.getElementById(
-  "costOfWantsMonthlySurplus",
-);
-
-const goalSavingsElement = document.getElementById(
-  "costOfWantsGoalSavings",
-);
-
-const netSurplusElement = document.getElementById(
-  "costOfWantsNetSurplus",
-);
-
-const breakdownIncomeElement = document.getElementById(
-  "costOfWantsBreakdownIncome",
-);
-
-const breakdownExpensesElement = document.getElementById(
-  "costOfWantsBreakdownExpenses",
-);
-
-const breakdownCommitmentsElement = document.getElementById(
-  "costOfWantsBreakdownCommitments",
-);
-
-const breakdownSurplusElement = document.getElementById(
-  "costOfWantsBreakdownSurplus",
-);
-
-const goalSavingsListElement = document.getElementById(
-  "costOfWantsGoalSavingsList",
-);
-
-const breakdownGoalSavingsElement = document.getElementById(
-  "costOfWantsBreakdownGoalSavings",
-);
-
-const goalSavingsStatusElement = document.getElementById(
-  "costOfWantsGoalSavingsStatus",
-);
-
-const breakdownNetSurplusElement = document.getElementById(
-  "costOfWantsBreakdownNetSurplus",
-);
-
-const availableSurplusElement = document.getElementById(
-  "costOfWantsAvailableSurplus",
-);
-
-const cpfRetirementOptionButtons = document.querySelectorAll(
-  "[data-cpf-retirement-option]",
-);
-
-const cpfGrowthRateInput = document.getElementById("costOfWantsCpfGrowthRate");
-
-const projectedBrsElement = document.getElementById("costOfWantsProjectedBrs");
-
-const projectedFrsElement = document.getElementById("costOfWantsProjectedFrs");
-
-const projectedErsElement = document.getElementById("costOfWantsProjectedErs");
-
-const projectedBrsPayoutElement = document.getElementById(
-  "costOfWantsProjectedBrsPayout",
-);
-
-const projectedFrsPayoutElement = document.getElementById(
-  "costOfWantsProjectedFrsPayout",
-);
-
-const projectedErsPayoutElement = document.getElementById(
-  "costOfWantsProjectedErsPayout",
-);
-
-const cpfProjectionCaptionElement = document.getElementById(
-  "costOfWantsCpfProjectionCaption",
-);
-
-const projectedBrsBasisElement = document.getElementById(
-  "costOfWantsProjectedBrsBasis",
-);
-
-const projectedFrsBasisElement = document.getElementById(
-  "costOfWantsProjectedFrsBasis",
-);
-
-const projectedErsBasisElement = document.getElementById(
-  "costOfWantsProjectedErsBasis",
-);
-
-const fybcYearsRemainingElement = document.getElementById(
-  "costOfWantsFybcYearsRemaining",
-);
-
-const fybcIncomeElement = document.getElementById("costOfWantsFybcIncome");
-
-const incomeAt65Element = document.getElementById("costOfWantsIncomeAt65");
-
-const timelineBrsMarkerElement = document.getElementById(
-  "costOfWantsTimelineBrsMarker",
-);
-
-const timelineFrsMarkerElement = document.getElementById(
-  "costOfWantsTimelineFrsMarker",
-);
-
-const timelineErsMarkerElement = document.getElementById(
-  "costOfWantsTimelineErsMarker",
-);
-
-const timelineGoalMarkerElement = document.getElementById(
-  "costOfWantsTimelineGoalMarker",
-);
-
-const timelineBrsAmountElement = document.getElementById(
-  "costOfWantsTimelineBrsAmount",
-);
-
-const timelineFrsAmountElement = document.getElementById(
-  "costOfWantsTimelineFrsAmount",
-);
-
-const timelineErsAmountElement = document.getElementById(
-  "costOfWantsTimelineErsAmount",
-);
-
-const timelineGoalAmountElement = document.getElementById(
-  "costOfWantsTimelineGoalAmount",
-);
-
-const timelineIncomeNeededElement = document.getElementById(
-  "costOfWantsTimelineIncomeNeeded",
-);
-
-const timelineTotalPayoutsElement = document.getElementById(
-  "costOfWantsTimelineTotalPayouts",
-);
-
-const fybcInflationNoteElement = document.getElementById(
-  "costOfWantsFybcInflationNote",
-);
-
-const cpfLifeIncomeElement = document.getElementById(
-  "costOfWantsCpfLifeIncome",
-);
-
-const fybcRequiredElement = document.getElementById("costOfWantsFybcRequired");
-
-const cpfPayoutHelperElement = document.getElementById(
-  "costOfWantsCpfPayoutHelper",
-);
-
-const cpfCalculationToggleButton = document.getElementById(
-  "costOfWantsCpfCalculationToggle",
-);
-
-const cpfCalculationToggleIcon = document.getElementById(
-  "costOfWantsCpfCalculationToggleIcon",
-);
-
-const cpfCalculationDetailsElement = document.getElementById(
-  "costOfWantsCpfCalculationDetails",
-);
-
-const cpfCalculationSummaryElement = document.getElementById(
-  "costOfWantsCpfCalculationSummary",
-);
-
-const cpfCalculationDataElement = document.getElementById(
-  "costOfWantsCpfCalculationData",
-);
-
-const projectionCalculationToggleButton = document.getElementById(
-  "costOfWantsProjectionCalculationToggle",
-);
-
-const projectionCalculationToggleIcon = document.getElementById(
-  "costOfWantsProjectionCalculationToggleIcon",
-);
-
-const projectionCalculationDetailsElement = document.getElementById(
-  "costOfWantsProjectionCalculationDetails",
-);
-
-const projectionCalculationSummaryElement = document.getElementById(
-  "costOfWantsProjectionCalculationSummary",
-);
-
-const projectionCalculationDataElement = document.getElementById(
-  "costOfWantsProjectionCalculationData",
-);
-
-const timelineContentElement = document.getElementById(
-  "costOfWantsTimelineContent",
-);
-
-const timelineProgressElement = document.getElementById(
-  "costOfWantsTimelineProgress",
-);
-
-const incomeGapElement = document.getElementById("costOfWantsIncomeGap");
-
-const remainingCapitalElement = document.getElementById(
-  "costOfWantsRemainingCapital",
-);
-
-const capitalNeededHelperElement = document.getElementById(
-  "costOfWantsCapitalNeededHelper",
-);
+const elements = costOfWantsElements;
 
 /* ========================================
    MODULE STATE
@@ -381,8 +83,10 @@ export function resetCostOfWants() {
 
   selectedCpfRetirementOption = "frs";
 
-  if (cpfGrowthRateInput) {
-    cpfGrowthRateInput.value = String(DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE);
+  if (elements.cpfGrowthRateInput) {
+    elements.cpfGrowthRateInput.value = String(
+      DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE,
+    );
   }
 
   renderCpfRetirementOptionSelection();
@@ -415,9 +119,9 @@ function collapseCalculatedBreakdown() {
 
 function attachInputListeners() {
   const inputs = [
-    desiredFybcAgeInput,
-    plannedMortalityAgeInput,
-    inflationRateInput,
+    elements.desiredFybcAgeInput,
+    elements.plannedMortalityAgeInput,
+    elements.inflationRateInput,
   ];
 
   inputs.forEach(function (input) {
@@ -430,9 +134,15 @@ function attachInputListeners() {
     input.addEventListener("blur", handleCostOfWantsBlur);
   });
 
-  cpfGrowthRateInput?.addEventListener("input", handleCpfGrowthRateInput);
+  elements.cpfGrowthRateInput?.addEventListener(
+    "input",
+    handleCpfGrowthRateInput,
+  );
 
-  customIncomeInput?.addEventListener("input", handleCustomIncomeInput);
+  elements.customIncomeInput?.addEventListener(
+    "input",
+    handleCustomIncomeInput,
+  );
 }
 
 function handleCpfGrowthRateInput() {
@@ -542,7 +252,7 @@ function handleCostOfWantsInput() {
 
 function handleCustomIncomeInput() {
   updateCostOfWants({
-    customMonthlyIncome: getWholeNumberInput(customIncomeInput),
+    customMonthlyIncome: getWholeNumberInput(elements.customIncomeInput),
   });
 
   renderSelectedIncome();
@@ -577,17 +287,17 @@ function selectLifestyleOption(option) {
   emitCostOfWantsChanged();
 
   if (option === "custom") {
-    customIncomeInput?.focus();
+    elements.customIncomeInput?.focus();
   }
 }
 
 function saveCostOfWantsInputs() {
   updateCostOfWants({
-    desiredFybcAge: getWholeNumberInput(desiredFybcAgeInput),
+    desiredFybcAge: getWholeNumberInput(elements.desiredFybcAgeInput),
 
-    plannedMortalityAge: getWholeNumberInput(plannedMortalityAgeInput),
+    plannedMortalityAge: getWholeNumberInput(elements.plannedMortalityAgeInput),
 
-    inflationRate: getDecimalInput(inflationRateInput),
+    inflationRate: getDecimalInput(elements.inflationRateInput),
   });
 }
 
@@ -609,23 +319,27 @@ function renderCostOfWants() {
 }
 
 function renderClientDetails() {
-  if (!currentAgeInput) {
+  if (!elements.currentAgeInput) {
     return;
   }
 
   const currentAge = getClientAge();
 
-  currentAgeInput.value = currentAge === null ? "" : String(currentAge);
+  elements.currentAgeInput.value =
+    currentAge === null ? "" : String(currentAge);
 }
 
 function syncCostOfWantsInputs() {
   const costOfWants = getCostOfWants();
 
-  setOptionalNumberInput(desiredFybcAgeInput, costOfWants.desiredFybcAge);
+  setOptionalNumberInput(elements.desiredFybcAgeInput, costOfWants.desiredFybcAge);
 
-  setNumberInput(plannedMortalityAgeInput, costOfWants.plannedMortalityAge);
+  setNumberInput(
+    elements.plannedMortalityAgeInput,
+    costOfWants.plannedMortalityAge,
+  );
 
-  setNumberInput(inflationRateInput, costOfWants.inflationRate);
+  setNumberInput(elements.inflationRateInput, costOfWants.inflationRate);
 }
 
 function renderLifestyleSelection() {
@@ -643,8 +357,8 @@ function renderLifestyleSelection() {
     customIncomeGroup.hidden = lifestyleOption !== "custom";
   }
 
-  if (customIncomeInput) {
-    customIncomeInput.value =
+  if (elements.customIncomeInput) {
+    elements.customIncomeInput.value =
       customMonthlyIncome > 0 ? String(customMonthlyIncome) : "";
   }
 }
@@ -1498,7 +1212,7 @@ function calculateClientCpfRetirementProjection() {
 }
 
 function getCpfRetirementSumGrowthRate() {
-  const enteredValue = cpfGrowthRateInput?.value.trim();
+  const enteredValue = elements.cpfGrowthRateInput?.value.trim();
 
   if (!enteredValue) {
     return DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE;
@@ -2140,7 +1854,7 @@ function validateFybcAge() {
   if (desiredFybcAge <= 0) {
     showValidationMessage(
       "Please enter the age you want to FYBC.",
-      desiredFybcAgeInput,
+      elements.desiredFybcAgeInput,
     );
 
     return false;
@@ -2149,7 +1863,7 @@ function validateFybcAge() {
   if (desiredFybcAge <= currentAge) {
     showValidationMessage(
       `Desired FYBC Age must be above the client's current age of ${currentAge}.`,
-      desiredFybcAgeInput,
+      elements.desiredFybcAgeInput,
     );
 
     return false;
@@ -2158,7 +1872,7 @@ function validateFybcAge() {
   if (plannedMortalityAge > 0 && desiredFybcAge >= plannedMortalityAge) {
     showValidationMessage(
       "Desired FYBC Age must be below the planned mortality age.",
-      desiredFybcAgeInput,
+      elements.desiredFybcAgeInput,
     );
 
     return false;
@@ -2179,7 +1893,7 @@ function validateCostOfWants() {
   if (plannedMortalityAge <= 65) {
     showValidationMessage(
       "Planned mortality age must be above age 65.",
-      plannedMortalityAgeInput,
+      elements.plannedMortalityAgeInput,
     );
 
     return false;
@@ -2188,7 +1902,7 @@ function validateCostOfWants() {
   if (inflationRate < 0) {
     showValidationMessage(
       "Inflation rate cannot be negative.",
-      inflationRateInput,
+      elements.inflationRateInput,
     );
 
     return false;
@@ -2232,31 +1946,31 @@ function formatCurrency(value) {
 }
 
 function getDesiredFybcAge() {
-  if (!desiredFybcAgeInput) {
+  if (!elements.desiredFybcAgeInput) {
     return null;
   }
 
-  const value = parseInt(desiredFybcAgeInput.value, 10);
+  const value = parseInt(elements.desiredFybcAgeInput.value, 10);
 
   return Number.isFinite(value) ? value : null;
 }
 
 function getInflationRate() {
-  if (!inflationRateInput) {
+  if (!elements.inflationRateInput) {
     return 0;
   }
 
-  const value = parseFloat(inflationRateInput.value);
+  const value = parseFloat(elements.inflationRateInput.value);
 
   return Number.isFinite(value) ? value : 0;
 }
 
 function getPlannedMortalityAge() {
-  if (!plannedMortalityAgeInput) {
+  if (!elements.plannedMortalityAgeInput) {
     return null;
   }
 
-  const value = parseInt(plannedMortalityAgeInput.value, 10);
+  const value = parseInt(elements.plannedMortalityAgeInput.value, 10);
 
   return Number.isFinite(value) ? value : null;
 }
@@ -2301,10 +2015,10 @@ function clearValidationMessage() {
 
 function clearInvalidInputs() {
   [
-    desiredFybcAgeInput,
-    plannedMortalityAgeInput,
-    inflationRateInput,
-    customIncomeInput,
+    elements.desiredFybcAgeInput,
+    elements.plannedMortalityAgeInput,
+    elements.inflationRateInput,
+    elements.customIncomeInput,
   ].forEach(function (input) {
     input?.removeAttribute("aria-invalid");
   });
