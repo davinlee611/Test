@@ -151,7 +151,7 @@ function handleCpfGrowthRateInput() {
 }
 
 function attachLifestyleListeners() {
-  lifestyleOptionButtons.forEach(function (button) {
+  elements.lifestyleOptionButtons.forEach(function (button) {
     button.addEventListener("click", function () {
       selectLifestyleOption(button.dataset.lifestyleOption);
     });
@@ -345,7 +345,7 @@ function syncCostOfWantsInputs() {
 function renderLifestyleSelection() {
   const { lifestyleOption, customMonthlyIncome } = getCostOfWants();
 
-  lifestyleOptionButtons.forEach(function (button) {
+  elements.lifestyleOptionButtons.forEach(function (button) {
     const isSelected = button.dataset.lifestyleOption === lifestyleOption;
 
     button.classList.toggle("is-selected", isSelected);
@@ -353,8 +353,8 @@ function renderLifestyleSelection() {
     button.setAttribute("aria-checked", String(isSelected));
   });
 
-  if (customIncomeGroup) {
-    customIncomeGroup.hidden = lifestyleOption !== "custom";
+  if (elements.customIncomeGroup) {
+    elements.customIncomeGroup.hidden = lifestyleOption !== "custom";
   }
 
   if (elements.customIncomeInput) {
@@ -364,15 +364,15 @@ function renderLifestyleSelection() {
 }
 
 function renderSelectedIncome() {
-  if (!selectedIncomeSummary || !selectedIncomeAmount) {
+  if (!elements.selectedIncomeSummary || !elements.selectedIncomeAmount) {
     return;
   }
 
   const monthlyIncome = getSelectedMonthlyIncome();
 
-  selectedIncomeSummary.hidden = false;
+  elements.selectedIncomeSummary.hidden = false;
 
-  selectedIncomeAmount.textContent =
+  elements.selectedIncomeAmount.textContent =
     monthlyIncome > 0 ? formatCurrency(monthlyIncome) : "Not selected";
 }
 
@@ -424,53 +424,47 @@ function getSelectedMonthlyPassiveIncome() {
 function renderMonthlySpendingBreakdown() {
   const breakdown = calculateMonthlySpendingBreakdown();
 
-  setCurrencyText(
-    householdAmountElement,
-    breakdown.expenses.household,
-  );
+  setCurrencyText(elements.householdAmount, breakdown.expenses.household);
+
+  setCurrencyText(elements.transportAmount, breakdown.expenses.transport);
 
   setCurrencyText(
-    transportAmountElement,
-    breakdown.expenses.transport,
-  );
-
-  setCurrencyText(
-    subscriptionsAmountElement,
+    elements.subscriptionsAmount,
     breakdown.expenses.subscriptionsLifestyle,
   );
 
   setCurrencyText(
-    dependantsAmountElement,
+    elements.dependantsAmount,
     breakdown.expenses.parentsDependantsSupport,
   );
 
   setCurrencyText(
-    otherExpensesAmountElement,
+    elements.otherExpensesAmount,
     breakdown.expenses.otherRecurringExpenses,
   );
 
   setCurrencyText(
-    liabilityRepaymentsElement,
+    elements.liabilityRepaymentsAmount,
     breakdown.commitments.liabilityRepayments,
   );
 
   setCurrencyText(
-    insuranceAmountElement,
+    elements.insuranceAmount,
     breakdown.commitments.insurancePremiums,
   );
 
   setCurrencyText(
-    totalExpensesElement,
+    elements.totalExpensesElement,
     breakdown.totalMonthlyExpenses,
   );
 
   setCurrencyText(
-    totalCommitmentsElement,
+    elements.totalCommitmentsElement,
     breakdown.totalMonthlyCommitments,
   );
 
   setCurrencyText(
-    totalSpendingElement,
+    elements.totalSpendingElement,
     breakdown.totalMonthlyOutflow,
   );
 }
