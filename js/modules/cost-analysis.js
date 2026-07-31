@@ -27,6 +27,8 @@ import {
   getLiabilityMonthlyCpfPayment,
 } from "./liabilities/liability-calculator.js";
 
+import { getEffectiveMonthlyInsurancePremium } from "../services/commitment-service.js";
+
 /* ========================================
    CONFIGURATION
 ======================================== */
@@ -246,9 +248,7 @@ function calculateCurrentMonthlyCashflow() {
 
   const monthlyCashCommitments = calculateMonthlyCashCommitments(liabilities);
 
-  const monthlyInsurancePremiums = getNonNegativeNumber(
-    getCommitments().insurancePremiums,
-  );
+  const monthlyInsurancePremiums = getEffectiveMonthlyInsurancePremium();
 
   const monthlyCommitments = monthlyCashCommitments + monthlyInsurancePremiums;
 

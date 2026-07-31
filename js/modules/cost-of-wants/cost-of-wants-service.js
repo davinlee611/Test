@@ -27,6 +27,8 @@ import {
   calculateFybcProjection as calculateFybcProjectionValues,
 } from "./cost-of-wants-calculator.js";
 
+import { getEffectiveMonthlyInsurancePremium } from "../../services/commitment-service.js";
+
 /* ========================================
    CONSTANTS
 ======================================== */
@@ -299,7 +301,7 @@ export function calculateMonthlySpendingBreakdown() {
   const monthlyCommitments = {
     liabilityRepayments: calculateTotalMonthlyLiabilityRepayments(),
 
-    insurancePremiums: calculateMonthlyInsurancePremiums(),
+    insurancePremiums: getEffectiveMonthlyInsurancePremium(),
   };
 
   const totalMonthlyExpenses =
@@ -403,53 +405,6 @@ function calculateTotalMonthlyLiabilityRepayments() {
   return getLiabilities().reduce(function (runningTotal, liability) {
     return runningTotal + getLiabilityMonthlyCashRepayment(liability);
   }, 0);
-}
-
-/* ========================================
-   INSURANCE PREMIUMS
-======================================== */
-
-function calculateMonthlyInsurancePremiums() {
-  const portfolioMonthlyPremium = calculatePortfolioMonthlyPremium();
-
-  if (portfolioMonthlyPremium > 0) {
-    return portfolioMonthlyPremium;
-  }
-
-  const commitments = getCommitments();
-
-  return getValidAmount(commitments.insurancePremiums);
-}
-
-function calculatePortfolioMonthlyPremium() {
-  return getPolicies().reduce(function (runningTotal, policy) {
-    return runningTotal + convertPremiumToMonthly(policy?.premium);
-  }, 0);
-}
-
-function convertPremiumToMonthly(premium) {
-  const amount = getValidAmount(premium?.amount);
-
-  if (amount <= 0) {
-    return 0;
-  }
-
-  switch (premium?.frequency) {
-    case "monthly":
-      return amount;
-
-    case "quarterly":
-      return amount / 3;
-
-    case "half_yearly":
-      return amount / 6;
-
-    case "annual":
-      return amount / 12;
-
-    default:
-      return 0;
-  }
 }
 
 /* ========================================
