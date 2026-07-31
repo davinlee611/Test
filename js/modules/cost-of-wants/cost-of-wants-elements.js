@@ -149,7 +149,33 @@ export const costOfWantsElements = Object.freeze({
     requiredCapital: document.getElementById("costOfWantsFybcRequired"),
   }),
 
-  timeline: Object.freeze({}),
+  timeline: Object.freeze({
+    container: document.getElementById("costOfWantsIncomeTimeline"),
+
+    content: document.getElementById("costOfWantsTimelineContent"),
+
+    progress: document.getElementById("costOfWantsTimelineProgress"),
+
+    brsMarker: document.getElementById("costOfWantsTimelineBrsMarker"),
+
+    brsAmount: document.getElementById("costOfWantsTimelineBrsAmount"),
+
+    frsMarker: document.getElementById("costOfWantsTimelineFrsMarker"),
+
+    frsAmount: document.getElementById("costOfWantsTimelineFrsAmount"),
+
+    ersMarker: document.getElementById("costOfWantsTimelineErsMarker"),
+
+    ersAmount: document.getElementById("costOfWantsTimelineErsAmount"),
+
+    goalMarker: document.getElementById("costOfWantsTimelineGoalMarker"),
+
+    goalAmount: document.getElementById("costOfWantsTimelineGoalAmount"),
+
+    incomeNeeded: document.getElementById("costOfWantsTimelineIncomeNeeded"),
+
+    totalPayouts: document.getElementById("costOfWantsTimelineTotalPayouts"),
+  }),
 
   projection: Object.freeze({
     calculationToggleButton: document.getElementById(

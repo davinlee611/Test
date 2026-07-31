@@ -563,32 +563,32 @@ function renderFloatingSummary() {
   );
 
   setSignedCurrencyText(
-    elements.floatingSummary.netSurplus,
+    elements.floatingSummary.breakdown.netSurplus,
     position.netSurplus,
   );
 
   setCurrencyText(
-    elements.floatingSummary.breakdownIncome,
+    elements.floatingSummary.breakdown.income,
     position.monthlyTakeHomeIncome,
   );
 
   setDeductionCurrencyText(
-    elements.floatingSummary.breakdownExpenses,
+    elements.floatingSummary.breakdown.expenses,
     position.monthlyExpenses,
   );
 
   setDeductionCurrencyText(
-    elements.floatingSummary.breakdownCommitments,
+    elements.floatingSummary.breakdown.commitments,
     position.monthlyCommitments,
   );
 
   setSignedCurrencyText(
-    elements.floatingSummary.breakdownSurplus,
+    elements.floatingSummary.breakdown.surplus,
     position.monthlySurplus,
   );
 
   setDeductionCurrencyText(
-    elements.floatingSummary.breakdownGoalSavings,
+    elements.floatingSummary.breakdown.goalSavings,
     position.minimumGoalSavings,
   );
 
@@ -1458,34 +1458,34 @@ function renderCostOfWantsTimeline(projection) {
       ? Math.min(100, Math.max(0, (selectedCpfPayout / incomeNeeded) * 100))
       : 0;
 
-  if (timelineProgressElement) {
-    timelineProgressElement.style.width = `${payoutProgressPercentage}%`;
+  if (elements.timeline.progress) {
+    elements.timeline.progress.style.width = `${payoutProgressPercentage}%`;
   }
 
-  timelineContentElement?.classList.add("is-ready");
+  elements.timeline.content?.classList.add("is-ready");
 
-  if (timelineBrsAmountElement) {
-    timelineBrsAmountElement.textContent = `${formatCurrency(brsPayout)}/mth`;
+  if (elements.timeline.brsAmount) {
+    elements.timeline.brsAmount.textContent = `${formatCurrency(brsPayout)}/mth`;
   }
 
-  if (timelineFrsAmountElement) {
-    timelineFrsAmountElement.textContent = `${formatCurrency(frsPayout)}/mth`;
+  if (elements.timeline.frsAmount) {
+    elements.timeline.frsAmount.textContent = `${formatCurrency(frsPayout)}/mth`;
   }
 
-  if (timelineErsAmountElement) {
-    timelineErsAmountElement.textContent = `${formatCurrency(ersPayout)}/mth`;
+  if (elements.timeline.ersAmount) {
+    elements.timeline.ersAmount.textContent = `${formatCurrency(ersPayout)}/mth`;
   }
 
-  if (timelineGoalAmountElement) {
-    timelineGoalAmountElement.textContent = `${formatCurrency(incomeNeeded)}/mth`;
+  if (elements.timeline.goalAmount) {
+    elements.timeline.goalAmount.textContent = `${formatCurrency(incomeNeeded)}/mth`;
   }
 
-  if (timelineIncomeNeededElement) {
-    timelineIncomeNeededElement.textContent = `${formatCurrency(incomeNeeded)}/mth`;
+  if (elements.timeline.incomeNeeded) {
+    elements.timeline.incomeNeeded.textContent = `${formatCurrency(incomeNeeded)}/mth`;
   }
 
-  if (timelineTotalPayoutsElement) {
-    timelineTotalPayoutsElement.textContent = `${formatCurrency(selectedCpfPayout)}/mth`;
+  if (elements.timeline.totalPayouts) {
+    elements.timeline.totalPayouts.textContent = `${formatCurrency(selectedCpfPayout)}/mth`;
   }
 
   positionCostOfWantsTimelineMarkers({
@@ -1520,20 +1520,20 @@ function positionCostOfWantsTimelineMarkers({
     return Math.min(94, Math.max(4, percentage));
   };
 
-  if (timelineBrsMarkerElement) {
-    timelineBrsMarkerElement.style.left = `${getPayoutPosition(brsPayout)}%`;
+  if (elements.timeline.brsMarker) {
+    elements.timeline.brsMarker.style.left = `${getPayoutPosition(brsPayout)}%`;
   }
 
-  if (timelineFrsMarkerElement) {
-    timelineFrsMarkerElement.style.left = `${getPayoutPosition(frsPayout)}%`;
+  if (elements.timeline.frsMarker) {
+    elements.timeline.frsMarker.style.left = `${getPayoutPosition(frsPayout)}%`;
   }
 
-  if (timelineErsMarkerElement) {
-    timelineErsMarkerElement.style.left = `${getPayoutPosition(ersPayout)}%`;
+  if (elements.timeline.ersMarker) {
+    elements.timeline.ersMarker.style.left = `${getPayoutPosition(ersPayout)}%`;
   }
 
-  if (timelineGoalMarkerElement) {
-    timelineGoalMarkerElement.style.left = "100%";
+  if (elements.timeline.goalMarker) {
+    elements.timeline.goalMarker.style.left = "100%";
   }
 }
 
@@ -1806,26 +1806,26 @@ function renderEmptyFybcProjection() {
 }
 
 function renderEmptyCostOfWantsTimeline() {
-  timelineContentElement?.classList.remove("is-ready");
+  elements.timeline.content?.classList.remove("is-ready");
 
-  if (timelineBrsAmountElement) {
-    timelineBrsAmountElement.textContent = "--";
+  if (elements.timeline.brsAmount) {
+    elements.timeline.brsAmount.textContent = "--";
   }
 
-  if (timelineFrsAmountElement) {
-    timelineFrsAmountElement.textContent = "--";
+  if (elements.timeline.frsAmount) {
+    elements.timeline.frsAmount.textContent = "--";
   }
 
-  if (timelineErsAmountElement) {
-    timelineErsAmountElement.textContent = "--";
+  if (elements.timeline.ersAmount) {
+    elements.timeline.ersAmount.textContent = "--";
   }
 
-  if (timelineGoalAmountElement) {
-    timelineGoalAmountElement.textContent = "--";
+  if (elements.timeline.goalAmount) {
+    elements.timeline.goalAmount.textContent = "--";
   }
 
-  if (timelineIncomeNeededElement) {
-    timelineIncomeNeededElement.textContent = "--";
+  if (elements.timeline.incomeNeeded) {
+    elements.timeline.incomeNeeded.textContent = "--";
   }
 
   if (timelineTotalPayoutsElement) {
@@ -1840,15 +1840,15 @@ function renderEmptyCostOfWantsTimeline() {
     remainingCapitalElement.textContent = "--";
   }
 
-  if (timelineProgressElement) {
-    timelineProgressElement.style.width = "0%";
+  if (elements.timeline.progress) {
+    elements.timeline.progress.style.width = "0%";
   }
 
   [
-    timelineBrsMarkerElement,
-    timelineFrsMarkerElement,
-    timelineErsMarkerElement,
-    timelineGoalMarkerElement,
+    elements.timeline.brsMarker,
+    elements.timeline.frsMarker,
+    elements.timeline.ersMarker,
+    elements.timeline.goalMarker,
   ].forEach(function (marker) {
     marker?.style.removeProperty("left");
   });
