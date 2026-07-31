@@ -13,6 +13,9 @@ export function createEmptyCostOfWants() {
 
     lifestyleOption: "",
     customMonthlyIncome: 0,
+
+    selectedCpfRetirementOption: "frs",
+    cpfRetirementSumGrowthRate: 3.5,
   };
 }
 

@@ -127,6 +127,42 @@ export function getInflationRate() {
   return Number.isFinite(rate) ? rate : 0;
 }
 
+export function getSelectedCpfRetirementOption() {
+  const { selectedCpfRetirementOption } = getCostOfWants();
+
+  const validOptions = ["brs", "frs", "ers", "self_employed"];
+
+  return validOptions.includes(selectedCpfRetirementOption)
+    ? selectedCpfRetirementOption
+    : "frs";
+}
+
+export function getSavedCpfRetirementSumGrowthRate() {
+  const { cpfRetirementSumGrowthRate } = getCostOfWants();
+
+  return getCpfRetirementSumGrowthRate(cpfRetirementSumGrowthRate);
+}
+
+export function setSelectedCpfRetirementOption(option) {
+  const validOptions = ["brs", "frs", "ers", "self_employed"];
+
+  if (!validOptions.includes(option)) {
+    return false;
+  }
+
+  updateCostOfWants({
+    selectedCpfRetirementOption: option,
+  });
+
+  return true;
+}
+
+export function setCpfRetirementSumGrowthRate(value) {
+  updateCostOfWants({
+    cpfRetirementSumGrowthRate: getCpfRetirementSumGrowthRate(value),
+  });
+}
+
 /* ========================================
    CPF PROJECTION
 ======================================== */
@@ -214,6 +250,15 @@ export function getSelectedCpfLifeMonthlyPayout({
 ======================================== */
 
 export function getRetirementGoalSummary() {
+  const selectedCpfRetirementOption = getSelectedCpfRetirementOption();
+
+  const cpfGrowthRate = getSavedCpfRetirementSumGrowthRate();
+
+  const cpfLifePayout = getSelectedCpfLifeMonthlyPayout({
+    selectedCpfRetirementOption,
+    cpfGrowthRate,
+  });
+
   const projection = calculateFybcProjectionValues({
     currentAge: getClientAge(),
 
@@ -225,11 +270,7 @@ export function getRetirementGoalSummary() {
 
     monthlyPassiveIncome: getSelectedMonthlyPassiveIncome(),
 
-    /*
-     * CPF LIFE is deliberately excluded for now.
-     * This can be connected to the future CPF section later.
-     */
-    cpfLifePayout: 0,
+    cpfLifePayout,
   });
 
   if (!projection.isValid) {
@@ -255,24 +296,12 @@ export function getRetirementGoalSummary() {
 
     desiredFybcAge: projection.desiredFybcAge,
 
-    /*
-     * This is the selected ideal monthly passive income
-     * after inflation up to the desired FYBC age.
-     */
     monthlyPassiveIncomeNeeded: projection.monthlyIncomeAtFybc,
 
-    /*
-     * The same selected lifestyle amount inflated
-     * from the client's current age to age 65.
-     */
     monthlyIncomeAt65: projection.monthlyIncomeAt65,
 
-    cpfLifeIncome: 0,
+    cpfLifeIncome: projection.cpfLifePayout,
 
-    /*
-     * Because CPF LIFE is currently zero, this matches
-     * the Cost of Wants income-gap result.
-     */
     incomeGap: projection.monthlyIncomeAfterCpf,
 
     totalCapitalNeeded: projection.totalCapitalRequired,

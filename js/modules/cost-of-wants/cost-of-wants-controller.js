@@ -22,6 +22,10 @@ import {
   saveFybcAssumptions,
   setCustomMonthlyIncome,
   setLifestyleOption,
+  getSavedCpfRetirementSumGrowthRate,
+  getSelectedCpfRetirementOption,
+  setCpfRetirementSumGrowthRate,
+  setSelectedCpfRetirementOption,
 } from "./cost-of-wants-service.js";
 
 import {
@@ -87,7 +91,7 @@ export function initializeCostOfWants() {
 export function resetCostOfWants() {
   resetCostOfWantsState();
 
-  selectedCpfRetirementOption = "frs";
+  selectedCpfRetirementOption = getSelectedCpfRetirementOption();
 
   resetCpfGrowthRateInput();
 
@@ -111,6 +115,16 @@ function resetCpfGrowthRateInput() {
 
   elements.inputs.cpfGrowthRate.value = String(
     DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE,
+  );
+}
+
+function syncCpfGrowthRateInput() {
+  if (!elements.inputs.cpfGrowthRate) {
+    return;
+  }
+
+  elements.inputs.cpfGrowthRate.value = String(
+    getSavedCpfRetirementSumGrowthRate(),
   );
 }
 
@@ -173,9 +187,13 @@ function handleCustomIncomeInput() {
 }
 
 function handleCpfGrowthRateInput() {
+  setCpfRetirementSumGrowthRate(getCpfGrowthRateInputValue());
+
   renderCpfProjection();
 
   renderFybcProjections();
+
+  emitCostOfWantsChanged();
 }
 
 function saveCostOfWantsInputs() {
@@ -375,6 +393,12 @@ function handleCpfRetirementOptionClick(event) {
     return;
   }
 
+  const optionSaved = setSelectedCpfRetirementOption(selectedOption);
+
+  if (!optionSaved) {
+    return;
+  }
+
   selectedCpfRetirementOption = selectedOption;
 
   renderCpfRetirementOptionSelection(selectedCpfRetirementOption);
@@ -382,14 +406,6 @@ function handleCpfRetirementOptionClick(event) {
   renderFybcProjections();
 
   emitCostOfWantsChanged();
-}
-
-function getSelectedCpfRetirementOption() {
-  const selectedButton = document.querySelector(
-    ["[data-cpf-retirement-option]", '[aria-checked="true"]'].join(""),
-  );
-
-  return selectedButton?.dataset.cpfRetirementOption || "brs";
 }
 
 /* ========================================
@@ -432,6 +448,8 @@ export function renderCostOfWants() {
   renderClientDetails(getClientAge());
 
   syncCostOfWantsInputs(costOfWants);
+
+  syncCpfGrowthRateInput();
 
   renderLifestyleSelection(costOfWants);
 
