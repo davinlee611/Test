@@ -80,23 +80,19 @@ export const costOfWantsElements = Object.freeze({
 
     goalSavingsStatus: document.getElementById("costOfWantsGoalSavingsStatus"),
 
-    breakdownIncome: document.getElementById("costOfWantsBreakdownIncome"),
+    breakdown: Object.freeze({
+      income: document.getElementById("costOfWantsBreakdownIncome"),
 
-    breakdownExpenses: document.getElementById("costOfWantsBreakdownExpenses"),
+      expenses: document.getElementById("costOfWantsBreakdownExpenses"),
 
-    breakdownCommitments: document.getElementById(
-      "costOfWantsBreakdownCommitments",
-    ),
+      commitments: document.getElementById("costOfWantsBreakdownCommitments"),
 
-    breakdownSurplus: document.getElementById("costOfWantsBreakdownSurplus"),
+      surplus: document.getElementById("costOfWantsBreakdownSurplus"),
 
-    breakdownGoalSavings: document.getElementById(
-      "costOfWantsBreakdownGoalSavings",
-    ),
+      goalSavings: document.getElementById("costOfWantsBreakdownGoalSavings"),
 
-    breakdownNetSurplus: document.getElementById(
-      "costOfWantsBreakdownNetSurplus",
-    ),
+      netSurplus: document.getElementById("costOfWantsBreakdownNetSurplus"),
+    }),
   }),
 
   cpf: Object.freeze({
@@ -139,7 +135,19 @@ export const costOfWantsElements = Object.freeze({
     calculationData: document.getElementById("cpfCalculationData"),
   }),
 
-  fybc: Object.freeze({}),
+  fybc: Object.freeze({
+    yearsRemaining: document.getElementById("costOfWantsFybcYearsRemaining"),
+
+    inflationNote: document.getElementById("costOfWantsFybcInflationNote"),
+
+    income: document.getElementById("costOfWantsFybcIncome"),
+
+    incomeAt65: document.getElementById("costOfWantsIncomeAt65"),
+
+    cpfLifeIncome: document.getElementById("costOfWantsCpfLifeIncome"),
+
+    requiredCapital: document.getElementById("costOfWantsFybcRequired"),
+  }),
 
   timeline: Object.freeze({}),
 

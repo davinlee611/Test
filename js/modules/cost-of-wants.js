@@ -1376,37 +1376,34 @@ function renderFybcProjections() {
 
 function renderFybcProjectionResults(projection) {
 
-  if (fybcYearsRemainingElement) {
-    const yearLabel =
-      projection.yearsRemaining === 1
-        ? "Year"
-        : "Years";
+  if (elements.fybc.yearsRemaining) {
+    const yearLabel = projection.yearsRemaining === 1 ? "Year" : "Years";
 
-    fybcYearsRemainingElement.textContent =
-      `${projection.yearsRemaining} ${yearLabel}`;
+    elements.fybc.yearsRemaining.textContent = `${projection.yearsRemaining} ${yearLabel}`;
   }
 
-  if (fybcIncomeElement) {
-    fybcIncomeElement.textContent = formatCurrency(
+  if (elements.fybc.income) {
+    elements.fybc.income.textContent = formatCurrency(
       projection.monthlyIncomeAtFybc,
     );
   }
 
-  if (incomeAt65Element) {
-    incomeAt65Element.textContent = formatCurrency(
+  if (elements.fybc.incomeAt65) {
+    elements.fybc.incomeAt65.textContent = formatCurrency(
       projection.monthlyIncomeAt65,
     );
   }
 
-  if (fybcInflationNoteElement) {
-    fybcInflationNoteElement.textContent =
-      `Assuming ${formatPercentage(
-        projection.inflationRate * 100,
-      )} annual inflation`;
+  if (elements.fybc.inflationNote) {
+    elements.fybc.inflationNote.textContent = `Assuming ${formatPercentage(
+      projection.inflationRate * 100,
+    )} annual inflation`;
   }
 
-  if (cpfLifeIncomeElement) {
-    cpfLifeIncomeElement.textContent = formatCurrency(projection.cpfLifePayout);
+  if (elements.fybc.cpfLifeIncome) {
+    elements.fybc.cpfLifeIncome.textContent = formatCurrency(
+      projection.cpfLifePayout,
+    );
   }
 
   if (fybcRequiredElement) {
@@ -1778,29 +1775,29 @@ function getSelectedCpfLifeMonthlyPayout() {
 }
 
 function renderEmptyFybcProjection() {
-  if (fybcYearsRemainingElement) {
-    fybcYearsRemainingElement.textContent = "--";
+  if (elements.fybc.yearsRemaining) {
+    elements.fybc.yearsRemaining.textContent = "--";
   }
 
-  if (fybcIncomeElement) {
-    fybcIncomeElement.textContent = "--";
+  if (elements.fybc.income) {
+    elements.fybc.income.textContent = "--";
   }
 
-  if (fybcInflationNoteElement) {
-    fybcInflationNoteElement.textContent =
+  if (elements.fybc.inflationNote) {
+    elements.fybc.inflationNote.textContent =
       "Enter the projection assumptions above";
   }
 
-  if (cpfLifeIncomeElement) {
-    cpfLifeIncomeElement.textContent = "--";
+  if (elements.fybc.cpfLifeIncome) {
+    elements.fybc.cpfLifeIncome.textContent = "--";
   }
 
-  if (fybcRequiredElement) {
-    fybcRequiredElement.textContent = "--";
+  if (elements.fybc.requiredCapital) {
+    elements.fybc.requiredCapital.textContent = "--";
   }
 
-  if (incomeAt65Element) {
-    incomeAt65Element.textContent = "--";
+  if (elements.fybc.incomeAt65) {
+    elements.fybc.incomeAt65.textContent = "--";
   }
 
   renderEmptyCostOfWantsTimeline();
