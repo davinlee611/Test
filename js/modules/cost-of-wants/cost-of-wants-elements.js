@@ -129,7 +129,7 @@ export const costOfWantsElements = Object.freeze({
     projectedErsBasis: document.getElementById("costOfWantsProjectedErsBasis"),
 
     calculationToggleButton: document.getElementById(
-      "cpfCalculationToggleButton",
+      "costOfWantsCpfCalculationToggle",
     ),
 
     calculationToggleIcon: document.getElementById(
@@ -193,11 +193,11 @@ export const costOfWantsElements = Object.freeze({
 
   projection: Object.freeze({
     calculationToggleButton: document.getElementById(
-      "projectionCalculationToggleButton",
+      "costOfWantsProjectionCalculationToggle",
     ),
 
     calculationToggleIcon: document.getElementById(
-      "projectionCalculationToggleIcon",
+      "costOfWantsProjectionCalculationToggleIcon",
     ),
 
     calculationDetails: document.getElementById(
