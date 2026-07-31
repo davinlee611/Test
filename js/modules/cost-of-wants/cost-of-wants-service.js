@@ -32,9 +32,9 @@ import {
 ======================================== */
 
 const LIFESTYLE_AMOUNTS = Object.freeze({
-  basic: 2000,
-  average: 3500,
-  comfort: 5000,
+  basic: 3000,
+  average: 5000,
+  comfort: 8000,
 });
 
 /* ========================================

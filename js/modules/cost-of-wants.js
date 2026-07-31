@@ -483,16 +483,6 @@ function renderFybcProjections() {
   });
 }
 
-function handleFybcAssumptionInput() {
-  saveCostOfWantsInputs();
-
-  clearValidationMessage();
-
-  renderFybcProjections();
-
-  emitCostOfWantsChanged();
-}
-
 /* ========================================
    VALIDATION
 ======================================== */
