@@ -139,7 +139,7 @@ function attachInputListeners() {
     handleCpfGrowthRateInput,
   );
 
-  elements..inputs.customIncomeInput?.addEventListener(
+  elements.inputs.customIncomeInput?.addEventListener(
     "input",
     handleCustomIncomeInput,
   );
