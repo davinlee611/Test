@@ -227,5 +227,7 @@ export const costOfWantsElements = Object.freeze({
     reportButton: document.getElementById("costOfWantsReportButton"),
   }),
 
-  validation: Object.freeze({}),
+  validation: Object.freeze({
+    message: document.getElementById("costOfWantsValidationMessage"),
+  }),
 });
