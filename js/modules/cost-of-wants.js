@@ -62,7 +62,7 @@ export function initializeCostOfWants() {
     renderCostOfWants();
     return;
   }
-
+  
   attachInputListeners();
   attachLifestyleListeners();
   attachSummaryListeners();
@@ -70,6 +70,7 @@ export function initializeCostOfWants() {
   attachCpfCalculationListeners();
   initializeCpfRetirementOptions();
 
+  renderFloatingSummary();
   renderCostOfWants();
 
   moduleInitialized = true;
