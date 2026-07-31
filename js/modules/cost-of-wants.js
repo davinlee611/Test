@@ -38,6 +38,13 @@ import {
 
 import { costOfWantsElements } from "./cost-of-wants/cost-of-wants-elements.js";
 
+import {
+  renderClientDetails,
+  renderLifestyleSelection,
+  renderSelectedIncome,
+  syncCostOfWantsInputs,
+} from "./cost-of-wants/cost-of-wants-renderer.js";
+
 /* ========================================
    PAGE ELEMENTS
 ======================================== */
@@ -195,7 +202,8 @@ function attachSummaryListeners() {
 
 function attachApplicationListeners() {
   on(EVENTS.PROFILE_CHANGED, function () {
-    renderClientDetails();
+    renderClientDetails(getClientAge());
+
     renderProjectedCpfRetirementSums();
 
     renderFybcProjections();
@@ -270,7 +278,8 @@ function handleCustomIncomeInput() {
     customMonthlyIncome: getWholeNumberInput(elements.inputs.customIncome),
   });
 
-  renderSelectedIncome();
+  renderSelectedIncome(getSelectedMonthlyIncome());
+
   renderMonthlySpendingBreakdown();
 
   renderFybcProjections();
@@ -293,8 +302,10 @@ function selectLifestyleOption(option) {
     lifestyleOption: option,
   });
 
-  renderLifestyleSelection();
-  renderSelectedIncome();
+  renderLifestyleSelection(getCostOfWants());
+
+  renderSelectedIncome(getSelectedMonthlyIncome());
+
   renderMonthlySpendingBreakdown();
 
   renderFybcProjections();
@@ -321,104 +332,25 @@ function saveCostOfWantsInputs() {
 ======================================== */
 
 function renderCostOfWants() {
-  renderClientDetails();
-  syncCostOfWantsInputs();
-  renderLifestyleSelection();
-  renderSelectedIncome();
+  const costOfWants = getCostOfWants();
+
+  renderClientDetails(getClientAge());
+
+  syncCostOfWantsInputs(costOfWants);
+
+  renderLifestyleSelection(costOfWants);
+
+  renderSelectedIncome(getSelectedMonthlyIncome());
+
   renderMonthlySpendingBreakdown();
+
   renderFloatingSummary();
 
   renderCpfRetirementOptionSelection();
+
   renderProjectedCpfRetirementSums();
+
   renderFybcProjections();
-}
-
-function renderClientDetails() {
-  if (!elements.inputs.currentAge) {
-    return;
-  }
-
-  const currentAge = getClientAge();
-
-  elements.inputs.currentAge.value =
-    currentAge === null ? "" : String(currentAge);
-}
-
-function syncCostOfWantsInputs() {
-  const costOfWants = getCostOfWants();
-
-  setOptionalNumberInput(
-    elements.inputs.desiredFybcAge,
-    costOfWants.desiredFybcAge,
-  );
-
-  setNumberInput(
-    elements.inputs.plannedMortalityAge,
-    costOfWants.plannedMortalityAge,
-  );
-
-  setNumberInput(elements.inputs.inflationRate, costOfWants.inflationRate);
-}
-
-function renderLifestyleSelection() {
-  const { lifestyleOption, customMonthlyIncome } = getCostOfWants();
-
-  elements.lifestyle.optionButtons.forEach(function (button) {
-    const isSelected =
-      button.dataset.lifestyleOption === lifestyleOption;
-
-    button.classList.toggle("is-selected", isSelected);
-
-    button.setAttribute("aria-checked", String(isSelected));
-  });
-
-  if (elements.lifestyle.customIncomeGroup) {
-    elements.lifestyle.customIncomeGroup.hidden =
-      lifestyleOption !== "custom";
-  }
-
-  if (elements.inputs.customIncome) {
-    elements.inputs.customIncome.value =
-      customMonthlyIncome > 0 ? String(customMonthlyIncome) : "";
-  }
-}
-
-function renderSelectedIncome() {
-  if (
-    !elements.lifestyle.selectedIncomeSummary ||
-    !elements.lifestyle.selectedIncomeAmount
-  ) {
-    return;
-  }
-
-  const monthlyIncome = getSelectedMonthlyIncome();
-
-  elements.lifestyle.selectedIncomeSummary.hidden = false;
-
-  elements.lifestyle.selectedIncomeAmount.textContent =
-    monthlyIncome > 0
-      ? formatCurrency(monthlyIncome)
-      : "Not selected";
-}
-
-function setOptionalNumberInput(input, value) {
-  if (!input) {
-    return;
-  }
-
-  const number = Number(value);
-
-  input.value = Number.isFinite(number) && number > 0 ? String(number) : "";
-}
-
-function setNumberInput(input, value) {
-  if (!input) {
-    return;
-  }
-
-  const number = Number(value);
-
-  input.value = Number.isFinite(number) ? String(number) : "";
 }
 
 /* ========================================
