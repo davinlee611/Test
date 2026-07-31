@@ -26,182 +26,15 @@ import { EVENTS } from "../events/events.js";
 
 import { getLiabilityMonthlyCashRepayment } from "./liabilities/liability-calculator.js";
 
-/* ========================================
-   CPF RETIREMENT CONFIGURATION
-======================================== */
-
-const DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE = 3.5;
-
-const LATEST_OFFICIAL_RETIREMENT_SUM_YEAR = 2027;
-
-/*
- * CPF Retirement Sums applicable when the member turns 55.
- *
- * ERS:
- * - 2022 to 2024: 1.5 times FRS
- * - 2025 onwards: 2 times FRS
- *
- * Store official ERS amounts explicitly so historical policy changes
- * are not lost by deriving ERS from the current rule.
- */
-const OFFICIAL_RETIREMENT_SUMS = {
-  2022: {
-    brs: 96000,
-    frs: 192000,
-    ers: 288000,
-  },
-
-  2023: {
-    brs: 99400,
-    frs: 198800,
-    ers: 298200,
-  },
-
-  2024: {
-    brs: 102900,
-    frs: 205800,
-    ers: 308700,
-  },
-
-  2025: {
-    brs: 106500,
-    frs: 213000,
-    ers: 426000,
-  },
-
-  2026: {
-    brs: 110200,
-    frs: 220400,
-    ers: 440800,
-  },
-
-  2027: {
-    brs: 114100,
-    frs: 228200,
-    ers: 456400,
-  },
-};
-
-const LATEST_OFFICIAL_FRS =
-  OFFICIAL_RETIREMENT_SUMS[
-    LATEST_OFFICIAL_RETIREMENT_SUM_YEAR
-  ].frs;
-
-/*
- * CPF LIFE payout figures obtained from the available CPF LIFE
- * calculator cohorts.
- *
- * These are used directly when a matching cohort is available.
- * Later cohorts use the locked 2026 conversion relationship.
- */
-const OFFICIAL_CPF_LIFE_PAYOUTS = {
-  2022: {
-    male: {
-      brs: 720,
-      frs: 1320,
-      ers: 1940,
-    },
-
-    female: {
-      brs: 670,
-      frs: 1230,
-      ers: 1810,
-    },
-  },
-
-  2023: {
-    male: {
-      brs: 750,
-      frs: 1420,
-      ers: 2100,
-    },
-
-    female: {
-      brs: 700,
-      frs: 1330,
-      ers: 1950,
-    },
-  },
-
-  2024: {
-    male: {
-      brs: 820,
-      frs: 1520,
-      ers: 2250,
-    },
-
-    female: {
-      brs: 770,
-      frs: 1420,
-      ers: 2100,
-    },
-  },
-
-  2025: {
-    male: {
-      brs: 880,
-      frs: 1650,
-      ers: 3210,
-    },
-
-    female: {
-      brs: 820,
-      frs: 1540,
-      ers: 2990,
-    },
-  },
-
-  2026: {
-    male: {
-      brs: 930,
-      frs: 1750,
-      ers: 3410,
-    },
-
-    female: {
-      brs: 890,
-      frs: 1640,
-      ers: 3180,
-    },
-  },
-};
-
-/*
- * Locked future CPF LIFE payout model.
- *
- * Male:
- * monthly payout = 100 + RA at 65 × 0.00507067220929381
- *
- * Female:
- * monthly payout = 120 + RA at 65 × 0.004685336151938148
- *
- * The model is based on the relationship between the 2026 BRS,
- * FRS and ERS RA balances and their corresponding payouts.
- */
-const CPF_LIFE_PAYOUT_MODEL = {
-  basisYear: 2026,
-
-  male: {
-    fixedAmount: 100,
-    raFactor: 0.00507067220929381,
-  },
-
-  female: {
-    fixedAmount: 120,
-    raFactor: 0.004685336151938148,
-  },
-
-  roundingIncrement: 10,
-};
-
-/*
- * Retirement Sums are assumed to remain in the RA from age 55 to
- * age 65 and compound at 4% per year for 10 years.
- *
- * 1.04 ^ 10 = approximately 1.4802442849
- */
-const CPF_RA_INTEREST_RATE = 4;
-const CPF_RA_COMPOUNDING_YEARS = 10;
+import {
+  CPF_LIFE_PAYOUT_MODEL,
+  CPF_RA_COMPOUNDING_YEARS,
+  CPF_RA_INTEREST_RATE,
+  DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE,
+  calculateClientCpfRetirementProjection as calculateCpfRetirementProjection,
+  calculateFybcProjection as calculateFybcProjectionValues,
+  getCpfCohortAgeText,
+} from "./cost-of-wants/cost-of-wants-calculator.js";
 
 /* ========================================
    PAGE ELEMENTS
@@ -1654,242 +1487,14 @@ function renderProjectedCpfRetirementSums() {
 }
 
 function calculateClientCpfRetirementProjection() {
-  const currentAge = getClientAge();
   const profile = getClientProfile();
 
-  if (currentAge === null) {
-    return {
-      isValid: false,
-      message:
-        "Complete the client's date of birth to calculate the projection.",
-    };
-  }
-
-  const gender = profile?.gender;
-
-  if (gender !== "male" && gender !== "female") {
-    return {
-      isValid: false,
-      message:
-        "Select the client's gender to calculate the estimated CPF LIFE payout.",
-    };
-  }
-
-  const yearTurning55 = getClientYearTurning55();
-
-  if (!yearTurning55) {
-    return {
-      isValid: false,
-      message: "Unable to determine the year the client turns 55.",
-    };
-  }
-
-  const earliestOfficialRetirementSumYear = Math.min(
-    ...Object.keys(OFFICIAL_RETIREMENT_SUMS).map(Number),
-  );
-
-  if (yearTurning55 < earliestOfficialRetirementSumYear) {
-    return {
-      isValid: false,
-      message: [
-        `The client turned 55 in ${yearTurning55}.`,
-        `CPF Retirement Sum data is currently available from`,
-        `${earliestOfficialRetirementSumYear} onwards.`,
-      ].join(" "),
-    };
-  }
-
-  const annualGrowthRate = getCpfRetirementSumGrowthRate();
-
-  const calculatedRetirementSums = calculateCpfRetirementSums({
-    yearTurning55,
-    annualGrowthRate,
+  return calculateCpfRetirementProjection({
+    currentAge: getClientAge(),
+    gender: profile?.gender,
+    dateOfBirth: profile?.dateOfBirth,
+    annualGrowthRate: getCpfRetirementSumGrowthRate(),
   });
-
-  if (
-    !Number.isFinite(calculatedRetirementSums.frs) ||
-    calculatedRetirementSums.frs <= 0
-  ) {
-    return {
-      isValid: false,
-      message: "Unable to calculate the CPF Retirement Sums.",
-    };
-  }
-
-  const retirementSums = {
-    brs: roundCpfProjectionAmount(calculatedRetirementSums.brs),
-
-    frs: roundCpfProjectionAmount(calculatedRetirementSums.frs),
-
-    ers: roundCpfProjectionAmount(calculatedRetirementSums.ers),
-  };
-
-  const raAt65 = {
-    brs: calculateCpfRaAt65(retirementSums.brs),
-    frs: calculateCpfRaAt65(retirementSums.frs),
-    ers: calculateCpfRaAt65(retirementSums.ers),
-  };
-
-  const cpfLifeProjection = calculateCpfLifePayouts({
-    yearTurning55,
-    gender,
-    raAt65,
-  });
-
-  return {
-    isValid: true,
-    yearTurning55,
-    gender,
-    annualGrowthRate,
-    retirementSumBasis: calculatedRetirementSums.basis,
-    payoutBasis: cpfLifeProjection.basis,
-    retirementSums,
-    raAt65,
-    monthlyPayouts: cpfLifeProjection.monthlyPayouts,
-  };
-}
-
-function calculateCpfRetirementSums({ yearTurning55, annualGrowthRate }) {
-  const officialRetirementSums = OFFICIAL_RETIREMENT_SUMS[yearTurning55];
-
-  if (officialRetirementSums) {
-    return {
-      brs: officialRetirementSums.brs,
-      frs: officialRetirementSums.frs,
-      ers: officialRetirementSums.ers,
-      basis: "official",
-    };
-  }
-
-  if (yearTurning55 < LATEST_OFFICIAL_RETIREMENT_SUM_YEAR) {
-    return {
-      brs: 0,
-      frs: 0,
-      ers: 0,
-      basis: "unavailable",
-    };
-  }
-
-  const projectionYears = yearTurning55 - LATEST_OFFICIAL_RETIREMENT_SUM_YEAR;
-
-  const decimalGrowthRate = annualGrowthRate / 100;
-
-  const projectedFrs =
-    LATEST_OFFICIAL_FRS * Math.pow(1 + decimalGrowthRate, projectionYears);
-
-  return {
-    brs: projectedFrs / 2,
-    frs: projectedFrs,
-    ers: projectedFrs * 2,
-    basis: "projected",
-  };
-}
-
-function calculateCpfRaAt65(retirementSumAt55) {
-  if (!Number.isFinite(retirementSumAt55) || retirementSumAt55 <= 0) {
-    return 0;
-  }
-
-  const decimalInterestRate = CPF_RA_INTEREST_RATE / 100;
-
-  return (
-    retirementSumAt55 *
-    Math.pow(1 + decimalInterestRate, CPF_RA_COMPOUNDING_YEARS)
-  );
-}
-
-function calculateCpfLifePayouts({ yearTurning55, gender, raAt65 }) {
-  const officialPayouts = OFFICIAL_CPF_LIFE_PAYOUTS[yearTurning55]?.[gender];
-
-  if (officialPayouts) {
-    return {
-      basis: "official",
-
-      monthlyPayouts: {
-        brs: officialPayouts.brs,
-        frs: officialPayouts.frs,
-        ers: officialPayouts.ers,
-      },
-    };
-  }
-
-  return {
-    basis: "projected",
-
-    monthlyPayouts: {
-      brs: calculateProjectedCpfLifePayout({
-        raAt65: raAt65.brs,
-        gender,
-      }),
-
-      frs: calculateProjectedCpfLifePayout({
-        raAt65: raAt65.frs,
-        gender,
-      }),
-
-      ers: calculateProjectedCpfLifePayout({
-        raAt65: raAt65.ers,
-        gender,
-      }),
-    },
-  };
-}
-
-function calculateProjectedCpfLifePayout({ raAt65, gender }) {
-  const model = CPF_LIFE_PAYOUT_MODEL[gender];
-
-  if (!model || !Number.isFinite(raAt65) || raAt65 <= 0) {
-    return 0;
-  }
-
-  const unroundedMonthlyPayout = model.fixedAmount + raAt65 * model.raFactor;
-
-  return roundCpfLifePayout(unroundedMonthlyPayout);
-}
-
-function roundCpfLifePayout(value) {
-  if (!Number.isFinite(value)) {
-    return 0;
-  }
-
-  const increment = CPF_LIFE_PAYOUT_MODEL.roundingIncrement;
-
-  return Math.round(value / increment) * increment;
-}
-
-function getCpfCohortAgeText(yearTurning55) {
-  const currentYear = new Date().getFullYear();
-
-  if (yearTurning55 < currentYear) {
-    return `Client turned 55 in ${yearTurning55}.`;
-  }
-
-  if (yearTurning55 === currentYear) {
-    return `Client turns 55 in ${yearTurning55}.`;
-  }
-
-  return `Client will turn 55 in ${yearTurning55}.`;
-}
-
-function getClientYearTurning55() {
-  const profile = getClientProfile();
-
-  const dateOfBirth = profile?.dateOfBirth;
-
-  if (
-    typeof dateOfBirth !== "string" ||
-    !/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)
-  ) {
-    return null;
-  }
-
-  const birthYear = Number(dateOfBirth.slice(0, 4));
-
-  if (!Number.isInteger(birthYear) || birthYear <= 0) {
-    return null;
-  }
-
-  return birthYear + 55;
 }
 
 function getCpfRetirementSumGrowthRate() {
@@ -1986,14 +1591,6 @@ function renderCpfProjectionBasis({ retirementSumBasis, payoutBasis }) {
 
     element.classList.add(stateClass);
   });
-}
-
-function roundCpfProjectionAmount(value) {
-  if (!Number.isFinite(value)) {
-    return 0;
-  }
-
-  return Math.round(value / 100) * 100;
 }
 
 function formatPercentage(value) {
@@ -2395,83 +1992,14 @@ function createPostCpfOnlyProjectionFlow({
 }
 
 function calculateFybcProjection() {
-  const currentAge = getClientAge();
-
-  const desiredFybcAge = getDesiredFybcAge();
-
-  const mortalityAge = getPlannedMortalityAge();
-
-  const inflationRate = getInflationRate() / 100;
-
-  const monthlyPassiveIncome =
-    getSelectedMonthlyPassiveIncome();
-
-  if (
-    currentAge === null ||
-    desiredFybcAge === null ||
-    mortalityAge === null
-  ) {
-    return {
-      isValid: false,
-    };
-  }
-
-  if (
-    monthlyPassiveIncome <= 0 ||
-    desiredFybcAge <= currentAge ||
-    mortalityAge <= 65
-  ) {
-    return {
-      isValid: false,
-    };
-  }
-
-  const yearsRemaining =
-    desiredFybcAge - currentAge;
-
-  const monthlyIncomeAtFybc =
-    monthlyPassiveIncome *
-    Math.pow(
-      1 + inflationRate,
-      yearsRemaining,
-    );
-
-    const yearsUntilAge65 = Math.max(0, 65 - currentAge);
-
-    const monthlyIncomeAt65 =
-      monthlyPassiveIncome * Math.pow(1 + inflationRate, yearsUntilAge65);
-
-  const cpfLifePayout =
-    getSelectedCpfLifeMonthlyPayout();
-
-  const monthlyIncomeAfterCpf =
-    Math.max(
-      0,
-      monthlyIncomeAtFybc - cpfLifePayout,
-    );
-
-  const totalCapitalRequired = calculateTotalCapitalRequired({
-    monthlyIncomeAtFybc,
-    desiredFybcAge,
-    mortalityAge,
-    inflationRate,
-    cpfLifePayout,
+  return calculateFybcProjectionValues({
+    currentAge: getClientAge(),
+    desiredFybcAge: getDesiredFybcAge(),
+    mortalityAge: getPlannedMortalityAge(),
+    inflationRatePercent: getInflationRate(),
+    monthlyPassiveIncome: getSelectedMonthlyPassiveIncome(),
+    cpfLifePayout: getSelectedCpfLifeMonthlyPayout(),
   });
-
-  return {
-    isValid: true,
-    currentAge,
-    desiredFybcAge,
-    mortalityAge,
-    yearsRemaining,
-    monthlyPassiveIncome,
-    monthlyIncomeAtFybc,
-    monthlyIncomeAt65,
-    cpfLifePayout,
-    monthlyIncomeAfterCpf,
-    totalCapitalRequired,
-    inflationRate,
-  };
 }
 
 function getSelectedCpfLifeMonthlyPayout() {
@@ -2490,44 +2018,6 @@ function getSelectedCpfLifeMonthlyPayout() {
   return Number.isFinite(selectedPayout)
     ? selectedPayout
     : 0;
-}
-
-function calculateTotalCapitalRequired({
-  monthlyIncomeAtFybc,
-  desiredFybcAge,
-  mortalityAge,
-  inflationRate,
-  cpfLifePayout,
-}) {
-  if (
-    !Number.isFinite(monthlyIncomeAtFybc) ||
-    monthlyIncomeAtFybc <= 0 ||
-    !Number.isFinite(desiredFybcAge) ||
-    !Number.isFinite(mortalityAge) ||
-    mortalityAge <= desiredFybcAge
-  ) {
-    return 0;
-  }
-
-  let totalCapitalRequired = 0;
-
-  for (let age = desiredFybcAge; age < mortalityAge; age += 1) {
-    const yearsSinceFybc = age - desiredFybcAge;
-
-    const monthlyIncomeRequired =
-      monthlyIncomeAtFybc * Math.pow(1 + inflationRate, yearsSinceFybc);
-
-    const monthlyCpfLifeIncome = age >= 65 ? cpfLifePayout : 0;
-
-    const monthlyCapitalRequired = Math.max(
-      0,
-      monthlyIncomeRequired - monthlyCpfLifeIncome,
-    );
-
-    totalCapitalRequired += monthlyCapitalRequired * 12;
-  }
-
-  return totalCapitalRequired;
 }
 
 function renderEmptyFybcProjection() {
