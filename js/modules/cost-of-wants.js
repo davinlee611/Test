@@ -70,8 +70,8 @@ export function initializeCostOfWants() {
   attachCpfCalculationListeners();
   initializeCpfRetirementOptions();
 
-  renderFloatingSummary();
   renderCostOfWants();
+  
 
   moduleInitialized = true;
 }

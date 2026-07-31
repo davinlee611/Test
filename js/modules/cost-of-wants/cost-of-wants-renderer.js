@@ -165,7 +165,7 @@ export function renderFloatingSummary(position) {
   );
 
   setSignedCurrencyText(
-    elements.floatingSummary.breakdown.netSurplus,
+    elements.floatingSummary.netSurplus,
     position.netSurplus,
   );
 
@@ -192,6 +192,11 @@ export function renderFloatingSummary(position) {
   setDeductionCurrencyText(
     elements.floatingSummary.breakdown.goalSavings,
     position.minimumGoalSavings,
+  );
+
+  setSignedCurrencyText(
+    elements.floatingSummary.breakdown.netSurplus,
+    position.netSurplus,
   );
 
   renderGoalSavingsBreakdown(position.goalSavingsSummary);
