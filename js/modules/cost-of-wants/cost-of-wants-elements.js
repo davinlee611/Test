@@ -1,103 +1,93 @@
 "use strict";
 
-/* ========================================
-   COST OF WANTS ELEMENTS
-======================================== */
-
 export const costOfWantsElements = Object.freeze({
-  /* Inputs */
+  inputs: Object.freeze({
+    currentAge: document.getElementById("costOfWantsCurrentAge"),
 
-  currentAgeInput: document.getElementById("costOfWantsCurrentAge"),
+    desiredFybcAge: document.getElementById("desiredFybcAge"),
 
-  desiredFybcAgeInput: document.getElementById("desiredFybcAge"),
+    plannedMortalityAge: document.getElementById("plannedMortalityAge"),
 
-  plannedMortalityAgeInput: document.getElementById("plannedMortalityAge"),
+    inflationRate: document.getElementById("costOfWantsInflationRate"),
 
-  inflationRateInput: document.getElementById("costOfWantsInflationRate"),
+    customIncome: document.getElementById("costOfWantsCustomIncome"),
 
-  customIncomeInput: document.getElementById("costOfWantsCustomIncome"),
+    cpfGrowthRate: document.getElementById("costOfWantsCpfGrowthRate"),
+  }),
 
-  cpfGrowthRateInput: document.getElementById("costOfWantsCpfGrowthRate"),
+  lifestyle: Object.freeze({
+    optionButtons: Array.from(
+      document.querySelectorAll("[data-lifestyle-option]"),
+    ),
 
-  /* Lifestyle */
+    customIncomeGroup: document.getElementById("costOfWantsCustomIncomeGroup"),
 
-  lifestyleOptionButtons: Array.from(
-    document.querySelectorAll("[data-lifestyle-option]"),
-  ),
+    selectedIncomeSummary: document.getElementById("costOfWantsSelectedIncome"),
 
-  customIncomeGroup: document.getElementById("costOfWantsCustomIncomeGroup"),
+    selectedIncomeAmount: document.getElementById(
+      "costOfWantsSelectedIncomeAmount",
+    ),
+  }),
 
-  selectedIncomeSummary: document.getElementById("costOfWantsSelectedIncome"),
+  spending: Object.freeze({
+    householdAmount: document.getElementById("costOfWantsHouseholdAmount"),
 
-  selectedIncomeAmount: document.getElementById(
-    "costOfWantsSelectedIncomeAmount",
-  ),
+    transportAmount: document.getElementById("costOfWantsTransportAmount"),
 
-  validationMessage: document.getElementById("costOfWantsValidationMessage"),
+    subscriptionsAmount: document.getElementById(
+      "costOfWantsSubscriptionsAmount",
+    ),
 
-  /* Spending Summary */
+    dependantsAmount: document.getElementById("costOfWantsDependantsAmount"),
 
-  householdAmount: document.getElementById("costOfWantsHouseholdAmount"),
+    otherExpensesAmount: document.getElementById(
+      "costOfWantsOtherExpensesAmount",
+    ),
 
-  transportAmount: document.getElementById("costOfWantsTransportAmount"),
+    liabilityRepayments: document.getElementById(
+      "costOfWantsLiabilityRepaymentsAmount",
+    ),
 
-  subscriptionsAmount: document.getElementById(
-    "costOfWantsSubscriptionsAmount",
-  ),
+    insuranceAmount: document.getElementById("costOfWantsInsuranceAmount"),
 
-  dependantsAmount: document.getElementById("costOfWantsDependantsAmount"),
+    totalExpenses: document.getElementById("costOfWantsTotalExpenses"),
 
-  otherExpensesAmount: document.getElementById(
-    "costOfWantsOtherExpensesAmount",
-  ),
+    totalCommitments: document.getElementById("costOfWantsTotalCommitments"),
 
-  liabilityRepaymentsAmount: document.getElementById(
-    "costOfWantsLiabilityRepaymentsAmount",
-  ),
+    totalSpending: document.getElementById("costOfWantsTotalSpending"),
+  }),
 
-  insuranceAmount: document.getElementById("costOfWantsInsuranceAmount"),
+  floatingSummary: Object.freeze({
+    container: document.getElementById("costOfWantsFloatingSummary"),
 
-  totalExpensesAmount: document.getElementById("costOfWantsTotalExpenses"),
+    toggleButton: document.getElementById("costOfWantsSummaryToggle"),
 
-  totalCommitmentsAmount: document.getElementById(
-    "costOfWantsTotalCommitments",
-  ),
+    toggleIcon: document.getElementById("costOfWantsSummaryToggleIcon"),
 
-  totalSpendingAmount: document.getElementById("costOfWantsTotalSpending"),
+    calculatedBreakdown: document.getElementById(
+      "costOfWantsCalculatedBreakdown",
+    ),
 
-  /* Floating Summary */
+    monthlySurplus: document.getElementById("costOfWantsMonthlySurplus"),
 
-  floatingSummary: document.getElementById("costOfWantsFloatingSummary"),
+    goalSavings: document.getElementById("costOfWantsGoalSavings"),
 
-  floatingSummaryContent: document.getElementById(
-    "costOfWantsFloatingSummaryContent",
-  ),
+    netSurplus: document.getElementById("costOfWantsNetSurplus"),
 
-  /* CPF */
+    availableSurplus: document.getElementById("costOfWantsAvailableSurplus"),
 
-  cpfRetirementCards: document.getElementById("cpfRetirementCards"),
+    goalSavingsList: document.getElementById("costOfWantsGoalSavingsList"),
 
-  cpfRetirementTimeline: document.getElementById("cpfRetirementTimeline"),
+    goalSavingsStatus: document.getElementById("costOfWantsGoalSavingsStatus"),
+  }),
 
-  cpfSchemeDescription: document.getElementById(
-    "cpfRetirementSchemeDescription",
-  ),
+  cpf: Object.freeze({}),
 
-  cpfRetirementOptionButtons: Array.from(
-    document.querySelectorAll("[data-cpf-retirement-option]"),
-  ),
+  fybc: Object.freeze({}),
 
-  /* Projection */
+  timeline: Object.freeze({}),
 
-  projectionSummary: document.getElementById("costOfWantsProjectionSummary"),
+  projection: Object.freeze({}),
 
-  incomeGapCard: document.getElementById("costOfWantsIncomeGapCard"),
-
-  capitalRequiredCard: document.getElementById(
-    "costOfWantsCapitalRequiredCard",
-  ),
-
-  timelineContainer: document.getElementById("costOfWantsIncomeTimeline"),
-
-  calculationFlow: document.getElementById("costOfWantsCalculationFlow"),
+  validation: Object.freeze({}),
 });

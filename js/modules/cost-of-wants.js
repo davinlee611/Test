@@ -100,17 +100,17 @@ export function resetCostOfWants() {
 }
 
 function collapseCalculatedBreakdown() {
-  if (!calculatedBreakdownElement) {
+  if (!elements.floatingSummary.calculatedBreakdown) {
     return;
   }
 
-  calculatedBreakdownElement.hidden = true;
+  elements.floatingSummary.calculatedBreakdown.hidden = true;
 
-  summaryToggleButton?.setAttribute("aria-expanded", "false");
+  elements.floatingSummary.toggleButton?.setAttribute("aria-expanded", "false");
 
-  floatingSummaryElement?.classList.remove("is-expanded");
+  elements.floatingSummary.container?.classList.remove("is-expanded");
 
-  summaryToggleIcon?.classList.remove("is-expanded");
+  elements.floatingSummary.toggleIcon?.classList.remove("is-expanded");
 }
 
 /* ========================================
@@ -159,23 +159,38 @@ function attachLifestyleListeners() {
 }
 
 function toggleCalculatedBreakdown() {
-  if (!summaryToggleButton || !calculatedBreakdownElement) {
+  if (
+    !elements.floatingSummary.toggleButton ||
+    !elements.floatingSummary.calculatedBreakdown
+  ) {
     return;
   }
 
-  const willExpand = calculatedBreakdownElement.hidden;
+  const willExpand = elements.floatingSummary.calculatedBreakdown.hidden;
 
-  calculatedBreakdownElement.hidden = !willExpand;
+  elements.floatingSummary.calculatedBreakdown.hidden = !willExpand;
 
-  summaryToggleButton.setAttribute("aria-expanded", String(willExpand));
+  elements.floatingSummary.toggleButton.setAttribute(
+    "aria-expanded",
+    String(willExpand),
+  );
 
-  floatingSummaryElement?.classList.toggle("is-expanded", willExpand);
+  elements.floatingSummary.container?.classList.toggle(
+    "is-expanded",
+    willExpand,
+  );
 
-  summaryToggleIcon?.classList.toggle("is-expanded", willExpand);
+  elements.floatingSummary.toggleIcon?.classList.toggle(
+    "is-expanded",
+    willExpand,
+  );
 }
 
 function attachSummaryListeners() {
-  summaryToggleButton?.addEventListener("click", toggleCalculatedBreakdown);
+  elements.floatingSummary.toggleButton?.addEventListener(
+    "click",
+    toggleCalculatedBreakdown,
+  );
 }
 
 function attachApplicationListeners() {
@@ -560,15 +575,18 @@ function renderFloatingSummary() {
 
   setSignedCurrencyText(availableSurplusElement, position.netSurplus);
 
-  applyFinancialPositionClass(floatingSummaryElement, position.netSurplus);
+  applyFinancialPositionClass(
+    elements.floatingSummary.container,
+    position.netSurplus,
+  );
 }
 
 function renderGoalSavingsBreakdown(goalSavingsSummary) {
-  if (!goalSavingsListElement) {
+  if (!elements.floatingSummary.goalSavingsList) {
     return;
   }
 
-  goalSavingsListElement.replaceChildren();
+  elements.floatingSummary.goalSavingsList.replaceChildren();
 
   const validGoals = goalSavingsSummary?.validGoals || [];
 
@@ -579,7 +597,7 @@ function renderGoalSavingsBreakdown(goalSavingsSummary) {
 
     emptyMessage.textContent = "No active goal savings required.";
 
-    goalSavingsListElement.append(emptyMessage);
+    elements.floatingSummary.goalSavingsList.append(emptyMessage);
 
     return;
   }
@@ -590,7 +608,7 @@ function renderGoalSavingsBreakdown(goalSavingsSummary) {
     fragment.append(createGoalSavingsRow(goal));
   });
 
-  goalSavingsListElement.append(fragment);
+  elements.floatingSummary.goalSavingsList.append(fragment);
 }
 
 function createGoalSavingsRow(goal) {
@@ -621,7 +639,7 @@ function createGoalSavingsRow(goal) {
 }
 
 function renderGoalSavingsStatus(goalSavingsSummary) {
-  if (!goalSavingsStatusElement) {
+  if (!elements.floatingSummary.goalSavingsStatus) {
     return;
   }
 
