@@ -151,7 +151,7 @@ function handleCpfGrowthRateInput() {
 }
 
 function attachLifestyleListeners() {
-  elements.lifestyleOptionButtons.forEach(function (button) {
+  elements.lifestyle.optionButtons.forEach(function (button) {
     button.addEventListener("click", function () {
       selectLifestyleOption(button.dataset.lifestyleOption);
     });
