@@ -208,6 +208,76 @@ export function getSelectedCpfLifeMonthlyPayout({
 }
 
 /* ========================================
+   RETIREMENT GOAL SUMMARY
+======================================== */
+
+export function getRetirementGoalSummary() {
+  const projection = calculateFybcProjectionValues({
+    currentAge: getClientAge(),
+
+    desiredFybcAge: getDesiredFybcAge(),
+
+    mortalityAge: getPlannedMortalityAge(),
+
+    inflationRatePercent: getInflationRate(),
+
+    monthlyPassiveIncome: getSelectedMonthlyPassiveIncome(),
+
+    /*
+     * CPF LIFE is deliberately excluded for now.
+     * This can be connected to the future CPF section later.
+     */
+    cpfLifePayout: 0,
+  });
+
+  if (!projection.isValid) {
+    return {
+      isValid: false,
+
+      desiredFybcAge: getDesiredFybcAge(),
+
+      monthlyPassiveIncomeNeeded: 0,
+
+      monthlyIncomeAt65: 0,
+
+      cpfLifeIncome: 0,
+
+      incomeGap: 0,
+
+      totalCapitalNeeded: 0,
+    };
+  }
+
+  return {
+    isValid: true,
+
+    desiredFybcAge: projection.desiredFybcAge,
+
+    /*
+     * This is the selected ideal monthly passive income
+     * after inflation up to the desired FYBC age.
+     */
+    monthlyPassiveIncomeNeeded: projection.monthlyIncomeAtFybc,
+
+    /*
+     * The same selected lifestyle amount inflated
+     * from the client's current age to age 65.
+     */
+    monthlyIncomeAt65: projection.monthlyIncomeAt65,
+
+    cpfLifeIncome: 0,
+
+    /*
+     * Because CPF LIFE is currently zero, this matches
+     * the Cost of Wants income-gap result.
+     */
+    incomeGap: projection.monthlyIncomeAfterCpf,
+
+    totalCapitalNeeded: projection.totalCapitalRequired,
+  };
+}
+
+/* ========================================
    MONTHLY SPENDING BREAKDOWN
 ======================================== */
 

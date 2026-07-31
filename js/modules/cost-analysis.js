@@ -4,7 +4,6 @@ import {
   getAssets,
   getClientProfile,
   getCommitments,
-  getCostOfWants,
   getExpenses,
   getGoals,
   getLiabilities,
@@ -18,6 +17,8 @@ import {
 } from "../services/cpf-service.js";
 
 import { calculateLiquidAssetTotal } from "./assets-income/assets-income-calculator.js";
+
+import { getRetirementGoalSummary } from "./cost-of-wants/cost-of-wants-service.js";
 
 import { calculateTotalMonthlyExpenses } from "./expenses/expense-calculator.js";
 
@@ -145,22 +146,36 @@ export function renderCostAnalysis() {
 ======================================== */
 
 function renderRetirementGoalSummary() {
-  const costOfWants = getCostOfWants();
+  const summary = getRetirementGoalSummary();
 
-  /*
-   * These fields are placeholders until the Cost of Wants
-   * projection calculator is extracted during the refactor.
-   */
   setText(
     desiredFybcAgeElement,
-    costOfWants.desiredFybcAge > 0 ? String(costOfWants.desiredFybcAge) : "—",
+    summary.desiredFybcAge > 0 ? String(summary.desiredFybcAge) : "—",
   );
 
-  setText(monthlyIncomeNeededElement, "$0");
-  setText(monthlyIncomeAt65Element, "$0");
-  setText(cpfLifeIncomeElement, "$0");
-  setText(incomeGapElement, "$0/mth");
-  setText(totalCapitalNeededElement, "$0");
+  if (!summary.isValid) {
+    setCurrency(monthlyIncomeNeededElement, 0);
+
+    setCurrency(monthlyIncomeAt65Element, 0);
+
+    setCurrency(cpfLifeIncomeElement, 0);
+
+    setText(incomeGapElement, `${formatCurrency(0)}/mth`);
+
+    setCurrency(totalCapitalNeededElement, 0);
+
+    return;
+  }
+
+  setCurrency(monthlyIncomeNeededElement, summary.monthlyPassiveIncomeNeeded);
+
+  setCurrency(monthlyIncomeAt65Element, summary.monthlyIncomeAt65);
+
+  setCurrency(cpfLifeIncomeElement, summary.cpfLifeIncome);
+
+  setText(incomeGapElement, `${formatCurrency(summary.incomeGap)}/mth`);
+
+  setCurrency(totalCapitalNeededElement, summary.totalCapitalNeeded);
 }
 
 /* ========================================
