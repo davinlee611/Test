@@ -193,5 +193,19 @@ export const costOfWantsElements = Object.freeze({
     calculationData: document.getElementById("projectionCalculationData"),
   }),
 
+  outcome: Object.freeze({
+    incomeGap: document.getElementById("costOfWantsIncomeGap"),
+
+    remainingCapital: document.getElementById("costOfWantsRemainingCapital"),
+
+    capitalNeededHelper: document.getElementById(
+      "costOfWantsCapitalNeededHelper",
+    ),
+
+    analyseButton: document.getElementById("costOfWantsAnalyseButton"),
+
+    reportButton: document.getElementById("costOfWantsReportButton"),
+  }),
+
   validation: Object.freeze({}),
 });

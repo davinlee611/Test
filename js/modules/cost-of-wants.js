@@ -1412,8 +1412,8 @@ function renderFybcProjectionResults(projection) {
     );
   }
 
-  if (capitalNeededHelperElement) {
-    capitalNeededHelperElement.textContent = `After accounting monthly income needed until planned mortality age of ${projection.mortalityAge}`;
+  if (elements.outcome.capitalNeededHelper) {
+    elements.outcome.capitalNeededHelper.textContent = `After accounting monthly income needed until planned mortality age of ${projection.mortalityAge}`;
   }
 
   renderFybcProjectionMethodology(projection);
@@ -1443,12 +1443,12 @@ function renderCostOfWantsTimeline(projection) {
 
   const incomeGap = Math.max(0, incomeNeeded - selectedCpfPayout);
 
-  if (incomeGapElement) {
-    incomeGapElement.textContent = `${formatCurrency(incomeGap)}/mth`;
+  if (elements.outcome.incomeGap) {
+    elements.outcome.incomeGap.textContent = `${formatCurrency(incomeGap)}/mth`;
   }
 
-  if (remainingCapitalElement) {
-    remainingCapitalElement.textContent = formatCurrency(
+  if (elements.outcome.remainingCapital) {
+    elements.outcome.remainingCapital.textContent = formatCurrency(
       projection.totalCapitalRequired,
     );
   }
@@ -1832,12 +1832,12 @@ function renderEmptyCostOfWantsTimeline() {
     elements.timeline.totalPayouts.textContent = "--";
   }
 
-  if (incomeGapElement) {
-    incomeGapElement.textContent = "--";
+  if (elements.outcome.incomeGap) {
+    elements.outcome.incomeGap.textContent = "--";
   }
 
-  if (remainingCapitalElement) {
-    remainingCapitalElement.textContent = "--";
+  if (elements.outcome.remainingCapital) {
+    elements.outcome.remainingCapital.textContent = "--";
   }
 
   if (elements.timeline.progress) {
@@ -1866,8 +1866,8 @@ function renderEmptyFybcProjectionMethodology() {
     elements.projection.calculationDetails.hidden = true;
   }
 
-  if (capitalNeededHelperElement) {
-    capitalNeededHelperElement.textContent =
+  if (elements.outcome.capitalNeededHelper) {
+    elements.outcome.capitalNeededHelper.textContent =
       "After accounting monthly income needed until planned mortality age of --";
   }
 
