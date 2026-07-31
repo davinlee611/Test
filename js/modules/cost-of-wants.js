@@ -83,8 +83,8 @@ export function resetCostOfWants() {
 
   selectedCpfRetirementOption = "frs";
 
-  if (elements.cpfGrowthRateInput) {
-    elements.cpfGrowthRateInput.value = String(
+  if (elements.inputs.cpfGrowthRate) {
+    elements.inputs.cpfGrowthRate.value = String(
       DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE,
     );
   }
@@ -119,9 +119,9 @@ function collapseCalculatedBreakdown() {
 
 function attachInputListeners() {
   const inputs = [
-    elements.desiredFybcAgeInput,
-    elements.plannedMortalityAgeInput,
-    elements.inflationRateInput,
+    elements.inputs.desiredFybcAge,
+    elements.inputs.plannedMortalityAge,
+    elements.inputs.inflationRate,
   ];
 
   inputs.forEach(function (input) {
@@ -134,7 +134,7 @@ function attachInputListeners() {
     input.addEventListener("blur", handleCostOfWantsBlur);
   });
 
-  elements.cpfGrowthRateInput?.addEventListener(
+  elements.inputs.cpfGrowthRate?.addEventListener(
     "input",
     handleCpfGrowthRateInput,
   );
@@ -308,11 +308,11 @@ function selectLifestyleOption(option) {
 
 function saveCostOfWantsInputs() {
   updateCostOfWants({
-    desiredFybcAge: getWholeNumberInput(elements.desiredFybcAgeInput),
+    desiredFybcAge: getWholeNumberInput(elements.inputs.desiredFybcAge),
 
-    plannedMortalityAge: getWholeNumberInput(elements.plannedMortalityAgeInput),
+    plannedMortalityAge: getWholeNumberInput(elements.inputs.plannedMortalityAge),
 
-    inflationRate: getDecimalInput(elements.inflationRateInput),
+    inflationRate: getDecimalInput(elements.inputs.inflationRate),
   });
 }
 
@@ -334,27 +334,30 @@ function renderCostOfWants() {
 }
 
 function renderClientDetails() {
-  if (!elements.inputs.currentAgeInput) {
+  if (!elements.inputs.currentAge) {
     return;
   }
 
   const currentAge = getClientAge();
 
-  elements.inputs.currentAgeInput.value =
+  elements.inputs.currentAge.value =
     currentAge === null ? "" : String(currentAge);
 }
 
 function syncCostOfWantsInputs() {
   const costOfWants = getCostOfWants();
 
-  setOptionalNumberInput(elements.desiredFybcAgeInput, costOfWants.desiredFybcAge);
+  setOptionalNumberInput(
+    elements.inputs.desiredFybcAge,
+    costOfWants.desiredFybcAge,
+  );
 
   setNumberInput(
-    elements.plannedMortalityAgeInput,
+    elements.inputs.plannedMortalityAge,
     costOfWants.plannedMortalityAge,
   );
 
-  setNumberInput(elements.inflationRateInput, costOfWants.inflationRate);
+  setNumberInput(elements.inputs.inflationRate, costOfWants.inflationRate);
 }
 
 function renderLifestyleSelection() {
@@ -1255,7 +1258,7 @@ function calculateClientCpfRetirementProjection() {
 }
 
 function getCpfRetirementSumGrowthRate() {
-  const enteredValue = elements.cpfGrowthRateInput?.value.trim();
+  const enteredValue = elements.inputs.cpfGrowthRate?.value.trim();
 
   if (!enteredValue) {
     return DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE;
@@ -1897,7 +1900,7 @@ function validateFybcAge() {
   if (desiredFybcAge <= 0) {
     showValidationMessage(
       "Please enter the age you want to FYBC.",
-      elements.desiredFybcAgeInput,
+      elements.inputs.desiredFybcAge,
     );
 
     return false;
@@ -1906,7 +1909,7 @@ function validateFybcAge() {
   if (desiredFybcAge <= currentAge) {
     showValidationMessage(
       `Desired FYBC Age must be above the client's current age of ${currentAge}.`,
-      elements.desiredFybcAgeInput,
+      elements.inputs.desiredFybcAge,
     );
 
     return false;
@@ -1915,7 +1918,7 @@ function validateFybcAge() {
   if (plannedMortalityAge > 0 && desiredFybcAge >= plannedMortalityAge) {
     showValidationMessage(
       "Desired FYBC Age must be below the planned mortality age.",
-      elements.desiredFybcAgeInput,
+      elements.inputs.desiredFybcAge,
     );
 
     return false;
@@ -1936,7 +1939,7 @@ function validateCostOfWants() {
   if (plannedMortalityAge <= 65) {
     showValidationMessage(
       "Planned mortality age must be above age 65.",
-      elements.plannedMortalityAgeInput,
+      elements.inputs.plannedMortalityAge,
     );
 
     return false;
@@ -1945,7 +1948,7 @@ function validateCostOfWants() {
   if (inflationRate < 0) {
     showValidationMessage(
       "Inflation rate cannot be negative.",
-      elements.inflationRateInput,
+      elements.inputs.inflationRate,
     );
 
     return false;
@@ -1989,31 +1992,31 @@ function formatCurrency(value) {
 }
 
 function getDesiredFybcAge() {
-  if (!elements.desiredFybcAgeInput) {
+  if (!elements.inputs.desiredFybcAge) {
     return null;
   }
 
-  const value = parseInt(elements.desiredFybcAgeInput.value, 10);
+  const value = parseInt(elements.inputs.desiredFybcAge.value, 10);
 
   return Number.isFinite(value) ? value : null;
 }
 
 function getInflationRate() {
-  if (!elements.inflationRateInput) {
+  if (!elements.inputs.inflationRate) {
     return 0;
   }
 
-  const value = parseFloat(elements.inflationRateInput.value);
+  const value = parseFloat(elements.inputs.inflationRate.value);
 
   return Number.isFinite(value) ? value : 0;
 }
 
 function getPlannedMortalityAge() {
-  if (!elements.plannedMortalityAgeInput) {
+  if (!elements.inputs.plannedMortalityAge) {
     return null;
   }
 
-  const value = parseInt(elements.plannedMortalityAgeInput.value, 10);
+  const value = parseInt(elements.inputs.plannedMortalityAge.value, 10);
 
   return Number.isFinite(value) ? value : null;
 }
@@ -2058,9 +2061,9 @@ function clearValidationMessage() {
 
 function clearInvalidInputs() {
   [
-    elements.desiredFybcAgeInput,
-    elements.plannedMortalityAgeInput,
-    elements.inflationRateInput,
+    elements.inputs.desiredFybcAge,
+    elements.inputs.plannedMortalityAge,
+    elements.inputs.inflationRate,
     elements.inputs.customIncomeInput,
   ].forEach(function (input) {
     input?.removeAttribute("aria-invalid");

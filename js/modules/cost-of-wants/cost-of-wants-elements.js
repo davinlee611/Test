@@ -100,39 +100,53 @@ export const costOfWantsElements = Object.freeze({
       document.querySelectorAll("[data-cpf-retirement-option]"),
     ),
 
-    projectionCaption: document.getElementById("cpfProjectionCaption"),
+    projectionCaption: document.getElementById(
+      "costOfWantsCpfProjectionCaption",
+    ),
 
-    projectedBrs: document.getElementById("projectedBrs"),
+    projectedBrs: document.getElementById("costOfWantsProjectedBrs"),
 
-    projectedFrs: document.getElementById("projectedFrs"),
+    projectedFrs: document.getElementById("costOfWantsProjectedFrs"),
 
-    projectedErs: document.getElementById("projectedErs"),
+    projectedErs: document.getElementById("costOfWantsProjectedErs"),
 
-    projectedBrsPayout: document.getElementById("projectedBrsPayout"),
+    projectedBrsPayout: document.getElementById(
+      "costOfWantsProjectedBrsPayout",
+    ),
 
-    projectedFrsPayout: document.getElementById("projectedFrsPayout"),
+    projectedFrsPayout: document.getElementById(
+      "costOfWantsProjectedFrsPayout",
+    ),
 
-    projectedErsPayout: document.getElementById("projectedErsPayout"),
+    projectedErsPayout: document.getElementById(
+      "costOfWantsProjectedErsPayout",
+    ),
 
-    projectedBrsBasis: document.getElementById("projectedBrsBasis"),
+    projectedBrsBasis: document.getElementById("costOfWantsProjectedBrsBasis"),
 
-    projectedFrsBasis: document.getElementById("projectedFrsBasis"),
+    projectedFrsBasis: document.getElementById("costOfWantsProjectedFrsBasis"),
 
-    projectedErsBasis: document.getElementById("projectedErsBasis"),
+    projectedErsBasis: document.getElementById("costOfWantsProjectedErsBasis"),
 
     calculationToggleButton: document.getElementById(
       "cpfCalculationToggleButton",
     ),
 
-    calculationToggleIcon: document.getElementById("cpfCalculationToggleIcon"),
+    calculationToggleIcon: document.getElementById(
+      "costOfWantsCpfCalculationToggleIcon",
+    ),
 
-    calculationDetails: document.getElementById("cpfCalculationDetails"),
+    calculationDetails: document.getElementById(
+      "costOfWantsCpfCalculationDetails",
+    ),
 
-    payoutHelper: document.getElementById("cpfPayoutHelper"),
+    payoutHelper: document.getElementById("costOfWantsCpfPayoutHelper"),
 
-    calculationSummary: document.getElementById("cpfCalculationSummary"),
+    calculationSummary: document.getElementById(
+      "costOfWantsCpfCalculationSummary",
+    ),
 
-    calculationData: document.getElementById("cpfCalculationData"),
+    calculationData: document.getElementById("costOfWantsCpfCalculationData"),
   }),
 
   fybc: Object.freeze({
@@ -186,11 +200,17 @@ export const costOfWantsElements = Object.freeze({
       "projectionCalculationToggleIcon",
     ),
 
-    calculationDetails: document.getElementById("projectionCalculationDetails"),
+    calculationDetails: document.getElementById(
+      "costOfWantsProjectionCalculationDetails",
+    ),
 
-    calculationSummary: document.getElementById("projectionCalculationSummary"),
+    calculationSummary: document.getElementById(
+      "costOfWantsProjectionCalculationSummary",
+    ),
 
-    calculationData: document.getElementById("projectionCalculationData"),
+    calculationData: document.getElementById(
+      "costOfWantsProjectionCalculationData",
+    ),
   }),
 
   outcome: Object.freeze({
