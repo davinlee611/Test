@@ -1,9 +1,9 @@
 "use strict";
 
 import {
+  getCpfContributionRates2027,
   CPF_ORDINARY_WAGE_CEILING,
   CPF_ANNUAL_WAGE_CEILING,
-  getCpfContributionRates,
 } from "./cpf-service.js";
 
 /* ========================================
@@ -27,7 +27,7 @@ export function calculateIncomeSummary({
 
   const cpfApplies = employmentStatus === "full_time_employed" && age !== null;
 
-  const cpfRates = getCpfContributionRates(age);
+  const cpfRates = getCpfContributionRates2027(age);
 
   const employeeCpfRate = cpfApplies ? cpfRates.employeeRate : 0;
 
