@@ -81,7 +81,45 @@ export const costOfWantsElements = Object.freeze({
     goalSavingsStatus: document.getElementById("costOfWantsGoalSavingsStatus"),
   }),
 
-  cpf: Object.freeze({}),
+  cpf: Object.freeze({
+    optionButtons: Array.from(
+      document.querySelectorAll("[data-cpf-retirement-option]"),
+    ),
+
+    projectionCaption: document.getElementById("cpfProjectionCaption"),
+
+    projectedBrs: document.getElementById("projectedBrs"),
+
+    projectedFrs: document.getElementById("projectedFrs"),
+
+    projectedErs: document.getElementById("projectedErs"),
+
+    projectedBrsPayout: document.getElementById("projectedBrsPayout"),
+
+    projectedFrsPayout: document.getElementById("projectedFrsPayout"),
+
+    projectedErsPayout: document.getElementById("projectedErsPayout"),
+
+    projectedBrsBasis: document.getElementById("projectedBrsBasis"),
+
+    projectedFrsBasis: document.getElementById("projectedFrsBasis"),
+
+    projectedErsBasis: document.getElementById("projectedErsBasis"),
+
+    calculationToggleButton: document.getElementById(
+      "cpfCalculationToggleButton",
+    ),
+
+    calculationToggleIcon: document.getElementById("cpfCalculationToggleIcon"),
+
+    calculationDetails: document.getElementById("cpfCalculationDetails"),
+
+    payoutHelper: document.getElementById("cpfPayoutHelper"),
+
+    calculationSummary: document.getElementById("cpfCalculationSummary"),
+
+    calculationData: document.getElementById("cpfCalculationData"),
+  }),
 
   fybc: Object.freeze({}),
 

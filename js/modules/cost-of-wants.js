@@ -859,7 +859,7 @@ function getValidAmount(value) {
 ======================================== */
 
 function attachCpfCalculationListeners() {
-  cpfCalculationToggleButton?.addEventListener(
+  elements.cpf.calculationToggleButton?.addEventListener(
     "click",
     toggleCpfCalculationDetails,
   );
@@ -871,17 +871,26 @@ function attachCpfCalculationListeners() {
 }
 
 function toggleCpfCalculationDetails() {
-  if (!cpfCalculationToggleButton || !cpfCalculationDetailsElement) {
+  if (
+    !elements.cpf.calculationToggleButton ||
+    !elements.cpf.calculationDetails
+  ) {
     return;
   }
 
-  const willExpand = cpfCalculationDetailsElement.hidden;
+  const willExpand = elements.cpf.calculationDetails.hidden;
 
-  cpfCalculationDetailsElement.hidden = !willExpand;
+  elements.cpf.calculationDetails.hidden = !willExpand;
 
-  cpfCalculationToggleButton.setAttribute("aria-expanded", String(willExpand));
+  elements.cpf.calculationToggleButton.setAttribute(
+    "aria-expanded",
+    String(willExpand),
+  );
 
-  cpfCalculationToggleIcon?.classList.toggle("is-expanded", willExpand);
+  elements.cpf.calculationToggleIcon?.classList.toggle(
+    "is-expanded",
+    willExpand,
+  );
 }
 
 function toggleProjectionCalculationDetails() {
@@ -906,9 +915,9 @@ function toggleProjectionCalculationDetails() {
 
 function renderCpfPayoutMethodology(projection) {
   if (
-    !cpfPayoutHelperElement ||
-    !cpfCalculationSummaryElement ||
-    !cpfCalculationDataElement
+    !elements.cpf.payoutHelper ||
+    !elements.cpf.calculationSummary ||
+    !elements.cpf.calculationData
   ) {
     return;
   }
@@ -933,11 +942,11 @@ function renderProjectedCpfPayoutMethodology(projection) {
 
   const conversionFactor = model.raFactor * 100;
 
-  cpfPayoutHelperElement.textContent =
+  elements.cpf.payoutHelper.textContent =
     `RA payout projection using a conversion factor of ` +
     `${formatCpfPayoutFactor(conversionFactor)}.`;
 
-  cpfCalculationSummaryElement.textContent = [
+  elements.cpf.calculationSummary.textContent = [
     `The projected ${genderLabel.toLowerCase()} CPF LIFE payout`,
     `uses the relationship observed from the 2026 BRS, FRS`,
     `and ERS payout figures.`,
@@ -946,7 +955,7 @@ function renderProjectedCpfPayoutMethodology(projection) {
     `of the projected RA balance at age 65.`,
   ].join(" ");
 
-  cpfCalculationDataElement.replaceChildren(
+  elements.cpf.calculationData.replaceChildren(
     createCpfMethodologyRow(
       "Model basis",
       `${CPF_LIFE_PAYOUT_MODEL.basisYear} ${genderLabel} CPF LIFE figures`,
@@ -975,17 +984,17 @@ function renderProjectedCpfPayoutMethodology(projection) {
 }
 
 function renderOfficialCpfPayoutMethodology(projection) {
-  cpfPayoutHelperElement.textContent =
+  elements.cpf.payoutHelper.textContent =
     "Published CPF LIFE payout figures are used for this cohort.";
 
-  cpfCalculationSummaryElement.textContent = [
+  elements.cpf.calculationSummary.textContent = [
     `The client belongs to the ${projection.yearTurning55}`,
     `CPF Retirement Sum cohort.`,
     `The displayed monthly payouts are taken directly from`,
     `the stored CPF LIFE figures for that cohort and gender.`,
   ].join(" ");
 
-  cpfCalculationDataElement.replaceChildren(
+  elements.cpf.calculationData.replaceChildren(
     createCpfMethodologyRow("Cohort year", String(projection.yearTurning55)),
 
     createCpfMethodologyRow(
@@ -1037,34 +1046,29 @@ function formatCpfMultiplier(value) {
 }
 
 function renderEmptyCpfPayoutMethodology() {
-  if (cpfPayoutHelperElement) {
-    cpfPayoutHelperElement.textContent = "--";
+  if (elements.cpf.payoutHelper) {
+    elements.cpf.payoutHelper.textContent = "--";
   }
 
-  if (cpfCalculationSummaryElement) {
-    cpfCalculationSummaryElement.textContent = "--";
+  if (elements.cpf.calculationSummary) {
+    elements.cpf.calculationSummary.textContent = "--";
   }
 
-  cpfCalculationDataElement?.replaceChildren();
+  elements.cpf.calculationData?.replaceChildren();
 
-  if (cpfCalculationDetailsElement) {
-    cpfCalculationDetailsElement.hidden = true;
+  if (elements.cpf.calculationDetails) {
+    elements.cpf.calculationDetails.hidden = true;
   }
 
-  cpfCalculationToggleButton?.setAttribute("aria-expanded", "false");
+  elements.cpf.calculationToggleButton?.setAttribute("aria-expanded", "false");
 
-  cpfCalculationToggleIcon?.classList.remove("is-expanded");
+  elements.cpf.calculationToggleIcon?.classList.remove("is-expanded");
 }
 
 function initializeCpfRetirementOptions() {
-  cpfRetirementOptionButtons.forEach(
-    function (button) {
-      button.addEventListener(
-        "click",
-        handleCpfRetirementOptionClick,
-      );
-    },
-  );
+  elements.cpf.optionButtons.forEach(function (button) {
+    button.addEventListener("click", handleCpfRetirementOptionClick);
+  });
 }
 
 function handleCpfRetirementOptionClick(event) {
@@ -1085,24 +1089,14 @@ function handleCpfRetirementOptionClick(event) {
 }
 
 function renderCpfRetirementOptionSelection() {
-  cpfRetirementOptionButtons.forEach(
-    function (button) {
-      const isSelected =
-        button.dataset
-          .cpfRetirementOption ===
-        selectedCpfRetirementOption;
+  elements.cpf.optionButtons.forEach(function (button) {
+    const isSelected =
+      button.dataset.cpfRetirementOption === selectedCpfRetirementOption;
 
-      button.classList.toggle(
-        "selected",
-        isSelected,
-      );
+    button.classList.toggle("selected", isSelected);
 
-      button.setAttribute(
-        "aria-checked",
-        String(isSelected),
-      );
-    },
-  );
+    button.setAttribute("aria-checked", String(isSelected));
+  });
 }
 
 function getSelectedCpfRetirementOption() {
@@ -1132,38 +1126,38 @@ function renderProjectedCpfRetirementSums() {
 
   const cohortAgeText = getCpfCohortAgeText(projection.yearTurning55);
 
-  if (projectedBrsElement) {
-    projectedBrsElement.textContent = formatCurrency(
+  if (elements.cpf.projectedBrs) {
+    elements.cpf.projectedBrs.textContent = formatCurrency(
       projection.retirementSums.brs,
     );
   }
 
-  if (projectedFrsElement) {
-    projectedFrsElement.textContent = formatCurrency(
+  if (elements.cpf.projectedFrs) {
+    elements.cpf.projectedFrs.textContent = formatCurrency(
       projection.retirementSums.frs,
     );
   }
 
-  if (projectedErsElement) {
-    projectedErsElement.textContent = formatCurrency(
+  if (elements.cpf.projectedErs) {
+    elements.cpf.projectedErs.textContent = formatCurrency(
       projection.retirementSums.ers,
     );
   }
 
-  if (projectedBrsPayoutElement) {
-    projectedBrsPayoutElement.textContent = formatCurrency(
+  if (elements.cpf.projectedBrsPayout) {
+    elements.cpf.projectedBrsPayout.textContent = formatCurrency(
       projection.monthlyPayouts.brs,
     );
   }
 
-  if (projectedFrsPayoutElement) {
-    projectedFrsPayoutElement.textContent = formatCurrency(
+  if (elements.cpf.projectedFrsPayout) {
+    elements.cpf.projectedFrsPayout.textContent = formatCurrency(
       projection.monthlyPayouts.frs,
     );
   }
 
-  if (projectedErsPayoutElement) {
-    projectedErsPayoutElement.textContent = formatCurrency(
+  if (elements.cpf.projectedErsPayout) {
+    elements.cpf.projectedErsPayout.textContent = formatCurrency(
       projection.monthlyPayouts.ers,
     );
   }
@@ -1175,7 +1169,7 @@ function renderProjectedCpfRetirementSums() {
 
   renderCpfPayoutMethodology(projection);
 
-  if (!cpfProjectionCaptionElement) {
+  if (!elements.cpf.projectionCaption) {
     return;
   }
 
@@ -1185,7 +1179,7 @@ function renderProjectedCpfRetirementSums() {
     projection.retirementSumBasis === "official" &&
     projection.payoutBasis === "official"
   ) {
-    cpfProjectionCaptionElement.textContent = [
+    elements.cpf.projectionCaption.textContent = [
       cohortAgeText,
       `Published Retirement Sums and available ${genderLabel}`,
       `CPF LIFE payout figures are used.`,
@@ -1198,7 +1192,7 @@ function renderProjectedCpfRetirementSums() {
     projection.retirementSumBasis === "official" &&
     projection.payoutBasis === "projected"
   ) {
-    cpfProjectionCaptionElement.textContent = [
+    elements.cpf.projectionCaption.textContent = [
       cohortAgeText,
       `Published CPF Retirement Sums are used.`,
       `CPF LIFE payouts are estimated using the locked`,
@@ -1209,7 +1203,7 @@ function renderProjectedCpfRetirementSums() {
     return;
   }
 
-  cpfProjectionCaptionElement.textContent = [
+  elements.cpf.projectionCaption.textContent = [
     cohortAgeText,
     `Retirement Sums assume an annual increase of`,
     `${formatPercentage(projection.annualGrowthRate)}.`,
@@ -1251,21 +1245,21 @@ function renderEmptyCpfRetirementSums(message) {
 renderEmptyCpfPayoutMethodology();
 
   const retirementSumElements = [
-    projectedBrsElement,
-    projectedFrsElement,
-    projectedErsElement,
+    elements.cpf.projectedBrs,
+    elements.cpf.projectedFrs,
+    elements.cpf.projectedErs,
   ];
 
   const payoutElements = [
-    projectedBrsPayoutElement,
-    projectedFrsPayoutElement,
-    projectedErsPayoutElement,
+    elements.cpf.projectedBrsPayout,
+    elements.cpf.projectedFrsPayout,
+    elements.cpf.projectedErsPayout,
   ];
 
   const basisElements = [
-    projectedBrsBasisElement,
-    projectedFrsBasisElement,
-    projectedErsBasisElement,
+    elements.cpf.projectedBrsBasis,
+    elements.cpf.projectedFrsBasis,
+    elements.cpf.projectedErsBasis,
   ];
 
   retirementSumElements.forEach(function (element) {
@@ -1290,8 +1284,8 @@ renderEmptyCpfPayoutMethodology();
     element.classList.remove("is-official", "is-projected", "is-mixed");
   });
 
-  if (cpfProjectionCaptionElement) {
-    cpfProjectionCaptionElement.textContent = message;
+  if (elements.cpf.projectionCaption) {
+    elements.cpf.projectionCaption.textContent = message;
   }
 }
 
@@ -1308,9 +1302,9 @@ function renderCpfProjectionBasis({ retirementSumBasis, payoutBasis }) {
   }
 
   const basisElements = [
-    projectedBrsBasisElement,
-    projectedFrsBasisElement,
-    projectedErsBasisElement,
+    elements.cpf.projectedBrsBasis,
+    elements.cpf.projectedFrsBasis,
+    elements.cpf.projectedErsBasis,
   ];
 
   basisElements.forEach(function (element) {
