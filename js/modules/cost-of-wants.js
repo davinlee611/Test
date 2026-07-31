@@ -139,7 +139,7 @@ function attachInputListeners() {
     handleCpfGrowthRateInput,
   );
 
-  elements.customIncomeInput?.addEventListener(
+  elements..inputs.customIncomeInput?.addEventListener(
     "input",
     handleCustomIncomeInput,
   );
@@ -267,7 +267,7 @@ function handleCostOfWantsInput() {
 
 function handleCustomIncomeInput() {
   updateCostOfWants({
-    customMonthlyIncome: getWholeNumberInput(elements.customIncomeInput),
+    customMonthlyIncome: getWholeNumberInput(elements.inputs.customIncomeInput),
   });
 
   renderSelectedIncome();
@@ -302,7 +302,7 @@ function selectLifestyleOption(option) {
   emitCostOfWantsChanged();
 
   if (option === "custom") {
-    elements.customIncomeInput?.focus();
+    elements.inputs.customIncomeInput?.focus();
   }
 }
 
@@ -334,13 +334,13 @@ function renderCostOfWants() {
 }
 
 function renderClientDetails() {
-  if (!elements.currentAgeInput) {
+  if (!elements.inputs.currentAgeInput) {
     return;
   }
 
   const currentAge = getClientAge();
 
-  elements.currentAgeInput.value =
+  elements.inputs.currentAgeInput.value =
     currentAge === null ? "" : String(currentAge);
 }
 
@@ -360,35 +360,42 @@ function syncCostOfWantsInputs() {
 function renderLifestyleSelection() {
   const { lifestyleOption, customMonthlyIncome } = getCostOfWants();
 
-  elements.lifestyleOptionButtons.forEach(function (button) {
-    const isSelected = button.dataset.lifestyleOption === lifestyleOption;
+  elements.lifestyle.optionButtons.forEach(function (button) {
+    const isSelected =
+      button.dataset.lifestyleOption === lifestyleOption;
 
     button.classList.toggle("is-selected", isSelected);
 
     button.setAttribute("aria-checked", String(isSelected));
   });
 
-  if (elements.customIncomeGroup) {
-    elements.customIncomeGroup.hidden = lifestyleOption !== "custom";
+  if (elements.lifestyle.customIncomeGroup) {
+    elements.lifestyle.customIncomeGroup.hidden =
+      lifestyleOption !== "custom";
   }
 
-  if (elements.customIncomeInput) {
-    elements.customIncomeInput.value =
+  if (elements.inputs.customIncome) {
+    elements.inputs.customIncome.value =
       customMonthlyIncome > 0 ? String(customMonthlyIncome) : "";
   }
 }
 
 function renderSelectedIncome() {
-  if (!elements.selectedIncomeSummary || !elements.selectedIncomeAmount) {
+  if (
+    !elements.lifestyle.selectedIncomeSummary ||
+    !elements.lifestyle.selectedIncomeAmount
+  ) {
     return;
   }
 
   const monthlyIncome = getSelectedMonthlyIncome();
 
-  elements.selectedIncomeSummary.hidden = false;
+  elements.lifestyle.selectedIncomeSummary.hidden = false;
 
-  elements.selectedIncomeAmount.textContent =
-    monthlyIncome > 0 ? formatCurrency(monthlyIncome) : "Not selected";
+  elements.lifestyle.selectedIncomeAmount.textContent =
+    monthlyIncome > 0
+      ? formatCurrency(monthlyIncome)
+      : "Not selected";
 }
 
 function setOptionalNumberInput(input, value) {
@@ -2030,7 +2037,7 @@ function clearInvalidInputs() {
     elements.desiredFybcAgeInput,
     elements.plannedMortalityAgeInput,
     elements.inflationRateInput,
-    elements.customIncomeInput,
+    elements.inputs.customIncomeInput,
   ].forEach(function (input) {
     input?.removeAttribute("aria-invalid");
   });
