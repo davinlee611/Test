@@ -10,63 +10,22 @@ export const CPF_ANNUAL_WAGE_CEILING = 102000;
 
 /* ========================================
    CPF CONTRIBUTION RATES
+
+   Rates effective from 1 January 2027.
+   Applicable to Singapore Citizens and
+   third-year Permanent Residents and above
+   earning monthly wages above $750.
 ======================================== */
 
 export function getCpfContributionRates(age) {
-  if (age === null || age < 0) {
-    return {
-      employeeRate: 0,
-      employerRate: 0,
-    };
-  }
-
-  if (age <= 55) {
-    return {
-      employeeRate: 0.2,
-      employerRate: 0.17,
-    };
-  }
-
-  if (age <= 60) {
-    return {
-      employeeRate: 0.18,
-      employerRate: 0.16,
-    };
-  }
-
-  if (age <= 65) {
-    return {
-      employeeRate: 0.125,
-      employerRate: 0.125,
-    };
-  }
-
-  if (age <= 70) {
-    return {
-      employeeRate: 0.075,
-      employerRate: 0.09,
-    };
-  }
-
-  return {
-    employeeRate: 0.05,
-    employerRate: 0.075,
-  };
-}
-
-/* ========================================
-   2027 PROJECTION RATES
-======================================== */
-
-export function getCpfContributionRates2027(age) {
-  if (!Number.isFinite(Number(age)) || Number(age) < 0) {
-    return {
-      employeeRate: 0,
-      employerRate: 0,
-    };
-  }
-
   const safeAge = Number(age);
+
+  if (!Number.isFinite(safeAge) || safeAge < 0) {
+    return {
+      employeeRate: 0,
+      employerRate: 0,
+    };
+  }
 
   if (safeAge <= 55) {
     return {
@@ -102,8 +61,20 @@ export function getCpfContributionRates2027(age) {
   };
 }
 
-export function getCpfAllocationRates2027(age) {
-  if (!Number.isFinite(Number(age)) || Number(age) < 0) {
+/* ========================================
+   CPF ALLOCATION RATES
+
+   Rates effective from 1 January 2027.
+
+   retirementRate represents:
+   - SA allocation for age 55 and below
+   - RA allocation for age above 55
+======================================== */
+
+export function getCpfAllocationRates(age) {
+  const safeAge = Number(age);
+
+  if (!Number.isFinite(safeAge) || safeAge < 0) {
     return {
       oaRate: 0,
       retirementRate: 0,
@@ -111,8 +82,6 @@ export function getCpfAllocationRates2027(age) {
       retirementAccount: "sa",
     };
   }
-
-  const safeAge = Number(age);
 
   if (safeAge <= 35) {
     return {

@@ -13,8 +13,8 @@ import {
 import {
   CPF_ANNUAL_WAGE_CEILING,
   CPF_ORDINARY_WAGE_CEILING,
-  getCpfAllocationRates2027,
-  getCpfContributionRates2027,
+  getCpfAllocationRates,
+  getCpfContributionRates,
 } from "../services/cpf-service.js";
 
 import { calculateLiquidAssetTotal } from "./assets-income/assets-income-calculator.js";
@@ -188,7 +188,7 @@ function calculateCurrentMonthlyCashflow() {
     profile.employmentStatus === "full_time_employed" && age !== null;
 
   const contributionRates = cpfApplies
-    ? getCpfContributionRates2027(age)
+    ? getCpfContributionRates(age)
     : {
         employeeRate: 0,
         employerRate: 0,
@@ -372,7 +372,7 @@ function calculateTenYearProjection({
       projectedIncome.monthlyTotalCpfContribution +
       projectedIncome.monthlyBonusTotalCpf;
 
-    const allocationRates = getCpfAllocationRates2027(age);
+    const allocationRates = getCpfAllocationRates(age);
 
     const oaInflow = totalCpfInflow * allocationRates.oaRate;
 
@@ -430,7 +430,7 @@ function calculateProjectedIncome({
   const cpfApplies = employmentStatus === "full_time_employed" && age !== null;
 
   const contributionRates = cpfApplies
-    ? getCpfContributionRates2027(age)
+    ? getCpfContributionRates(age)
     : {
         employeeRate: 0,
         employerRate: 0,
