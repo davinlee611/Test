@@ -57,44 +57,6 @@ export const costOfWantsElements = Object.freeze({
     totalSpending: document.getElementById("costOfWantsTotalSpending"),
   }),
 
-  floatingSummary: Object.freeze({
-    container: document.getElementById("costOfWantsFloatingSummary"),
-
-    toggleButton: document.getElementById("costOfWantsSummaryToggle"),
-
-    toggleIcon: document.getElementById("costOfWantsSummaryToggleIcon"),
-
-    calculatedBreakdown: document.getElementById(
-      "costOfWantsCalculatedBreakdown",
-    ),
-
-    monthlySurplus: document.getElementById("costOfWantsMonthlySurplus"),
-
-    goalSavings: document.getElementById("costOfWantsGoalSavings"),
-
-    netSurplus: document.getElementById("costOfWantsNetSurplus"),
-
-    availableSurplus: document.getElementById("costOfWantsAvailableSurplus"),
-
-    goalSavingsList: document.getElementById("costOfWantsGoalSavingsList"),
-
-    goalSavingsStatus: document.getElementById("costOfWantsGoalSavingsStatus"),
-
-    breakdown: Object.freeze({
-      income: document.getElementById("costOfWantsBreakdownIncome"),
-
-      expenses: document.getElementById("costOfWantsBreakdownExpenses"),
-
-      commitments: document.getElementById("costOfWantsBreakdownCommitments"),
-
-      surplus: document.getElementById("costOfWantsBreakdownSurplus"),
-
-      goalSavings: document.getElementById("costOfWantsBreakdownGoalSavings"),
-
-      netSurplus: document.getElementById("costOfWantsBreakdownNetSurplus"),
-    }),
-  }),
-
   cpf: Object.freeze({
     optionButtons: Array.from(
       document.querySelectorAll("[data-cpf-retirement-option]"),

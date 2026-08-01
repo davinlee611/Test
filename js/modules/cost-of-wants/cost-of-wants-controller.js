@@ -16,7 +16,6 @@ import { DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE } from "./cost-of-wants-calculat
 import {
   calculateClientCpfRetirementProjection,
   calculateFybcProjection,
-  calculateMonthlyFinancialPosition,
   calculateMonthlySpendingBreakdown,
   getSelectedMonthlyIncome,
   saveFybcAssumptions,
@@ -31,7 +30,6 @@ import {
 import {
   renderClientDetails,
   renderCpfRetirementOptionSelection,
-  renderFloatingSummary,
   renderFybcProjection,
   renderLifestyleSelection,
   renderMonthlySpendingBreakdown,
@@ -71,8 +69,6 @@ export function initializeCostOfWants() {
 
   attachLifestyleListeners();
 
-  attachSummaryListeners();
-
   attachApplicationListeners();
 
   attachCalculationListeners();
@@ -96,8 +92,6 @@ export function resetCostOfWants() {
   resetCpfGrowthRateInput();
 
   clearValidationMessage();
-
-  collapseCalculatedBreakdown();
 
   collapseCpfCalculationDetails();
 
@@ -241,59 +235,6 @@ function selectLifestyleOption(option) {
 }
 
 /* ========================================
-   FLOATING SUMMARY
-======================================== */
-
-function attachSummaryListeners() {
-  elements.floatingSummary.toggleButton?.addEventListener(
-    "click",
-    toggleCalculatedBreakdown,
-  );
-}
-
-function toggleCalculatedBreakdown() {
-  const toggleButton = elements.floatingSummary.toggleButton;
-
-  const calculatedBreakdown = elements.floatingSummary.calculatedBreakdown;
-
-  if (!toggleButton || !calculatedBreakdown) {
-    return;
-  }
-
-  const willExpand = calculatedBreakdown.hidden;
-
-  calculatedBreakdown.hidden = !willExpand;
-
-  toggleButton.setAttribute("aria-expanded", String(willExpand));
-
-  elements.floatingSummary.container?.classList.toggle(
-    "is-expanded",
-    willExpand,
-  );
-
-  elements.floatingSummary.toggleIcon?.classList.toggle(
-    "is-expanded",
-    willExpand,
-  );
-}
-
-function collapseCalculatedBreakdown() {
-  const calculatedBreakdown = elements.floatingSummary.calculatedBreakdown;
-
-  if (!calculatedBreakdown) {
-    return;
-  }
-
-  calculatedBreakdown.hidden = true;
-
-  elements.floatingSummary.toggleButton?.setAttribute("aria-expanded", "false");
-
-  elements.floatingSummary.container?.classList.remove("is-expanded");
-
-  elements.floatingSummary.toggleIcon?.classList.remove("is-expanded");
-}
-
-/* ========================================
    CALCULATION DETAILS
 ======================================== */
 
@@ -419,17 +360,13 @@ function attachApplicationListeners() {
     clearValidationMessage();
   });
 
-  on(EVENTS.INCOME_CHANGED, renderFloatingFinancialSummary);
+  on(EVENTS.EXPENSES_CHANGED, refreshMonthlySpendingBreakdown);
 
-  on(EVENTS.EXPENSES_CHANGED, renderSpendingAndFinancialSummary);
+  on(EVENTS.COMMITMENTS_CHANGED, refreshMonthlySpendingBreakdown);
 
-  on(EVENTS.COMMITMENTS_CHANGED, renderSpendingAndFinancialSummary);
+  on(EVENTS.LIABILITIES_CHANGED, refreshMonthlySpendingBreakdown);
 
-  on(EVENTS.LIABILITIES_CHANGED, renderSpendingAndFinancialSummary);
-
-  on(EVENTS.POLICIES_CHANGED, renderSpendingAndFinancialSummary);
-
-  on(EVENTS.GOALS_CHANGED, renderFloatingFinancialSummary);
+  on(EVENTS.POLICIES_CHANGED, refreshMonthlySpendingBreakdown);
 
   on(EVENTS.SECTION_CHANGED, function ({ section }) {
     if (section === "cost") {
@@ -457,8 +394,6 @@ export function renderCostOfWants() {
 
   renderMonthlySpendingBreakdown(calculateMonthlySpendingBreakdown());
 
-  renderFloatingFinancialSummary();
-
   renderCpfRetirementOptionSelection(selectedCpfRetirementOption);
 
   renderCpfProjection();
@@ -466,14 +401,8 @@ export function renderCostOfWants() {
   renderFybcProjections();
 }
 
-function renderSpendingAndFinancialSummary() {
+function refreshMonthlySpendingBreakdown() {
   renderMonthlySpendingBreakdown(calculateMonthlySpendingBreakdown());
-
-  renderFloatingFinancialSummary();
-}
-
-function renderFloatingFinancialSummary() {
-  renderFloatingSummary(calculateMonthlyFinancialPosition());
 }
 
 function renderCpfProjection() {
