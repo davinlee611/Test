@@ -197,6 +197,36 @@ export function calculateClientCpfRetirementProjection({ cpfGrowthRate } = {}) {
   });
 }
 
+export function getProjectedCohortFrs() {
+  const cpfProjection = calculateClientCpfRetirementProjection({
+    cpfGrowthRate: getSavedCpfRetirementSumGrowthRate(),
+  });
+
+  if (!cpfProjection?.isValid) {
+    return {
+      isValid: false,
+      amount: 0,
+      yearTurning55: null,
+      basis: "unavailable",
+      annualGrowthRate: getSavedCpfRetirementSumGrowthRate(),
+    };
+  }
+
+  const projectedFrs = Number(cpfProjection.retirementSums?.frs);
+
+  return {
+    isValid: Number.isFinite(projectedFrs) && projectedFrs > 0,
+
+    amount: Number.isFinite(projectedFrs) ? projectedFrs : 0,
+
+    yearTurning55: cpfProjection.yearTurning55,
+
+    basis: cpfProjection.retirementSumBasis,
+
+    annualGrowthRate: cpfProjection.annualGrowthRate,
+  };
+}
+
 /* ========================================
    FYBC PROJECTION
 ======================================== */

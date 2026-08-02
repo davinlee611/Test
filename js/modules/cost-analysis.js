@@ -19,6 +19,7 @@ import { calculateLiquidAssetTotal } from "./assets-income/assets-income-calcula
 
 import {
   getPlannedMortalityAge,
+  getProjectedCohortFrs,
   getRetirementGoalSummary,
 } from "./cost-of-wants/cost-of-wants-service.js";
 
@@ -33,6 +34,11 @@ import {
   getEffectiveMonthlyInsurancePremium,
   getMonthlyInsuranceMedisaveOutflow,
 } from "../services/commitment-service.js";
+
+import {
+  BHS_PROJECTION_GROWTH_RATE,
+  getApplicableBasicHealthcareSum,
+} from "../services/cpf-healthcare-service.js";
 
 /* ========================================
    CONFIGURATION
@@ -71,6 +77,18 @@ const cashflowProjectionTableBody = document.getElementById(
 
 const cpfProjectionTableBody = document.getElementById(
   "analysisCpfProjectionTableBody",
+);
+
+const projectedFrsElement = document.getElementById("analysisProjectedFrs");
+
+const projectedFrsBasisElement = document.getElementById(
+  "analysisProjectedFrsBasis",
+);
+
+const applicableBhsElement = document.getElementById("analysisApplicableBhs");
+
+const applicableBhsBasisElement = document.getElementById(
+  "analysisApplicableBhsBasis",
 );
 
 const goalFilterOptions = document.getElementById("analysisGoalFilterOptions");
@@ -194,6 +212,19 @@ export function renderCostAnalysis() {
     startingDate,
   );
 
+  const cohortFrs = getProjectedCohortFrs();
+
+  const startingBhs = getApplicableBasicHealthcareSum({
+    dateOfBirth: getClientProfile().dateOfBirth,
+
+    projectionDate: startingDate,
+  });
+
+  renderCpfPlanningAssumptions({
+    cohortFrs,
+    startingBhs,
+  });
+
   const monthlyProjection = calculateProjection({
     currentCashflow,
 
@@ -203,6 +234,8 @@ export function renderCostAnalysis() {
     projectionMonths,
 
     startingDate,
+
+    cohortFrsAmount: cohortFrs.isValid ? cohortFrs.amount : 0,
   });
 
   const displayRows = usesAnnualRows
@@ -534,6 +567,83 @@ function isGoalIncludedInProjection(
 }
 
 /* ========================================
+   CPF PLANNING ASSUMPTIONS
+======================================== */
+
+function renderCpfPlanningAssumptions({
+  cohortFrs,
+  startingBhs,
+}) {
+  if (cohortFrs?.isValid) {
+    setCurrency(
+      projectedFrsElement,
+      cohortFrs.amount,
+    );
+
+    const frsBasisLabel =
+      cohortFrs.basis === "official"
+        ? "Confirmed CPF Retirement Sum"
+        : [
+            `Projected for age 55 in`,
+            cohortFrs.yearTurning55,
+            `using`,
+            `${cohortFrs.annualGrowthRate}%`,
+            `annual growth`,
+          ].join(" ");
+
+    setText(
+      projectedFrsBasisElement,
+      frsBasisLabel,
+    );
+  } else {
+    setText(projectedFrsElement, "—");
+
+    setText(
+      projectedFrsBasisElement,
+      "Complete the Client Profile",
+    );
+  }
+
+  if (startingBhs?.isValid) {
+    setCurrency(
+      applicableBhsElement,
+      startingBhs.amount,
+    );
+
+    let bhsBasisLabel;
+
+    if (startingBhs.isLocked) {
+      bhsBasisLabel =
+        `Fixed cohort BHS from ${startingBhs.applicableBhsYear}`;
+    } else if (
+      startingBhs.basis === "confirmed"
+    ) {
+      bhsBasisLabel =
+        `Confirmed ${startingBhs.applicableBhsYear} BHS`;
+    } else {
+      bhsBasisLabel =
+        [
+          `Projected ${startingBhs.applicableBhsYear} BHS`,
+          `at ${BHS_PROJECTION_GROWTH_RATE}%`,
+          `rounded to $500`,
+        ].join(" ");
+    }
+
+    setText(
+      applicableBhsBasisElement,
+      bhsBasisLabel,
+    );
+  } else {
+    setText(applicableBhsElement, "—");
+
+    setText(
+      applicableBhsBasisElement,
+      "Complete the Client Profile",
+    );
+  }
+}
+
+/* ========================================
    PROJECTION ENGINE
 ======================================== */
 
@@ -542,6 +652,7 @@ function calculateProjection({
   annualEmploymentIncrement,
   projectionMonths,
   startingDate,
+  cohortFrsAmount,
 }) {
   const assets = getAssets();
 
@@ -559,9 +670,18 @@ function calculateProjection({
 
   let raBalance = getNonNegativeNumber(assets.cpf?.ra);
 
+  const monthlyInsuranceMedisaveOutflow = getMonthlyInsuranceMedisaveOutflow();
+
   let maBalance = getNonNegativeNumber(assets.cpf?.ma);
 
-  const monthlyInsuranceMedisaveOutflow = getMonthlyInsuranceMedisaveOutflow();
+  const startingAge = calculateAgeOnDate(profile.dateOfBirth, startingDate);
+
+  /*
+   * If the client is already 55, preserve the
+   * entered balances because they should already
+   * represent their actual post-55 CPF position.
+   */
+  let raHasBeenFormed = startingAge !== null && startingAge >= 55;
 
   const rows = [];
 
@@ -625,16 +745,105 @@ function calculateProjection({
 
     const allocationRates = getCpfAllocationRates(age);
 
-    const oaInflow = totalCpfInflow * allocationRates.oaRate;
+    let oaInflow = totalCpfInflow * allocationRates.oaRate;
 
     const retirementInflow = totalCpfInflow * allocationRates.retirementRate;
 
-    const maInflow = totalCpfInflow * allocationRates.maRate;
+    const originalMaInflow = totalCpfInflow * allocationRates.maRate;
+
+    const hasReachedAge55 = age !== null && age >= 55;
+
+    /*
+     * Form RA once in the month the client
+     * reaches age 55.
+     *
+     * SA is transferred first, followed by OA.
+     * Any remaining SA after meeting FRS moves
+     * into OA because SA no longer remains the
+     * displayed retirement account.
+     */
+    if (hasReachedAge55 && !raHasBeenFormed) {
+      const remainingFrsBeforeTransfer = Math.max(
+        cohortFrsAmount - raBalance,
+        0,
+      );
+
+      const saTransferredToRa = Math.min(saBalance, remainingFrsBeforeTransfer);
+
+      raBalance += saTransferredToRa;
+      saBalance -= saTransferredToRa;
+
+      const remainingFrsAfterSa = Math.max(cohortFrsAmount - raBalance, 0);
+
+      const oaTransferredToRa = Math.min(oaBalance, remainingFrsAfterSa);
+
+      raBalance += oaTransferredToRa;
+      oaBalance -= oaTransferredToRa;
+
+      /*
+       * Any SA remaining after RA reaches FRS
+       * is redirected into OA.
+       */
+      oaBalance += saBalance;
+      saBalance = 0;
+
+      raHasBeenFormed = true;
+    }
+
+    /*
+     * Apply the BHS applicable for this month.
+     * Opening MA is preserved. Only new MA
+     * allocation is restricted by the limit.
+     */
+    const applicableBhs = getApplicableBasicHealthcareSum({
+      dateOfBirth: profile.dateOfBirth,
+      projectionDate,
+    });
+
+    const bhsAmount = applicableBhs.isValid
+      ? applicableBhs.amount
+      : Number.POSITIVE_INFINITY;
+
+    const availableMaCapacity = Math.max(bhsAmount - maBalance, 0);
+
+    const maInflow = Math.min(originalMaInflow, availableMaCapacity);
+
+    const maOverflow = Math.max(originalMaInflow - maInflow, 0);
+
+    /*
+     * Before 55:
+     * - normal retirement allocation goes to SA
+     * - MA overflow also goes to SA
+     *
+     * From 55:
+     * - retirement allocation and MA overflow
+     *   fill RA up to cohort FRS
+     * - remaining excess goes to OA
+     */
+    if (!hasReachedAge55) {
+      saBalance += retirementInflow + maOverflow;
+    } else {
+      const amountAvailableForRa = retirementInflow + maOverflow;
+
+      const remainingRaCapacity = Math.max(cohortFrsAmount - raBalance, 0);
+
+      const amountDirectedToRa = Math.min(
+        amountAvailableForRa,
+        remainingRaCapacity,
+      );
+
+      const amountRedirectedToOa = amountAvailableForRa - amountDirectedToRa;
+
+      raBalance += amountDirectedToRa;
+      oaInflow += amountRedirectedToOa;
+    }
 
     const oaOutflow = calculateActiveMonthlyCpfCommitments(
       liabilities,
       projectionDate,
     );
+
+    oaBalance = Math.max(0, oaBalance + oaInflow - oaOutflow);
 
     const availableMaBalance = maBalance + maInflow;
 
@@ -643,15 +852,12 @@ function calculateProjection({
       availableMaBalance,
     );
 
-    oaBalance = Math.max(0, oaBalance + oaInflow - oaOutflow);
-
-    if (allocationRates.retirementAccount === "ra") {
-      raBalance += retirementInflow;
-    } else {
-      saBalance += retirementInflow;
-    }
-
     maBalance = Math.max(0, availableMaBalance - maInsuranceOutflow);
+
+    const retirementAccount = hasReachedAge55 ? "ra" : "sa";
+
+    const displayedRetirementBalance =
+      retirementAccount === "ra" ? raBalance : saBalance;
 
     rows.push({
       date: projectionDate,
@@ -668,8 +874,18 @@ function calculateProjection({
       netCpf: totalCpfInflow - oaOutflow - maInsuranceOutflow,
 
       oaBalance,
-      retirementBalance: saBalance + raBalance,
+
+      retirementAccount,
+
+      retirementBalance: displayedRetirementBalance,
+
       maBalance,
+
+      applicableBhs: applicableBhs.isValid ? applicableBhs.amount : 0,
+
+      bhsBasis: applicableBhs.basis,
+
+      bhsIsLocked: applicableBhs.isLocked,
 
       goalNames: goalsDue.map(function (goal) {
         return goal.name || "Goal";
@@ -803,9 +1019,17 @@ function aggregateProjectionIntoAnnualRows(monthlyRows) {
 
       oaBalance: lastRow.oaBalance,
 
+      retirementAccount: lastRow.retirementAccount,
+
       retirementBalance: lastRow.retirementBalance,
 
       maBalance: lastRow.maBalance,
+
+      applicableBhs: lastRow.applicableBhs,
+
+      bhsBasis: lastRow.bhsBasis,
+
+      bhsIsLocked: lastRow.bhsIsLocked,
 
       goalNames: periodRows.flatMap(function (row) {
         return row.goalNames;
@@ -1013,9 +1237,11 @@ function renderCpfProjectionTable({
 
       createCurrencyCell(row.oaBalance),
 
-      createCurrencyCell(row.retirementBalance),
+      createRetirementBalanceCell(row),
 
       createCurrencyCell(row.maBalance),
+
+      createBhsCell(row),
     );
 
     fragment.append(tableRow);
@@ -1053,6 +1279,48 @@ function createCurrencyCell(value, showStatus = false) {
     cell.classList.toggle("is-positive", value > 0);
     cell.classList.toggle("is-negative", value < 0);
   }
+
+  return cell;
+}
+
+function createRetirementBalanceCell(row) {
+  const cell = document.createElement("td");
+
+  cell.className = "analysis-cpf-labelled-cell";
+
+  const amount = document.createElement("strong");
+
+  amount.textContent = formatCurrency(row.retirementBalance);
+
+  const accountLabel = document.createElement("small");
+
+  accountLabel.className = "analysis-cpf-account-badge";
+
+  accountLabel.textContent = row.retirementAccount === "ra" ? "RA" : "SA";
+
+  cell.append(amount, accountLabel);
+
+  return cell;
+}
+
+function createBhsCell(row) {
+  const cell = document.createElement("td");
+
+  cell.className = "analysis-cpf-labelled-cell";
+
+  const amount = document.createElement("strong");
+
+  amount.textContent = formatCurrency(row.applicableBhs);
+
+  const basis = document.createElement("small");
+
+  basis.textContent = row.bhsIsLocked
+    ? "Fixed for life"
+    : row.bhsBasis === "projected"
+      ? "Projected"
+      : "Confirmed";
+
+  cell.append(amount, basis);
 
   return cell;
 }

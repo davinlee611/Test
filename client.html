@@ -2619,6 +2619,65 @@
                   </p>
                 </div>
 
+                <div class="analysis-cpf-assumption-grid">
+                  <div class="analysis-cpf-assumption-item">
+                    <span>Projected Cohort FRS</span>
+
+                    <strong id="analysisProjectedFrs">$0</strong>
+
+                    <small id="analysisProjectedFrsBasis">
+                      Complete the Client Profile
+                    </small>
+                  </div>
+
+                  <div class="analysis-cpf-assumption-item">
+                    <span>Applicable Basic Healthcare Sum</span>
+
+                    <strong id="analysisApplicableBhs">$0</strong>
+
+                    <small id="analysisApplicableBhsBasis">
+                      Complete the Client Profile
+                    </small>
+                  </div>
+                </div>
+
+                <details class="analysis-cpf-calculation-details">
+                  <summary>
+                    <i
+                      class="fa-regular fa-circle-question"
+                      aria-hidden="true"
+                    ></i>
+
+                    How is the BHS calculated?
+                  </summary>
+
+                  <div class="analysis-cpf-calculation-content">
+                    <p>
+                      Confirmed Basic Healthcare Sum amounts are used for
+                      cohorts turning 65 up to 2026.
+                    </p>
+
+                    <p>
+                      From 2027, the Basic Healthcare Sum is projected to
+                      increase by <strong>4.72% each year</strong> and is
+                      rounded to the nearest <strong>$500</strong>.
+                    </p>
+
+                    <p>
+                      Before age 65, the applicable limit changes annually. The
+                      Basic Healthcare Sum in the year the client turns 65 is
+                      fixed for life.
+                    </p>
+
+                    <p>
+                      When MA reaches the applicable limit, excess allocation is
+                      redirected to SA before age 55. From age 55, excess is
+                      redirected to RA until the client’s projected cohort FRS
+                      is reached, after which it is redirected to OA.
+                    </p>
+                  </div>
+                </details>
+
                 <div class="analysis-projection-table-wrap">
                   <table
                     class="analysis-projection-table analysis-projection-table--cpf"
@@ -2631,8 +2690,9 @@
                         <th>MA Insurance Outflow</th>
                         <th>Net CPF Flow</th>
                         <th>OA Balance</th>
-                        <th>SA / RA Balance</th>
+                        <th>Retirement Balance</th>
                         <th>MA Balance</th>
+                        <th>Applicable BHS</th>
                       </tr>
                     </thead>
 
