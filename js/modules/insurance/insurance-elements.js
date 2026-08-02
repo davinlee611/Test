@@ -201,5 +201,15 @@ export function getInsuranceElements() {
     hospitalisationCashInput: document.getElementById(
       "hospitalisationCashInput",
     ),
+
+    longTermCarePremiumPaymentGroup: document.getElementById(
+      "longTermCarePremiumPaymentGroup",
+    ),
+
+    longTermCareMedisaveInput: document.getElementById(
+      "longTermCareMedisaveInput",
+    ),
+
+    longTermCareCashInput: document.getElementById("longTermCareCashInput"),
   };
 }

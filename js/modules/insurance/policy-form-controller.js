@@ -21,6 +21,11 @@ import {
   getHospitalisationAwl,
 } from "./hospitalisation-premium.js";
 
+import {
+  calculateLongTermCarePremiumPayment,
+  getAutomaticLongTermCareMedisaveAmount,
+} from "./long-term-care-premium.js";
+
 export function createPolicyFormController({
   elements,
 
@@ -58,19 +63,42 @@ export function createPolicyFormController({
   ======================================== */
 
   function updatePremiumFields() {
+    const policyType = elements.policyTypeSelect.value;
 
-    const isHospitalisation =
-      elements.policyTypeSelect.value === "hospitalisation";
+    const isHospitalisation = policyType === "hospitalisation";
 
-    const isPaidUp = elements.policyStatusSelect.value === "paid_up";
+    const isLongTermCare = policyType === "long_term_care";
+
+    const usesFixedAnnualPremium = isHospitalisation || isLongTermCare;
+
+    if (usesFixedAnnualPremium) {
+      elements.policyStatusSelect.value = "active";
+
+      elements.premiumFrequencySelect.value = "annual";
+    }
+
+    const isPaidUp =
+      !usesFixedAnnualPremium &&
+      elements.policyStatusSelect.value === "paid_up";
+
+    elements.policyStatusGroup.hidden = usesFixedAnnualPremium;
 
     elements.premiumAmountGroup.hidden = isPaidUp;
 
-    elements.premiumFrequencyGroup.hidden = isPaidUp || isHospitalisation;
+    elements.premiumFrequencyGroup.hidden = isPaidUp || usesFixedAnnualPremium;
 
     elements.premiumInput.required = !isPaidUp;
 
-    elements.premiumFrequencySelect.required = !isPaidUp && !isHospitalisation;
+    elements.premiumFrequencySelect.required =
+      !isPaidUp && !usesFixedAnnualPremium;
+
+    if (isHospitalisation) {
+      elements.policyPremiumLabel.textContent = "Annual Premium";
+    } else if (isLongTermCare) {
+      elements.policyPremiumLabel.textContent = "Annual Supplement Premium";
+    } else {
+      elements.policyPremiumLabel.textContent = "Premium";
+    }
 
     if (isPaidUp) {
       elements.premiumInput.value = "";
@@ -89,9 +117,19 @@ export function createPolicyFormController({
 
     elements.longTermCareBasePlanGroup.hidden = !isLongTermCarePolicy;
 
+    elements.longTermCarePremiumPaymentGroup.hidden = !isLongTermCarePolicy;
+
     if (!isLongTermCarePolicy) {
       elements.longTermCareBasePlanSelect.value = "";
+
+      elements.longTermCareMedisaveInput.value = "";
+
+      elements.longTermCareCashInput.value = "0";
+
+      return;
     }
+
+    updateLongTermCarePremiumPayment();
   }
 
   function handleLongTermCareBasePlanChange() {
@@ -134,9 +172,43 @@ export function createPolicyFormController({
     renderDraftBenefits();
   }
 
-  /* ========================================
-     POLICY TYPE
-  ======================================== */
+  function updateAutomaticLongTermCareMedisave() {
+    const automaticMedisaveAmount = getAutomaticLongTermCareMedisaveAmount(
+      elements.premiumInput.value,
+    );
+
+    elements.longTermCareMedisaveInput.value = String(automaticMedisaveAmount);
+  }
+
+  function handleLongTermCarePremiumInput() {
+    if (elements.policyTypeSelect.value !== "long_term_care") {
+      return;
+    }
+
+    updateAutomaticLongTermCareMedisave();
+
+    updateLongTermCarePremiumPayment();
+  }
+
+  function updateLongTermCarePremiumPayment() {
+    if (elements.policyTypeSelect.value !== "long_term_care") {
+      return;
+    }
+
+    const payment = calculateLongTermCarePremiumPayment({
+      annualSupplementPremium: elements.premiumInput.value,
+
+      medisaveAmount: elements.longTermCareMedisaveInput.value,
+    });
+
+    elements.longTermCareMedisaveInput.value = String(payment.medisaveAmount);
+
+    elements.longTermCareCashInput.value = String(payment.cashAmount);
+  }
+
+/* ========================================
+   POLICY TYPE
+======================================== */
 
   function handlePolicyTypeChange() {
     const policyType = elements.policyTypeSelect.value;
@@ -195,6 +267,10 @@ export function createPolicyFormController({
     });
 
     updatePremiumFields();
+
+    if (policyType === "long_term_care") {
+      handleLongTermCarePremiumInput();
+    }
 
     syncHospitalisationBaseBenefit();
 
@@ -271,25 +347,13 @@ export function createPolicyFormController({
 
     elements.hospitalisationPremiumPaymentGroup.hidden = !isHospitalisation;
 
-    elements.policyStatusGroup.hidden = isHospitalisation;
-
     elements.addBenefitButton.hidden = isHospitalisation;
 
     if (!isHospitalisation) {
       elements.hospitalisationRiderFields.hidden = true;
 
-      elements.policyPremiumLabel.textContent = "Premium";
-
       return;
     }
-
-    elements.policyStatusSelect.value = "active";
-
-    elements.premiumFrequencySelect.value = "annual";
-
-    elements.premiumFrequencyGroup.hidden = true;
-
-    elements.policyPremiumLabel.textContent = "Annual Premium";
 
     closeBenefitEditor();
 
@@ -431,6 +495,8 @@ export function createPolicyFormController({
     updatePremiumFields,
     updateLongTermCareBasePlanField,
     handleLongTermCareBasePlanChange,
+    handleLongTermCarePremiumInput,
+    updateLongTermCarePremiumPayment,
     handlePolicyTypeChange,
     syncSuggestedBenefitLifeAssured,
   };

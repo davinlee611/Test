@@ -330,6 +330,16 @@ function bindModuleEvents() {
       policyFormController.handleLongTermCareBasePlanChange();
     },
 
+    onLongTermCarePremiumChange(event) {
+      if (event?.currentTarget === elements.longTermCareMedisaveInput) {
+        policyFormController.updateLongTermCarePremiumPayment();
+
+        return;
+      }
+
+      policyFormController.handleLongTermCarePremiumInput();
+    },
+
     onPolicyLifeAssuredInput() {
       policyFormController.syncSuggestedBenefitLifeAssured();
     },

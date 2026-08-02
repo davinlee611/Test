@@ -48,6 +48,14 @@ function getPolicyMonthlyCashPremium(policy) {
     return annualCashAmount / 12;
   }
 
+  if (policy?.policyType === "long_term_care") {
+    const annualCashAmount = getNonNegativeNumber(
+      policy.longTermCare?.premiumPayment?.cashAmount,
+    );
+
+    return annualCashAmount / 12;
+  }
+
   return convertPremiumToMonthly(policy?.premium);
 }
 

@@ -4,6 +4,8 @@ import { getWholeNumber } from "../../utils/client-utils.js";
 
 import { calculateHospitalisationPremiumPayment } from "./hospitalisation-premium.js";
 
+import { calculateLongTermCarePremiumPayment } from "./long-term-care-premium.js";
+
 /* ========================================
    POLICY FORM DATA
 ======================================== */
@@ -20,6 +22,10 @@ export function readPolicyFormData(elements) {
 
   const isHospitalisation = policyType === "hospitalisation";
 
+  const isLongTermCare = policyType === "long_term_care";
+
+  const usesFixedAnnualPremium = isHospitalisation || isLongTermCare;
+
   const premiumAmount = getWholeNumber(elements.premiumInput.value);
 
   const riderIncluded =
@@ -29,7 +35,7 @@ export function readPolicyFormData(elements) {
     ? getWholeNumber(elements.hospitalisationRiderPremiumInput.value)
     : 0;
 
-  const premiumPayment = calculateHospitalisationPremiumPayment({
+  const hospitalisationPayment = calculateHospitalisationPremiumPayment({
     annualBasePremium: premiumAmount,
 
     annualRiderPremium: riderAnnualPremium,
@@ -37,15 +43,30 @@ export function readPolicyFormData(elements) {
     medisaveAmount: elements.hospitalisationMedisaveInput.value,
   });
 
+  const longTermCarePayment = calculateLongTermCarePremiumPayment({
+    annualSupplementPremium: premiumAmount,
+
+    medisaveAmount: elements.longTermCareMedisaveInput.value,
+  });
+
   return {
     policyName: elements.policyNameInput.value.trim(),
 
     policyType,
 
-    longTermCareBasePlan:
-      policyType === "long_term_care"
-        ? elements.longTermCareBasePlanSelect.value
-        : null,
+    longTermCareBasePlan: isLongTermCare
+      ? elements.longTermCareBasePlanSelect.value
+      : null,
+
+    longTermCare: isLongTermCare
+      ? {
+          premiumPayment: {
+            medisaveAmount: longTermCarePayment.medisaveAmount,
+
+            cashAmount: longTermCarePayment.cashAmount,
+          },
+        }
+      : null,
 
     lifeAssured: elements.policyLifeAssuredInput.value.trim(),
 
@@ -53,11 +74,13 @@ export function readPolicyFormData(elements) {
 
     policyNumber: elements.policyNumberInput.value.trim(),
 
-    status: isHospitalisation ? "active" : elements.policyStatusSelect.value,
+    status: usesFixedAnnualPremium
+      ? "active"
+      : elements.policyStatusSelect.value,
 
     premiumAmount,
 
-    premiumFrequency: isHospitalisation
+    premiumFrequency: usesFixedAnnualPremium
       ? "annual"
       : elements.premiumFrequencySelect.value,
 
@@ -76,9 +99,9 @@ export function readPolicyFormData(elements) {
           },
 
           premiumPayment: {
-            medisaveAmount: premiumPayment.medisaveAmount,
+            medisaveAmount: hospitalisationPayment.medisaveAmount,
 
-            cashAmount: premiumPayment.cashAmount,
+            cashAmount: hospitalisationPayment.cashAmount,
           },
         }
       : null,

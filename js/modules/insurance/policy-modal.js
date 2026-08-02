@@ -138,6 +138,10 @@ export function createPolicyModal({
 
     elements.hospitalisationCashInput.value = "0";
 
+    elements.longTermCareMedisaveInput.value = "";
+
+    elements.longTermCareCashInput.value = "0";
+
     updateHospitalisationFields();
 
     elements.policyFormMessage.textContent = "";

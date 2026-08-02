@@ -23,6 +23,7 @@ export function bindInsuranceEvents({
   onPolicyStatusChange,
   onPolicyTypeChange,
   onLongTermCareBasePlanChange,
+  onLongTermCarePremiumChange,
   onPolicyLifeAssuredInput,
 
   onHospitalisationRiderChange,
@@ -81,6 +82,8 @@ export function bindInsuranceEvents({
     onHospitalisationBasePremiumChange,
   );
 
+  elements.premiumInput?.addEventListener("input", onLongTermCarePremiumChange);
+
   elements.hospitalisationRiderPremiumInput?.addEventListener(
     "input",
     onHospitalisationPremiumChange,
@@ -94,6 +97,11 @@ export function bindInsuranceEvents({
   elements.longTermCareBasePlanSelect?.addEventListener(
     "change",
     onLongTermCareBasePlanChange,
+  );
+
+  elements.longTermCareMedisaveInput?.addEventListener(
+    "input",
+    onLongTermCarePremiumChange,
   );
 
   elements.policyLifeAssuredInput?.addEventListener(

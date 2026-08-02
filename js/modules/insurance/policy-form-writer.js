@@ -29,6 +29,8 @@ export function writePolicyFormData(
   elements.premiumFrequencySelect.value = policy.premium?.frequency || "annual";
 
   writeHospitalisationFields(elements, policy);
+
+  writeLongTermCareFields(elements, policy);
 }
 
 /* ========================================
@@ -62,6 +64,39 @@ function writeHospitalisationFields(elements, policy) {
   )
     ? String(premiumPayment.cashAmount)
     : "0";
+}
+
+/* ========================================
+   LONG-TERM CARE WRITER
+======================================== */
+
+function writeLongTermCareFields(
+  elements,
+  policy,
+) {
+  const longTermCare =
+    policy.longTermCare || {};
+
+  const premiumPayment =
+    longTermCare.premiumPayment || {};
+
+  elements.longTermCareMedisaveInput.value =
+    Number.isFinite(
+      Number(premiumPayment.medisaveAmount),
+    )
+      ? String(
+          premiumPayment.medisaveAmount,
+        )
+      : "";
+
+  elements.longTermCareCashInput.value =
+    Number.isFinite(
+      Number(premiumPayment.cashAmount),
+    )
+      ? String(
+          premiumPayment.cashAmount,
+        )
+      : "0";
 }
 
 /* ========================================

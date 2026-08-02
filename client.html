@@ -3542,6 +3542,72 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Long-Term Care Premium Payment -->
+              <div
+                id="longTermCarePremiumPaymentGroup"
+                class="form-group form-group--full"
+                hidden
+              >
+                <div class="hospitalisation-payment-heading">
+                  <h4>Premium Payment</h4>
+
+                  <p>
+                    The base ElderShield or CareShield Life premium is excluded
+                    because it is fully payable using MediSave. Up to $600 per
+                    year may be paid using MediSave for the private supplement.
+                  </p>
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="longTermCareMedisaveInput">
+                      Paid Using MediSave
+                      <span class="required-label">*</span>
+                    </label>
+
+                    <div class="currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="longTermCareMedisaveInput"
+                        class="form-control"
+                        type="number"
+                        min="0"
+                        max="600"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="0"
+                      />
+                    </div>
+
+                    <p class="form-helper-text">
+                      Limited to the lower of the annual supplement premium or
+                      $600.
+                    </p>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="longTermCareCashInput"> Paid Using Cash </label>
+
+                    <div class="currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="longTermCareCashInput"
+                        class="form-control"
+                        type="number"
+                        value="0"
+                        readonly
+                      />
+                    </div>
+
+                    <p class="form-helper-text">
+                      Annual supplement premium less the MediSave amount.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
