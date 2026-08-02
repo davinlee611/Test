@@ -350,14 +350,31 @@ export function calculateCpfLifePayouts({ yearTurning55, gender, raAt65 }) {
   };
 }
 
-export function calculateProjectedCpfLifePayout({ raAt65, gender }) {
+export function calculateProjectedCpfLifePayout({
+  raAt65,
+  cpfLifePremium,
+  gender,
+}) {
   const model = CPF_LIFE_PAYOUT_MODEL[gender];
 
-  if (!model || !Number.isFinite(raAt65) || raAt65 <= 0) {
+  /*
+   * Keep raAt65 supported for the existing
+   * Cost of Wants CPF projection.
+   *
+   * Analyse Commitments passes cpfLifePremium
+   * because the actual amount may be below the
+   * target amount.
+   */
+  const premiumAmount = Number.isFinite(cpfLifePremium)
+    ? cpfLifePremium
+    : raAt65;
+
+  if (!model || !Number.isFinite(premiumAmount) || premiumAmount <= 0) {
     return 0;
   }
 
-  const unroundedMonthlyPayout = model.fixedAmount + raAt65 * model.raFactor;
+  const unroundedMonthlyPayout =
+    model.fixedAmount + premiumAmount * model.raFactor;
 
   return roundCpfLifePayout(unroundedMonthlyPayout);
 }

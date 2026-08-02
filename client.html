@@ -2852,9 +2852,9 @@
 
                   <p>
                     This projection uses CPF contribution and allocation rates
-                    effective from 1 January 2027. CPF interest is not included
-                    yet. Longer ranges use the same annual periods selected
-                    above.
+                    effective from 1 January 2027. CPF interest is accumulated
+                    monthly and credited in December. Longer ranges use the same
+                    annual periods selected above.
                   </p>
                 </div>
 
@@ -2867,6 +2867,20 @@
                     <small id="analysisProjectedFrsBasis">
                       Complete the Client Profile
                     </small>
+
+                    <button
+                      class="analysis-retirement-scenario-coming-soon"
+                      type="button"
+                      aria-disabled="true"
+                      tabindex="-1"
+                      title="Future modelling may allow BRS, FRS or ERS to be applied. FRS is currently used."
+                    >
+                      <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+
+                      <span>Retirement Sum Scenarios</span>
+
+                      <small>Coming Soon</small>
+                    </button>
                   </div>
 
                   <div class="analysis-cpf-assumption-item">
@@ -2876,6 +2890,41 @@
 
                     <small id="analysisProjectedCohortBhsBasis">
                       Complete the Client Profile
+                    </small>
+                  </div>
+
+                  <div
+                    class="analysis-cpf-assumption-item analysis-cpf-life-assumption"
+                  >
+                    <label for="analysisCpfLifeStartAgeInput">
+                      CPF LIFE Payout Start Age
+                    </label>
+
+                    <select id="analysisCpfLifeStartAgeInput">
+                      <option value="65">Age 65</option>
+                      <option value="66">Age 66</option>
+                      <option value="67">Age 67</option>
+                      <option value="68">Age 68</option>
+                      <option value="69">Age 69</option>
+                      <option value="70">Age 70</option>
+                    </select>
+
+                    <div class="analysis-cpf-life-result-grid">
+                      <div>
+                        <span>Affordable Premium</span>
+
+                        <strong id="analysisCpfLifePremium"> — </strong>
+                      </div>
+
+                      <div>
+                        <span>Estimated Payout</span>
+
+                        <strong id="analysisCpfLifePayout"> — </strong>
+                      </div>
+                    </div>
+
+                    <small id="analysisCpfLifeProjectionStatus">
+                      Complete the projection assumptions.
                     </small>
                   </div>
                 </div>

@@ -163,6 +163,28 @@ export function setCpfRetirementSumGrowthRate(value) {
   });
 }
 
+export function getCpfLifePayoutStartAge() {
+  const selectedAge = Number(getCostOfWants().cpfLifePayoutStartAge);
+
+  return Number.isInteger(selectedAge) && selectedAge >= 65 && selectedAge <= 70
+    ? selectedAge
+    : 65;
+}
+
+export function setCpfLifePayoutStartAge(value) {
+  const selectedAge = Number(value);
+
+  if (!Number.isInteger(selectedAge) || selectedAge < 65 || selectedAge > 70) {
+    return false;
+  }
+
+  updateCostOfWants({
+    cpfLifePayoutStartAge: selectedAge,
+  });
+
+  return true;
+}
+
 /* ========================================
    CPF PROJECTION
 ======================================== */

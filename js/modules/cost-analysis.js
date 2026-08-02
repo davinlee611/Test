@@ -15,11 +15,18 @@ import { calculateIncomeSummary } from "../services/income-calculator.js";
 import { calculateLiquidAssetTotal } from "./assets-income/assets-income-calculator.js";
 
 import {
+  getCpfLifePayoutStartAge,
   getInflationRate,
   getPlannedMortalityAge,
   getProjectedCohortFrs,
   getRetirementGoalSummary,
+  setCpfLifePayoutStartAge,
 } from "./cost-of-wants/cost-of-wants-service.js";
+
+import {
+  CPF_RA_INTEREST_RATE,
+  calculateProjectedCpfLifePayout,
+} from "./cost-of-wants/cost-of-wants-calculator.js";
 
 import { calculateTotalMonthlyExpenses } from "./expenses/expense-calculator.js";
 
@@ -49,6 +56,7 @@ const MONTHS_PER_YEAR = 12;
 const DEFAULT_PROJECTION_PERIOD = "10";
 const DEFAULT_PROJECTION_YEARS = 10;
 const DEFAULT_EMPLOYMENT_INCREMENT = 2;
+const MINIMUM_AUTOMATIC_CPF_LIFE_PREMIUM = 60000;
 
 /* ========================================
    ELEMENTS
@@ -112,6 +120,18 @@ const projectedCohortBhsElement = document.getElementById(
 
 const projectedCohortBhsBasisElement = document.getElementById(
   "analysisProjectedCohortBhsBasis",
+);
+
+const cpfLifeStartAgeInput = document.getElementById(
+  "analysisCpfLifeStartAgeInput",
+);
+
+const cpfLifePremiumElement = document.getElementById("analysisCpfLifePremium");
+
+const cpfLifePayoutElement = document.getElementById("analysisCpfLifePayout");
+
+const cpfLifeProjectionStatusElement = document.getElementById(
+  "analysisCpfLifeProjectionStatus",
 );
 
 const goalFilterOptions = document.getElementById("analysisGoalFilterOptions");
@@ -200,6 +220,16 @@ export function initializeCostAnalysis() {
     input.addEventListener("change", renderCostAnalysis);
   });
 
+  cpfLifeStartAgeInput?.addEventListener("change", function (event) {
+    const wasSaved = setCpfLifePayoutStartAge(event.currentTarget.value);
+
+    if (!wasSaved) {
+      event.currentTarget.value = String(getCpfLifePayoutStartAge());
+    }
+
+    renderCostAnalysis();
+  });
+
   goalFilterOptions?.addEventListener("change", handleGoalFilterChange);
 
   selectAllGoalsButton?.addEventListener("click", handleSelectAllGoals);
@@ -243,6 +273,12 @@ function syncExpenseInflationDefault() {
 
 export function renderCostAnalysis() {
   renderRetirementGoalSummary();
+
+  const cpfLifeStartAge = getCpfLifePayoutStartAge();
+
+  if (cpfLifeStartAgeInput) {
+    cpfLifeStartAgeInput.value = String(cpfLifeStartAge);
+  }
 
   if (!expenseInflationWasOverridden) {
     syncExpenseInflationDefault();
@@ -290,6 +326,13 @@ export function renderCostAnalysis() {
     startingDate,
 
     cohortFrsAmount: cohortFrs.isValid ? cohortFrs.amount : 0,
+
+    cpfLifeStartAge,
+  });
+
+  renderCpfLifeProjectionStatus({
+    rows: monthlyProjection,
+    cpfLifeStartAge,
   });
 
   const displayRows = usesAnnualRows
@@ -749,6 +792,60 @@ function renderCpfPlanningAssumptions({ cohortFrs, projectedCohortBhs }) {
   }
 }
 
+function renderCpfLifeProjectionStatus({ rows, cpfLifeStartAge }) {
+  const eventRow = rows.find(function (row) {
+    return (
+      (row.cpfLifeProjectionStatus === "started" &&
+        row.cpfLifePremiumOutflow > 0) ||
+      row.cpfLifeProjectionStatus === "insufficient"
+    );
+  });
+
+  if (!eventRow) {
+    setText(cpfLifePremiumElement, "—");
+
+    setText(cpfLifePayoutElement, "—");
+
+    setText(
+      cpfLifeProjectionStatusElement,
+      `The selected projection does not reach age ${cpfLifeStartAge}.`,
+    );
+
+    return;
+  }
+
+  if (eventRow.cpfLifeProjectionStatus === "insufficient") {
+    setCurrency(cpfLifePremiumElement, eventRow.affordableCpfLifePremium);
+
+    setCurrency(cpfLifePayoutElement, 0);
+
+    setText(
+      cpfLifeProjectionStatusElement,
+      `Projected RA at age ${cpfLifeStartAge} is below the ` +
+        `${formatCurrency(
+          MINIMUM_AUTOMATIC_CPF_LIFE_PREMIUM,
+        )} automatic-inclusion threshold. ` +
+        `No CPF LIFE premium or cash payout is applied.`,
+    );
+
+    return;
+  }
+
+  setCurrency(cpfLifePremiumElement, eventRow.cpfLifePremiumOutflow);
+
+  setText(
+    cpfLifePayoutElement,
+    `${formatCurrency(eventRow.cpfLifeMonthlyPayout)}/mth`,
+  );
+
+  setText(
+    cpfLifeProjectionStatusElement,
+    `The premium is limited to the projected RA balance ` +
+      `available at age ${cpfLifeStartAge}. The estimated ` +
+      `Standard Plan payout is added to cashflow from that month.`,
+  );
+}
+
 /* ========================================
    PROJECTION ENGINE
 ======================================== */
@@ -760,6 +857,7 @@ function calculateProjection({
   projectionMonths,
   startingDate,
   cohortFrsAmount,
+  cpfLifeStartAge,
 }) {
   const assets = getAssets();
 
@@ -790,6 +888,18 @@ function calculateProjection({
    */
   let raHasBeenFormed = startingAge !== null && startingAge >= 55;
 
+  /*
+   * Keep the amount already set aside for retirement
+   * separate from the visible RA balance.
+   *
+   * When the CPF LIFE premium leaves RA, it must not
+   * reopen FRS room and redirect later employment
+   * contributions back into RA.
+   */
+  let retirementSumSetAside = raHasBeenFormed
+    ? Math.min(raBalance, cohortFrsAmount)
+    : 0;
+
   const pendingCpfInterest = {
     oa: 0,
     sa: 0,
@@ -799,8 +909,19 @@ function calculateProjection({
 
   const rows = [];
 
+  let cpfLifeHasStarted = false;
+
+  let activeCpfLifeMonthlyPayout = 0;
+
   for (let monthIndex = 0; monthIndex < projectionMonths; monthIndex += 1) {
     const projectionDate = addMonths(startingDate, monthIndex);
+
+    const startingCpfBalances = {
+      oa: oaBalance,
+      sa: saBalance,
+      ra: raBalance,
+      ma: maBalance,
+    };
 
     const completedYears = Math.max(
       projectionDate.getFullYear() - startingDate.getFullYear(),
@@ -868,7 +989,7 @@ function calculateProjection({
 
     const monthlyCommitments = activeCashCommitments + insurancePremiums;
 
-    const netCashflow =
+    const cashflowBeforeCpfLife =
       projectedIncome.monthlyTakeHomeIncome +
       projectedIncome.monthlyBonusAfterCpf -
       monthlyExpenses -
@@ -881,9 +1002,6 @@ function calculateProjection({
     }, 0);
 
     const startWithdrawableBalance = withdrawableBalance;
-
-    withdrawableBalance =
-      startWithdrawableBalance + netCashflow - bigTicketOutflow;
 
     const employeeCpfInflow =
       projectedIncome.monthlyTotalCpfContribution +
@@ -948,6 +1066,53 @@ function calculateProjection({
       pendingCpfInterest.sa = 0;
 
       raHasBeenFormed = true;
+
+      retirementSumSetAside = Math.max(
+        retirementSumSetAside,
+        Math.min(raBalance, cohortFrsAmount),
+      );
+    }
+    
+    let cpfLifePremiumOutflow = 0;
+
+    let targetCpfLifePremium = 0;
+
+    let affordableCpfLifePremium = 0;
+
+    let cpfLifeProjectionStatus = cpfLifeHasStarted ? "started" : "not_started";
+
+    if (
+      !cpfLifeHasStarted &&
+      isCpfLifeStartMonth({
+        dateOfBirth: profile.dateOfBirth,
+        projectionDate,
+        cpfLifeStartAge,
+      })
+    ) {
+      targetCpfLifePremium = calculateTargetCpfLifePremium({
+        cohortFrsAmount,
+        cpfLifeStartAge,
+      });
+
+      affordableCpfLifePremium = Math.min(raBalance, targetCpfLifePremium);
+
+      if (affordableCpfLifePremium >= MINIMUM_AUTOMATIC_CPF_LIFE_PREMIUM) {
+        cpfLifePremiumOutflow = affordableCpfLifePremium;
+
+        raBalance -= cpfLifePremiumOutflow;
+
+        activeCpfLifeMonthlyPayout = calculateProjectedCpfLifePayout({
+          cpfLifePremium: cpfLifePremiumOutflow,
+
+          gender: profile.gender,
+        });
+
+        cpfLifeHasStarted = true;
+
+        cpfLifeProjectionStatus = "started";
+      } else {
+        cpfLifeProjectionStatus = "insufficient";
+      }
     }
 
     /*
@@ -985,7 +1150,10 @@ function calculateProjection({
     } else {
       const amountAvailableForRa = retirementInflow + maOverflow;
 
-      const remainingRaCapacity = Math.max(cohortFrsAmount - raBalance, 0);
+      const remainingRaCapacity = Math.max(
+        cohortFrsAmount - retirementSumSetAside,
+        0,
+      );
 
       const amountDirectedToRa = Math.min(
         amountAvailableForRa,
@@ -995,6 +1163,7 @@ function calculateProjection({
       const amountRedirectedToOa = amountAvailableForRa - amountDirectedToRa;
 
       raBalance += amountDirectedToRa;
+      retirementSumSetAside += amountDirectedToRa;
       oaInflow += amountRedirectedToOa;
     }
 
@@ -1044,6 +1213,11 @@ function calculateProjection({
 
       raBalance += pendingCpfInterest.ra;
 
+      retirementSumSetAside = Math.max(
+        retirementSumSetAside,
+        Math.min(raBalance, cohortFrsAmount),
+      );
+
       /*
        * MA interest is credited only up to the
        * applicable BHS. Excess follows the same
@@ -1076,7 +1250,10 @@ function calculateProjection({
 
           oaBalance += maInterestOverflow - overflowToSa;
         } else {
-          const remainingRaCapacity = Math.max(cohortFrsAmount - raBalance, 0);
+          const remainingRaCapacity = Math.max(
+            cohortFrsAmount - retirementSumSetAside,
+            0,
+          );
 
           const overflowToRa = Math.min(
             maInterestOverflow,
@@ -1084,7 +1261,7 @@ function calculateProjection({
           );
 
           raBalance += overflowToRa;
-
+          retirementSumSetAside += overflowToRa;
           oaBalance += maInterestOverflow - overflowToRa;
         }
       }
@@ -1102,6 +1279,31 @@ function calculateProjection({
     }
 
     const retirementAccount = hasReachedAge55 ? "ra" : "sa";
+
+    const cpfLifeCashInflow = cpfLifeHasStarted
+      ? activeCpfLifeMonthlyPayout
+      : 0;
+
+    const netCashflow = cashflowBeforeCpfLife + cpfLifeCashInflow;
+
+    withdrawableBalance =
+      startWithdrawableBalance + netCashflow - bigTicketOutflow;
+
+    const accountNetFlows = {
+      oa: oaBalance - startingCpfBalances.oa,
+
+      sa: saBalance - startingCpfBalances.sa,
+
+      ra: raBalance - startingCpfBalances.ra,
+
+      ma: maBalance - startingCpfBalances.ma,
+    };
+
+    const netCpf =
+      accountNetFlows.oa +
+      accountNetFlows.sa +
+      accountNetFlows.ra +
+      accountNetFlows.ma;
 
     const displayedRetirementBalance =
       retirementAccount === "ra" ? raBalance : saBalance;
@@ -1128,12 +1330,25 @@ function calculateProjection({
        */
       saOutflow: 0,
 
-      raOutflow: 0,
+      raOutflow: cpfLifePremiumOutflow,
 
       maInsuranceOutflow,
 
-      netCpf:
-        totalCpfInflow + cpfInterestCredited - oaOutflow - maInsuranceOutflow,
+      accountNetFlows,
+
+      netCpf,
+
+      cpfLifeCashInflow,
+
+      cpfLifePremiumOutflow,
+
+      targetCpfLifePremium,
+
+      affordableCpfLifePremium,
+
+      cpfLifeMonthlyPayout: activeCpfLifeMonthlyPayout,
+
+      cpfLifeProjectionStatus,
 
       oaBalance,
 
@@ -1156,6 +1371,29 @@ function calculateProjection({
   }
 
   return rows;
+}
+
+function calculateTargetCpfLifePremium({ cohortFrsAmount, cpfLifeStartAge }) {
+  const safeFrs = getNonNegativeNumber(cohortFrsAmount);
+
+  const compoundingYears = Math.max(getFiniteNumber(cpfLifeStartAge) - 55, 0);
+
+  return safeFrs * Math.pow(1 + CPF_RA_INTEREST_RATE / 100, compoundingYears);
+}
+
+function isCpfLifeStartMonth({ dateOfBirth, projectionDate, cpfLifeStartAge }) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth || "")) {
+    return false;
+  }
+
+  const birthYear = Number(dateOfBirth.slice(0, 4));
+
+  const birthMonth = Number(dateOfBirth.slice(5, 7)) - 1;
+
+  return (
+    projectionDate.getFullYear() === birthYear + cpfLifeStartAge &&
+    projectionDate.getMonth() === birthMonth
+  );
 }
 
 /* ========================================
@@ -1286,6 +1524,16 @@ function aggregateProjectionIntoAnnualRows(monthlyRows) {
 
       maInsuranceOutflow: sumProjectionValues(periodRows, "maInsuranceOutflow"),
 
+      accountNetFlows: {
+        oa: sumNestedProjectionValues(periodRows, "accountNetFlows", "oa"),
+
+        sa: sumNestedProjectionValues(periodRows, "accountNetFlows", "sa"),
+
+        ra: sumNestedProjectionValues(periodRows, "accountNetFlows", "ra"),
+
+        ma: sumNestedProjectionValues(periodRows, "accountNetFlows", "ma"),
+      },
+
       netCpf: sumProjectionValues(periodRows, "netCpf"),
 
       oaBalance: lastRow.oaBalance,
@@ -1313,6 +1561,12 @@ function sumProjectionValues(rows, propertyName) {
   return rows.reduce(function (total, row) {
     return total +
       getFiniteNumber(row[propertyName]);
+  }, 0);
+}
+
+function sumNestedProjectionValues(rows, objectName, propertyName) {
+  return rows.reduce(function (total, row) {
+    return total + getFiniteNumber(row[objectName]?.[propertyName]);
   }, 0);
 }
 
@@ -1506,7 +1760,7 @@ function renderCpfProjectionTable({
 
       createCurrencyCell(row.cpfInterestCredited, true),
 
-      createCurrencyCell(row.netCpf, true),
+      createCpfNetFlowCell(row),
 
       createCurrencyCell(row.oaBalance),
 
@@ -1607,6 +1861,62 @@ function createCpfOutflowCell(row) {
     const amountElement = document.createElement("strong");
 
     amountElement.textContent = `-${formatCurrency(amount)}`;
+
+    item.append(accountLabel, amountElement);
+
+    list.append(item);
+  });
+
+  cell.append(list);
+
+  return cell;
+}
+
+function createCpfNetFlowCell(row) {
+  const cell = document.createElement("td");
+
+  cell.className = "analysis-cpf-net-flow-cell";
+
+  const movements = [
+    ["OA", getFiniteNumber(row.accountNetFlows?.oa)],
+
+    ["SA", getFiniteNumber(row.accountNetFlows?.sa)],
+
+    ["RA", getFiniteNumber(row.accountNetFlows?.ra)],
+
+    ["MA", getFiniteNumber(row.accountNetFlows?.ma)],
+  ].filter(function ([, amount]) {
+    return Math.abs(amount) >= 0.5;
+  });
+
+  if (movements.length === 0) {
+    cell.textContent = "—";
+
+    return cell;
+  }
+
+  const list = document.createElement("div");
+
+  list.className = "analysis-cpf-net-flow-list";
+
+  movements.forEach(function ([account, amount]) {
+    const item = document.createElement("div");
+
+    item.className = "analysis-cpf-net-flow-item";
+
+    const accountLabel = document.createElement("span");
+
+    accountLabel.textContent = account;
+
+    const amountElement = document.createElement("strong");
+
+    const sign = amount > 0 ? "+" : "-";
+
+    amountElement.textContent = `${sign}${formatCurrency(Math.abs(amount))}`;
+
+    amountElement.classList.toggle("is-positive", amount > 0);
+
+    amountElement.classList.toggle("is-negative", amount < 0);
 
     item.append(accountLabel, amountElement);
 

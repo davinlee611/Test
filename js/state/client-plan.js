@@ -16,6 +16,7 @@ export function createEmptyCostOfWants() {
 
     selectedCpfRetirementOption: "frs",
     cpfRetirementSumGrowthRate: 3.5,
+    cpfLifePayoutStartAge: 65,
   };
 }
 

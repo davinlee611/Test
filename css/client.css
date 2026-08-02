@@ -4721,7 +4721,7 @@ button.insurance-validation-count:disabled {
 .analysis-cpf-assumption-grid {
   display: grid;
   grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+    repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 14px;
 }
@@ -4754,6 +4754,90 @@ button.insurance-validation-count:disabled {
   color: var(--text-secondary);
   font-size: 11px;
   line-height: 1.4;
+}
+
+.analysis-cpf-life-assumption label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.analysis-cpf-life-assumption select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+
+  color: var(--text-primary);
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.analysis-cpf-life-result-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.analysis-cpf-life-result-grid > div {
+  min-width: 0;
+  padding: 9px 10px;
+
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.analysis-cpf-life-result-grid span,
+.analysis-cpf-life-result-grid strong {
+  display: block;
+}
+
+.analysis-cpf-life-result-grid span {
+  margin-bottom: 4px;
+  font-size: 10px;
+}
+
+.analysis-cpf-life-result-grid strong {
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analysis-retirement-scenario-coming-soon {
+  display: inline-flex;
+  width: fit-content;
+  padding: 7px 9px;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--text-secondary);
+  background: var(--card-background);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: not-allowed;
+}
+
+.analysis-retirement-scenario-coming-soon small {
+  padding: 2px 5px;
+
+  color: var(--primary-color);
+  background: var(--primary-soft);
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.2;
 }
 
 .analysis-cpf-calculation-details {
@@ -4865,6 +4949,39 @@ button.insurance-validation-count:disabled {
 
 .analysis-cpf-outflow-item strong {
   color: var(--danger-color);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.analysis-cpf-net-flow-cell {
+  min-width: 118px;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+.analysis-cpf-net-flow-list {
+  display: inline-flex;
+  min-width: 96px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.analysis-cpf-net-flow-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.analysis-cpf-net-flow-item span {
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.analysis-cpf-net-flow-item strong {
   font-size: 12px;
   font-weight: 700;
   text-align: right;
