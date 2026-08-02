@@ -27,6 +27,22 @@ export function readAssetsIncomeFormData(elements) {
 
       annualBonus: getInputWholeNumber(elements.annualBonusInput),
 
+      annualNetTradeIncome: getInputWholeNumber(
+        elements.annualNetTradeIncomeInput,
+      ),
+
+      netPlatformEarnings: getInputWholeNumber(
+        elements.netPlatformEarningsInput,
+      ),
+
+      sepMedisaveOverrideEnabled: Boolean(
+        elements.sepMedisaveOverrideInput?.checked,
+      ),
+
+      sepMedisaveOverrideAmount: getInputWholeNumber(
+        elements.sepMedisaveOverrideAmountInput,
+      ),
+
       otherMonthly: getInputWholeNumber(elements.otherMonthlyIncomeInput),
     },
 
@@ -69,6 +85,24 @@ export function writeAssetsIncomeFormData(elements, assets) {
   );
 
   setInputValue(elements.annualBonusInput, income.annualBonus);
+
+  setInputValue(
+    elements.annualNetTradeIncomeInput,
+    income.annualNetTradeIncome,
+  );
+
+  setInputValue(elements.netPlatformEarningsInput, income.netPlatformEarnings);
+
+  if (elements.sepMedisaveOverrideInput) {
+    elements.sepMedisaveOverrideInput.checked = Boolean(
+      income.sepMedisaveOverrideEnabled,
+    );
+  }
+
+  setInputValue(
+    elements.sepMedisaveOverrideAmountInput,
+    income.sepMedisaveOverrideAmount,
+  );
 
   setInputValue(elements.otherMonthlyIncomeInput, income.otherMonthly);
 

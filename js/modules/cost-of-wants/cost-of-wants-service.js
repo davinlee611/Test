@@ -448,12 +448,34 @@ function calculateCurrentIncomeSummary() {
 
     annualBonus: income.annualBonus,
 
+    annualNetTradeIncome: income.annualNetTradeIncome,
+
+    netPlatformEarnings: income.netPlatformEarnings,
+
+    sepMedisaveOverrideEnabled: income.sepMedisaveOverrideEnabled,
+
+    sepMedisaveOverrideAmount: income.sepMedisaveOverrideAmount,
+
     monthlyOtherIncome: income.otherMonthly,
 
     employmentStatus: profile?.employmentStatus,
 
     age: getClientAge(),
+
+    ageAtStartOfWorkYear: getAgeAtStartOfCurrentYear(profile?.dateOfBirth),
   });
+}
+
+function getAgeAtStartOfCurrentYear(dateOfBirth) {
+  if (!dateOfBirth) {
+    return null;
+  }
+
+  const birthYear = Number(String(dateOfBirth).split("-")[0]);
+
+  return Number.isFinite(birthYear)
+    ? new Date().getFullYear() - birthYear
+    : null;
 }
 
 /* ========================================

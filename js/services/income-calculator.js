@@ -6,6 +6,8 @@ import {
   CPF_ANNUAL_WAGE_CEILING,
 } from "./cpf-service.js";
 
+import { calculateSelfEmployedMedisave } from "./self-employed-medisave-calculator.js";
+
 /* ========================================
    INCOME CALCULATION SERVICE
 ======================================== */
@@ -13,9 +15,19 @@ import {
 export function calculateIncomeSummary({
   monthlyEmploymentIncome = 0,
   annualBonus = 0,
+
+  annualNetTradeIncome = 0,
+  netPlatformEarnings = 0,
+  sepMedisaveOverrideEnabled = false,
+  sepMedisaveOverrideAmount = 0,
+
   monthlyOtherIncome = 0,
+
   employmentStatus = "",
+
   age = null,
+
+  ageAtStartOfWorkYear = null,
 }) {
   const safeMonthlyEmploymentIncome = toNonNegativeNumber(
     monthlyEmploymentIncome,
@@ -23,8 +35,153 @@ export function calculateIncomeSummary({
 
   const safeAnnualBonus = toNonNegativeNumber(annualBonus);
 
+  const safeAnnualNetTradeIncome = toNonNegativeNumber(annualNetTradeIncome);
+
   const safeMonthlyOtherIncome = toNonNegativeNumber(monthlyOtherIncome);
 
+  const annualOtherIncome = safeMonthlyOtherIncome * 12;
+
+  const isSelfEmployed = employmentStatus === "self_employed";
+
+  const sepMedisave = calculateSelfEmployedMedisave({
+    annualNetTradeIncome: safeAnnualNetTradeIncome,
+
+    netPlatformEarnings,
+
+    ageAtStartOfWorkYear,
+
+    overrideEnabled: sepMedisaveOverrideEnabled,
+
+    overrideAnnualAmount: sepMedisaveOverrideAmount,
+  });
+
+  if (isSelfEmployed) {
+    return calculateSelfEmployedIncome({
+      annualNetTradeIncome: safeAnnualNetTradeIncome,
+
+      monthlyOtherIncome: safeMonthlyOtherIncome,
+
+      annualOtherIncome,
+
+      sepMedisave,
+    });
+  }
+
+  return calculateEmployeeIncome({
+    monthlyEmploymentIncome: safeMonthlyEmploymentIncome,
+
+    annualBonus: safeAnnualBonus,
+
+    monthlyOtherIncome: safeMonthlyOtherIncome,
+
+    annualOtherIncome,
+
+    employmentStatus,
+
+    age,
+
+    sepMedisave,
+  });
+}
+
+/* ========================================
+   SELF-EMPLOYED INCOME
+======================================== */
+
+function calculateSelfEmployedIncome({
+  annualNetTradeIncome,
+
+  monthlyOtherIncome,
+
+  annualOtherIncome,
+
+  sepMedisave,
+}) {
+  const monthlyNetTradeIncome = annualNetTradeIncome / 12;
+
+  const monthlyTakeHomeIncome =
+    monthlyNetTradeIncome -
+    sepMedisave.monthlyContribution +
+    monthlyOtherIncome;
+
+  const annualTakeHomeIncome =
+    annualNetTradeIncome - sepMedisave.annualContribution + annualOtherIncome;
+
+  return {
+    cpfApplies: false,
+
+    isSelfEmployed: true,
+
+    employeeCpfRate: 0,
+    employerCpfRate: 0,
+
+    monthlyCpfOrdinaryWage: 0,
+    monthlyIncomeNotSubjectToCpf: 0,
+
+    annualCpfOrdinaryWage: 0,
+    additionalWageCeiling: 0,
+
+    cpfAdditionalWage: 0,
+    bonusNotSubjectToCpf: 0,
+
+    monthlyEmployeeCpf: 0,
+    monthlyEmployerCpf: 0,
+
+    annualOrdinaryWageEmployeeCpf: 0,
+    annualOrdinaryWageEmployerCpf: 0,
+
+    annualAdditionalWageEmployeeCpf: 0,
+    annualAdditionalWageEmployerCpf: 0,
+
+    annualEmployeeCpf: 0,
+    annualEmployerCpf: 0,
+
+    monthlyEmploymentIncome: 0,
+    annualEmploymentIncome: 0,
+
+    annualNetTradeIncome,
+
+    monthlyNetTradeIncome,
+
+    monthlyOtherIncome,
+
+    annualOtherIncome,
+
+    totalMonthlyIncome: monthlyNetTradeIncome + monthlyOtherIncome,
+
+    totalAnnualIncome: annualNetTradeIncome + annualOtherIncome,
+
+    monthlyTakeHomeIncome,
+
+    annualTakeHomeIncome,
+
+    sepMedisave,
+
+    annualSepMedisaveContribution: sepMedisave.annualContribution,
+
+    monthlySepMedisaveContribution: sepMedisave.monthlyContribution,
+  };
+}
+
+/* ========================================
+   EMPLOYEE INCOME
+======================================== */
+
+function calculateEmployeeIncome({
+  monthlyEmploymentIncome,
+
+  annualBonus,
+
+  monthlyOtherIncome,
+
+  annualOtherIncome,
+
+  employmentStatus,
+
+  age,
+
+  sepMedisave,
+}) {
   const cpfApplies = employmentStatus === "full_time_employed" && age !== null;
 
   const cpfRates = getCpfContributionRates(age);
@@ -34,12 +191,12 @@ export function calculateIncomeSummary({
   const employerCpfRate = cpfApplies ? cpfRates.employerRate : 0;
 
   const monthlyCpfOrdinaryWage = cpfApplies
-    ? Math.min(safeMonthlyEmploymentIncome, CPF_ORDINARY_WAGE_CEILING)
+    ? Math.min(monthlyEmploymentIncome, CPF_ORDINARY_WAGE_CEILING)
     : 0;
 
   const monthlyIncomeNotSubjectToCpf = cpfApplies
-    ? Math.max(0, safeMonthlyEmploymentIncome - monthlyCpfOrdinaryWage)
-    : safeMonthlyEmploymentIncome;
+    ? Math.max(0, monthlyEmploymentIncome - monthlyCpfOrdinaryWage)
+    : monthlyEmploymentIncome;
 
   const annualCpfOrdinaryWage = monthlyCpfOrdinaryWage * 12;
 
@@ -48,12 +205,12 @@ export function calculateIncomeSummary({
     : 0;
 
   const cpfAdditionalWage = cpfApplies
-    ? Math.min(safeAnnualBonus, additionalWageCeiling)
+    ? Math.min(annualBonus, additionalWageCeiling)
     : 0;
 
   const bonusNotSubjectToCpf = cpfApplies
-    ? Math.max(0, safeAnnualBonus - cpfAdditionalWage)
-    : safeAnnualBonus;
+    ? Math.max(0, annualBonus - cpfAdditionalWage)
+    : annualBonus;
 
   const monthlyEmployeeCpf = cpfApplies
     ? Math.round(monthlyCpfOrdinaryWage * employeeCpfRate)
@@ -81,18 +238,14 @@ export function calculateIncomeSummary({
   const annualEmployerCpf =
     annualOrdinaryWageEmployerCpf + annualAdditionalWageEmployerCpf;
 
-  const annualEmploymentIncome =
-    safeMonthlyEmploymentIncome * 12 + safeAnnualBonus;
+  const annualEmploymentIncome = monthlyEmploymentIncome * 12 + annualBonus;
 
-  const annualOtherIncome = safeMonthlyOtherIncome * 12;
-
-  const totalMonthlyIncome =
-    safeMonthlyEmploymentIncome + safeMonthlyOtherIncome;
+  const totalMonthlyIncome = monthlyEmploymentIncome + monthlyOtherIncome;
 
   const totalAnnualIncome = annualEmploymentIncome + annualOtherIncome;
 
   const monthlyTakeHomeIncome =
-    safeMonthlyEmploymentIncome - monthlyEmployeeCpf + safeMonthlyOtherIncome;
+    monthlyEmploymentIncome - monthlyEmployeeCpf + monthlyOtherIncome;
 
   const annualTakeHomeIncome =
     annualEmploymentIncome - annualEmployeeCpf + annualOtherIncome;
@@ -100,13 +253,17 @@ export function calculateIncomeSummary({
   return {
     cpfApplies,
 
+    isSelfEmployed: false,
+
     employeeCpfRate,
     employerCpfRate,
 
     monthlyCpfOrdinaryWage,
     monthlyIncomeNotSubjectToCpf,
+
     annualCpfOrdinaryWage,
     additionalWageCeiling,
+
     cpfAdditionalWage,
     bonusNotSubjectToCpf,
 
@@ -122,10 +279,14 @@ export function calculateIncomeSummary({
     annualEmployeeCpf,
     annualEmployerCpf,
 
-    monthlyEmploymentIncome: safeMonthlyEmploymentIncome,
+    monthlyEmploymentIncome,
 
     annualEmploymentIncome,
-    monthlyOtherIncome: safeMonthlyOtherIncome,
+
+    annualNetTradeIncome: 0,
+    monthlyNetTradeIncome: 0,
+
+    monthlyOtherIncome,
     annualOtherIncome,
 
     totalMonthlyIncome,
@@ -133,6 +294,11 @@ export function calculateIncomeSummary({
 
     monthlyTakeHomeIncome,
     annualTakeHomeIncome,
+
+    sepMedisave,
+
+    annualSepMedisaveContribution: 0,
+    monthlySepMedisaveContribution: 0,
   };
 }
 
@@ -156,6 +322,7 @@ function toNonNegativeNumber(value) {
 
 export function getAverageGrossMonthlyIncome({
   monthlyEmploymentIncome = 0,
+
   annualBonus = 0,
 }) {
   return (

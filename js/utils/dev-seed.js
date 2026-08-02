@@ -105,6 +105,14 @@ export function seedAssetsAndIncome() {
 
       annualBonus: 20000,
 
+      annualNetTradeIncome: 0,
+
+      netPlatformEarnings: 0,
+
+      sepMedisaveOverrideEnabled: false,
+
+      sepMedisaveOverrideAmount: 0,
+
       otherMonthly: 1,
     },
 

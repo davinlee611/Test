@@ -35,10 +35,9 @@ export function calculateCpfBalanceTotal(cpf) {
 
 export function calculateAssetsIncomeSummary({
   assets,
-
   employmentStatus,
-
   age,
+  ageAtStartOfWorkYear,
 }) {
   const safeAssets = assets || {};
 
@@ -54,11 +53,21 @@ export function calculateAssetsIncomeSummary({
 
       annualBonus: income.annualBonus,
 
+      annualNetTradeIncome: income.annualNetTradeIncome,
+
+      netPlatformEarnings: income.netPlatformEarnings,
+
+      sepMedisaveOverrideEnabled: income.sepMedisaveOverrideEnabled,
+
+      sepMedisaveOverrideAmount: income.sepMedisaveOverrideAmount,
+
       monthlyOtherIncome: income.otherMonthly,
 
       employmentStatus,
 
       age,
+
+      ageAtStartOfWorkYear,
     }),
   };
 }

@@ -109,13 +109,68 @@ function attachProfileListeners() {
    PROFILE STATE
 ======================================== */
 
-function handleProfileInput() {
+function handleProfileInput(event) {
+  /*
+   * Select elements may emit both input and
+   * change. Employment status is processed
+   * only on change so confirmation appears once.
+   */
+  if (event?.target === employmentStatusInput && event.type === "input") {
+    return;
+  }
+
+  const previousEmploymentStatus = clientPlan.profile.employmentStatus;
+
+  const nextEmploymentStatus = employmentStatusInput?.value || "";
+
+  const employmentStatusChanged =
+    event?.target === employmentStatusInput &&
+    previousEmploymentStatus !== nextEmploymentStatus;
+
+  if (
+    employmentStatusChanged &&
+    hasEmploymentSpecificIncome() &&
+    !window.confirm(
+      "Changing employment status will clear the existing " +
+        "employment income details. Other planning " +
+        "information will not be affected.",
+    )
+  ) {
+    employmentStatusInput.value = previousEmploymentStatus;
+
+    return;
+  }
+
   clearProfileMessage();
+
   syncProfileState();
+
   updateClientHeading();
 
   emit(EVENTS.PROFILE_CHANGED, {
     profile: clientPlan.profile,
+
+    previousEmploymentStatus: employmentStatusChanged
+      ? previousEmploymentStatus
+      : "",
+  });
+}
+
+function hasEmploymentSpecificIncome() {
+  const income = clientPlan.priorities?.assets?.income || {};
+
+  return [
+    income.monthlyEmployment,
+
+    income.annualBonus,
+
+    income.annualNetTradeIncome,
+
+    income.netPlatformEarnings,
+
+    income.sepMedisaveOverrideAmount,
+  ].some(function (value) {
+    return Number(value) > 0;
   });
 }
 

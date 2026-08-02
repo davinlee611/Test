@@ -540,19 +540,24 @@
                   <div class="planning-card-header">
                     <div>
                       <h3>Income</h3>
-                      <p>
+
+                      <p id="incomeDescription">
                         Enter the client's monthly gross salary, annual bonus
                         and other monthly income.
                       </p>
                     </div>
                   </div>
-                  <div class="financial-input-list">
+
+                  <!-- Employee Income -->
+                  <div id="employeeIncomeFields" class="financial-input-list">
                     <div class="financial-input-row">
                       <label for="monthlyEmploymentIncome">
                         Monthly Gross Salary
                       </label>
+
                       <div class="currency-input">
                         <span>$</span>
+
                         <input
                           id="monthlyEmploymentIncome"
                           class="form-control financial-amount-input"
@@ -564,10 +569,13 @@
                         />
                       </div>
                     </div>
+
                     <div class="financial-input-row">
                       <label for="annualBonus"> Annual Bonus </label>
+
                       <div class="currency-input">
                         <span>$</span>
+
                         <input
                           id="annualBonus"
                           class="form-control financial-amount-input"
@@ -579,6 +587,66 @@
                         />
                       </div>
                     </div>
+                  </div>
+
+                  <!-- Self-employed Income -->
+                  <div
+                    id="selfEmployedIncomeFields"
+                    class="financial-input-list"
+                    hidden
+                  >
+                    <div class="financial-input-row">
+                      <label for="annualNetTradeIncome">
+                        Annual Net Trade Income
+
+                        <span class="form-helper-text">
+                          Use the total amount assessed by IRAS.
+                        </span>
+                      </label>
+
+                      <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                          id="annualNetTradeIncome"
+                          class="form-control financial-amount-input"
+                          type="number"
+                          min="0"
+                          step="1"
+                          inputmode="numeric"
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="financial-input-row">
+                      <label for="netPlatformEarnings">
+                        Net Platform Earnings
+
+                        <span class="form-helper-text">
+                          Optional. Excluded from the SEP MediSave calculation
+                          for work year 2025 onwards.
+                        </span>
+                      </label>
+
+                      <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                          id="netPlatformEarnings"
+                          class="form-control financial-amount-input"
+                          type="number"
+                          min="0"
+                          step="1"
+                          inputmode="numeric"
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Common Income -->
+                  <div class="financial-input-list income-common-fields">
                     <div class="financial-input-row">
                       <label for="otherMonthlyIncome">
                         Other Monthly Income
@@ -587,8 +655,10 @@
                           For example, rental income, dividends, etc.
                         </span>
                       </label>
+
                       <div class="currency-input">
                         <span>$</span>
+
                         <input
                           id="otherMonthlyIncome"
                           class="form-control financial-amount-input"
@@ -606,11 +676,17 @@
                   <div class="income-summary">
                     <div class="income-summary-row">
                       <div class="income-summary-content">
-                        <span class="income-summary-label">
+                        <span
+                          id="annualIncomeSummaryLabel"
+                          class="income-summary-label"
+                        >
                           Annual Gross Employment Income
                         </span>
 
-                        <span class="income-summary-note">
+                        <span
+                          id="annualIncomeSummaryNote"
+                          class="income-summary-note"
+                        >
                           Including annual bonus
                         </span>
                       </div>
@@ -623,9 +699,35 @@
                       </strong>
                     </div>
 
-                    <div class="income-summary-row">
+                    <div
+                      id="annualSepMedisaveSummaryRow"
+                      class="income-summary-row"
+                      hidden
+                    >
                       <div class="income-summary-content">
                         <span class="income-summary-label">
+                          Annual Mandatory MediSave Contribution
+                        </span>
+
+                        <span class="income-summary-note">
+                          Estimated from NTI, age and the applicable SEP rate
+                        </span>
+                      </div>
+
+                      <strong
+                        id="annualSepMedisaveContribution"
+                        class="income-summary-value income-deduction"
+                      >
+                        $0
+                      </strong>
+                    </div>
+
+                    <div class="income-summary-row">
+                      <div class="income-summary-content">
+                        <span
+                          id="contributionSummaryLabel"
+                          class="income-summary-label"
+                        >
                           Monthly Employee CPF Contribution
                         </span>
 
@@ -642,6 +744,7 @@
                         class="income-summary-value income-deduction"
                       >
                         $0
+
                         <span class="income-summary-period"> per month </span>
                       </strong>
                     </div>
@@ -662,6 +765,7 @@
                         class="income-summary-value"
                       >
                         $0
+
                         <span class="income-summary-period"> per month </span>
                       </strong>
                     </div>
@@ -672,7 +776,10 @@
                           Annual Take-home Income
                         </span>
 
-                        <span class="income-summary-note">
+                        <span
+                          id="annualTakeHomeSummaryNote"
+                          class="income-summary-note"
+                        >
                           Including annual bonus and other income
                         </span>
                       </div>
@@ -686,10 +793,10 @@
                     </div>
                   </div>
 
-                  <!-- CPF Details -->
+                  <!-- Contribution Details -->
                   <details class="cpf-details">
                     <summary>
-                      <span>CPF Details</span>
+                      <span id="contributionDetailsLabel"> CPF Details </span>
 
                       <i
                         class="fa-solid fa-chevron-down"
@@ -704,55 +811,152 @@
                         hidden
                       ></div>
 
-                      <div class="cpf-detail-row">
-                        <span>Employee CPF Rate</span>
+                      <!-- Employee CPF Details -->
+                      <div id="employeeCpfDetailsRows" class="cpf-details-rows">
+                        <div class="cpf-detail-row">
+                          <span>Employee CPF Rate</span>
 
-                        <strong id="employeeCpfRate">0%</strong>
+                          <strong id="employeeCpfRate"> 0% </strong>
+                        </div>
+
+                        <div class="cpf-detail-row">
+                          <span>Ordinary Wage Ceiling</span>
+
+                          <strong id="ordinaryWageCeiling">
+                            $0
+
+                            <span class="income-summary-period">
+                              per month
+                            </span>
+                          </strong>
+                        </div>
+
+                        <div class="cpf-detail-row">
+                          <span>Monthly Income Subjected to CPF</span>
+
+                          <strong id="monthlyWageSubjectToCpf">
+                            $0
+
+                            <span class="income-summary-period">
+                              per month
+                            </span>
+                          </strong>
+                        </div>
+
+                        <div class="cpf-detail-row">
+                          <span> Monthly Income NOT Subjected to CPF </span>
+
+                          <strong id="monthlyIncomeNotSubjectToCpf">
+                            $0
+
+                            <span class="income-summary-period">
+                              per month
+                            </span>
+                          </strong>
+                        </div>
+
+                        <div class="cpf-detail-row">
+                          <span>Additional Wage Ceiling</span>
+
+                          <strong id="additionalWageCeiling"> $0 </strong>
+                        </div>
+
+                        <div class="cpf-detail-row">
+                          <span> Employment Bonus Subjected to CPF </span>
+
+                          <strong id="bonusSubjectToCpf"> $0 </strong>
+                        </div>
+
+                        <div class="cpf-detail-row">
+                          <span> Employment Bonus NOT Subjected to CPF </span>
+
+                          <strong id="bonusNotSubjectToCpf"> $0 </strong>
+                        </div>
                       </div>
 
-                      <div class="cpf-detail-row">
-                        <span>Ordinary Wage Ceiling</span>
+                      <!-- Self-employed MediSave Details -->
+                      <div
+                        id="selfEmployedMedisaveDetailsRows"
+                        class="cpf-details-rows"
+                        hidden
+                      >
+                        <div class="cpf-detail-row">
+                          <span>Rate Table</span>
 
-                        <strong id="ordinaryWageCeiling">
-                          $0
-                          <span class="income-summary-period"> per month </span>
-                        </strong>
-                      </div>
+                          <strong>
+                            <span id="sepRateYear">2026</span>
+                            SEP rates
+                          </strong>
+                        </div>
 
-                      <div class="cpf-detail-row">
-                        <span>Monthly Income Subjected to CPF</span>
+                        <div class="cpf-detail-row">
+                          <span>Age on 1 January</span>
 
-                        <strong id="monthlyWageSubjectToCpf">
-                          $0
-                          <span class="income-summary-period"> per month </span>
-                        </strong>
-                      </div>
+                          <strong id="sepAgeAtStartOfYear"> — </strong>
+                        </div>
 
-                      <div class="cpf-detail-row">
-                        <span>Monthly Income NOT Subjected to CPF</span>
+                        <div class="cpf-detail-row">
+                          <span>NTI Used for Calculation</span>
 
-                        <strong id="monthlyIncomeNotSubjectToCpf">
-                          $0
-                          <span class="income-summary-period"> per month </span>
-                        </strong>
-                      </div>
+                          <strong id="sepApplicableNti"> $0 </strong>
+                        </div>
 
-                      <div class="cpf-detail-row">
-                        <span>Additional Wage Ceiling</span>
+                        <div class="cpf-detail-row">
+                          <span>Platform Earnings Excluded</span>
 
-                        <strong id="additionalWageCeiling">$0</strong>
-                      </div>
+                          <strong id="sepPlatformEarningsExcluded"> $0 </strong>
+                        </div>
 
-                      <div class="cpf-detail-row">
-                        <span>Employment Bonus Subjected to CPF</span>
+                        <div class="cpf-detail-row">
+                          <span>Effective MediSave Rate</span>
 
-                        <strong id="bonusSubjectToCpf">$0</strong>
-                      </div>
+                          <strong id="sepEffectiveRate"> 0% </strong>
+                        </div>
 
-                      <div class="cpf-detail-row">
-                        <span>Employment Bonus NOT Subjected to CPF</span>
+                        <div class="cpf-detail-row">
+                          <span>Calculated Annual MediSave</span>
 
-                        <strong id="bonusNotSubjectToCpf">$0</strong>
+                          <strong id="sepCalculatedAnnualMedisave"> $0 </strong>
+                        </div>
+
+                        <label class="sep-medisave-override-toggle">
+                          <span>
+                            <strong> Use CPF Board assessed amount </strong>
+
+                            <small>
+                              Overrides the planner's estimated annual amount.
+                            </small>
+                          </span>
+
+                          <input
+                            id="sepMedisaveOverrideEnabled"
+                            type="checkbox"
+                          />
+                        </label>
+
+                        <div
+                          id="sepMedisaveOverrideAmountGroup"
+                          class="sep-medisave-override-amount"
+                          hidden
+                        >
+                          <label for="sepMedisaveOverrideAmount">
+                            CPF Board Assessed Annual Amount
+                          </label>
+
+                          <div class="currency-input">
+                            <span>$</span>
+
+                            <input
+                              id="sepMedisaveOverrideAmount"
+                              class="form-control financial-amount-input"
+                              type="number"
+                              min="0"
+                              step="1"
+                              inputmode="numeric"
+                              placeholder="0"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </details>
@@ -2369,7 +2573,7 @@
 
                     <h3>Monthly Cashflow</h3>
 
-                    <p>
+                    <p id="analysisCashflowDescription">
                       Employment and bonus income are shown after the employee's
                       CPF contribution.
                     </p>
@@ -2377,7 +2581,9 @@
 
                   <div class="analysis-assumption-stack">
                     <label class="analysis-assumption-field">
-                      <span> Annual Employment &amp; Bonus Increment </span>
+                      <span id="analysisIncomeIncrementLabel">
+                        Annual Employment &amp; Bonus Increment
+                      </span>
 
                       <div class="analysis-percentage-input">
                         <input
@@ -2424,12 +2630,16 @@
                       </tr>
 
                       <tr>
-                        <td>Employment Income After CPF</td>
+                        <td id="analysisPrimaryIncomeLabel">
+                          Employment Income After CPF
+                        </td>
                         <td id="analysisEmploymentIncomeAfterCpf">$0</td>
                       </tr>
 
                       <tr>
-                        <td>Annual Bonus After CPF</td>
+                        <td id="analysisContributionIncomeLabel">
+                          Annual Bonus After CPF
+                        </td>
                         <td id="analysisBonusIncomeAfterCpf">
                           $0/year · $0/month
                         </td>

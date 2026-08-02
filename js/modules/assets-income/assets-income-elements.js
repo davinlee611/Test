@@ -28,6 +28,28 @@ export function getAssetsIncomeElements() {
 
     annualBonusInput: document.getElementById("annualBonus"),
 
+    employeeIncomeFields: document.getElementById("employeeIncomeFields"),
+
+    selfEmployedIncomeFields: document.getElementById(
+      "selfEmployedIncomeFields",
+    ),
+
+    annualNetTradeIncomeInput: document.getElementById("annualNetTradeIncome"),
+
+    netPlatformEarningsInput: document.getElementById("netPlatformEarnings"),
+
+    sepMedisaveOverrideInput: document.getElementById(
+      "sepMedisaveOverrideEnabled",
+    ),
+
+    sepMedisaveOverrideAmountGroup: document.getElementById(
+      "sepMedisaveOverrideAmountGroup",
+    ),
+
+    sepMedisaveOverrideAmountInput: document.getElementById(
+      "sepMedisaveOverrideAmount",
+    ),
+
     otherMonthlyIncomeInput: document.getElementById("otherMonthlyIncome"),
 
     /* Income summary */
@@ -48,6 +70,56 @@ export function getAssetsIncomeElements() {
 
     annualTakeHomeIncomeElement: document.getElementById(
       "annualTakeHomeIncome",
+    ),
+
+    annualSepMedisaveSummaryRow: document.getElementById(
+      "annualSepMedisaveSummaryRow",
+    ),
+
+    annualSepMedisaveContributionElement: document.getElementById(
+      "annualSepMedisaveContribution",
+    ),
+
+    incomeDescriptionElement: document.getElementById("incomeDescription"),
+
+    annualIncomeSummaryLabel: document.getElementById(
+      "annualIncomeSummaryLabel",
+    ),
+
+    annualIncomeSummaryNote: document.getElementById("annualIncomeSummaryNote"),
+
+    contributionSummaryLabel: document.getElementById(
+      "contributionSummaryLabel",
+    ),
+
+    annualTakeHomeSummaryNote: document.getElementById(
+      "annualTakeHomeSummaryNote",
+    ),
+
+    contributionDetailsLabel: document.getElementById(
+      "contributionDetailsLabel",
+    ),
+
+    employeeCpfDetailsRows: document.getElementById("employeeCpfDetailsRows"),
+
+    selfEmployedMedisaveDetailsRows: document.getElementById(
+      "selfEmployedMedisaveDetailsRows",
+    ),
+
+    sepRateYearElement: document.getElementById("sepRateYear"),
+
+    sepAgeAtStartOfYearElement: document.getElementById("sepAgeAtStartOfYear"),
+
+    sepApplicableNtiElement: document.getElementById("sepApplicableNti"),
+
+    sepPlatformEarningsExcludedElement: document.getElementById(
+      "sepPlatformEarningsExcluded",
+    ),
+
+    sepEffectiveRateElement: document.getElementById("sepEffectiveRate"),
+
+    sepCalculatedAnnualMedisaveElement: document.getElementById(
+      "sepCalculatedAnnualMedisave",
     ),
 
     /* CPF calculation details */
@@ -112,6 +184,13 @@ export function getFinancialInputs(elements) {
 
     elements.monthlyEmploymentIncomeInput,
     elements.annualBonusInput,
+
+    elements.annualNetTradeIncomeInput,
+    elements.netPlatformEarningsInput,
+
+    elements.sepMedisaveOverrideInput,
+    elements.sepMedisaveOverrideAmountInput,
+
     elements.otherMonthlyIncomeInput,
 
     elements.cpfOaInput,

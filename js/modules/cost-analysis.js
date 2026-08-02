@@ -8,12 +8,9 @@ import {
   getLiabilities,
 } from "../state/client-plan.js";
 
-import {
-  CPF_ANNUAL_WAGE_CEILING,
-  CPF_ORDINARY_WAGE_CEILING,
-  getCpfAllocationRates,
-  getCpfContributionRates,
-} from "../services/cpf-service.js";
+import { getCpfAllocationRates } from "../services/cpf-service.js";
+
+import { calculateIncomeSummary } from "../services/income-calculator.js";
 
 import { calculateLiquidAssetTotal } from "./assets-income/assets-income-calculator.js";
 
@@ -63,6 +60,22 @@ const employmentIncrementInput = document.getElementById(
 
 const expenseInflationInput = document.getElementById(
   "analysisExpenseInflationInput",
+);
+
+const cashflowDescriptionElement = document.getElementById(
+  "analysisCashflowDescription",
+);
+
+const incomeIncrementLabel = document.getElementById(
+  "analysisIncomeIncrementLabel",
+);
+
+const primaryIncomeLabel = document.getElementById(
+  "analysisPrimaryIncomeLabel",
+);
+
+const contributionIncomeLabel = document.getElementById(
+  "analysisContributionIncomeLabel",
 );
 
 const projectionPeriodInputs = Array.from(
@@ -349,56 +362,57 @@ function calculateCurrentMonthlyCashflow() {
 
   const income = assets.income || {};
 
-  const age = calculateAgeOnDate(profile.dateOfBirth, new Date());
+  const now = new Date();
 
-  const employmentIncome = getNonNegativeNumber(income.monthlyEmployment);
+  const age = calculateAgeOnDate(profile.dateOfBirth, now);
+
+  const incomeSummary = calculateIncomeSummary({
+    monthlyEmploymentIncome: income.monthlyEmployment,
+
+    annualBonus: income.annualBonus,
+
+    annualNetTradeIncome: income.annualNetTradeIncome,
+
+    netPlatformEarnings: income.netPlatformEarnings,
+
+    sepMedisaveOverrideEnabled: income.sepMedisaveOverrideEnabled,
+
+    sepMedisaveOverrideAmount: income.sepMedisaveOverrideAmount,
+
+    monthlyOtherIncome: income.otherMonthly,
+
+    employmentStatus: profile.employmentStatus,
+
+    age,
+
+    ageAtStartOfWorkYear: calculateAgeOnDate(
+      profile.dateOfBirth,
+
+      new Date(now.getFullYear(), 0, 1),
+    ),
+  });
+
+  const isSelfEmployed = profile.employmentStatus === "self_employed";
+
+  const employmentIncome = incomeSummary.monthlyEmploymentIncome;
 
   const annualBonus = getNonNegativeNumber(income.annualBonus);
 
-  const otherMonthlyIncome = getNonNegativeNumber(income.otherMonthly);
+  const annualNetTradeIncome = incomeSummary.annualNetTradeIncome;
 
-  const cpfApplies =
-    profile.employmentStatus === "full_time_employed" && age !== null;
+  const otherMonthlyIncome = incomeSummary.monthlyOtherIncome;
 
-  const contributionRates = cpfApplies
-    ? getCpfContributionRates(age)
-    : {
-        employeeRate: 0,
-        employerRate: 0,
-      };
+  const employmentIncomeAfterCpf =
+    employmentIncome - incomeSummary.monthlyEmployeeCpf;
 
-  const ordinaryWageSubjectToCpf = Math.min(
-    employmentIncome,
-    CPF_ORDINARY_WAGE_CEILING,
-  );
-
-  const monthlyEmployeeCpf = cpfApplies
-    ? Math.round(ordinaryWageSubjectToCpf * contributionRates.employeeRate)
-    : 0;
-
-  const annualOrdinaryWage = ordinaryWageSubjectToCpf * 12;
-
-  const additionalWageCeiling = Math.max(
-    CPF_ANNUAL_WAGE_CEILING - annualOrdinaryWage,
-    0,
-  );
-
-  const bonusSubjectToCpf = cpfApplies
-    ? Math.min(annualBonus, additionalWageCeiling)
-    : 0;
-
-  const annualBonusEmployeeCpf = cpfApplies
-    ? Math.round(bonusSubjectToCpf * contributionRates.employeeRate)
-    : 0;
-
-  const employmentIncomeAfterCpf = employmentIncome - monthlyEmployeeCpf;
-
-  const annualBonusAfterCpf = annualBonus - annualBonusEmployeeCpf;
+  const annualBonusAfterCpf =
+    annualBonus - incomeSummary.annualAdditionalWageEmployeeCpf;
 
   const monthlyBonusAfterCpf = annualBonusAfterCpf / 12;
 
-  const totalMonthlyIncome =
-    employmentIncomeAfterCpf + monthlyBonusAfterCpf + otherMonthlyIncome;
+  const totalMonthlyIncome = isSelfEmployed
+    ? incomeSummary.monthlyTakeHomeIncome
+    : employmentIncomeAfterCpf + monthlyBonusAfterCpf + otherMonthlyIncome;
 
   const monthlyExpenses = calculateTotalMonthlyExpenses(getExpenses());
 
@@ -413,27 +427,91 @@ function calculateCurrentMonthlyCashflow() {
 
   return {
     employmentIncome,
+
     annualBonus,
+
+    annualNetTradeIncome,
+
     otherMonthlyIncome,
 
+    isSelfEmployed,
+
+    monthlyNetTradeIncome: incomeSummary.monthlyNetTradeIncome,
+
+    annualSepMedisaveContribution: incomeSummary.annualSepMedisaveContribution,
+
+    monthlySepMedisaveContribution:
+      incomeSummary.monthlySepMedisaveContribution,
+
     employmentIncomeAfterCpf,
+
     annualBonusAfterCpf,
+
     monthlyBonusAfterCpf,
 
     totalMonthlyIncome,
+
     monthlyExpenses,
+
     monthlyCommitments,
+
     remainingSurplus,
   };
 }
 
 function renderCurrentMonthlyCashflow(cashflow) {
-  setCurrency(employmentIncomeElement, cashflow.employmentIncomeAfterCpf);
+  setText(
+    cashflowDescriptionElement,
+
+    cashflow.isSelfEmployed
+      ? "Net trade income is shown after the estimated mandatory MediSave contribution."
+      : "Employment and bonus income are shown after the employee's CPF contribution.",
+  );
+
+  setText(
+    incomeIncrementLabel,
+
+    cashflow.isSelfEmployed
+      ? "Annual Net Trade Income Increment"
+      : "Annual Employment & Bonus Increment",
+  );
+
+  setText(
+    primaryIncomeLabel,
+
+    cashflow.isSelfEmployed
+      ? "Monthly Net Trade Income"
+      : "Employment Income After CPF",
+  );
+
+  setText(
+    contributionIncomeLabel,
+
+    cashflow.isSelfEmployed
+      ? "Mandatory MediSave Contribution"
+      : "Annual Bonus After CPF",
+  );
+
+  setCurrency(
+    employmentIncomeElement,
+
+    cashflow.isSelfEmployed
+      ? cashflow.monthlyNetTradeIncome
+      : cashflow.employmentIncomeAfterCpf,
+  );
 
   setText(
     bonusIncomeElement,
-    `${formatCurrency(cashflow.annualBonusAfterCpf)}/year · ` +
-      `${formatCurrency(cashflow.monthlyBonusAfterCpf)}/month`,
+
+    cashflow.isSelfEmployed
+      ? `-${formatCurrency(
+          cashflow.annualSepMedisaveContribution,
+        )}/year · -${formatCurrency(
+          cashflow.monthlySepMedisaveContribution,
+        )}/month`
+      : `${formatCurrency(
+          cashflow.annualBonusAfterCpf,
+        )}/year · ${formatCurrency(cashflow.monthlyBonusAfterCpf)}/month`,
   );
 
   setCurrency(otherIncomeElement, cashflow.otherMonthlyIncome);
@@ -442,15 +520,21 @@ function renderCurrentMonthlyCashflow(cashflow) {
 
   setText(
     monthlyExpensesElement,
+
     `-${formatCurrency(cashflow.monthlyExpenses)}`,
   );
 
   setText(
     monthlyCommitmentsElement,
+
     `-${formatCurrency(cashflow.monthlyCommitments)}`,
   );
 
-  setSignedCurrency(remainingSurplusElement, cashflow.remainingSurplus);
+  setSignedCurrency(
+    remainingSurplusElement,
+
+    cashflow.remainingSurplus,
+  );
 }
 
 /* ========================================
@@ -734,14 +818,37 @@ function calculateProjection({
     const projectedAnnualBonus =
       currentCashflow.annualBonus * salaryGrowthFactor;
 
+    const projectedAnnualNetTradeIncome =
+      currentCashflow.annualNetTradeIncome * salaryGrowthFactor;
+
     const age = calculateAgeOnDate(profile.dateOfBirth, projectionDate);
 
     const projectedIncome = calculateProjectedIncome({
       monthlyEmploymentIncome: projectedEmploymentIncome,
+
       annualBonus: projectedAnnualBonus,
+
+      annualNetTradeIncome: projectedAnnualNetTradeIncome,
+
+      netPlatformEarnings:
+        getNonNegativeNumber(assets.income?.netPlatformEarnings) *
+        salaryGrowthFactor,
+
+      sepMedisaveOverrideEnabled: assets.income?.sepMedisaveOverrideEnabled,
+
+      sepMedisaveOverrideAmount: assets.income?.sepMedisaveOverrideAmount,
+
       otherMonthlyIncome: currentCashflow.otherMonthlyIncome,
+
       employmentStatus: profile.employmentStatus,
+
       age,
+
+      ageAtStartOfWorkYear: calculateAgeOnDate(
+        profile.dateOfBirth,
+
+        new Date(projectionDate.getFullYear(), 0, 1),
+      ),
     });
 
     const expenseGrowthFactor = Math.pow(
@@ -778,17 +885,22 @@ function calculateProjection({
     withdrawableBalance =
       startWithdrawableBalance + netCashflow - bigTicketOutflow;
 
-    const totalCpfInflow =
+    const employeeCpfInflow =
       projectedIncome.monthlyTotalCpfContribution +
       projectedIncome.monthlyBonusTotalCpf;
 
+    const totalCpfInflow =
+      employeeCpfInflow + projectedIncome.monthlySepMedisaveContribution;
+
     const allocationRates = getCpfAllocationRates(age);
 
-    let oaInflow = totalCpfInflow * allocationRates.oaRate;
+    let oaInflow = employeeCpfInflow * allocationRates.oaRate;
 
-    const retirementInflow = totalCpfInflow * allocationRates.retirementRate;
+    const retirementInflow = employeeCpfInflow * allocationRates.retirementRate;
 
-    const originalMaInflow = totalCpfInflow * allocationRates.maRate;
+    const originalMaInflow =
+      employeeCpfInflow * allocationRates.maRate +
+      projectedIncome.monthlySepMedisaveContribution;
 
     const hasReachedAge55 = age !== null && age >= 55;
 
@@ -1192,70 +1304,72 @@ function sumProjectionValues(rows, propertyName) {
 
 function calculateProjectedIncome({
   monthlyEmploymentIncome,
+
   annualBonus,
+
+  annualNetTradeIncome,
+
+  netPlatformEarnings,
+
+  sepMedisaveOverrideEnabled,
+
+  sepMedisaveOverrideAmount,
+
   otherMonthlyIncome,
+
   employmentStatus,
+
   age,
+
+  ageAtStartOfWorkYear,
 }) {
-  const cpfApplies = employmentStatus === "full_time_employed" && age !== null;
+  const summary = calculateIncomeSummary({
+    monthlyEmploymentIncome,
 
-  const contributionRates = cpfApplies
-    ? getCpfContributionRates(age)
-    : {
-        employeeRate: 0,
-        employerRate: 0,
-      };
+    annualBonus,
 
-  const cpfOrdinaryWage = cpfApplies
-    ? Math.min(monthlyEmploymentIncome, CPF_ORDINARY_WAGE_CEILING)
-    : 0;
+    annualNetTradeIncome,
 
-  const ordinaryWageEmployeeCpf = cpfApplies
-    ? Math.round(cpfOrdinaryWage * contributionRates.employeeRate)
-    : 0;
+    netPlatformEarnings,
 
-  const ordinaryWageEmployerCpf = cpfApplies
-    ? Math.round(cpfOrdinaryWage * contributionRates.employerRate)
-    : 0;
+    sepMedisaveOverrideEnabled,
 
-  const annualOrdinaryWage = cpfOrdinaryWage * 12;
+    sepMedisaveOverrideAmount,
 
-  const additionalWageCeiling = Math.max(
-    CPF_ANNUAL_WAGE_CEILING - annualOrdinaryWage,
-    0,
-  );
+    monthlyOtherIncome: otherMonthlyIncome,
 
-  const annualBonusSubjectToCpf = cpfApplies
-    ? Math.min(annualBonus, additionalWageCeiling)
-    : 0;
+    employmentStatus,
 
-  const annualBonusEmployeeCpf = cpfApplies
-    ? Math.round(annualBonusSubjectToCpf * contributionRates.employeeRate)
-    : 0;
+    age,
 
-  const annualBonusEmployerCpf = cpfApplies
-    ? Math.round(annualBonusSubjectToCpf * contributionRates.employerRate)
-    : 0;
+    ageAtStartOfWorkYear,
+  });
 
-  /*
-   * Draft assumption:
-   * The annual bonus is spread evenly over 12 months.
-   */
-  const monthlyBonusAfterCpf = (annualBonus - annualBonusEmployeeCpf) / 12;
+  const monthlyBonusAfterCpf =
+    (getNonNegativeNumber(annualBonus) -
+      summary.annualAdditionalWageEmployeeCpf) /
+    12;
 
   const monthlyBonusTotalCpf =
-    (annualBonusEmployeeCpf + annualBonusEmployerCpf) / 12;
+    (summary.annualAdditionalWageEmployeeCpf +
+      summary.annualAdditionalWageEmployerCpf) /
+    12;
 
   return {
-    monthlyTakeHomeIncome:
-      monthlyEmploymentIncome - ordinaryWageEmployeeCpf + otherMonthlyIncome,
+    monthlyTakeHomeIncome: summary.isSelfEmployed
+      ? summary.monthlyTakeHomeIncome
+      : getNonNegativeNumber(monthlyEmploymentIncome) -
+        summary.monthlyEmployeeCpf +
+        getNonNegativeNumber(otherMonthlyIncome),
 
-    monthlyBonusAfterCpf,
+    monthlyBonusAfterCpf: summary.isSelfEmployed ? 0 : monthlyBonusAfterCpf,
 
     monthlyTotalCpfContribution:
-      ordinaryWageEmployeeCpf + ordinaryWageEmployerCpf,
+      summary.monthlyEmployeeCpf + summary.monthlyEmployerCpf,
 
-    monthlyBonusTotalCpf,
+    monthlyBonusTotalCpf: summary.isSelfEmployed ? 0 : monthlyBonusTotalCpf,
+
+    monthlySepMedisaveContribution: summary.monthlySepMedisaveContribution,
   };
 }
 

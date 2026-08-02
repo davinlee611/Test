@@ -8,17 +8,10 @@ import {
 
 import { CPF_ORDINARY_WAGE_CEILING } from "../../services/cpf-service.js";
 
-/* ========================================
-   FULL DISPLAY UPDATE
-======================================== */
-
 export function renderAssetsIncomeDisplay({
   elements,
-
   summary,
-
   employmentStatus,
-
   age,
 }) {
   if (elements.totalLiquidAssetsElement) {
@@ -42,23 +35,73 @@ export function renderAssetsIncomeDisplay({
   });
 }
 
-/* ========================================
-   INCOME SUMMARY
-======================================== */
+function renderIncomeSummary({ elements, summary, employmentStatus, age }) {
+  const isSelfEmployed = employmentStatus === "self_employed";
 
-function renderIncomeSummary({
-  elements,
+  setText(
+    elements.incomeDescriptionElement,
 
-  summary,
+    isSelfEmployed
+      ? "Enter the client's annual net trade income and other income."
+      : "Enter the client's monthly gross salary, annual bonus and other monthly income.",
+  );
 
-  employmentStatus,
+  setText(
+    elements.annualIncomeSummaryLabel,
 
-  age,
-}) {
+    isSelfEmployed
+      ? "Annual Net Trade Income"
+      : "Annual Gross Employment Income",
+  );
+
+  setText(
+    elements.annualIncomeSummaryNote,
+
+    isSelfEmployed
+      ? "Amount assessed by IRAS before mandatory MediSave"
+      : "Including annual bonus",
+  );
+
+  setText(
+    elements.contributionSummaryLabel,
+
+    isSelfEmployed
+      ? "Monthly Planning MediSave Contribution"
+      : "Monthly Employee CPF Contribution",
+  );
+
+  setText(
+    elements.annualTakeHomeSummaryNote,
+
+    isSelfEmployed
+      ? "After mandatory MediSave and including other income"
+      : "Including annual bonus and other income",
+  );
+
+  setText(
+    elements.contributionDetailsLabel,
+
+    isSelfEmployed ? "MediSave Contribution Details" : "CPF Details",
+  );
+
+  if (elements.annualSepMedisaveSummaryRow) {
+    elements.annualSepMedisaveSummaryRow.hidden = !isSelfEmployed;
+  }
+
+  setAmountDisplay({
+    element: elements.annualSepMedisaveContributionElement,
+
+    value: summary.annualSepMedisaveContribution,
+
+    deduction: true,
+  });
+
   setAmountDisplay({
     element: elements.employeeCpfContributionElement,
 
-    value: summary.monthlyEmployeeCpf,
+    value: isSelfEmployed
+      ? summary.monthlySepMedisaveContribution
+      : summary.monthlyEmployeeCpf,
 
     deduction: true,
 
@@ -76,7 +119,9 @@ function renderIncomeSummary({
   setAmountDisplay({
     element: elements.annualEmploymentIncomeElement,
 
-    value: summary.annualEmploymentIncome,
+    value: isSelfEmployed
+      ? summary.annualNetTradeIncome
+      : summary.annualEmploymentIncome,
   });
 
   setAmountDisplay({
@@ -85,56 +130,58 @@ function renderIncomeSummary({
     value: summary.annualTakeHomeIncome,
   });
 
-  renderCpfSummaryNote({
+  renderContributionSummaryNote({
     elements,
-
     summary,
-
     employmentStatus,
-
     age,
   });
 
-  renderCpfDetails({
+  renderContributionDetails({
     elements,
-
     summary,
+    isSelfEmployed,
   });
 }
 
-/* ========================================
-   CPF SUMMARY NOTE
-======================================== */
-
-function renderCpfSummaryNote({
+function renderContributionSummaryNote({
   elements,
-
   summary,
-
   employmentStatus,
-
   age,
 }) {
   if (elements.employeeCpfContributionNote) {
-    elements.employeeCpfContributionNote.textContent = summary.cpfApplies
-      ? [
-          "Employee contribution: ",
+    if (summary.isSelfEmployed) {
+      elements.employeeCpfContributionNote.textContent = summary.sepMedisave
+        .usesOverride
+        ? "Using the CPF Board assessed annual amount entered below"
+        : `Estimated using ${summary.sepMedisave.rateYear} non-pensioner SEP rates`;
+    } else if (summary.cpfApplies) {
+      elements.employeeCpfContributionNote.textContent = [
+        "Employee contribution: ",
 
-          formatPercentage(summary.employeeCpfRate),
+        formatPercentage(summary.employeeCpfRate),
 
-          " (Ordinary Wage Ceiling: ",
+        " (Ordinary Wage Ceiling: ",
 
-          formatCurrency(CPF_ORDINARY_WAGE_CEILING),
+        formatCurrency(CPF_ORDINARY_WAGE_CEILING),
 
-          "/month)",
-        ].join("")
-      : getCpfSummaryNote(employmentStatus, age, summary);
+        "/month)",
+      ].join("");
+    } else {
+      elements.employeeCpfContributionNote.textContent = getCpfSummaryNote(
+        employmentStatus,
+        age,
+        summary,
+      );
+    }
   }
 
   if (elements.cpfNotApplicableMessage) {
-    elements.cpfNotApplicableMessage.hidden = summary.cpfApplies;
+    elements.cpfNotApplicableMessage.hidden =
+      summary.cpfApplies || summary.isSelfEmployed;
 
-    if (!summary.cpfApplies) {
+    if (!summary.cpfApplies && !summary.isSelfEmployed) {
       elements.cpfNotApplicableMessage.textContent = getCpfNotApplicableMessage(
         employmentStatus,
         age,
@@ -143,20 +190,70 @@ function renderCpfSummaryNote({
   }
 }
 
-/* ========================================
-   CPF DETAILS
-======================================== */
-
-function renderCpfDetails({
-  elements,
-
-  summary,
-}) {
-  if (elements.employeeCpfRateElement) {
-    elements.employeeCpfRateElement.textContent = formatPercentage(
-      summary.employeeCpfRate,
-    );
+function renderContributionDetails({ elements, summary, isSelfEmployed }) {
+  if (elements.employeeCpfDetailsRows) {
+    elements.employeeCpfDetailsRows.hidden = isSelfEmployed;
   }
+
+  if (elements.selfEmployedMedisaveDetailsRows) {
+    elements.selfEmployedMedisaveDetailsRows.hidden = !isSelfEmployed;
+  }
+
+  if (isSelfEmployed) {
+    renderSelfEmployedDetails({
+      elements,
+      summary,
+    });
+
+    return;
+  }
+
+  renderEmployeeCpfDetails({
+    elements,
+    summary,
+  });
+}
+
+function renderSelfEmployedDetails({ elements, summary }) {
+  const sep = summary.sepMedisave;
+
+  setText(elements.sepRateYearElement, String(sep.rateYear));
+
+  setText(
+    elements.sepAgeAtStartOfYearElement,
+
+    sep.isAgeAvailable
+      ? String(sep.ageAtStartOfWorkYear)
+      : "Enter date of birth",
+  );
+
+  setCurrency(elements.sepApplicableNtiElement, sep.applicableNti);
+
+  setCurrency(
+    elements.sepPlatformEarningsExcludedElement,
+
+    sep.excludedPlatformEarnings,
+  );
+
+  setText(
+    elements.sepEffectiveRateElement,
+
+    formatPercentage(sep.effectiveRate),
+  );
+
+  setCurrency(
+    elements.sepCalculatedAnnualMedisaveElement,
+
+    sep.calculatedAnnualContribution,
+  );
+}
+
+function renderEmployeeCpfDetails({ elements, summary }) {
+  setText(
+    elements.employeeCpfRateElement,
+
+    formatPercentage(summary.employeeCpfRate),
+  );
 
   setCpfDetailValue({
     element: elements.ordinaryWageCeilingElement,
@@ -182,34 +279,24 @@ function renderCpfDetails({
     period: "per month",
   });
 
-  if (elements.additionalWageCeilingElement) {
-    elements.additionalWageCeilingElement.textContent = formatCurrency(
-      summary.additionalWageCeiling,
-    );
-  }
+  setCurrency(
+    elements.additionalWageCeilingElement,
 
-  if (elements.bonusSubjectToCpfElement) {
-    elements.bonusSubjectToCpfElement.textContent = formatCurrency(
-      summary.cpfAdditionalWage,
-    );
-  }
+    summary.additionalWageCeiling,
+  );
 
-  if (elements.bonusNotSubjectToCpfElement) {
-    elements.bonusNotSubjectToCpfElement.textContent = formatCurrency(
-      summary.bonusNotSubjectToCpf,
-    );
-  }
+  setCurrency(
+    elements.bonusSubjectToCpfElement,
 
-  if (elements.cpfOnAdditionalWagesElement) {
-    elements.cpfOnAdditionalWagesElement.textContent = formatCurrency(
-      summary.annualAdditionalWageEmployeeCpf,
-    );
-  }
+    summary.cpfAdditionalWage,
+  );
+
+  setCurrency(
+    elements.bonusNotSubjectToCpfElement,
+
+    summary.bonusNotSubjectToCpf,
+  );
 }
-
-/* ========================================
-   CPF MESSAGES
-======================================== */
 
 function getCpfSummaryNote(employmentStatus, age, summary) {
   if (!employmentStatus) {
@@ -239,16 +326,6 @@ function getCpfNotApplicableMessage(employmentStatus, age) {
     );
   }
 
-  if (employmentStatus === "self_employed") {
-    return (
-      "Employee CPF is not applied to " +
-      "self-employed income. " +
-      "Self-employed MediSave " +
-      "obligations are not included " +
-      "in this calculation."
-    );
-  }
-
   if (employmentStatus === "full_time_employed" && age === null) {
     return (
       "Enter the client's date of birth " +
@@ -260,19 +337,7 @@ function getCpfNotApplicableMessage(employmentStatus, age) {
   return "Employee CPF is not applied to " + "this employment status.";
 }
 
-/* ========================================
-   AMOUNT DISPLAY
-======================================== */
-
-function setAmountDisplay({
-  element,
-
-  value,
-
-  deduction = false,
-
-  period = "",
-}) {
+function setAmountDisplay({ element, value, deduction = false, period = "" }) {
   if (!element) {
     return;
   }
@@ -288,13 +353,7 @@ function setAmountDisplay({
   appendPeriod(element, period);
 }
 
-function setCpfDetailValue({
-  element,
-
-  value,
-
-  period = "",
-}) {
+function setCpfDetailValue({ element, value, period = "" }) {
   if (!element) {
     return;
   }
@@ -318,4 +377,14 @@ function appendPeriod(element, period) {
   periodElement.textContent = period;
 
   element.appendChild(periodElement);
+}
+
+function setText(element, value) {
+  if (element) {
+    element.textContent = value;
+  }
+}
+
+function setCurrency(element, value) {
+  setText(element, formatCurrency(value));
 }

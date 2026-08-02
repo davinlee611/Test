@@ -54,7 +54,17 @@ export function createEmptyClientPlan() {
 
         income: {
           monthlyEmployment: 0,
+
           annualBonus: 0,
+
+          annualNetTradeIncome: 0,
+
+          netPlatformEarnings: 0,
+
+          sepMedisaveOverrideEnabled: false,
+
+          sepMedisaveOverrideAmount: 0,
+
           otherMonthly: 0,
         },
 

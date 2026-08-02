@@ -56,12 +56,27 @@ export function createAssetsIncomeController({
      PROFILE CHANGES
   ======================================== */
 
-  function handleProfileChanged() {
+  function handleProfileChanged({
+    previousEmploymentStatus = "",
+    profile = {},
+  } = {}) {
+    const employmentStatusChanged =
+      previousEmploymentStatus &&
+      previousEmploymentStatus !== profile.employmentStatus;
+
+    if (employmentStatusChanged) {
+      workflow.clearEmploymentSpecificIncome();
+    }
+
     applyCpfAccountRules();
 
     syncInputs();
 
     render();
+
+    if (employmentStatusChanged) {
+      emitFinancialEvents();
+    }
   }
 
   /* ========================================
@@ -133,6 +148,11 @@ export function createAssetsIncomeController({
       employmentStatus: profile.employmentStatus,
 
       age,
+
+      ageAtStartOfWorkYear: getAgeAtStartOfYear(
+        profile.dateOfBirth,
+        new Date().getFullYear(),
+      ),
     });
 
     renderAssetsIncomeDisplay({
@@ -144,6 +164,38 @@ export function createAssetsIncomeController({
 
       age,
     });
+
+    updateIncomeFieldVisibility({
+      employmentStatus: profile.employmentStatus,
+
+      income: assets.income,
+    });
+  }
+
+  function updateIncomeFieldVisibility({
+    employmentStatus,
+
+    income = {},
+  }) {
+    const isSelfEmployed = employmentStatus === "self_employed";
+
+    if (elements.employeeIncomeFields) {
+      elements.employeeIncomeFields.hidden = isSelfEmployed;
+    }
+
+    if (elements.selfEmployedIncomeFields) {
+      elements.selfEmployedIncomeFields.hidden = !isSelfEmployed;
+    }
+
+    const usesOverride = Boolean(income.sepMedisaveOverrideEnabled);
+
+    if (elements.sepMedisaveOverrideAmountGroup) {
+      elements.sepMedisaveOverrideAmountGroup.hidden = !usesOverride;
+    }
+
+    if (elements.sepMedisaveOverrideAmountInput) {
+      elements.sepMedisaveOverrideAmountInput.disabled = !usesOverride;
+    }
   }
 
   /* ========================================
@@ -217,4 +269,14 @@ export function createAssetsIncomeController({
 
     reset,
   };
+}
+
+function getAgeAtStartOfYear(dateOfBirth, year) {
+  if (!dateOfBirth) {
+    return null;
+  }
+
+  const birthYear = Number(String(dateOfBirth).split("-")[0]);
+
+  return Number.isFinite(birthYear) ? year - birthYear : null;
 }

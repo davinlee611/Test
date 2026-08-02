@@ -332,6 +332,17 @@
   gap: 16px;
 }
 
+.income-common-fields {
+  margin-top: 16px;
+}
+
+.financial-input-list[hidden],
+.cpf-details-rows[hidden],
+.income-summary-row[hidden],
+.sep-medisave-override-amount[hidden] {
+  display: none;
+}
+
 .financial-input-row {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(220px, 320px);
@@ -531,6 +542,56 @@
   color: var(--text-primary);
   font-size: 14px;
   text-align: right;
+}
+
+.sep-medisave-override-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid #eef2f7;
+  cursor: pointer;
+}
+
+.sep-medisave-override-toggle > span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sep-medisave-override-toggle strong {
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.sep-medisave-override-toggle small {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.sep-medisave-override-toggle input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-color);
+}
+
+.sep-medisave-override-amount {
+  display: grid;
+  grid-template-columns:
+    minmax(180px, 1fr)
+    minmax(220px, 320px);
+  align-items: center;
+  gap: 24px;
+  padding-top: 16px;
+}
+
+.sep-medisave-override-amount > label {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .cpf-not-applicable-message {
@@ -3162,6 +3223,11 @@ button.insurance-validation-count:disabled {
     grid-template-columns: 1fr;
     gap: 8px;
   }
+
+  .sep-medisave-override-amount {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
 
   .financial-input-grid {
     grid-template-columns: 1fr;

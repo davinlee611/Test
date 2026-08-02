@@ -19,7 +19,17 @@ function createEmptyLiquidAssets() {
 function createEmptyIncome() {
   return {
     monthlyEmployment: 0,
+
     annualBonus: 0,
+
+    annualNetTradeIncome: 0,
+
+    netPlatformEarnings: 0,
+
+    sepMedisaveOverrideEnabled: false,
+
+    sepMedisaveOverrideAmount: 0,
+
     otherMonthly: 0,
   };
 }
@@ -107,6 +117,32 @@ export function createAssetsIncomeWorkflow() {
   }
 
   /* ========================================
+   EMPLOYMENT STATUS CHANGE
+  ======================================== */
+
+  function clearEmploymentSpecificIncome() {
+    const currentAssets = getAssets();
+
+    return updateAssets({
+      ...currentAssets,
+
+      income: {
+        ...createEmptyIncome(),
+
+        /*
+         * Other Monthly Income is not tied to
+         * employment status, so preserve it.
+         */
+        otherMonthly: Number(currentAssets.income?.otherMonthly) || 0,
+      },
+
+      properties: Array.isArray(currentAssets.properties)
+        ? [...currentAssets.properties]
+        : [],
+    });
+  }
+
+  /* ========================================
      RESET
   ======================================== */
 
@@ -134,6 +170,8 @@ export function createAssetsIncomeWorkflow() {
     save,
 
     applyCpfAccountRules,
+
+    clearEmploymentSpecificIncome,
 
     reset,
   };
