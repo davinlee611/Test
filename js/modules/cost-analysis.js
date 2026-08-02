@@ -936,6 +936,14 @@ function calculateProjection({
       completedYears,
     );
 
+    const hasReachedFybc = hasReachedTargetAgeMonth({
+      dateOfBirth: profile.dateOfBirth,
+
+      projectionDate,
+
+      targetAge: desiredFybcAge,
+    });
+
     const projectedEmploymentIncome = hasReachedFybc
       ? 0
       : currentCashflow.employmentIncome * salaryGrowthFactor;
@@ -948,14 +956,6 @@ function calculateProjection({
       currentCashflow.annualNetTradeIncome * salaryGrowthFactor;
 
     const age = calculateAgeOnDate(profile.dateOfBirth, projectionDate);
-
-    const hasReachedFybc = hasReachedTargetAgeMonth({
-      dateOfBirth: profile.dateOfBirth,
-
-      projectionDate,
-
-      targetAge: desiredFybcAge,
-    });
 
     const displayedAge = calculateAgeAtEndOfMonth(
       profile.dateOfBirth,
