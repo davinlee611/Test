@@ -1120,6 +1120,16 @@ function calculateProjection({
 
       oaOutflow,
 
+      /*
+       * There are currently no routine withdrawals
+       * from SA or RA. These fields are retained so
+       * the combined outflow column can support them
+       * later without another table redesign.
+       */
+      saOutflow: 0,
+
+      raOutflow: 0,
+
       maInsuranceOutflow,
 
       netCpf:
@@ -1269,6 +1279,10 @@ function aggregateProjectionIntoAnnualRows(monthlyRows) {
       ),
 
       oaOutflow: sumProjectionValues(periodRows, "oaOutflow"),
+
+      saOutflow: sumProjectionValues(periodRows, "saOutflow"),
+
+      raOutflow: sumProjectionValues(periodRows, "raOutflow"),
 
       maInsuranceOutflow: sumProjectionValues(periodRows, "maInsuranceOutflow"),
 
@@ -1488,9 +1502,7 @@ function renderCpfProjectionTable({
 
       createCurrencyCell(row.cpfInflow),
 
-      createCurrencyCell(-row.oaOutflow, true),
-
-      createCurrencyCell(-row.maInsuranceOutflow, true),
+      createCpfOutflowCell(row),
 
       createCurrencyCell(row.cpfInterestCredited, true),
 
@@ -1540,6 +1552,68 @@ function createCurrencyCell(value, showStatus = false) {
     cell.classList.toggle("is-positive", value > 0);
     cell.classList.toggle("is-negative", value < 0);
   }
+
+  return cell;
+}
+
+function createCpfOutflowCell(row) {
+  const cell = document.createElement("td");
+
+  cell.className = "analysis-cpf-outflow-cell";
+
+  const outflows = [
+    {
+      account: "OA",
+      amount: getNonNegativeNumber(row.oaOutflow),
+    },
+
+    {
+      account: "SA",
+      amount: getNonNegativeNumber(row.saOutflow),
+    },
+
+    {
+      account: "RA",
+      amount: getNonNegativeNumber(row.raOutflow),
+    },
+
+    {
+      account: "MA",
+      amount: getNonNegativeNumber(row.maInsuranceOutflow),
+    },
+  ].filter(function (outflow) {
+    return outflow.amount > 0;
+  });
+
+  if (outflows.length === 0) {
+    cell.textContent = "—";
+
+    return cell;
+  }
+
+  const list = document.createElement("div");
+
+  list.className = "analysis-cpf-outflow-list";
+
+  outflows.forEach(function ({ account, amount }) {
+    const item = document.createElement("div");
+
+    item.className = "analysis-cpf-outflow-item";
+
+    const accountLabel = document.createElement("span");
+
+    accountLabel.textContent = account;
+
+    const amountElement = document.createElement("strong");
+
+    amountElement.textContent = `-${formatCurrency(amount)}`;
+
+    item.append(accountLabel, amountElement);
+
+    list.append(item);
+  });
+
+  cell.append(list);
 
   return cell;
 }

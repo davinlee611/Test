@@ -594,6 +594,15 @@
   font-weight: 600;
 }
 
+.sep-medisave-override-helper {
+  grid-column: 1 / -1;
+  margin: -12px 0 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
 .cpf-not-applicable-message {
   margin-top: 18px;
   padding: 14px 16px;
@@ -4827,6 +4836,40 @@ button.insurance-validation-count:disabled {
   line-height: 1;
 }
 
+.analysis-cpf-outflow-cell {
+  min-width: 118px;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+.analysis-cpf-outflow-list {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 96px;
+}
+
+.analysis-cpf-outflow-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.analysis-cpf-outflow-item span {
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.analysis-cpf-outflow-item strong {
+  color: var(--danger-color);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
 @media (max-width: 700px) {
   .analysis-cpf-assumption-grid {
     grid-template-columns: 1fr;
@@ -5052,7 +5095,7 @@ button.insurance-validation-count:disabled {
 }
 
 .analysis-projection-table--cpf {
-  min-width: 1100px;
+  min-width: 960px;
 }
 
 .analysis-projection-table th,
