@@ -277,7 +277,7 @@ export function seedPolicies() {
        * base Hospitalisation plan premium.
        */
       premium: {
-        amount: 3400,
+        amount: 3700,
 
         frequency: "annual",
       },
