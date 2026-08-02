@@ -18,6 +18,7 @@ import {
 import { calculateLiquidAssetTotal } from "./assets-income/assets-income-calculator.js";
 
 import {
+  getInflationRate,
   getPlannedMortalityAge,
   getProjectedCohortFrs,
   getRetirementGoalSummary,
@@ -41,6 +42,8 @@ import {
   getProjectedCohortBasicHealthcareSum,
 } from "../services/cpf-healthcare-service.js";
 
+import { calculateMonthlyCpfInterest } from "../services/cpf-interest-calculator.js";
+
 /* ========================================
    CONFIGURATION
 ======================================== */
@@ -56,6 +59,10 @@ const DEFAULT_EMPLOYMENT_INCREMENT = 2;
 
 const employmentIncrementInput = document.getElementById(
   "analysisEmploymentIncrementInput",
+);
+
+const expenseInflationInput = document.getElementById(
+  "analysisExpenseInflationInput",
 );
 
 const projectionPeriodInputs = Array.from(
@@ -152,6 +159,8 @@ const remainingSurplusElement = document.getElementById(
 
 let moduleInitialized = false;
 
+let expenseInflationWasOverridden = false;
+
 const excludedProjectionGoalIds = new Set();
 
 export function initializeCostAnalysis() {
@@ -162,6 +171,16 @@ export function initializeCostAnalysis() {
 
   if (employmentIncrementInput) {
     employmentIncrementInput.addEventListener("input", renderCostAnalysis);
+  }
+
+  syncExpenseInflationDefault();
+
+  if (expenseInflationInput) {
+    expenseInflationInput.addEventListener("input", function () {
+      expenseInflationWasOverridden = true;
+
+      renderCostAnalysis();
+    });
   }
 
   projectionPeriodInputs.forEach(function (input) {
@@ -182,6 +201,10 @@ export function resetCostAnalysis() {
     employmentIncrementInput.value = DEFAULT_EMPLOYMENT_INCREMENT;
   }
 
+  expenseInflationWasOverridden = false;
+
+  syncExpenseInflationDefault();
+
   projectionPeriodInputs.forEach(function (input) {
     input.checked = input.value === DEFAULT_PROJECTION_PERIOD;
   });
@@ -191,12 +214,26 @@ export function resetCostAnalysis() {
   renderCostAnalysis();
 }
 
+function syncExpenseInflationDefault() {
+  if (!expenseInflationInput) {
+    return;
+  }
+
+  expenseInflationInput.value = String(
+    getNonNegativeNumber(getInflationRate()),
+  );
+}
+
 /* ========================================
    MAIN RENDER
 ======================================== */
 
 export function renderCostAnalysis() {
   renderRetirementGoalSummary();
+
+  if (!expenseInflationWasOverridden) {
+    syncExpenseInflationDefault();
+  }
 
   const currentCashflow = calculateCurrentMonthlyCashflow();
 
@@ -231,6 +268,9 @@ export function renderCostAnalysis() {
 
     annualEmploymentIncrement:
       getNonNegativeNumber(employmentIncrementInput?.value) / 100,
+
+    annualExpenseInflation:
+      getNonNegativeNumber(expenseInflationInput?.value) / 100,
 
     projectionMonths,
 
@@ -632,6 +672,7 @@ function renderCpfPlanningAssumptions({ cohortFrs, projectedCohortBhs }) {
 function calculateProjection({
   currentCashflow,
   annualEmploymentIncrement,
+  annualExpenseInflation,
   projectionMonths,
   startingDate,
   cohortFrsAmount,
@@ -665,12 +706,22 @@ function calculateProjection({
    */
   let raHasBeenFormed = startingAge !== null && startingAge >= 55;
 
+  const pendingCpfInterest = {
+    oa: 0,
+    sa: 0,
+    ra: 0,
+    ma: 0,
+  };
+
   const rows = [];
 
   for (let monthIndex = 0; monthIndex < projectionMonths; monthIndex += 1) {
     const projectionDate = addMonths(startingDate, monthIndex);
 
-    const completedYears = Math.floor(monthIndex / 12);
+    const completedYears = Math.max(
+      projectionDate.getFullYear() - startingDate.getFullYear(),
+      0,
+    );
 
     const salaryGrowthFactor = Math.pow(
       1 + annualEmploymentIncrement,
@@ -693,7 +744,13 @@ function calculateProjection({
       age,
     });
 
-    const monthlyExpenses = currentCashflow.monthlyExpenses;
+    const expenseGrowthFactor = Math.pow(
+      1 + annualExpenseInflation,
+      completedYears,
+    );
+
+    const monthlyExpenses =
+      currentCashflow.monthlyExpenses * expenseGrowthFactor;
 
     const activeCashCommitments = calculateActiveMonthlyCashCommitments(
       liabilities,
@@ -769,6 +826,15 @@ function calculateProjection({
       oaBalance += saBalance;
       saBalance = 0;
 
+      /*
+       * Interest accrued for SA before age 55
+       * follows the retirement balance after
+       * SA closes.
+       */
+      pendingCpfInterest.ra += pendingCpfInterest.sa;
+
+      pendingCpfInterest.sa = 0;
+
       raHasBeenFormed = true;
     }
 
@@ -836,6 +902,93 @@ function calculateProjection({
 
     maBalance = Math.max(0, availableMaBalance - maInsuranceOutflow);
 
+    const monthlyCpfInterest = calculateMonthlyCpfInterest({
+      age,
+
+      oaBalance,
+      saBalance,
+      raBalance,
+      maBalance,
+    });
+
+    pendingCpfInterest.oa += monthlyCpfInterest.creditedInterest.oa;
+
+    pendingCpfInterest.sa += monthlyCpfInterest.creditedInterest.sa;
+
+    pendingCpfInterest.ra += monthlyCpfInterest.creditedInterest.ra;
+
+    pendingCpfInterest.ma += monthlyCpfInterest.creditedInterest.ma;
+
+    let cpfInterestCredited = 0;
+
+    /*
+     * CPF interest is accumulated monthly and
+     * credited in December.
+     */
+    if (projectionDate.getMonth() === 11) {
+      oaBalance += pendingCpfInterest.oa;
+
+      saBalance += pendingCpfInterest.sa;
+
+      raBalance += pendingCpfInterest.ra;
+
+      /*
+       * MA interest is credited only up to the
+       * applicable BHS. Excess follows the same
+       * BHS overflow routing used by contributions.
+       */
+      const maInterestCapacity = Math.max(bhsAmount - maBalance, 0);
+
+      const maInterestCredited = Math.min(
+        pendingCpfInterest.ma,
+        maInterestCapacity,
+      );
+
+      const maInterestOverflow = Math.max(
+        pendingCpfInterest.ma - maInterestCredited,
+        0,
+      );
+
+      maBalance += maInterestCredited;
+
+      if (maInterestOverflow > 0) {
+        if (!hasReachedAge55) {
+          const remainingSaCapacity = Math.max(cohortFrsAmount - saBalance, 0);
+
+          const overflowToSa = Math.min(
+            maInterestOverflow,
+            remainingSaCapacity,
+          );
+
+          saBalance += overflowToSa;
+
+          oaBalance += maInterestOverflow - overflowToSa;
+        } else {
+          const remainingRaCapacity = Math.max(cohortFrsAmount - raBalance, 0);
+
+          const overflowToRa = Math.min(
+            maInterestOverflow,
+            remainingRaCapacity,
+          );
+
+          raBalance += overflowToRa;
+
+          oaBalance += maInterestOverflow - overflowToRa;
+        }
+      }
+
+      cpfInterestCredited =
+        pendingCpfInterest.oa +
+        pendingCpfInterest.sa +
+        pendingCpfInterest.ra +
+        pendingCpfInterest.ma;
+
+      pendingCpfInterest.oa = 0;
+      pendingCpfInterest.sa = 0;
+      pendingCpfInterest.ra = 0;
+      pendingCpfInterest.ma = 0;
+    }
+
     const retirementAccount = hasReachedAge55 ? "ra" : "sa";
 
     const displayedRetirementBalance =
@@ -850,10 +1003,15 @@ function calculateProjection({
       endWithdrawableBalance: withdrawableBalance,
 
       cpfInflow: totalCpfInflow,
+
+      cpfInterestCredited,
+
       oaOutflow,
+
       maInsuranceOutflow,
 
-      netCpf: totalCpfInflow - oaOutflow - maInsuranceOutflow,
+      netCpf:
+        totalCpfInflow + cpfInterestCredited - oaOutflow - maInsuranceOutflow,
 
       oaBalance,
 
@@ -992,6 +1150,11 @@ function aggregateProjectionIntoAnnualRows(monthlyRows) {
       endWithdrawableBalance: lastRow.endWithdrawableBalance,
 
       cpfInflow: sumProjectionValues(periodRows, "cpfInflow"),
+
+      cpfInterestCredited: sumProjectionValues(
+        periodRows,
+        "cpfInterestCredited",
+      ),
 
       oaOutflow: sumProjectionValues(periodRows, "oaOutflow"),
 
@@ -1214,6 +1377,8 @@ function renderCpfProjectionTable({
       createCurrencyCell(-row.oaOutflow, true),
 
       createCurrencyCell(-row.maInsuranceOutflow, true),
+
+      createCurrencyCell(row.cpfInterestCredited, true),
 
       createCurrencyCell(row.netCpf, true),
 

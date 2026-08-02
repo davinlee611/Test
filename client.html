@@ -2375,22 +2375,45 @@
                     </p>
                   </div>
 
-                  <label class="analysis-assumption-field">
-                    <span>Annual Employment &amp; Bonus Increment</span>
+                  <div class="analysis-assumption-stack">
+                    <label class="analysis-assumption-field">
+                      <span> Annual Employment &amp; Bonus Increment </span>
 
-                    <div class="analysis-percentage-input">
-                      <input
-                        id="analysisEmploymentIncrementInput"
-                        type="number"
-                        min="0"
-                        max="20"
-                        step="0.1"
-                        value="2"
-                      />
+                      <div class="analysis-percentage-input">
+                        <input
+                          id="analysisEmploymentIncrementInput"
+                          type="number"
+                          min="0"
+                          max="20"
+                          step="0.1"
+                          value="2"
+                        />
 
-                      <span>%</span>
-                    </div>
-                  </label>
+                        <span>%</span>
+                      </div>
+                    </label>
+
+                    <label class="analysis-assumption-field">
+                      <span>Annual Expense Inflation</span>
+
+                      <div class="analysis-percentage-input">
+                        <input
+                          id="analysisExpenseInflationInput"
+                          type="number"
+                          min="0"
+                          max="20"
+                          step="0.1"
+                        />
+
+                        <span>%</span>
+                      </div>
+
+                      <small class="analysis-assumption-helper">
+                        Defaults to the Cost of Wants inflation rate. Changes
+                        here affect only this projection.
+                      </small>
+                    </label>
+                  </div>
                 </div>
 
                 <div class="analysis-cashflow-table-wrap">
@@ -2688,6 +2711,7 @@
                         <th>CPF Inflow</th>
                         <th>OA Outflow</th>
                         <th>MA Insurance Outflow</th>
+                        <th>CPF Interest Credited</th>
                         <th>Net CPF Flow</th>
                         <th>OA Balance</th>
                         <th>Retirement Balance</th>
