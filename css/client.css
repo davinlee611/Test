@@ -2054,7 +2054,7 @@ button.insurance-validation-count:disabled {
   flex: 0 0 42px;
   width: 42px;
   height: 24px;
-  margin: 0;
+  margin: 8px;
   cursor: pointer;
 }
 
