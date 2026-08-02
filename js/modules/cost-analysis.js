@@ -16,6 +16,7 @@ import { calculateLiquidAssetTotal } from "./assets-income/assets-income-calcula
 
 import {
   getCpfLifePayoutStartAge,
+  getDesiredFybcAge,
   getInflationRate,
   getPlannedMortalityAge,
   getProjectedCohortFrs,
@@ -863,6 +864,8 @@ function calculateProjection({
 
   const profile = getClientProfile();
 
+  const desiredFybcAge = getDesiredFybcAge();
+
   const goals = getGoals();
 
   const liabilities = getLiabilities();
@@ -933,16 +936,26 @@ function calculateProjection({
       completedYears,
     );
 
-    const projectedEmploymentIncome =
-      currentCashflow.employmentIncome * salaryGrowthFactor;
+    const projectedEmploymentIncome = hasReachedFybc
+      ? 0
+      : currentCashflow.employmentIncome * salaryGrowthFactor;
 
-    const projectedAnnualBonus =
-      currentCashflow.annualBonus * salaryGrowthFactor;
+    const projectedAnnualBonus = hasReachedFybc
+      ? 0
+      : currentCashflow.annualBonus * salaryGrowthFactor;
 
     const projectedAnnualNetTradeIncome =
       currentCashflow.annualNetTradeIncome * salaryGrowthFactor;
 
     const age = calculateAgeOnDate(profile.dateOfBirth, projectionDate);
+
+    const hasReachedFybc = hasReachedTargetAgeMonth({
+      dateOfBirth: profile.dateOfBirth,
+
+      projectionDate,
+
+      targetAge: desiredFybcAge,
+    });
 
     const displayedAge = calculateAgeAtEndOfMonth(
       profile.dateOfBirth,
@@ -1088,9 +1101,7 @@ function calculateProjection({
       );
 
       frsMetAt55 =
-        isAge55TransitionMonth &&
-        cohortFrsAmount > 0 &&
-        retirementSumSetAside >= cohortFrsAmount - 0.5;
+        cohortFrsAmount > 0 && retirementSumSetAside >= cohortFrsAmount - 0.5;
     }
     
     let cpfLifePremiumOutflow = 0;
@@ -2209,6 +2220,31 @@ function formatMonthYear(date) {
     month: "short",
     year: "numeric",
   }).format(date);
+}
+
+function hasReachedTargetAgeMonth({ dateOfBirth, projectionDate, targetAge }) {
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth || "") ||
+    !Number.isFinite(targetAge)
+  ) {
+    return false;
+  }
+
+  const birthYear = Number(dateOfBirth.slice(0, 4));
+
+  const birthMonth = Number(dateOfBirth.slice(5, 7)) - 1;
+
+  const targetYear = birthYear + targetAge;
+
+  if (projectionDate.getFullYear() > targetYear) {
+    return true;
+  }
+
+  if (projectionDate.getFullYear() < targetYear) {
+    return false;
+  }
+
+  return projectionDate.getMonth() >= birthMonth;
 }
 
 /* ========================================
