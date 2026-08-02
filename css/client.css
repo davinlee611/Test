@@ -4943,6 +4943,31 @@ button.insurance-validation-count:disabled {
   line-height: 1;
 }
 
+.analysis-cashflow-period-cell > span {
+  display: block;
+}
+
+.analysis-fybc-marker {
+  display: inline-flex;
+  width: fit-content;
+  padding: 3px 7px;
+  margin-top: 5px;
+  align-items: center;
+  gap: 4px;
+
+  color: var(--primary-color);
+  background: var(--primary-soft);
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.analysis-fybc-marker i {
+  font-size: 8px;
+}
+
 .analysis-cpf-outflow-cell {
   min-width: 118px;
   padding-top: 8px !important;

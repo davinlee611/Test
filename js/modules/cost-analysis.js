@@ -970,6 +970,14 @@ function calculateProjection({
       targetAge: 55,
     });
 
+    const fybcReachedThisMonth = isTargetAgeMonth({
+      dateOfBirth: profile.dateOfBirth,
+
+      projectionDate,
+
+      targetAge: desiredFybcAge,
+    });
+
     const projectedIncome = calculateProjectedIncome({
       monthlyEmploymentIncome: projectedEmploymentIncome,
 
@@ -1344,6 +1352,8 @@ function calculateProjection({
 
       age: displayedAge,
 
+      fybcReachedThisMonth,
+
       frsMetAt55,
 
       startWithdrawableBalance,
@@ -1542,6 +1552,10 @@ function aggregateProjectionIntoAnnualRows(monthlyRows) {
 
       isCurrentPartialYear: calendarYear === currentYear,
 
+      fybcReachedThisMonth: periodRows.some(function (row) {
+        return row.fybcReachedThisMonth;
+      }),
+
       startWithdrawableBalance: firstRow.startWithdrawableBalance,
 
       netCashflow: sumProjectionValues(periodRows, "netCashflow"),
@@ -1739,28 +1753,15 @@ function renderCashflowProjectionTable({
     }
 
     tableRow.append(
-      createTextCell(
-        getProjectionRowLabel(
-          row,
-          usesAnnualRows,
-        ),
-      ),
+      createCashflowPeriodCell(row, usesAnnualRows),
 
-      createCurrencyCell(
-        row.startWithdrawableBalance,
-      ),
+      createCurrencyCell(row.startWithdrawableBalance),
 
-      createCurrencyCell(
-        row.netCashflow,
-        true,
-      ),
+      createCurrencyCell(row.netCashflow, true),
 
       createGoalOutflowCell(row),
 
-      createCurrencyCell(
-        row.endWithdrawableBalance,
-        true,
-      ),
+      createCurrencyCell(row.endWithdrawableBalance, true),
     );
 
     fragment.append(tableRow);
@@ -1830,6 +1831,40 @@ function getProjectionRowLabel(row, usesAnnualRows) {
   }
 
   return `Year ${row.projectionYear} · ` + formatMonthYear(row.date) + ageLabel;
+}
+
+function createCashflowPeriodCell(row, usesAnnualRows) {
+  const cell = document.createElement("td");
+
+  cell.className = "analysis-cashflow-period-cell";
+
+  const period = document.createElement("span");
+
+  period.textContent = getProjectionRowLabel(row, usesAnnualRows);
+
+  cell.append(period);
+
+  if (row.fybcReachedThisMonth) {
+    const marker = document.createElement("small");
+
+    marker.className = "analysis-fybc-marker";
+
+    const icon = document.createElement("i");
+
+    icon.className = "fa-solid fa-flag";
+
+    icon.setAttribute("aria-hidden", "true");
+
+    const label = document.createElement("span");
+
+    label.textContent = "FYBC reached";
+
+    marker.append(icon, label);
+
+    cell.append(marker);
+  }
+
+  return cell;
 }
 
 function createTextCell(value) {
@@ -2245,6 +2280,24 @@ function hasReachedTargetAgeMonth({ dateOfBirth, projectionDate, targetAge }) {
   }
 
   return projectionDate.getMonth() >= birthMonth;
+}
+
+function isTargetAgeMonth({ dateOfBirth, projectionDate, targetAge }) {
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth || "") ||
+    !Number.isFinite(targetAge)
+  ) {
+    return false;
+  }
+
+  const birthYear = Number(dateOfBirth.slice(0, 4));
+
+  const birthMonth = Number(dateOfBirth.slice(5, 7)) - 1;
+
+  return (
+    projectionDate.getFullYear() === birthYear + targetAge &&
+    projectionDate.getMonth() === birthMonth
+  );
 }
 
 /* ========================================
