@@ -2031,7 +2031,8 @@ button.insurance-validation-count:disabled {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 38px;
+  width: 100%;
+  min-height: var(--input-height);
   padding: 0 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -2049,6 +2050,7 @@ button.insurance-validation-count:disabled {
 .hospitalisation-rider-switch {
   position: relative;
   display: inline-flex;
+  align-self: center;
   flex: 0 0 42px;
   width: 42px;
   height: 24px;
