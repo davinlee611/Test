@@ -2304,323 +2304,343 @@
             </div>
 
             <!-- Retirement Goal Summary -->
-            <section class="analysis-section-card">
-              <div class="analysis-section-heading">
-                <div>
-                  <span class="analysis-section-eyebrow">Cost of Wants</span>
-
-                  <h3>Retirement Goal Summary</h3>
-
-                  <p>
-                    A fixed summary of the retirement projection selected on the
-                    Cost of Wants page.
-                  </p>
-                </div>
-              </div>
-
-              <div class="analysis-goal-summary-grid">
-                <div class="analysis-summary-item">
-                  <span>Desired FYBC Age</span>
-                  <strong id="analysisDesiredFybcAge">—</strong>
-                </div>
-
-                <div class="analysis-summary-item">
-                  <span>Monthly Passive Income Needed</span>
-                  <strong id="analysisMonthlyIncomeNeeded">$0</strong>
-                </div>
-
-                <div class="analysis-summary-item">
-                  <span>Monthly Income Needed at 65</span>
-                  <strong id="analysisMonthlyIncomeAt65">$0</strong>
-                </div>
-
-                <div class="analysis-summary-item">
-                  <span>Estimated CPF LIFE Income</span>
-                  <strong id="analysisCpfLifeIncome">$0</strong>
-                </div>
-
-                <div class="analysis-summary-item">
-                  <span>Income Gap</span>
-                  <strong id="analysisIncomeGap">$0/mth</strong>
-                </div>
-
-                <div
-                  class="analysis-summary-item analysis-summary-item--primary"
-                >
-                  <span>Total Capital Needed</span>
-                  <strong id="analysisTotalCapitalNeeded">$0</strong>
-                </div>
-              </div>
-            </section>
-
-            <!-- Monthly Cashflow -->
-            <section class="analysis-section-card">
-              <div
-                class="analysis-section-heading analysis-section-heading--split"
-              >
-                <div>
-                  <span class="analysis-section-eyebrow">Current Position</span>
-
-                  <h3>Monthly Cashflow</h3>
-
-                  <p>
-                    Employment and bonus income are shown after the employee's
-                    CPF contribution.
-                  </p>
-                </div>
-
-                <label class="analysis-assumption-field">
-                  <span>Annual Employment Increment</span>
-
-                  <div class="analysis-percentage-input">
-                    <input
-                      id="analysisEmploymentIncrementInput"
-                      type="number"
-                      min="0"
-                      max="20"
-                      step="0.1"
-                      value="2"
-                    />
-
-                    <span>%</span>
-                  </div>
-                </label>
-              </div>
-
-              <div class="analysis-cashflow-table-wrap">
-                <table class="analysis-cashflow-table">
-                  <tbody>
-                    <tr>
-                      <th colspan="2">Income</th>
-                    </tr>
-
-                    <tr>
-                      <td>Employment Income After CPF</td>
-                      <td id="analysisEmploymentIncomeAfterCpf">$0</td>
-                    </tr>
-
-                    <tr>
-                      <td>Annual Bonus After CPF</td>
-                      <td id="analysisBonusIncomeAfterCpf">
-                        $0/year · $0/month
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>Other Monthly Income</td>
-                      <td id="analysisOtherMonthlyIncome">$0</td>
-                    </tr>
-
-                    <tr class="analysis-table-total">
-                      <td>Total Monthly Income</td>
-                      <td id="analysisTotalMonthlyIncome">$0</td>
-                    </tr>
-
-                    <tr>
-                      <th colspan="2">Outflows</th>
-                    </tr>
-
-                    <tr>
-                      <td>Expenses</td>
-                      <td id="analysisMonthlyExpenses">-$0</td>
-                    </tr>
-
-                    <tr>
-                      <td>Commitments</td>
-                      <td id="analysisMonthlyCommitments">-$0</td>
-                    </tr>
-
-                    <tr class="analysis-table-result">
-                      <td>Remaining Surplus</td>
-                      <td id="analysisRemainingSurplus">$0</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
-
-            <!-- Cashflow Projection -->
-            <section class="analysis-section-card">
-              <div
-                class="analysis-section-heading analysis-section-heading--split"
-              >
-                <div>
-                  <span
-                    id="analysisProjectionPeriodLabel"
-                    class="analysis-section-eyebrow"
-                  >
-                    10-Year Outlook · Monthly Rows
-                  </span>
-
-                  <h3>Monthly Cashflow Projection</h3>
-
-                  <p>
-                    Projects the client's withdrawable assets using income,
-                    expenses, cash-paid liabilities, insurance premiums, and
-                    planned goal withdrawals.
-                  </p>
-                </div>
-
-                <fieldset class="analysis-projection-period">
-                  <legend>Projection Period</legend>
-
-                  <div class="analysis-projection-period-options">
-                    <label>
-                      <input
-                        type="radio"
-                        name="analysisProjectionPeriod"
-                        value="10"
-                        checked
-                      />
-
-                      <span>10 Years</span>
-                    </label>
-
-                    <label>
-                      <input
-                        type="radio"
-                        name="analysisProjectionPeriod"
-                        value="20"
-                      />
-
-                      <span>20 Years</span>
-                    </label>
-
-                    <label>
-                      <input
-                        type="radio"
-                        name="analysisProjectionPeriod"
-                        value="30"
-                      />
-
-                      <span>30 Years</span>
-                    </label>
-
-                    <label>
-                      <input
-                        type="radio"
-                        name="analysisProjectionPeriod"
-                        value="40"
-                      />
-
-                      <span>40 Years</span>
-                    </label>
-
-                    <label>
-                      <input
-                        type="radio"
-                        name="analysisProjectionPeriod"
-                        value="mortality"
-                      />
-
-                      <span>Mortality Age</span>
-                    </label>
-                  </div>
-                </fieldset>
-              </div>
-
-              <div class="analysis-projection-note">
-                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-
-                <p>
-                  The 10-year projection shows monthly rows. Longer projections
-                  are summarised into 12-month annual periods. Expenses remain
-                  unchanged, salary increases annually, and liabilities stop
-                  after their recorded repayment end dates.
-                </p>
-              </div>
-
-              <div class="analysis-goal-filter">
-                <div class="analysis-goal-filter-heading">
+            <div class="analysis-section-surround">
+              <section class="analysis-section-card">
+                <div class="analysis-section-heading">
                   <div>
-                    <strong>Goals Included in Projection</strong>
+                    <span class="analysis-section-eyebrow">Cost of Wants</span>
+
+                    <h3>Retirement Goal Summary</h3>
 
                     <p>
-                      Select which current goals should be included as
-                      big-ticket cash outflows.
+                      A fixed summary of the retirement projection selected on
+                      the Cost of Wants page.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="analysis-goal-summary-grid">
+                  <div class="analysis-summary-item">
+                    <span>Desired FYBC Age</span>
+                    <strong id="analysisDesiredFybcAge">—</strong>
+                  </div>
+
+                  <div class="analysis-summary-item">
+                    <span>Monthly Passive Income Needed</span>
+                    <strong id="analysisMonthlyIncomeNeeded">$0</strong>
+                  </div>
+
+                  <div class="analysis-summary-item">
+                    <span>Monthly Income Needed at 65</span>
+                    <strong id="analysisMonthlyIncomeAt65">$0</strong>
+                  </div>
+
+                  <div class="analysis-summary-item">
+                    <span>Estimated CPF LIFE Income</span>
+                    <strong id="analysisCpfLifeIncome">$0</strong>
+                  </div>
+
+                  <div class="analysis-summary-item">
+                    <span>Income Gap</span>
+                    <strong id="analysisIncomeGap">$0/mth</strong>
+                  </div>
+
+                  <div
+                    class="analysis-summary-item analysis-summary-item--primary"
+                  >
+                    <span>Total Capital Needed</span>
+                    <strong id="analysisTotalCapitalNeeded">$0</strong>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Monthly Cashflow and Projections -->
+            <div class="analysis-section-surround">
+              <!-- Monthly Cashflow -->
+              <section class="analysis-section-card">
+                <div
+                  class="analysis-section-heading analysis-section-heading--split"
+                >
+                  <div>
+                    <span class="analysis-section-eyebrow"
+                      >Current Position</span
+                    >
+
+                    <h3>Monthly Cashflow</h3>
+
+                    <p>
+                      Employment and bonus income are shown after the employee's
+                      CPF contribution.
                     </p>
                   </div>
 
-                  <button
-                    id="analysisSelectAllGoalsButton"
-                    class="analysis-goal-filter-action"
-                    type="button"
-                  >
-                    Select All
-                  </button>
+                  <label class="analysis-assumption-field">
+                    <span>Annual Employment &amp; Bonus Increment</span>
+
+                    <div class="analysis-percentage-input">
+                      <input
+                        id="analysisEmploymentIncrementInput"
+                        type="number"
+                        min="0"
+                        max="20"
+                        step="0.1"
+                        value="2"
+                      />
+
+                      <span>%</span>
+                    </div>
+                  </label>
                 </div>
 
+                <div class="analysis-cashflow-table-wrap">
+                  <table class="analysis-cashflow-table">
+                    <tbody>
+                      <tr>
+                        <th colspan="2">Income</th>
+                      </tr>
+
+                      <tr>
+                        <td>Employment Income After CPF</td>
+                        <td id="analysisEmploymentIncomeAfterCpf">$0</td>
+                      </tr>
+
+                      <tr>
+                        <td>Annual Bonus After CPF</td>
+                        <td id="analysisBonusIncomeAfterCpf">
+                          $0/year · $0/month
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>Other Monthly Income</td>
+                        <td id="analysisOtherMonthlyIncome">$0</td>
+                      </tr>
+
+                      <tr class="analysis-table-total">
+                        <td>Total Monthly Income</td>
+                        <td id="analysisTotalMonthlyIncome">$0</td>
+                      </tr>
+
+                      <tr>
+                        <th colspan="2">Outflows</th>
+                      </tr>
+
+                      <tr>
+                        <td>Expenses</td>
+                        <td id="analysisMonthlyExpenses">-$0</td>
+                      </tr>
+
+                      <tr>
+                        <td>Commitments</td>
+                        <td id="analysisMonthlyCommitments">-$0</td>
+                      </tr>
+
+                      <tr class="analysis-table-result">
+                        <td>Remaining Surplus</td>
+                        <td id="analysisRemainingSurplus">$0</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <div
+                class="analysis-section-group-divider"
+                aria-hidden="true"
+              ></div>
+
+              <!-- Cashflow Projection -->
+              <section class="analysis-section-card">
                 <div
-                  id="analysisGoalFilterOptions"
-                  class="analysis-goal-filter-options"
-                ></div>
-              </div>
-
-              <div class="analysis-projection-table-wrap">
-                <table
-                  class="analysis-projection-table analysis-projection-table--cashflow"
+                  class="analysis-section-heading analysis-section-heading--split"
                 >
-                  <thead>
-                    <tr>
-                      <th id="analysisCashflowPeriodHeading">Month</th>
-                      <th>Start Balance</th>
-                      <th>Net Cashflow</th>
-                      <th>Big Ticket Outflow</th>
-                      <th>End Balance</th>
-                    </tr>
-                  </thead>
+                  <div>
+                    <span
+                      id="analysisProjectionPeriodLabel"
+                      class="analysis-section-eyebrow"
+                    >
+                      10-Year Outlook · Monthly Rows
+                    </span>
 
-                  <tbody id="analysisCashflowProjectionTableBody"></tbody>
-                </table>
-              </div>
-            </section>
+                    <h3>Monthly Cashflow Projection</h3>
 
-            <!-- CPF Flow Projection -->
-            <section class="analysis-section-card">
-              <div class="analysis-section-heading">
-                <div>
-                  <span class="analysis-section-eyebrow">CPF Position</span>
+                    <p>
+                      Projects the client's withdrawable assets using income,
+                      expenses, cash-paid liabilities, insurance premiums, and
+                      planned goal withdrawals.
+                    </p>
+                  </div>
 
-                  <h3>Monthly CPF Flow Projection</h3>
+                  <fieldset class="analysis-projection-period">
+                    <legend>Projection Period</legend>
+
+                    <div class="analysis-projection-period-options">
+                      <label>
+                        <input
+                          type="radio"
+                          name="analysisProjectionPeriod"
+                          value="10"
+                          checked
+                        />
+
+                        <span>10 Years</span>
+                      </label>
+
+                      <label>
+                        <input
+                          type="radio"
+                          name="analysisProjectionPeriod"
+                          value="20"
+                        />
+
+                        <span>20 Years</span>
+                      </label>
+
+                      <label>
+                        <input
+                          type="radio"
+                          name="analysisProjectionPeriod"
+                          value="30"
+                        />
+
+                        <span>30 Years</span>
+                      </label>
+
+                      <label>
+                        <input
+                          type="radio"
+                          name="analysisProjectionPeriod"
+                          value="40"
+                        />
+
+                        <span>40 Years</span>
+                      </label>
+
+                      <label>
+                        <input
+                          type="radio"
+                          name="analysisProjectionPeriod"
+                          value="mortality"
+                        />
+
+                        <span>Mortality Age</span>
+                      </label>
+                    </div>
+                  </fieldset>
+                </div>
+
+                <div class="analysis-projection-note">
+                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
 
                   <p>
-                    Projects CPF contributions, housing-related OA outflows, and
-                    the resulting OA, SA or RA, and MA balances.
+                    The 10-year projection shows monthly rows. Longer
+                    projections are summarised into calendar years. Employment
+                    income and annual bonus increase at the selected rate at the
+                    beginning of each new projection year. Expenses and
+                    insurance premiums remain unchanged, while liabilities stop
+                    after their recorded repayment end dates.
                   </p>
                 </div>
-              </div>
 
-              <div class="analysis-projection-note">
-                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                <div class="analysis-goal-filter">
+                  <div class="analysis-goal-filter-heading">
+                    <div>
+                      <strong>Goals Included in Projection</strong>
 
-                <p>
-                  This projection uses CPF contribution and allocation rates
-                  effective from 1 January 2027. CPF interest is not included
-                  yet. Longer ranges use the same annual periods selected above.
-                </p>
-              </div>
+                      <p>
+                        Select which current goals should be included as
+                        big-ticket cash outflows.
+                      </p>
+                    </div>
 
-              <div class="analysis-projection-table-wrap">
-                <table
-                  class="analysis-projection-table analysis-projection-table--cpf"
-                >
-                  <thead>
-                    <tr>
-                      <th id="analysisCpfPeriodHeading">Month</th>
-                      <th>CPF Inflow</th>
-                      <th>OA Outflow</th>
-                      <th>MA Insurance Outflow</th>
-                      <th>Net CPF Flow</th>
-                      <th>OA Balance</th>
-                      <th>SA / RA Balance</th>
-                      <th>MA Balance</th>
-                    </tr>
-                  </thead>
+                    <button
+                      id="analysisSelectAllGoalsButton"
+                      class="analysis-goal-filter-action"
+                      type="button"
+                    >
+                      Select All
+                    </button>
+                  </div>
 
-                  <tbody id="analysisCpfProjectionTableBody"></tbody>
-                </table>
-              </div>
-            </section>
+                  <div
+                    id="analysisGoalFilterOptions"
+                    class="analysis-goal-filter-options"
+                  ></div>
+                </div>
+
+                <div class="analysis-projection-table-wrap">
+                  <table
+                    class="analysis-projection-table analysis-projection-table--cashflow"
+                  >
+                    <thead>
+                      <tr>
+                        <th id="analysisCashflowPeriodHeading">Month</th>
+                        <th>Start Balance</th>
+                        <th>Net Cashflow</th>
+                        <th>Big Ticket Outflow</th>
+                        <th>End Balance</th>
+                      </tr>
+                    </thead>
+
+                    <tbody id="analysisCashflowProjectionTableBody"></tbody>
+                  </table>
+                </div>
+              </section>
+
+              <div
+                class="analysis-section-group-divider"
+                aria-hidden="true"
+              ></div>
+
+              <!-- CPF Flow Projection -->
+              <section class="analysis-section-card">
+                <div class="analysis-section-heading">
+                  <div>
+                    <span class="analysis-section-eyebrow">CPF Position</span>
+
+                    <h3>Monthly CPF Flow Projection</h3>
+
+                    <p>
+                      Projects CPF contributions, housing-related OA outflows,
+                      and the resulting OA, SA or RA, and MA balances.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="analysis-projection-note">
+                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+
+                  <p>
+                    This projection uses CPF contribution and allocation rates
+                    effective from 1 January 2027. CPF interest is not included
+                    yet. Longer ranges use the same annual periods selected
+                    above.
+                  </p>
+                </div>
+
+                <div class="analysis-projection-table-wrap">
+                  <table
+                    class="analysis-projection-table analysis-projection-table--cpf"
+                  >
+                    <thead>
+                      <tr>
+                        <th id="analysisCpfPeriodHeading">Month</th>
+                        <th>CPF Inflow</th>
+                        <th>OA Outflow</th>
+                        <th>MA Insurance Outflow</th>
+                        <th>Net CPF Flow</th>
+                        <th>OA Balance</th>
+                        <th>SA / RA Balance</th>
+                        <th>MA Balance</th>
+                      </tr>
+                    </thead>
+
+                    <tbody id="analysisCpfProjectionTableBody"></tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
 
             <!-- Placeholder -->
             <section class="analysis-section-card analysis-placeholder-card">
