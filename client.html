@@ -2530,6 +2530,32 @@
                 </p>
               </div>
 
+              <div class="analysis-goal-filter">
+                <div class="analysis-goal-filter-heading">
+                  <div>
+                    <strong>Goals Included in Projection</strong>
+
+                    <p>
+                      Select which current goals should be included as
+                      big-ticket cash outflows.
+                    </p>
+                  </div>
+
+                  <button
+                    id="analysisSelectAllGoalsButton"
+                    class="analysis-goal-filter-action"
+                    type="button"
+                  >
+                    Select All
+                  </button>
+                </div>
+
+                <div
+                  id="analysisGoalFilterOptions"
+                  class="analysis-goal-filter-options"
+                ></div>
+              </div>
+
               <div class="analysis-projection-table-wrap">
                 <table
                   class="analysis-projection-table analysis-projection-table--cashflow"
@@ -2583,6 +2609,7 @@
                       <th id="analysisCpfPeriodHeading">Month</th>
                       <th>CPF Inflow</th>
                       <th>OA Outflow</th>
+                      <th>MA Insurance Outflow</th>
                       <th>Net CPF Flow</th>
                       <th>OA Balance</th>
                       <th>SA / RA Balance</th>

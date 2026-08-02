@@ -36,6 +36,73 @@ export function calculatePortfolioMonthlyPremium(policies = []) {
 }
 
 /* ========================================
+   MONTHLY MEDISAVE INSURANCE OUTFLOW
+======================================== */
+
+export function getMonthlyInsuranceMedisaveOutflow() {
+  const policies = getPolicies();
+
+  if (!Array.isArray(policies)) {
+    return 0;
+  }
+
+  return calculatePortfolioMonthlyMedisaveOutflow(
+    policies,
+  );
+}
+
+export function calculatePortfolioMonthlyMedisaveOutflow(
+  policies = [],
+) {
+  if (!Array.isArray(policies)) {
+    return 0;
+  }
+
+  const annualMedisaveOutflow =
+    policies.reduce(
+      function (runningTotal, policy) {
+        return (
+          runningTotal +
+          getPolicyAnnualMedisavePremium(
+            policy,
+          )
+        );
+      },
+      0,
+    );
+
+  return annualMedisaveOutflow / 12;
+}
+
+function getPolicyAnnualMedisavePremium(
+  policy,
+) {
+  if (
+    policy?.policyType ===
+    "hospitalisation"
+  ) {
+    return getNonNegativeNumber(
+      policy.hospitalisation
+        ?.premiumPayment
+        ?.medisaveAmount,
+    );
+  }
+
+  if (
+    policy?.policyType ===
+    "long_term_care"
+  ) {
+    return getNonNegativeNumber(
+      policy.longTermCare
+        ?.premiumPayment
+        ?.medisaveAmount,
+    );
+  }
+
+  return 0;
+}
+
+/* ========================================
    PREMIUM CONVERSION
 ======================================== */
 

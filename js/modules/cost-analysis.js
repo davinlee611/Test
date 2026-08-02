@@ -29,7 +29,10 @@ import {
   getLiabilityMonthlyCpfPayment,
 } from "./liabilities/liability-calculator.js";
 
-import { getEffectiveMonthlyInsurancePremium } from "../services/commitment-service.js";
+import {
+  getEffectiveMonthlyInsurancePremium,
+  getMonthlyInsuranceMedisaveOutflow,
+} from "../services/commitment-service.js";
 
 /* ========================================
    CONFIGURATION
@@ -68,6 +71,12 @@ const cashflowProjectionTableBody = document.getElementById(
 
 const cpfProjectionTableBody = document.getElementById(
   "analysisCpfProjectionTableBody",
+);
+
+const goalFilterOptions = document.getElementById("analysisGoalFilterOptions");
+
+const selectAllGoalsButton = document.getElementById(
+  "analysisSelectAllGoalsButton",
 );
 
 const desiredFybcAgeElement = document.getElementById("analysisDesiredFybcAge");
@@ -122,6 +131,8 @@ const remainingSurplusElement = document.getElementById(
 
 let moduleInitialized = false;
 
+const excludedProjectionGoalIds = new Set();
+
 export function initializeCostAnalysis() {
   if (moduleInitialized) {
     renderCostAnalysis();
@@ -135,6 +146,10 @@ export function initializeCostAnalysis() {
   projectionPeriodInputs.forEach(function (input) {
     input.addEventListener("change", renderCostAnalysis);
   });
+
+  goalFilterOptions?.addEventListener("change", handleGoalFilterChange);
+
+  selectAllGoalsButton?.addEventListener("click", handleSelectAllGoals);
 
   moduleInitialized = true;
 
@@ -150,6 +165,8 @@ export function resetCostAnalysis() {
     input.checked = input.value === DEFAULT_PROJECTION_PERIOD;
   });
 
+  excludedProjectionGoalIds.clear();
+
   renderCostAnalysis();
 }
 
@@ -163,6 +180,8 @@ export function renderCostAnalysis() {
   const currentCashflow = calculateCurrentMonthlyCashflow();
 
   renderCurrentMonthlyCashflow(currentCashflow);
+
+  renderGoalFilter(getGoals());
 
   const selectedPeriod = getSelectedProjectionPeriod();
 
@@ -356,6 +375,160 @@ function renderCurrentMonthlyCashflow(cashflow) {
 }
 
 /* ========================================
+   GOAL PROJECTION FILTER
+======================================== */
+
+function renderGoalFilter(goals) {
+  if (!goalFilterOptions) {
+    return;
+  }
+
+  goalFilterOptions.replaceChildren();
+
+  removeMissingGoalExclusions(goals);
+
+  if (!Array.isArray(goals) || goals.length === 0) {
+    const emptyMessage =
+      document.createElement("p");
+
+    emptyMessage.className =
+      "analysis-goal-filter-empty";
+
+    emptyMessage.textContent =
+      "No current goals have been added.";
+
+    goalFilterOptions.append(emptyMessage);
+
+    if (selectAllGoalsButton) {
+      selectAllGoalsButton.hidden = true;
+    }
+
+    return;
+  }
+
+  if (selectAllGoalsButton) {
+    selectAllGoalsButton.hidden = false;
+  }
+
+  const fragment =
+    document.createDocumentFragment();
+
+  goals.forEach(function (goal, index) {
+    const goalId = getProjectionGoalId(
+      goal,
+      index,
+    );
+
+    const label = document.createElement("label");
+
+    label.className =
+      "analysis-goal-filter-option";
+
+    const checkbox =
+      document.createElement("input");
+
+    checkbox.type = "checkbox";
+    checkbox.value = goalId;
+    checkbox.checked =
+      !excludedProjectionGoalIds.has(goalId);
+
+    const marker = document.createElement("span");
+
+    marker.className =
+      "analysis-goal-filter-checkbox";
+
+    const details = document.createElement("span");
+
+    details.className =
+      "analysis-goal-filter-details";
+
+    const name = document.createElement("strong");
+
+    name.textContent = goal?.name || "Goal";
+
+    const amount = document.createElement("small");
+
+    amount.textContent = formatCurrency(
+      getNonNegativeNumber(
+        goal?.targetAmount,
+      ),
+    );
+
+    details.append(name, amount);
+
+    label.append(checkbox, marker, details);
+
+    fragment.append(label);
+  });
+
+  goalFilterOptions.append(fragment);
+}
+
+function handleGoalFilterChange(event) {
+  const checkbox = event.target.closest(
+    'input[type="checkbox"]',
+  );
+
+  if (!checkbox) {
+    return;
+  }
+
+  if (checkbox.checked) {
+    excludedProjectionGoalIds.delete(
+      checkbox.value,
+    );
+  } else {
+    excludedProjectionGoalIds.add(
+      checkbox.value,
+    );
+  }
+
+  renderCostAnalysis();
+}
+
+function handleSelectAllGoals() {
+  excludedProjectionGoalIds.clear();
+
+  renderCostAnalysis();
+}
+
+function removeMissingGoalExclusions(goals) {
+  const currentGoalIds = new Set(
+    goals.map(function (goal, index) {
+      return getProjectionGoalId(
+        goal,
+        index,
+      );
+    }),
+  );
+
+  excludedProjectionGoalIds.forEach(
+    function (goalId) {
+      if (!currentGoalIds.has(goalId)) {
+        excludedProjectionGoalIds.delete(
+          goalId,
+        );
+      }
+    },
+  );
+}
+
+function getProjectionGoalId(goal, index) {
+  return String(
+    goal?.id || `projection-goal-${index}`,
+  );
+}
+
+function isGoalIncludedInProjection(
+  goal,
+  index,
+) {
+  return !excludedProjectionGoalIds.has(
+    getProjectionGoalId(goal, index),
+  );
+}
+
+/* ========================================
    PROJECTION ENGINE
 ======================================== */
 
@@ -382,6 +555,8 @@ function calculateProjection({
   let raBalance = getNonNegativeNumber(assets.cpf?.ra);
 
   let maBalance = getNonNegativeNumber(assets.cpf?.ma);
+
+  const monthlyInsuranceMedisaveOutflow = getMonthlyInsuranceMedisaveOutflow();
 
   const rows = [];
 
@@ -456,6 +631,13 @@ function calculateProjection({
       projectionDate,
     );
 
+    const availableMaBalance = maBalance + maInflow;
+
+    const maInsuranceOutflow = Math.min(
+      monthlyInsuranceMedisaveOutflow,
+      availableMaBalance,
+    );
+
     oaBalance = Math.max(0, oaBalance + oaInflow - oaOutflow);
 
     if (allocationRates.retirementAccount === "ra") {
@@ -464,7 +646,7 @@ function calculateProjection({
       saBalance += retirementInflow;
     }
 
-    maBalance += maInflow;
+    maBalance = Math.max(0, availableMaBalance - maInsuranceOutflow);
 
     rows.push({
       date: projectionDate,
@@ -476,7 +658,9 @@ function calculateProjection({
 
       cpfInflow: totalCpfInflow,
       oaOutflow,
-      netCpf: totalCpfInflow - oaOutflow,
+      maInsuranceOutflow,
+
+      netCpf: totalCpfInflow - oaOutflow - maInsuranceOutflow,
 
       oaBalance,
       retirementBalance: saBalance + raBalance,
@@ -579,52 +763,33 @@ function aggregateProjectionIntoAnnualRows(
     annualRows.push({
       date: lastRow.date,
 
-      projectionYear:
-        annualRows.length + 1,
+      projectionYear: annualRows.length + 1,
 
-      startWithdrawableBalance:
-        firstRow.startWithdrawableBalance,
+      startWithdrawableBalance: firstRow.startWithdrawableBalance,
 
-      netCashflow: sumProjectionValues(
-        periodRows,
-        "netCashflow",
-      ),
+      netCashflow: sumProjectionValues(periodRows, "netCashflow"),
 
-      bigTicketOutflow: sumProjectionValues(
-        periodRows,
-        "bigTicketOutflow",
-      ),
+      bigTicketOutflow: sumProjectionValues(periodRows, "bigTicketOutflow"),
 
-      endWithdrawableBalance:
-        lastRow.endWithdrawableBalance,
+      endWithdrawableBalance: lastRow.endWithdrawableBalance,
 
-      cpfInflow: sumProjectionValues(
-        periodRows,
-        "cpfInflow",
-      ),
+      cpfInflow: sumProjectionValues(periodRows, "cpfInflow"),
 
-      oaOutflow: sumProjectionValues(
-        periodRows,
-        "oaOutflow",
-      ),
+      oaOutflow: sumProjectionValues(periodRows, "oaOutflow"),
 
-      netCpf: sumProjectionValues(
-        periodRows,
-        "netCpf",
-      ),
+      maInsuranceOutflow: sumProjectionValues(periodRows, "maInsuranceOutflow"),
+
+      netCpf: sumProjectionValues(periodRows, "netCpf"),
 
       oaBalance: lastRow.oaBalance,
 
-      retirementBalance:
-        lastRow.retirementBalance,
+      retirementBalance: lastRow.retirementBalance,
 
       maBalance: lastRow.maBalance,
 
-      goalNames: periodRows.flatMap(
-        function (row) {
-          return row.goalNames;
-        },
-      ),
+      goalNames: periodRows.flatMap(function (row) {
+        return row.goalNames;
+      }),
     });
   }
 
@@ -818,30 +983,19 @@ function renderCpfProjectionTable({
     }
 
     tableRow.append(
-      createTextCell(
-        getProjectionRowLabel(
-          row,
-          usesAnnualRows,
-        ),
-      ),
+      createTextCell(getProjectionRowLabel(row, usesAnnualRows)),
 
       createCurrencyCell(row.cpfInflow),
 
-      createCurrencyCell(
-        -row.oaOutflow,
-        true,
-      ),
+      createCurrencyCell(-row.oaOutflow, true),
 
-      createCurrencyCell(
-        row.netCpf,
-        true,
-      ),
+      createCurrencyCell(-row.maInsuranceOutflow, true),
+
+      createCurrencyCell(row.netCpf, true),
 
       createCurrencyCell(row.oaBalance),
 
-      createCurrencyCell(
-        row.retirementBalance,
-      ),
+      createCurrencyCell(row.retirementBalance),
 
       createCurrencyCell(row.maBalance),
     );
@@ -959,9 +1113,30 @@ function isLiabilityActive(liability, projectionDate) {
 function getGoalsDueInMonth(goals, projectionDate) {
   const projectionMonth = formatYearMonth(projectionDate);
 
-  return goals.filter(function (goal) {
-    return goal?.targetDate === projectionMonth;
+  return goals.filter(function (goal, index) {
+    return (
+      isGoalIncludedInProjection(goal, index) &&
+      getGoalProjectionMonth(goal) === projectionMonth
+    );
   });
+}
+
+function getGoalProjectionMonth(goal) {
+  const targetDate = goal?.targetDate;
+
+  if (typeof targetDate !== "string") {
+    return "";
+  }
+
+  if (/^\d{4}-\d{2}$/.test(targetDate)) {
+    return targetDate;
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(targetDate)) {
+    return targetDate.slice(0, 7);
+  }
+
+  return "";
 }
 
 /* ========================================

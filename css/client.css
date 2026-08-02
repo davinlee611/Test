@@ -4605,6 +4605,152 @@ button.insurance-validation-count:disabled {
   outline-offset: 2px;
 }
 
+/* Projection goal selector */
+
+.analysis-goal-filter {
+  padding: 16px;
+  margin-bottom: 18px;
+
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.analysis-goal-filter-heading {
+  display: flex;
+  margin-bottom: 14px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.analysis-goal-filter-heading strong {
+  display: block;
+  margin-bottom: 4px;
+
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.analysis-goal-filter-heading p {
+  margin: 0;
+
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.analysis-goal-filter-action {
+  padding: 7px 11px;
+  flex-shrink: 0;
+
+  color: var(--primary-color);
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.analysis-goal-filter-action:hover {
+  border-color: var(--primary-color);
+}
+
+.analysis-goal-filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.analysis-goal-filter-option {
+  position: relative;
+  display: flex;
+  min-width: 180px;
+  padding: 10px 12px;
+  align-items: center;
+  gap: 10px;
+
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+
+  cursor: pointer;
+}
+
+.analysis-goal-filter-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.analysis-goal-filter-checkbox {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+
+  border: 2px solid var(--border-color);
+  border-radius: 5px;
+}
+
+.analysis-goal-filter-option input:checked +
+.analysis-goal-filter-checkbox {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.analysis-goal-filter-option input:checked +
+.analysis-goal-filter-checkbox::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  transform: rotate(45deg);
+}
+
+.analysis-goal-filter-option:has(input:checked) {
+  background: var(--primary-soft);
+  border-color: var(--primary-color);
+}
+
+.analysis-goal-filter-details {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.analysis-goal-filter-details strong {
+  overflow: hidden;
+
+  color: var(--text-primary);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analysis-goal-filter-details small {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.analysis-goal-filter-empty {
+  margin: 0;
+
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
 .analysis-projection-note {
   display: flex;
   padding: 14px 16px;
