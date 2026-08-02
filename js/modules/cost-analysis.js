@@ -166,6 +166,8 @@ export function renderCostAnalysis() {
 
   const selectedPeriod = getSelectedProjectionPeriod();
 
+  const usesAnnualRows = selectedPeriod !== DEFAULT_PROJECTION_PERIOD;
+
   const projectionMonths = getProjectionMonthCount(selectedPeriod);
 
   const monthlyProjection = calculateProjection({
@@ -175,9 +177,9 @@ export function renderCostAnalysis() {
       getNonNegativeNumber(employmentIncrementInput?.value) / 100,
 
     projectionMonths,
-  });
 
-  const usesAnnualRows = selectedPeriod !== DEFAULT_PROJECTION_PERIOD;
+    startingDate: getProjectionStartDate(usesAnnualRows),
+  });
 
   const displayRows = usesAnnualRows
     ? aggregateProjectionIntoAnnualRows(monthlyProjection)
@@ -361,6 +363,7 @@ function calculateProjection({
   currentCashflow,
   annualEmploymentIncrement,
   projectionMonths,
+  startingDate,
 }) {
   const assets = getAssets();
 
@@ -369,8 +372,6 @@ function calculateProjection({
   const goals = getGoals();
 
   const liabilities = getLiabilities();
-
-  const startingDate = getProjectionStartDate();
 
   let withdrawableBalance = calculateLiquidAssetTotal(assets.liquidAssets);
 
@@ -889,6 +890,8 @@ function createCurrencyCell(value, showStatus = false) {
 function createGoalOutflowCell(row) {
   const cell = document.createElement("td");
 
+  cell.className = "analysis-projection-goal-cell";
+
   if (row.bigTicketOutflow <= 0) {
     cell.textContent = "—";
     return cell;
@@ -965,8 +968,12 @@ function getGoalsDueInMonth(goals, projectionDate) {
    DATE HELPERS
 ======================================== */
 
-function getProjectionStartDate() {
+function getProjectionStartDate(usesAnnualRows = false) {
   const today = new Date();
+
+  if (usesAnnualRows) {
+    return new Date(today.getFullYear() + 1, 0, 1);
+  }
 
   return new Date(today.getFullYear(), today.getMonth() + 1, 1);
 }
