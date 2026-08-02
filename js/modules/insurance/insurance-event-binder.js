@@ -26,7 +26,9 @@ export function bindInsuranceEvents({
   onPolicyLifeAssuredInput,
 
   onHospitalisationRiderChange,
+  onHospitalisationRiderTypeChange,
   onHospitalisationWardTypeChange,
+  onHospitalisationBasePremiumChange,
   onHospitalisationPremiumChange,
 
   onAddBenefit,
@@ -69,9 +71,14 @@ export function bindInsuranceEvents({
     onHospitalisationRiderChange,
   );
 
+  elements.hospitalisationRiderTypeSelect?.addEventListener(
+    "change",
+    onHospitalisationRiderTypeChange,
+  );
+
   elements.premiumInput?.addEventListener(
     "input",
-    onHospitalisationPremiumChange,
+    onHospitalisationBasePremiumChange,
   );
 
   elements.hospitalisationRiderPremiumInput?.addEventListener(

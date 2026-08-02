@@ -130,7 +130,7 @@ export function createPolicyModal({
 
     elements.hospitalisationRiderCheckbox.checked = false;
 
-    elements.hospitalisationRiderNameInput.value = "";
+    elements.hospitalisationRiderTypeSelect.value = "";
 
     elements.hospitalisationRiderPremiumInput.value = "";
 

@@ -238,7 +238,7 @@ export function seedPolicies() {
         rider: {
           included: true,
 
-          name: "Singlife Health Plus Rider",
+          type: "private_panel",
 
           annualPremium: 2000,
         },
@@ -292,7 +292,7 @@ export function seedPolicies() {
 
           hospitalClass: "private",
 
-          riderType: "yes",
+          riderType: "private_panel",
 
           notes: "Integrated Shield Plan with rider.",
 

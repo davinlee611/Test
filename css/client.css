@@ -2013,6 +2013,35 @@ button.insurance-validation-count:disabled {
   --policy-accent-border: #bfdbfe;
 }
 
+/* Hospitalisation rider checkbox */
+
+.hospitalisation-rider-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  cursor: pointer;
+}
+
+#hospitalisationRiderCheckbox {
+  appearance: auto;
+  flex: 0 0 18px;
+  width: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  height: 18px;
+  min-height: 18px;
+  max-height: 18px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.hospitalisation-rider-checkbox span {
+  font-weight: 600;
+  line-height: 1.25;
+}
+
 /* Whole Life */
 
 .policy-item[data-policy-type="whole_life"] {

@@ -20,6 +20,23 @@ export function getHospitalisationAwl(currentAge) {
   return 900;
 }
 
+export function getAutomaticHospitalisationMedisaveAmount({
+  annualBasePremium,
+  currentAge,
+}) {
+  const basePremium = getAmount(annualBasePremium);
+
+  const additionalWithdrawalLimit = getHospitalisationAwl(currentAge);
+
+  /*
+   * Only the base plan can use MediSave.
+   *
+   * The automatic amount must therefore
+   * never exceed the annual base premium.
+   */
+  return Math.min(basePremium, additionalWithdrawalLimit);
+}
+
 export function calculateHospitalisationPremiumPayment({
   annualBasePremium,
   annualRiderPremium,
@@ -29,7 +46,13 @@ export function calculateHospitalisationPremiumPayment({
 
   const riderPremium = getAmount(annualRiderPremium);
 
-  const medisavePayment = getAmount(medisaveAmount);
+  /*
+   * Rider premiums are fully cash-paid.
+   *
+   * Therefore, MediSave can never exceed
+   * the annual base-plan premium.
+   */
+  const medisavePayment = Math.min(getAmount(medisaveAmount), basePremium);
 
   const totalPremium = basePremium + riderPremium;
 
@@ -42,17 +65,12 @@ export function calculateHospitalisationPremiumPayment({
 
     medisaveAmount: medisavePayment,
 
-    cashAmount: Math.max(
-      totalPremium - medisavePayment,
-      0,
-    ),
+    cashAmount: Math.max(totalPremium - medisavePayment, 0),
   };
 }
 
 function getAmount(value) {
   const amount = Number(value);
 
-  return Number.isFinite(amount) && amount >= 0
-    ? Math.trunc(amount)
-    : 0;
+  return Number.isFinite(amount) && amount >= 0 ? Math.trunc(amount) : 0;
 }

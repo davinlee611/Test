@@ -46,7 +46,7 @@ function writeHospitalisationFields(elements, policy) {
 
   elements.hospitalisationRiderCheckbox.checked = rider.included === true;
 
-  elements.hospitalisationRiderNameInput.value = rider.name || "";
+  elements.hospitalisationRiderTypeSelect.value = rider.type || "";
 
   elements.hospitalisationRiderPremiumInput.value =
     Number(rider.annualPremium) > 0 ? String(rider.annualPremium) : "";

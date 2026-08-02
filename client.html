@@ -3419,18 +3419,21 @@
               >
                 <div class="form-grid">
                   <div class="form-group">
-                    <label for="hospitalisationRiderNameInput">
-                      Rider Name
+                    <label for="hospitalisationRiderTypeSelect">
+                      Rider Type
                       <span class="required-label">*</span>
                     </label>
 
-                    <input
-                      id="hospitalisationRiderNameInput"
+                    <select
+                      id="hospitalisationRiderTypeSelect"
                       class="form-control"
-                      type="text"
-                      placeholder="Enter rider name"
-                      autocomplete="off"
-                    />
+                    >
+                      <option value="">Select rider type</option>
+                      <option value="b_ward">B Ward</option>
+                      <option value="a_ward">A Ward</option>
+                      <option value="private">Private</option>
+                      <option value="private_panel">Private (Panel)</option>
+                    </select>
                   </div>
 
                   <div class="form-group">

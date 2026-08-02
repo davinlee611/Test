@@ -282,10 +282,20 @@ function bindModuleEvents() {
       renderDraftBenefits();
     },
 
+    onHospitalisationRiderTypeChange() {
+      policyFormController.syncHospitalisationBaseBenefit();
+
+      renderDraftBenefits();
+    },
+
     onHospitalisationWardTypeChange() {
       policyFormController.syncHospitalisationBaseBenefit();
 
       renderDraftBenefits();
+    },
+
+    onHospitalisationBasePremiumChange() {
+      policyFormController.handleHospitalisationBasePremiumInput();
     },
 
     onHospitalisationPremiumChange() {

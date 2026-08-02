@@ -53,10 +53,6 @@ export function readPolicyFormData(elements) {
 
     policyNumber: elements.policyNumberInput.value.trim(),
 
-    /*
-     * Hospitalisation status and frequency are hidden,
-     * but saved internally as active and annual.
-     */
     status: isHospitalisation ? "active" : elements.policyStatusSelect.value,
 
     premiumAmount,
@@ -72,8 +68,8 @@ export function readPolicyFormData(elements) {
           rider: {
             included: riderIncluded,
 
-            name: riderIncluded
-              ? elements.hospitalisationRiderNameInput.value.trim()
+            type: riderIncluded
+              ? elements.hospitalisationRiderTypeSelect.value
               : "",
 
             annualPremium: riderAnnualPremium,

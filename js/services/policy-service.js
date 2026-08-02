@@ -164,7 +164,7 @@ function cloneHospitalisation(hospitalisation) {
     rider: {
       included: rider.included === true,
 
-      name: rider.name || "",
+      type: rider.type || "",
 
       annualPremium: Number(rider.annualPremium) || 0,
     },

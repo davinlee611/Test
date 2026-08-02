@@ -178,8 +178,8 @@ export function getInsuranceElements() {
       "hospitalisationRiderFields",
     ),
 
-    hospitalisationRiderNameInput: document.getElementById(
-      "hospitalisationRiderNameInput",
+    hospitalisationRiderTypeSelect: document.getElementById(
+      "hospitalisationRiderTypeSelect",
     ),
 
     hospitalisationRiderPremiumInput: document.getElementById(

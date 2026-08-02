@@ -177,6 +177,21 @@ export function getBenefitDisplayName(benefit) {
 
 function getHospitalRiderLabel(riderType) {
   switch (riderType) {
+    case "b_ward":
+      return "B Ward";
+
+    case "a_ward":
+      return "A Ward";
+
+    case "private":
+      return "Private";
+
+    case "private_panel":
+      return "Private (Panel)";
+
+    /*
+     * Retain support for existing saved data.
+     */
     case "panel_only":
       return "Yes (Panel Only)";
 

@@ -17,6 +17,7 @@ import { getClientAge } from "../client-profile.js";
 
 import {
   calculateHospitalisationPremiumPayment,
+  getAutomaticHospitalisationMedisaveAmount,
   getHospitalisationAwl,
 } from "./hospitalisation-premium.js";
 
@@ -292,13 +293,8 @@ export function createPolicyFormController({
 
     closeBenefitEditor();
 
-    if (
-      applyDefaultMedisave ||
-      elements.hospitalisationMedisaveInput.value === ""
-    ) {
-      elements.hospitalisationMedisaveInput.value = String(
-        getHospitalisationAwl(getClientAge()),
-      );
+    if (applyDefaultMedisave) {
+      updateAutomaticHospitalisationMedisave();
     }
 
     updateHospitalisationRiderFields();
@@ -311,12 +307,12 @@ export function createPolicyFormController({
 
     elements.hospitalisationRiderFields.hidden = !hasRider;
 
-    elements.hospitalisationRiderNameInput.required = hasRider;
+    elements.hospitalisationRiderTypeSelect.required = hasRider;
 
     elements.hospitalisationRiderPremiumInput.required = hasRider;
 
     if (!hasRider) {
-      elements.hospitalisationRiderNameInput.value = "";
+      elements.hospitalisationRiderTypeSelect.value = "";
 
       elements.hospitalisationRiderPremiumInput.value = "";
     }
@@ -339,14 +335,46 @@ export function createPolicyFormController({
       medisaveAmount: elements.hospitalisationMedisaveInput.value,
     });
 
+    /*
+     * Reflect any cap applied by the calculator.
+     *
+     * For example, if the base premium is $200,
+     * MediSave cannot remain at $300.
+     */
+    elements.hospitalisationMedisaveInput.value = String(
+      payment.medisaveAmount,
+    );
+
     elements.hospitalisationCashInput.value = String(payment.cashAmount);
 
     const awl = getHospitalisationAwl(getClientAge());
 
     elements.hospitalisationMedisaveHelper.textContent =
       awl > 0
-        ? `Pre-filled using the applicable Additional Withdrawal Limit of $${awl}.`
+        ? `Automatically limited to the lower of the annual base premium or the $${awl} Additional Withdrawal Limit.`
         : "Enter the MediSave amount shown in the insurer's records.";
+  }
+
+  function updateAutomaticHospitalisationMedisave() {
+    const automaticMedisaveAmount = getAutomaticHospitalisationMedisaveAmount({
+      annualBasePremium: elements.premiumInput.value,
+
+      currentAge: getClientAge(),
+    });
+
+    elements.hospitalisationMedisaveInput.value = String(
+      automaticMedisaveAmount,
+    );
+  }
+
+  function handleHospitalisationBasePremiumInput() {
+    if (elements.policyTypeSelect.value !== "hospitalisation") {
+      return;
+    }
+
+    updateAutomaticHospitalisationMedisave();
+
+    updateHospitalisationPremiumPayment();
   }
 
   function syncHospitalisationBaseBenefit() {
@@ -370,7 +398,9 @@ export function createPolicyFormController({
 
         hospitalClass,
 
-        riderType: hasRider ? "yes" : "no",
+        riderType: hasRider
+          ? elements.hospitalisationRiderTypeSelect.value
+          : "no",
 
         hasRider,
       };
@@ -395,6 +425,7 @@ export function createPolicyFormController({
     updateHospitalisationFields,
     updateHospitalisationRiderFields,
     updateHospitalisationPremiumPayment,
+    handleHospitalisationBasePremiumInput,
     syncHospitalisationBaseBenefit,
     handleInsurerChange,
     updatePremiumFields,

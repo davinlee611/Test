@@ -40,8 +40,8 @@ export function validatePolicyDraft({
     }
 
     if (hospitalisation.rider?.included) {
-      if (!hospitalisation.rider.name) {
-        return "Enter the hospitalisation rider name.";
+      if (!hospitalisation.rider.type) {
+        return "Select the hospitalisation rider type.";
       }
 
       if (hospitalisation.rider.annualPremium <= 0) {
