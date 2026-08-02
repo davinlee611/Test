@@ -70,6 +70,38 @@ export function getApplicableBasicHealthcareSum({
   };
 }
 
+export function getProjectedCohortBasicHealthcareSum({ dateOfBirth }) {
+  const yearTurning65 = calculateYearTurningAge(dateOfBirth, 65);
+
+  if (!yearTurning65) {
+    return {
+      isValid: false,
+      amount: 0,
+      yearTurning65: null,
+      basis: "unavailable",
+      isProjected: false,
+      annualGrowthRate: 0,
+    };
+  }
+
+  const bhsResult = getBasicHealthcareSumForYear(yearTurning65);
+
+  return {
+    isValid: bhsResult.amount > 0,
+
+    amount: bhsResult.amount,
+
+    yearTurning65,
+
+    basis: bhsResult.basis,
+
+    isProjected: bhsResult.basis === "projected",
+
+    annualGrowthRate:
+      bhsResult.basis === "projected" ? BHS_PROJECTION_GROWTH_RATE : 0,
+  };
+}
+
 /* ========================================
    BHS BY YEAR
 ======================================== */

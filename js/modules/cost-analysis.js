@@ -38,6 +38,7 @@ import {
 import {
   BHS_PROJECTION_GROWTH_RATE,
   getApplicableBasicHealthcareSum,
+  getProjectedCohortBasicHealthcareSum,
 } from "../services/cpf-healthcare-service.js";
 
 /* ========================================
@@ -85,10 +86,12 @@ const projectedFrsBasisElement = document.getElementById(
   "analysisProjectedFrsBasis",
 );
 
-const applicableBhsElement = document.getElementById("analysisApplicableBhs");
+const projectedCohortBhsElement = document.getElementById(
+  "analysisProjectedCohortBhs",
+);
 
-const applicableBhsBasisElement = document.getElementById(
-  "analysisApplicableBhsBasis",
+const projectedCohortBhsBasisElement = document.getElementById(
+  "analysisProjectedCohortBhsBasis",
 );
 
 const goalFilterOptions = document.getElementById("analysisGoalFilterOptions");
@@ -214,15 +217,13 @@ export function renderCostAnalysis() {
 
   const cohortFrs = getProjectedCohortFrs();
 
-  const startingBhs = getApplicableBasicHealthcareSum({
+  const projectedCohortBhs = getProjectedCohortBasicHealthcareSum({
     dateOfBirth: getClientProfile().dateOfBirth,
-
-    projectionDate: startingDate,
   });
 
   renderCpfPlanningAssumptions({
     cohortFrs,
-    startingBhs,
+    projectedCohortBhs,
   });
 
   const monthlyProjection = calculateProjection({
@@ -570,19 +571,17 @@ function isGoalIncludedInProjection(
    CPF PLANNING ASSUMPTIONS
 ======================================== */
 
-function renderCpfPlanningAssumptions({
-  cohortFrs,
-  startingBhs,
-}) {
+function renderCpfPlanningAssumptions({ cohortFrs, projectedCohortBhs }) {
   if (cohortFrs?.isValid) {
-    setCurrency(
-      projectedFrsElement,
-      cohortFrs.amount,
-    );
+    setCurrency(projectedFrsElement, cohortFrs.amount);
 
     const frsBasisLabel =
       cohortFrs.basis === "official"
-        ? "Confirmed CPF Retirement Sum"
+        ? [
+            `Confirmed CPF Retirement Sum`,
+            `for age 55 in`,
+            cohortFrs.yearTurning55,
+          ].join(" ")
         : [
             `Projected for age 55 in`,
             cohortFrs.yearTurning55,
@@ -591,55 +590,38 @@ function renderCpfPlanningAssumptions({
             `annual growth`,
           ].join(" ");
 
-    setText(
-      projectedFrsBasisElement,
-      frsBasisLabel,
-    );
+    setText(projectedFrsBasisElement, frsBasisLabel);
   } else {
     setText(projectedFrsElement, "—");
 
-    setText(
-      projectedFrsBasisElement,
-      "Complete the Client Profile",
-    );
+    setText(projectedFrsBasisElement, "Complete the Client Profile");
   }
 
-  if (startingBhs?.isValid) {
-    setCurrency(
-      applicableBhsElement,
-      startingBhs.amount,
-    );
+  if (projectedCohortBhs?.isValid) {
+    setCurrency(projectedCohortBhsElement, projectedCohortBhs.amount);
 
-    let bhsBasisLabel;
-
-    if (startingBhs.isLocked) {
-      bhsBasisLabel =
-        `Fixed cohort BHS from ${startingBhs.applicableBhsYear}`;
-    } else if (
-      startingBhs.basis === "confirmed"
-    ) {
-      bhsBasisLabel =
-        `Confirmed ${startingBhs.applicableBhsYear} BHS`;
-    } else {
-      bhsBasisLabel =
-        [
-          `Projected ${startingBhs.applicableBhsYear} BHS`,
-          `at ${BHS_PROJECTION_GROWTH_RATE}%`,
-          `rounded to $500`,
+    const cohortBhsBasisLabel = projectedCohortBhs.isProjected
+      ? [
+          `Projected for age 65 in`,
+          projectedCohortBhs.yearTurning65,
+          `using`,
+          `${BHS_PROJECTION_GROWTH_RATE}%`,
+          `annual growth, rounded to $500.`,
+          `Fixed from`,
+          projectedCohortBhs.yearTurning65,
+          `onward.`,
+        ].join(" ")
+      : [
+          `Confirmed cohort BHS for age 65 in`,
+          projectedCohortBhs.yearTurning65,
+          `. Fixed for life.`,
         ].join(" ");
-    }
 
-    setText(
-      applicableBhsBasisElement,
-      bhsBasisLabel,
-    );
+    setText(projectedCohortBhsBasisElement, cohortBhsBasisLabel);
   } else {
-    setText(applicableBhsElement, "—");
+    setText(projectedCohortBhsElement, "—");
 
-    setText(
-      applicableBhsBasisElement,
-      "Complete the Client Profile",
-    );
+    setText(projectedCohortBhsBasisElement, "Complete the Client Profile");
   }
 }
 
@@ -1286,11 +1268,11 @@ function createCurrencyCell(value, showStatus = false) {
 function createRetirementBalanceCell(row) {
   const cell = document.createElement("td");
 
-  cell.className = "analysis-cpf-labelled-cell";
+  cell.className = "analysis-cpf-retirement-cell";
 
-  const amount = document.createElement("strong");
+  const wrapper = document.createElement("div");
 
-  amount.textContent = formatCurrency(row.retirementBalance);
+  wrapper.className = "analysis-cpf-retirement-value";
 
   const accountLabel = document.createElement("small");
 
@@ -1298,7 +1280,13 @@ function createRetirementBalanceCell(row) {
 
   accountLabel.textContent = row.retirementAccount === "ra" ? "RA" : "SA";
 
-  cell.append(amount, accountLabel);
+  const amount = document.createElement("strong");
+
+  amount.textContent = formatCurrency(row.retirementBalance);
+
+  wrapper.append(accountLabel, amount);
+
+  cell.append(wrapper);
 
   return cell;
 }

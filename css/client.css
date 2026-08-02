@@ -4716,11 +4716,27 @@ button.insurance-validation-count:disabled {
   font-weight: 600;
 }
 
+.analysis-cpf-retirement-cell {
+  text-align: right;
+}
+
+.analysis-cpf-retirement-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.analysis-cpf-retirement-value strong {
+  display: inline;
+}
+
 .analysis-cpf-account-badge {
-  display: inline-block !important;
-  width: fit-content;
-  padding: 2px 6px;
-  margin-left: auto;
+  display: inline-flex !important;
+  min-width: 28px;
+  padding: 3px 6px;
+  align-items: center;
+  justify-content: center;
 
   color: var(--primary-color) !important;
   background: var(--primary-soft);
@@ -4728,6 +4744,7 @@ button.insurance-validation-count:disabled {
 
   font-size: 10px !important;
   font-weight: 800 !important;
+  line-height: 1;
 }
 
 @media (max-width: 700px) {
