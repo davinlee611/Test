@@ -187,7 +187,12 @@ export function renderCostAnalysis() {
 
   const usesAnnualRows = selectedPeriod !== DEFAULT_PROJECTION_PERIOD;
 
-  const projectionMonths = getProjectionMonthCount(selectedPeriod);
+  const startingDate = getProjectionStartDate();
+
+  const projectionMonths = getProjectionMonthCount(
+    selectedPeriod,
+    startingDate,
+  );
 
   const monthlyProjection = calculateProjection({
     currentCashflow,
@@ -197,7 +202,7 @@ export function renderCostAnalysis() {
 
     projectionMonths,
 
-    startingDate: getProjectionStartDate(usesAnnualRows),
+    startingDate,
   });
 
   const displayRows = usesAnnualRows
@@ -690,80 +695,95 @@ function getSelectedProjectionPeriod() {
     DEFAULT_PROJECTION_PERIOD;
 }
 
-function getProjectionMonthCount(selectedPeriod) {
+function getProjectionMonthCount(selectedPeriod, startingDate) {
+  if (selectedPeriod === "10") {
+    return DEFAULT_PROJECTION_YEARS * MONTHS_PER_YEAR;
+  }
+
   if (selectedPeriod !== "mortality") {
     const selectedYears = Number(selectedPeriod);
 
-    if (
-      Number.isFinite(selectedYears) &&
-      selectedYears > 0
-    ) {
-      return selectedYears * MONTHS_PER_YEAR;
+    if (Number.isFinite(selectedYears) && selectedYears > 0) {
+      const projectionEndDate = new Date(
+        startingDate.getFullYear() + selectedYears,
+        11,
+        1,
+      );
+
+      return getInclusiveMonthDifference(startingDate, projectionEndDate);
     }
 
-    return (
-      DEFAULT_PROJECTION_YEARS *
-      MONTHS_PER_YEAR
-    );
+    return DEFAULT_PROJECTION_YEARS * MONTHS_PER_YEAR;
   }
 
   const profile = getClientProfile();
 
-  const currentAge = calculateAgeOnDate(
-    profile.dateOfBirth,
-    new Date(),
-  );
+  const currentAge = calculateAgeOnDate(profile.dateOfBirth, new Date());
 
-  const plannedMortalityAge =
-    getPlannedMortalityAge();
+  const plannedMortalityAge = getPlannedMortalityAge();
 
   if (
     currentAge === null ||
     !Number.isFinite(plannedMortalityAge) ||
     plannedMortalityAge <= currentAge
   ) {
-    return (
-      DEFAULT_PROJECTION_YEARS *
-      MONTHS_PER_YEAR
-    );
+    return DEFAULT_PROJECTION_YEARS * MONTHS_PER_YEAR;
   }
 
-  return (
-    plannedMortalityAge - currentAge
-  ) * MONTHS_PER_YEAR;
+  const yearsUntilMortality = plannedMortalityAge - currentAge;
+
+  const projectionEndDate = new Date(
+    startingDate.getFullYear() + yearsUntilMortality,
+    11,
+    1,
+  );
+
+  return getInclusiveMonthDifference(startingDate, projectionEndDate);
+}
+
+function getInclusiveMonthDifference(startDate, endDate) {
+  const yearDifference = endDate.getFullYear() - startDate.getFullYear();
+
+  const monthDifference = endDate.getMonth() - startDate.getMonth();
+
+  return Math.max(yearDifference * MONTHS_PER_YEAR + monthDifference + 1, 0);
 }
 
 /* ========================================
    ANNUAL PROJECTION ROWS
 ======================================== */
 
-function aggregateProjectionIntoAnnualRows(
-  monthlyRows,
-) {
-  const annualRows = [];
+function aggregateProjectionIntoAnnualRows(monthlyRows) {
+  const rowsByCalendarYear = new Map();
 
-  for (
-    let startIndex = 0;
-    startIndex < monthlyRows.length;
-    startIndex += MONTHS_PER_YEAR
-  ) {
-    const periodRows = monthlyRows.slice(
-      startIndex,
-      startIndex + MONTHS_PER_YEAR,
-    );
+  monthlyRows.forEach(function (row) {
+    const calendarYear = row.date.getFullYear();
 
-    if (periodRows.length === 0) {
-      continue;
+    if (!rowsByCalendarYear.has(calendarYear)) {
+      rowsByCalendarYear.set(calendarYear, []);
     }
 
+    rowsByCalendarYear.get(calendarYear).push(row);
+  });
+
+  const currentYear = new Date().getFullYear();
+
+  return Array.from(rowsByCalendarYear.entries()).map(function ([
+    calendarYear,
+    periodRows,
+  ]) {
     const firstRow = periodRows[0];
-    const lastRow =
-      periodRows[periodRows.length - 1];
 
-    annualRows.push({
-      date: lastRow.date,
+    const lastRow = periodRows[periodRows.length - 1];
 
-      projectionYear: annualRows.length + 1,
+    return {
+      date: new Date(calendarYear, 11, 1),
+
+      calendarYear,
+
+      projectionYear: calendarYear - currentYear,
+
+      isCurrentPartialYear: calendarYear === currentYear,
 
       startWithdrawableBalance: firstRow.startWithdrawableBalance,
 
@@ -790,10 +810,8 @@ function aggregateProjectionIntoAnnualRows(
       goalNames: periodRows.flatMap(function (row) {
         return row.goalNames;
       }),
-    });
-  }
-
-  return annualRows;
+    };
+  });
 }
 
 function sumProjectionValues(rows, propertyName) {
@@ -1006,18 +1024,16 @@ function renderCpfProjectionTable({
   cpfProjectionTableBody.append(fragment);
 }
 
-function getProjectionRowLabel(
-  row,
-  usesAnnualRows,
-) {
+function getProjectionRowLabel(row, usesAnnualRows) {
   if (!usesAnnualRows) {
     return formatMonthYear(row.date);
   }
 
-  return (
-    `Year ${row.projectionYear} · ` +
-    formatMonthYear(row.date)
-  );
+  if (row.isCurrentPartialYear) {
+    return "Current Year · " + formatMonthYear(row.date);
+  }
+
+  return `Year ${row.projectionYear} · ` + formatMonthYear(row.date);
 }
 
 function createTextCell(value) {
@@ -1143,12 +1159,8 @@ function getGoalProjectionMonth(goal) {
    DATE HELPERS
 ======================================== */
 
-function getProjectionStartDate(usesAnnualRows = false) {
+function getProjectionStartDate() {
   const today = new Date();
-
-  if (usesAnnualRows) {
-    return new Date(today.getFullYear() + 1, 0, 1);
-  }
 
   return new Date(today.getFullYear(), today.getMonth() + 1, 1);
 }
