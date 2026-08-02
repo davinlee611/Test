@@ -53,6 +53,48 @@ export function createEmptyBenefit(benefitType, lifeAssured) {
 }
 
 /* ========================================
+   HOSPITALISATION BENEFIT
+======================================== */
+
+export function createHospitalisationBaseBenefit(lifeAssured) {
+  return {
+    id: createPlannerId(),
+
+    source: BENEFIT_SOURCE.BASE_PLAN,
+
+    status: BENEFIT_STATUS.NEW,
+
+    hasUserInput: false,
+
+    isSuggested: false,
+
+    isBasePlanBenefit: true,
+
+    type: "hospitalisation",
+
+    customName: "Hospitalisation Coverage",
+
+    lifeAssured,
+
+    amount: 0,
+
+    payoutType: null,
+
+    payoutTerm: null,
+
+    payoutDuration: null,
+
+    hospitalClass: "",
+
+    riderType: "",
+
+    adlRequirement: null,
+
+    notes: "",
+  };
+}
+
+/* ========================================
    LONG-TERM CARE BASE BENEFIT
 ======================================== */
 

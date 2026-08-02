@@ -28,6 +28,46 @@ export function validatePolicyDraft({
     return "Select the Long-Term Care base plan.";
   }
 
+  if (formData.policyType === "hospitalisation") {
+    const hospitalisation = formData.hospitalisation;
+
+    if (!hospitalisation?.wardType) {
+      return "Select the hospitalisation ward type.";
+    }
+
+    if (formData.premiumAmount <= 0) {
+      return "Enter the annual hospitalisation premium.";
+    }
+
+    if (hospitalisation.rider?.included) {
+      if (!hospitalisation.rider.name) {
+        return "Enter the hospitalisation rider name.";
+      }
+
+      if (hospitalisation.rider.annualPremium <= 0) {
+        return "Enter the annual rider premium.";
+      }
+    }
+
+    if (
+      hospitalisation.premiumPayment.medisaveAmount > formData.premiumAmount
+    ) {
+      return (
+        "The MediSave amount cannot exceed " +
+        "the annual base hospitalisation premium."
+      );
+    }
+  }
+
+  if (
+    formData.policyType === "hospital_cash" &&
+    !draftBenefits.some(function (benefit) {
+      return benefit.type === "hospital_cash";
+    })
+  ) {
+    return "Add the Hospital Cash benefit.";
+  }
+
   if (!formData.lifeAssured) {
     return "Enter the life assured.";
   }

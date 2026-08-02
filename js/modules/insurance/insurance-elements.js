@@ -153,5 +153,53 @@ export function getInsuranceElements() {
     policyValidationSection: document.getElementById("policyValidationSection"),
 
     policyValidationList: document.getElementById("policyValidationList"),
+
+    policyStatusGroup: document.getElementById("policyStatusGroup"),
+
+    policyPremiumLabel: document.getElementById("policyPremiumLabel"),
+
+    hospitalisationWardTypeGroup: document.getElementById(
+      "hospitalisationWardTypeGroup",
+    ),
+
+    hospitalisationWardTypeSelect: document.getElementById(
+      "hospitalisationWardTypeSelect",
+    ),
+
+    hospitalisationRiderGroup: document.getElementById(
+      "hospitalisationRiderGroup",
+    ),
+
+    hospitalisationRiderCheckbox: document.getElementById(
+      "hospitalisationRiderCheckbox",
+    ),
+
+    hospitalisationRiderFields: document.getElementById(
+      "hospitalisationRiderFields",
+    ),
+
+    hospitalisationRiderNameInput: document.getElementById(
+      "hospitalisationRiderNameInput",
+    ),
+
+    hospitalisationRiderPremiumInput: document.getElementById(
+      "hospitalisationRiderPremiumInput",
+    ),
+
+    hospitalisationPremiumPaymentGroup: document.getElementById(
+      "hospitalisationPremiumPaymentGroup",
+    ),
+
+    hospitalisationMedisaveInput: document.getElementById(
+      "hospitalisationMedisaveInput",
+    ),
+
+    hospitalisationMedisaveHelper: document.getElementById(
+      "hospitalisationMedisaveHelper",
+    ),
+
+    hospitalisationCashInput: document.getElementById(
+      "hospitalisationCashInput",
+    ),
   };
 }

@@ -2,6 +2,8 @@
 
 import { getWholeNumber } from "../../utils/client-utils.js";
 
+import { calculateHospitalisationPremiumPayment } from "./hospitalisation-premium.js";
+
 /* ========================================
    POLICY FORM DATA
 ======================================== */

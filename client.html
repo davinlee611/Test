@@ -3207,6 +3207,8 @@
 
                   <option value="hospitalisation">Hospitalisation</option>
 
+                  <option value="hospital_cash">Hospital Cash</option>
+
                   <option value="personal_accident">Personal Accident</option>
 
                   <option value="disability_income">Disability Income</option>
@@ -3324,7 +3326,7 @@
               </div>
 
               <!-- Status -->
-              <div class="form-group">
+              <div id="policyStatusGroup" class="form-group">
                 <label for="policyStatusSelect">
                   Status
                   <span class="required-label">*</span>
@@ -3342,7 +3344,7 @@
               <!-- Premium -->
               <div id="premiumAmountGroup" class="form-group">
                 <label for="premiumInput">
-                  Premium
+                  <span id="policyPremiumLabel">Premium</span>
                   <span class="required-label">*</span>
                 </label>
 
@@ -3379,6 +3381,149 @@
 
                   <option value="monthly">Monthly</option>
                 </select>
+              </div>
+
+              <!-- Hospitalisation Ward Type -->
+              <div id="hospitalisationWardTypeGroup" class="form-group" hidden>
+                <label for="hospitalisationWardTypeSelect">
+                  Ward Type
+                  <span class="required-label">*</span>
+                </label>
+
+                <select id="hospitalisationWardTypeSelect" class="form-control">
+                  <option value="">Select ward coverage</option>
+                  <option value="b2_ward">B2 Ward</option>
+                  <option value="b1_ward">B1 Ward</option>
+                  <option value="a_ward">A Ward</option>
+                  <option value="private">Private Hospital</option>
+                </select>
+              </div>
+
+              <!-- Hospitalisation Rider -->
+              <div id="hospitalisationRiderGroup" class="form-group" hidden>
+                <label class="hospitalisation-rider-checkbox">
+                  <input id="hospitalisationRiderCheckbox" type="checkbox" />
+                  <span>Hospitalisation Rider</span>
+                </label>
+
+                <p class="form-helper-text">
+                  Select this if a rider is attached to the base plan.
+                </p>
+              </div>
+
+              <!-- Hospitalisation Rider Details -->
+              <div
+                id="hospitalisationRiderFields"
+                class="form-group form-group--full"
+                hidden
+              >
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="hospitalisationRiderNameInput">
+                      Rider Name
+                      <span class="required-label">*</span>
+                    </label>
+
+                    <input
+                      id="hospitalisationRiderNameInput"
+                      class="form-control"
+                      type="text"
+                      placeholder="Enter rider name"
+                      autocomplete="off"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="hospitalisationRiderPremiumInput">
+                      Annual Rider Premium
+                      <span class="required-label">*</span>
+                    </label>
+
+                    <div class="currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="hospitalisationRiderPremiumInput"
+                        class="form-control"
+                        type="number"
+                        min="1"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="0"
+                      />
+                    </div>
+
+                    <p class="form-helper-text">
+                      Rider premiums are treated as fully payable in cash.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hospitalisation Premium Payment -->
+              <div
+                id="hospitalisationPremiumPaymentGroup"
+                class="form-group form-group--full"
+                hidden
+              >
+                <div class="hospitalisation-payment-heading">
+                  <h4>Premium Payment</h4>
+
+                  <p>
+                    MediShield Life is excluded from this estimate. Update the
+                    MediSave amount using the insurer's records when available.
+                  </p>
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="hospitalisationMedisaveInput">
+                      Paid Using MediSave
+                      <span class="required-label">*</span>
+                    </label>
+
+                    <div class="currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="hospitalisationMedisaveInput"
+                        class="form-control"
+                        type="number"
+                        min="0"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="0"
+                      />
+                    </div>
+
+                    <p
+                      id="hospitalisationMedisaveHelper"
+                      class="form-helper-text"
+                    ></p>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="hospitalisationCashInput">
+                      Paid Using Cash
+                    </label>
+
+                    <div class="currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="hospitalisationCashInput"
+                        class="form-control"
+                        type="number"
+                        value="0"
+                        readonly
+                      />
+                    </div>
+
+                    <p class="form-helper-text">
+                      Base premium plus rider premium, less the MediSave amount.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </section>

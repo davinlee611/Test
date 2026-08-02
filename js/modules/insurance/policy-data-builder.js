@@ -10,6 +10,8 @@ export function buildPolicyData({ formData, benefits }) {
 
     policyType: formData.policyType,
 
+    hospitalisation: formData.hospitalisation,
+
     longTermCareBasePlan: formData.longTermCareBasePlan,
 
     insurer: formData.insurer,

@@ -270,6 +270,14 @@ function bindModuleEvents() {
       scrollToFirstPolicyWithSeverity("review");
     },
 
+    onHospitalisationRiderChange() {
+      policyFormController.updateHospitalisationRiderFields();
+    },
+
+    onHospitalisationPremiumChange() {
+      policyFormController.updateHospitalisationPremiumPayment();
+    },
+
     onAddPolicy() {
       policyModal.openAdd();
     },

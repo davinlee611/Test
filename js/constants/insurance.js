@@ -8,6 +8,7 @@ export const POLICY_TYPE_LABELS = {
   ilp_protection: "Investment-Linked (Protection)",
   ilp_accumulation: "Investment-Linked (Accumulation)",
   hospitalisation: "Hospitalisation",
+  hospital_cash: "Hospital Cash",
   personal_accident: "Personal Accident",
   disability_income: "Disability Income",
   long_term_care: "Long-Term Care",
@@ -47,7 +48,8 @@ export const PAYOUT_TYPE_LABELS = {
 };
 
 export const HOSPITAL_CLASS_LABELS = {
-  b_ward: "B Ward",
+  b2_ward: "B2 Ward",
+  b1_ward: "B1 Ward",
   a_ward: "A Ward",
   private: "Private Hospital",
 };

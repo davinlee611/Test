@@ -12,6 +12,13 @@ import {
 
 import { BENEFIT_SOURCE } from "./benefit-lifecycle.js";
 
+import { getClientAge } from "../client-profile.js";
+
+import {
+  calculateHospitalisationPremiumPayment,
+  getHospitalisationAwl,
+} from "./hospitalisation-premium.js";
+
 export function createPolicyFormController({
   elements,
 
@@ -49,15 +56,19 @@ export function createPolicyFormController({
   ======================================== */
 
   function updatePremiumFields() {
+
+    const isHospitalisation =
+      elements.policyTypeSelect.value === "hospitalisation";
+
     const isPaidUp = elements.policyStatusSelect.value === "paid_up";
 
     elements.premiumAmountGroup.hidden = isPaidUp;
 
-    elements.premiumFrequencyGroup.hidden = isPaidUp;
+    elements.premiumFrequencyGroup.hidden = isPaidUp || isHospitalisation;
 
     elements.premiumInput.required = !isPaidUp;
 
-    elements.premiumFrequencySelect.required = !isPaidUp;
+    elements.premiumFrequencySelect.required = !isPaidUp && !isHospitalisation;
 
     if (isPaidUp) {
       elements.premiumInput.value = "";
@@ -144,6 +155,10 @@ export function createPolicyFormController({
 
         updateLongTermCareBasePlanField();
 
+        updateHospitalisationFields({
+          applyDefaultMedisave: policyType === "hospitalisation",
+        });
+
         renderDraftBenefits();
 
         return;
@@ -205,7 +220,13 @@ export function createPolicyFormController({
         benefit.source === BENEFIT_SOURCE.SUGGESTED &&
         benefit.hasUserInput !== true;
 
-      if (!isUntouchedSuggestion) {
+      const isGeneratedBaseBenefit =
+        benefit.source === BENEFIT_SOURCE.BASE_PLAN &&
+        benefit.hasUserInput !== true;
+
+      const shouldSync = isUntouchedSuggestion || isGeneratedBaseBenefit;
+
+      if (!shouldSync) {
         return benefit;
       }
 
@@ -222,6 +243,99 @@ export function createPolicyFormController({
   }
 
   /* ========================================
+     HOSPITALISATION
+  ======================================== */
+
+  function updateHospitalisationFields({ applyDefaultMedisave = false } = {}) {
+    const isHospitalisation =
+      elements.policyTypeSelect.value === "hospitalisation";
+
+    elements.hospitalisationWardTypeGroup.hidden = !isHospitalisation;
+
+    elements.hospitalisationRiderGroup.hidden = !isHospitalisation;
+
+    elements.hospitalisationPremiumPaymentGroup.hidden = !isHospitalisation;
+
+    elements.policyStatusGroup.hidden = isHospitalisation;
+
+    elements.addBenefitButton.hidden = isHospitalisation;
+
+    if (!isHospitalisation) {
+      elements.hospitalisationRiderFields.hidden = true;
+
+      elements.policyPremiumLabel.textContent = "Premium";
+
+      return;
+    }
+
+    elements.policyStatusSelect.value = "active";
+
+    elements.premiumFrequencySelect.value = "annual";
+
+    elements.premiumFrequencyGroup.hidden = true;
+
+    elements.policyPremiumLabel.textContent = "Annual Premium";
+
+    closeBenefitEditor();
+
+    if (
+      applyDefaultMedisave ||
+      elements.hospitalisationMedisaveInput.value === ""
+    ) {
+      elements.hospitalisationMedisaveInput.value = String(
+        getHospitalisationAwl(getClientAge()),
+      );
+    }
+
+    updateHospitalisationRiderFields();
+
+    updateHospitalisationPremiumPayment();
+  }
+
+  function updateHospitalisationRiderFields() {
+    const hasRider = elements.hospitalisationRiderCheckbox.checked;
+
+    elements.hospitalisationRiderFields.hidden = !hasRider;
+
+    elements.hospitalisationRiderNameInput.required = hasRider;
+
+    elements.hospitalisationRiderPremiumInput.required = hasRider;
+
+    if (!hasRider) {
+      elements.hospitalisationRiderNameInput.value = "";
+
+      elements.hospitalisationRiderPremiumInput.value = "";
+    }
+
+    updateHospitalisationPremiumPayment();
+  }
+
+  function updateHospitalisationPremiumPayment() {
+    if (elements.policyTypeSelect.value !== "hospitalisation") {
+      return;
+    }
+
+    const payment = calculateHospitalisationPremiumPayment({
+      annualBasePremium: elements.premiumInput.value,
+
+      annualRiderPremium: elements.hospitalisationRiderCheckbox.checked
+        ? elements.hospitalisationRiderPremiumInput.value
+        : 0,
+
+      medisaveAmount: elements.hospitalisationMedisaveInput.value,
+    });
+
+    elements.hospitalisationCashInput.value = String(payment.cashAmount);
+
+    const awl = getHospitalisationAwl(getClientAge());
+
+    elements.hospitalisationMedisaveHelper.textContent =
+      awl > 0
+        ? `Pre-filled using the applicable Additional Withdrawal Limit of $${awl}.`
+        : "Enter the MediSave amount shown in the insurer's records.";
+  }
+
+  /* ========================================
      HELPERS
   ======================================== */
 
@@ -234,6 +348,9 @@ export function createPolicyFormController({
   }
 
   return {
+    updateHospitalisationFields,
+    updateHospitalisationRiderFields,
+    updateHospitalisationPremiumPayment,
     handleInsurerChange,
     updatePremiumFields,
     updateLongTermCareBasePlanField,
