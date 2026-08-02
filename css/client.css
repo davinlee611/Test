@@ -4895,9 +4895,32 @@ button.insurance-validation-count:disabled {
 
 .analysis-cpf-retirement-value {
   display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+}
+
+.analysis-cpf-retirement-main {
+  display: inline-flex;
   align-items: center;
   justify-content: flex-end;
   gap: 7px;
+}
+
+.analysis-cpf-frs-indicator {
+  display: inline-flex !important;
+  padding: 3px 7px;
+  align-items: center;
+  gap: 4px;
+
+  color: var(--success-color) !important;
+  background: #ecfdf3;
+  border-radius: 999px;
+
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  line-height: 1.2;
 }
 
 .analysis-cpf-retirement-value strong {

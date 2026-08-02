@@ -944,6 +944,19 @@ function calculateProjection({
 
     const age = calculateAgeOnDate(profile.dateOfBirth, projectionDate);
 
+    const displayedAge = calculateAgeAtEndOfMonth(
+      profile.dateOfBirth,
+      projectionDate,
+    );
+
+    const isAge55TransitionMonth = isBirthdayAgeMonth({
+      dateOfBirth: profile.dateOfBirth,
+
+      projectionDate,
+
+      targetAge: 55,
+    });
+
     const projectedIncome = calculateProjectedIncome({
       monthlyEmploymentIncome: projectedEmploymentIncome,
 
@@ -1022,6 +1035,8 @@ function calculateProjection({
 
     const hasReachedAge55 = age !== null && age >= 55;
 
+    let frsMetAt55 = false;
+
     /*
      * Form RA once in the month the client
      * reaches age 55.
@@ -1071,6 +1086,11 @@ function calculateProjection({
         retirementSumSetAside,
         Math.min(raBalance, cohortFrsAmount),
       );
+
+      frsMetAt55 =
+        isAge55TransitionMonth &&
+        cohortFrsAmount > 0 &&
+        retirementSumSetAside >= cohortFrsAmount - 0.5;
     }
     
     let cpfLifePremiumOutflow = 0;
@@ -1311,6 +1331,10 @@ function calculateProjection({
     rows.push({
       date: projectionDate,
 
+      age: displayedAge,
+
+      frsMetAt55,
+
       startWithdrawableBalance,
       netCashflow,
       bigTicketOutflow,
@@ -1494,6 +1518,12 @@ function aggregateProjectionIntoAnnualRows(monthlyRows) {
 
     return {
       date: new Date(calendarYear, 11, 1),
+
+      age: lastRow.age,
+
+      frsMetAt55: periodRows.some(function (row) {
+        return row.frsMetAt55;
+      }),
 
       calendarYear,
 
@@ -1778,15 +1808,17 @@ function renderCpfProjectionTable({
 }
 
 function getProjectionRowLabel(row, usesAnnualRows) {
+  const ageLabel = Number.isFinite(row.age) ? ` · Age ${row.age}` : "";
+
   if (!usesAnnualRows) {
-    return formatMonthYear(row.date);
+    return formatMonthYear(row.date) + ageLabel;
   }
 
   if (row.isCurrentPartialYear) {
-    return "Current Year · " + formatMonthYear(row.date);
+    return "Current Year · " + formatMonthYear(row.date) + ageLabel;
   }
 
-  return `Year ${row.projectionYear} · ` + formatMonthYear(row.date);
+  return `Year ${row.projectionYear} · ` + formatMonthYear(row.date) + ageLabel;
 }
 
 function createTextCell(value) {
@@ -1937,6 +1969,10 @@ function createRetirementBalanceCell(row) {
 
   wrapper.className = "analysis-cpf-retirement-value";
 
+  const mainLine = document.createElement("div");
+
+  mainLine.className = "analysis-cpf-retirement-main";
+
   const accountLabel = document.createElement("small");
 
   accountLabel.className = "analysis-cpf-account-badge";
@@ -1947,7 +1983,29 @@ function createRetirementBalanceCell(row) {
 
   amount.textContent = formatCurrency(row.retirementBalance);
 
-  wrapper.append(accountLabel, amount);
+  mainLine.append(accountLabel, amount);
+
+  wrapper.append(mainLine);
+
+  if (row.frsMetAt55) {
+    const indicator = document.createElement("small");
+
+    indicator.className = "analysis-cpf-frs-indicator";
+
+    const icon = document.createElement("i");
+
+    icon.className = "fa-solid fa-circle-check";
+
+    icon.setAttribute("aria-hidden", "true");
+
+    const label = document.createElement("span");
+
+    label.textContent = "FRS met at 55";
+
+    indicator.append(icon, label);
+
+    wrapper.append(indicator);
+  }
 
   cell.append(wrapper);
 
@@ -2111,6 +2169,31 @@ function calculateAgeOnDate(dateOfBirth, referenceDate) {
   }
 
   return age;
+}
+
+function calculateAgeAtEndOfMonth(dateOfBirth, projectionDate) {
+  const endOfMonth = new Date(
+    projectionDate.getFullYear(),
+    projectionDate.getMonth() + 1,
+    0,
+  );
+
+  return calculateAgeOnDate(dateOfBirth, endOfMonth);
+}
+
+function isBirthdayAgeMonth({ dateOfBirth, projectionDate, targetAge }) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth || "")) {
+    return false;
+  }
+
+  const birthYear = Number(dateOfBirth.slice(0, 4));
+
+  const birthMonth = Number(dateOfBirth.slice(5, 7)) - 1;
+
+  return (
+    projectionDate.getFullYear() === birthYear + targetAge &&
+    projectionDate.getMonth() === birthMonth
+  );
 }
 
 function formatYearMonth(date) {
