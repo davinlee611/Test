@@ -70,7 +70,17 @@ export const POLICY_TYPE_DEFAULT_BENEFITS = {
 
   ilp_accumulation: ["death"],
 
-  hospitalisation: ["hospitalisation"],
+  /*
+   * Hospitalisation coverage is generated automatically
+   * by policy-form-controller.js.
+   */
+  hospitalisation: [],
+
+  /*
+   * Hospital Cash remains editable because the adviser
+   * must enter the daily cash benefit.
+   */
+  hospital_cash: ["hospital_cash"],
 
   personal_accident: ["death", "tpd", "medical_reimbursement"],
 
@@ -109,7 +119,9 @@ export const POLICY_TYPE_BENEFIT_OPTIONS = {
 
   ilp_accumulation: ["death", "other"],
 
-  hospitalisation: ["hospitalisation", "hospital_cash", "other"],
+  hospitalisation: [],
+
+  hospital_cash: ["hospital_cash", "other"],
 
   personal_accident: ["death", "tpd", "medical_reimbursement", "other"],
 

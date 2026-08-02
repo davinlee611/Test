@@ -7,11 +7,15 @@ import { getCommitments, getPolicies } from "../state/client-plan.js";
 ======================================== */
 
 export function getEffectiveMonthlyInsurancePremium() {
-  const portfolioMonthlyPremium =
-    calculatePortfolioMonthlyPremium(getPolicies());
+  const policies = getPolicies();
 
-  if (portfolioMonthlyPremium > 0) {
-    return portfolioMonthlyPremium;
+  /*
+   * Once the Insurance Portfolio contains policies,
+   * it takes precedence even when the cash premium
+   * happens to be zero.
+   */
+  if (Array.isArray(policies) && policies.length > 0) {
+    return calculatePortfolioMonthlyPremium(policies);
   }
 
   return getNonNegativeNumber(getCommitments()?.insurancePremiums);
@@ -27,13 +31,25 @@ export function calculatePortfolioMonthlyPremium(policies = []) {
   }
 
   return policies.reduce(function (runningTotal, policy) {
-    return runningTotal + convertPremiumToMonthly(policy?.premium);
+    return runningTotal + getPolicyMonthlyCashPremium(policy);
   }, 0);
 }
 
 /* ========================================
    PREMIUM CONVERSION
 ======================================== */
+
+function getPolicyMonthlyCashPremium(policy) {
+  if (policy?.policyType === "hospitalisation") {
+    const annualCashAmount = getNonNegativeNumber(
+      policy.hospitalisation?.premiumPayment?.cashAmount,
+    );
+
+    return annualCashAmount / 12;
+  }
+
+  return convertPremiumToMonthly(policy?.premium);
+}
 
 export function convertPremiumToMonthly(premium) {
   const amount = getNonNegativeNumber(premium?.amount);

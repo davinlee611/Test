@@ -228,11 +228,39 @@ export function seedPolicies() {
     {
       id: createPlannerId(),
 
-      policyName:
-        "Singlife Shield Plan 1 + Rider",
+      policyName: "Singlife Shield Plan 1 + Rider",
 
-      policyType:
-        "hospitalisation",
+      policyType: "hospitalisation",
+
+      hospitalisation: {
+        wardType: "private",
+
+        rider: {
+          included: true,
+
+          name: "Singlife Health Plus Rider",
+
+          annualPremium: 2000,
+        },
+
+        premiumPayment: {
+          /*
+           * John is currently within the
+           * $300 Additional Withdrawal Limit band.
+           *
+           * MediShield Life premium is excluded.
+           */
+          medisaveAmount: 300,
+
+          /*
+           * $3,400 base
+           * + $2,000 rider
+           * - $300 MediSave
+           * = $5,100 annual cash payment
+           */
+          cashAmount: 5100,
+        },
+      },
 
       longTermCareBasePlan: null,
 
@@ -244,22 +272,35 @@ export function seedPolicies() {
 
       status: "active",
 
+      /*
+       * The generic premium stores only the
+       * base Hospitalisation plan premium.
+       */
       premium: {
-        amount: 450,
+        amount: 3400,
 
-        frequency: "monthly",
+        frequency: "annual",
       },
 
       benefits: [
         createSeedBenefit({
           type: "hospitalisation",
 
+          customName: "Hospitalisation Coverage",
+
           lifeAssured,
 
           hospitalClass: "private",
 
-          notes:
-            "Integrated Shield Plan with rider.",
+          riderType: "yes",
+
+          notes: "Integrated Shield Plan with rider.",
+
+          source: "base-plan",
+
+          hasUserInput: false,
+
+          isBasePlanBenefit: true,
         }),
       ],
     },
@@ -267,8 +308,7 @@ export function seedPolicies() {
     {
       id: createPlannerId(),
 
-      policyName:
-        "Participating Whole Life Plan",
+      policyName: "Participating Whole Life Plan",
 
       policyType: "whole_life",
 
@@ -330,8 +370,7 @@ export function seedPolicies() {
     {
       id: createPlannerId(),
 
-      policyName:
-        "Standalone Critical Illness Plan",
+      policyName: "Standalone Critical Illness Plan",
 
       policyType: "term",
 
@@ -367,11 +406,9 @@ export function seedPolicies() {
     {
       id: createPlannerId(),
 
-      policyName:
-        "Disability Income Protection",
+      policyName: "Disability Income Protection",
 
-      policyType:
-        "disability_income",
+      policyType: "disability_income",
 
       longTermCareBasePlan: null,
 
@@ -401,8 +438,7 @@ export function seedPolicies() {
 
           payoutDuration: 60,
 
-          notes:
-            "Monthly disability income benefit.",
+          notes: "Monthly disability income benefit.",
         }),
       ],
     },
@@ -410,11 +446,9 @@ export function seedPolicies() {
     {
       id: createPlannerId(),
 
-      policyName:
-        "Personal Accident Plan",
+      policyName: "Personal Accident Plan",
 
-      policyType:
-        "personal_accident",
+      policyType: "personal_accident",
 
       longTermCareBasePlan: null,
 
@@ -462,11 +496,9 @@ export function seedPolicies() {
     {
       id: createPlannerId(),
 
-      policyName:
-        "Investment-Linked Protection Plan",
+      policyName: "Investment-Linked Protection Plan",
 
-      policyType:
-        "ilp_protection",
+      policyType: "ilp_protection",
 
       longTermCareBasePlan: null,
 
@@ -506,8 +538,7 @@ export function seedPolicies() {
     {
       id: createPlannerId(),
 
-      policyName:
-        "Child Education Endowment",
+      policyName: "Child Education Endowment",
 
       policyType: "endowment",
 
@@ -545,8 +576,7 @@ export function seedPolicies() {
 
           amount: 80000,
 
-          notes:
-            "Estimated maturity value for education funding.",
+          notes: "Estimated maturity value for education funding.",
         }),
       ],
     },
@@ -554,8 +584,7 @@ export function seedPolicies() {
     {
       id: createPlannerId(),
 
-      policyName:
-        "Paid-Up Whole Life Plan",
+      policyName: "Paid-Up Whole Life Plan",
 
       policyType: "whole_life",
 
@@ -622,6 +651,14 @@ function createSeedBenefit({
   adlRequirement = null,
 
   notes = "",
+
+  source = "user-added",
+
+  hasUserInput = true,
+
+  isSuggested = false,
+
+  isBasePlanBenefit = false,
 }) {
   return {
     id: createPlannerId(),
@@ -648,15 +685,15 @@ function createSeedBenefit({
 
     notes,
 
-    source: "user-added",
+    source,
 
     status: "existing",
 
-    hasUserInput: true,
+    hasUserInput,
 
-    isSuggested: false,
+    isSuggested,
 
-    isBasePlanBenefit: false,
+    isBasePlanBenefit,
   };
 }
 

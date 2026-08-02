@@ -216,6 +216,10 @@ function createPolicyModalController() {
       policyFormController.updatePremiumFields();
     },
 
+    updateHospitalisationFields() {
+      policyFormController.updateHospitalisationFields();
+    },
+
     handleInsurerChange() {
       policyFormController.handleInsurerChange();
     },
@@ -272,6 +276,16 @@ function bindModuleEvents() {
 
     onHospitalisationRiderChange() {
       policyFormController.updateHospitalisationRiderFields();
+
+      policyFormController.syncHospitalisationBaseBenefit();
+
+      renderDraftBenefits();
+    },
+
+    onHospitalisationWardTypeChange() {
+      policyFormController.syncHospitalisationBaseBenefit();
+
+      renderDraftBenefits();
     },
 
     onHospitalisationPremiumChange() {
@@ -338,6 +352,8 @@ function bindModuleEvents() {
 
 function savePolicy() {
   clearPolicyFormMessage();
+
+  policyFormController.syncHospitalisationBaseBenefit();
 
   const formData = readPolicyFormData(elements);
 

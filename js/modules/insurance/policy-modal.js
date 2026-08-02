@@ -23,6 +23,7 @@ export function createPolicyModal({
   populateBenefitTypeOptions,
   updateLongTermCareBasePlanField,
   updatePremiumFields,
+  updateHospitalisationFields,
   handleInsurerChange,
 
   closeBenefitEditor,
@@ -85,6 +86,8 @@ export function createPolicyModal({
 
     updatePremiumFields();
 
+    updateHospitalisationFields();
+
     renderDraftBenefits();
 
     openModal(elements.policyModal);
@@ -122,6 +125,20 @@ export function createPolicyModal({
     elements.premiumInput.value = "";
 
     elements.premiumFrequencySelect.value = "";
+
+    elements.hospitalisationWardTypeSelect.value = "";
+
+    elements.hospitalisationRiderCheckbox.checked = false;
+
+    elements.hospitalisationRiderNameInput.value = "";
+
+    elements.hospitalisationRiderPremiumInput.value = "";
+
+    elements.hospitalisationMedisaveInput.value = "";
+
+    elements.hospitalisationCashInput.value = "0";
+
+    updateHospitalisationFields();
 
     elements.policyFormMessage.textContent = "";
 

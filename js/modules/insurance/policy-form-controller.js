@@ -7,6 +7,7 @@ import {
 
 import {
   createEmptyBenefit,
+  createHospitalisationBaseBenefit,
   createLongTermCareBaseBenefit,
 } from "../../factories/benefit-factory.js";
 
@@ -155,9 +156,9 @@ export function createPolicyFormController({
 
         updateLongTermCareBasePlanField();
 
-        updateHospitalisationFields({
-          applyDefaultMedisave: policyType === "hospitalisation",
-        });
+        updateHospitalisationFields();
+
+        updatePremiumFields();
 
         renderDraftBenefits();
 
@@ -173,15 +174,28 @@ export function createPolicyFormController({
 
     updateLongTermCareBasePlanField();
 
-    const defaultBenefitTypes = POLICY_TYPE_DEFAULT_BENEFITS[policyType] ?? [];
-
     const lifeAssured = getPolicyLifeAssured();
 
-    const suggestedBenefits = defaultBenefitTypes.map(function (benefitType) {
-      return createEmptyBenefit(benefitType, lifeAssured);
+    if (policyType === "hospitalisation") {
+      setDraftBenefits([createHospitalisationBaseBenefit(lifeAssured)]);
+    } else {
+      const defaultBenefitTypes =
+        POLICY_TYPE_DEFAULT_BENEFITS[policyType] ?? [];
+
+      const suggestedBenefits = defaultBenefitTypes.map(function (benefitType) {
+        return createEmptyBenefit(benefitType, lifeAssured);
+      });
+
+      setDraftBenefits(suggestedBenefits);
+    }
+
+    updateHospitalisationFields({
+      applyDefaultMedisave: policyType === "hospitalisation",
     });
 
-    setDraftBenefits(suggestedBenefits);
+    updatePremiumFields();
+
+    syncHospitalisationBaseBenefit();
 
     renderDraftBenefits();
   }
@@ -335,6 +349,36 @@ export function createPolicyFormController({
         : "Enter the MediSave amount shown in the insurer's records.";
   }
 
+  function syncHospitalisationBaseBenefit() {
+    if (elements.policyTypeSelect.value !== "hospitalisation") {
+      return;
+    }
+
+    const hospitalClass = elements.hospitalisationWardTypeSelect.value;
+
+    const hasRider = elements.hospitalisationRiderCheckbox.checked;
+
+    const updatedBenefits = getDraftBenefits().map(function (benefit) {
+      if (benefit.type !== "hospitalisation") {
+        return benefit;
+      }
+
+      return {
+        ...benefit,
+
+        lifeAssured: getPolicyLifeAssured(),
+
+        hospitalClass,
+
+        riderType: hasRider ? "yes" : "no",
+
+        hasRider,
+      };
+    });
+
+    setDraftBenefits(updatedBenefits);
+  }
+
   /* ========================================
      HELPERS
   ======================================== */
@@ -351,6 +395,7 @@ export function createPolicyFormController({
     updateHospitalisationFields,
     updateHospitalisationRiderFields,
     updateHospitalisationPremiumPayment,
+    syncHospitalisationBaseBenefit,
     handleInsurerChange,
     updatePremiumFields,
     updateLongTermCareBasePlanField,

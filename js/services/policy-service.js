@@ -56,6 +56,12 @@ export function updatePolicy(policyId, updates) {
         updatedPolicy.premium = clonePolicyPremium(updates.premium);
       }
 
+      if (Object.prototype.hasOwnProperty.call(updates, "hospitalisation")) {
+        updatedPolicy.hospitalisation = cloneHospitalisation(
+          updates.hospitalisation,
+        );
+      }
+
       if (Object.prototype.hasOwnProperty.call(updates, "benefits")) {
         updatedPolicy.benefits = cloneBenefits(updates.benefits);
       }
@@ -96,6 +102,7 @@ export function clearPolicies() {
 function createPolicyRecord({
   policyName,
   policyType,
+  hospitalisation = null,
   longTermCareBasePlan = null,
   insurer,
   policyNumber,
@@ -108,6 +115,9 @@ function createPolicyRecord({
     id: createPlannerId(),
     policyName,
     policyType,
+
+    hospitalisation: cloneHospitalisation(hospitalisation),
+
     longTermCareBasePlan,
     insurer,
     policyNumber,
@@ -136,5 +146,33 @@ function clonePolicyPremium(premium) {
     amount: Number(premium.amount) || 0,
 
     frequency: premium.frequency || null,
+  };
+}
+
+function cloneHospitalisation(hospitalisation) {
+  if (!hospitalisation || typeof hospitalisation !== "object") {
+    return null;
+  }
+
+  const rider = hospitalisation.rider || {};
+
+  const premiumPayment = hospitalisation.premiumPayment || {};
+
+  return {
+    wardType: hospitalisation.wardType || "",
+
+    rider: {
+      included: rider.included === true,
+
+      name: rider.name || "",
+
+      annualPremium: Number(rider.annualPremium) || 0,
+    },
+
+    premiumPayment: {
+      medisaveAmount: Number(premiumPayment.medisaveAmount) || 0,
+
+      cashAmount: Number(premiumPayment.cashAmount) || 0,
+    },
   };
 }

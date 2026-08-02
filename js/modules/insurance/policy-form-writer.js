@@ -27,6 +27,41 @@ export function writePolicyFormData(
   elements.premiumInput.value = policy.premium?.amount || "";
 
   elements.premiumFrequencySelect.value = policy.premium?.frequency || "annual";
+
+  writeHospitalisationFields(elements, policy);
+}
+
+/* ========================================
+   HOSPITALISATION WRITER
+======================================== */
+
+function writeHospitalisationFields(elements, policy) {
+  const hospitalisation = policy.hospitalisation || {};
+
+  const rider = hospitalisation.rider || {};
+
+  const premiumPayment = hospitalisation.premiumPayment || {};
+
+  elements.hospitalisationWardTypeSelect.value = hospitalisation.wardType || "";
+
+  elements.hospitalisationRiderCheckbox.checked = rider.included === true;
+
+  elements.hospitalisationRiderNameInput.value = rider.name || "";
+
+  elements.hospitalisationRiderPremiumInput.value =
+    Number(rider.annualPremium) > 0 ? String(rider.annualPremium) : "";
+
+  elements.hospitalisationMedisaveInput.value = Number.isFinite(
+    Number(premiumPayment.medisaveAmount),
+  )
+    ? String(premiumPayment.medisaveAmount)
+    : "";
+
+  elements.hospitalisationCashInput.value = Number.isFinite(
+    Number(premiumPayment.cashAmount),
+  )
+    ? String(premiumPayment.cashAmount)
+    : "0";
 }
 
 /* ========================================
