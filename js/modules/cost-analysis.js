@@ -3,12 +3,10 @@
 import {
   getAssets,
   getClientProfile,
-  getCommitments,
   getExpenses,
   getGoals,
   getLiabilities,
 } from "../state/client-plan.js";
-
 import {
   CPF_ANNUAL_WAGE_CEILING,
   CPF_ORDINARY_WAGE_CEILING,
@@ -360,9 +358,7 @@ function calculateTenYearProjection({
       projectionDate,
     );
 
-    const insurancePremiums = getNonNegativeNumber(
-      getCommitments().insurancePremiums,
-    );
+    const insurancePremiums = getEffectiveMonthlyInsurancePremium();
 
     const monthlyCommitments = activeCashCommitments + insurancePremiums;
 
