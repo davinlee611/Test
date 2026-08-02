@@ -1055,9 +1055,3 @@ function getFiniteNumber(value) {
 function getNonNegativeNumber(value) {
   return Math.max(0, getFiniteNumber(value));
 }
-
-function getFiniteNumber(value) {
-  const number = Number(value);
-
-  return Number.isFinite(number) ? number : 0;
-}
