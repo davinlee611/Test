@@ -358,11 +358,29 @@ function createPolicyMetadata(policy) {
     POLICY_STATUS_LABELS[policy.status] || "Status not specified",
   );
 
-  appendMetadataItem(
-    metadata,
+  if (policy.policyType === "hospitalisation") {
+    appendMetadataItem(
+      metadata,
 
-    getPremiumDescription(policy.premium),
-  );
+      `Base: ${getPremiumDescription(policy.premium)}`,
+    );
+
+    const rider = policy.hospitalisation?.rider;
+
+    if (rider?.included === true && Number(rider.annualPremium) > 0) {
+      appendMetadataItem(
+        metadata,
+
+        [`Rider: ${formatCurrency(rider.annualPremium)}`, "Annual"].join(" · "),
+      );
+    }
+  } else {
+    appendMetadataItem(
+      metadata,
+
+      getPremiumDescription(policy.premium),
+    );
+  }
 
   if (policy.policyType === "long_term_care" && policy.longTermCareBasePlan) {
     const basePlanLabel = getLongTermCareBasePlanLabel(
