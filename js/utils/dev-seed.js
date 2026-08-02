@@ -253,12 +253,12 @@ export function seedPolicies() {
           medisaveAmount: 300,
 
           /*
-           * $3,400 base
+           * $3,700 base
            * + $2,000 rider
            * - $300 MediSave
-           * = $5,100 annual cash payment
+           * = $5,400 annual cash payment
            */
-          cashAmount: 5100,
+          cashAmount: 5400,
         },
       },
 
