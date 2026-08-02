@@ -2094,17 +2094,18 @@ button.insurance-validation-count:disabled {
   transition: transform 0.2s ease;
 }
 
-.hospitalisation-rider-switch input:checked
-  + .hospitalisation-rider-slider {
+.hospitalisation-rider-switch input:checked + .hospitalisation-rider-slider {
   background: var(--primary-color);
 }
 
-.hospitalisation-rider-switch input:checked
+.hospitalisation-rider-switch
+  input:checked
   + .hospitalisation-rider-slider::before {
   transform: translateX(18px);
 }
 
-.hospitalisation-rider-switch input:focus-visible
+.hospitalisation-rider-switch
+  input:focus-visible
   + .hospitalisation-rider-slider {
   box-shadow:
     0 0 0 2px #ffffff,
@@ -3410,8 +3411,7 @@ button.insurance-validation-count:disabled {
   min-width: 0;
 }
 
-.cost-of-wants-cpf-panel--scheme
-  .cost-of-wants-cpf-content {
+.cost-of-wants-cpf-panel--scheme .cost-of-wants-cpf-content {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -4529,20 +4529,71 @@ button.insurance-validation-count:disabled {
 
 /* Projection table */
 
-.analysis-projection-legend {
-  display: flex;
-  align-items: center;
-  gap: 18px;
+.analysis-projection-period {
+  min-width: 420px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.analysis-projection-period legend {
+  margin-bottom: 8px;
 
   color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
 }
 
-.analysis-projection-legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
+.analysis-projection-period-options {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  padding: 5px;
+
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.analysis-projection-period-options label {
+  position: relative;
+  cursor: pointer;
+}
+
+.analysis-projection-period-options input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.analysis-projection-period-options span {
+  display: grid;
+  min-height: 38px;
+  padding: 7px 10px;
+  place-items: center;
+
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  border-radius: 7px;
+
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.analysis-projection-period-options input:checked + span {
+  color: var(--primary-color);
+  background: var(--card-background);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.analysis-projection-period-options input:focus-visible + span {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 .analysis-projection-note {
@@ -4574,10 +4625,17 @@ button.insurance-validation-count:disabled {
 
 .analysis-projection-table {
   width: 100%;
-  min-width: 1450px;
 
   border-collapse: separate;
   border-spacing: 0;
+}
+
+.analysis-projection-table--cashflow {
+  min-width: 900px;
+}
+
+.analysis-projection-table--cpf {
+  min-width: 1100px;
 }
 
 .analysis-projection-table th,
@@ -4610,10 +4668,6 @@ button.insurance-validation-count:disabled {
   background: var(--primary-surface);
 
   text-align: center;
-}
-
-.analysis-projection-table thead tr:nth-child(2) th {
-  top: 41px;
 }
 
 .analysis-projection-table th:first-child,
@@ -4705,6 +4759,11 @@ button.insurance-validation-count:disabled {
   .analysis-section-heading--split {
     flex-direction: column;
   }
+
+  .analysis-projection-period {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 @media (max-width: 700px) {
@@ -4719,5 +4778,9 @@ button.insurance-validation-count:disabled {
 
   .analysis-placeholder-badge {
     margin-left: 70px;
+  }
+
+  .analysis-projection-period-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

@@ -2297,8 +2297,8 @@
                 <h2>Analyse Commitments &amp; Savings Plan</h2>
 
                 <p>
-                  Review the client's current cashflow and project withdrawable
-                  assets and CPF balances over the next 10 years.
+                  Review the client's current cashflow, CPF movements, and
+                  long-term ability to fund the selected retirement goal.
                 </p>
               </div>
             </div>
@@ -2439,33 +2439,128 @@
               </div>
             </section>
 
-            <!-- Projection -->
+            <!-- Cashflow Projection -->
             <section class="analysis-section-card">
               <div
                 class="analysis-section-heading analysis-section-heading--split"
               >
                 <div>
-                  <span class="analysis-section-eyebrow">10-Year Outlook</span>
+                  <span
+                    id="analysisProjectionPeriodLabel"
+                    class="analysis-section-eyebrow"
+                  >
+                    10-Year Outlook · Monthly Rows
+                  </span>
 
-                  <h3>Monthly Cashflow Projection (10 Years)</h3>
+                  <h3>Monthly Cashflow Projection</h3>
 
                   <p>
-                    Projects withdrawable assets and CPF balances using CPF
-                    contribution and allocation rates effective from 1 January
-                    2027.
+                    Projects the client's withdrawable assets using income,
+                    expenses, cash-paid liabilities, insurance premiums, and
+                    planned goal withdrawals.
                   </p>
                 </div>
 
-                <div class="analysis-projection-legend">
-                  <span>
-                    <i class="fa-solid fa-wallet"></i>
-                    Cash
-                  </span>
+                <fieldset class="analysis-projection-period">
+                  <legend>Projection Period</legend>
 
-                  <span>
-                    <i class="fa-solid fa-building-columns"></i>
-                    CPF
-                  </span>
+                  <div class="analysis-projection-period-options">
+                    <label>
+                      <input
+                        type="radio"
+                        name="analysisProjectionPeriod"
+                        value="10"
+                        checked
+                      />
+
+                      <span>10 Years</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        name="analysisProjectionPeriod"
+                        value="20"
+                      />
+
+                      <span>20 Years</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        name="analysisProjectionPeriod"
+                        value="30"
+                      />
+
+                      <span>30 Years</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        name="analysisProjectionPeriod"
+                        value="40"
+                      />
+
+                      <span>40 Years</span>
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        name="analysisProjectionPeriod"
+                        value="mortality"
+                      />
+
+                      <span>Mortality Age</span>
+                    </label>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div class="analysis-projection-note">
+                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+
+                <p>
+                  The 10-year projection shows monthly rows. Longer projections
+                  are summarised into 12-month annual periods. Expenses remain
+                  unchanged, salary increases annually, and liabilities stop
+                  after their recorded repayment end dates.
+                </p>
+              </div>
+
+              <div class="analysis-projection-table-wrap">
+                <table
+                  class="analysis-projection-table analysis-projection-table--cashflow"
+                >
+                  <thead>
+                    <tr>
+                      <th id="analysisCashflowPeriodHeading">Month</th>
+                      <th>Start Balance</th>
+                      <th>Net Cashflow</th>
+                      <th>Big Ticket Outflow</th>
+                      <th>End Balance</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="analysisCashflowProjectionTableBody"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- CPF Flow Projection -->
+            <section class="analysis-section-card">
+              <div class="analysis-section-heading">
+                <div>
+                  <span class="analysis-section-eyebrow">CPF Position</span>
+
+                  <h3>Monthly CPF Flow Projection</h3>
+
+                  <p>
+                    Projects CPF contributions, housing-related OA outflows, and
+                    the resulting OA, SA or RA, and MA balances.
+                  </p>
                 </div>
               </div>
 
@@ -2473,42 +2568,29 @@
                 <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
 
                 <p>
-                  Draft assumptions: expenses remain unchanged, salary increases
-                  annually, CPF interest and investment growth are not included,
-                  and liabilities stop after their recorded repayment end dates.
+                  This projection uses CPF contribution and allocation rates
+                  effective from 1 January 2027. CPF interest is not included
+                  yet. Longer ranges use the same annual periods selected above.
                 </p>
               </div>
 
               <div class="analysis-projection-table-wrap">
-                <table class="analysis-projection-table">
+                <table
+                  class="analysis-projection-table analysis-projection-table--cpf"
+                >
                   <thead>
                     <tr>
-                      <th rowspan="2">Date</th>
-
-                      <th colspan="4">Withdrawable Assets</th>
-
-                      <th colspan="3">CPF Monthly Movement</th>
-
-                      <th colspan="3">CPF End Balance</th>
-                    </tr>
-
-                    <tr>
-                      <th>Start Balance</th>
-                      <th>Net Cashflow</th>
-                      <th>Big Ticket Outflow</th>
-                      <th>End Balance</th>
-
+                      <th id="analysisCpfPeriodHeading">Month</th>
                       <th>CPF Inflow</th>
                       <th>OA Outflow</th>
-                      <th>Net CPF</th>
-
-                      <th>OA</th>
-                      <th>SA / RA</th>
-                      <th>MA</th>
+                      <th>Net CPF Flow</th>
+                      <th>OA Balance</th>
+                      <th>SA / RA Balance</th>
+                      <th>MA Balance</th>
                     </tr>
                   </thead>
 
-                  <tbody id="analysisProjectionTableBody"></tbody>
+                  <tbody id="analysisCpfProjectionTableBody"></tbody>
                 </table>
               </div>
             </section>
@@ -3612,8 +3694,8 @@
           </section>
 
           <!-- ========================================
-       POLICY BENEFITS
-  ======================================== -->
+              POLICY BENEFITS
+          ======================================== -->
 
           <section class="policy-modal-section">
             <div
