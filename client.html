@@ -3401,10 +3401,24 @@
 
               <!-- Hospitalisation Rider -->
               <div id="hospitalisationRiderGroup" class="form-group" hidden>
-                <label class="hospitalisation-rider-checkbox">
-                  <input id="hospitalisationRiderCheckbox" type="checkbox" />
-                  <span>Hospitalisation Rider</span>
-                </label>
+                <div class="hospitalisation-rider-control">
+                  <span class="hospitalisation-rider-label">
+                    Hospitalisation Rider
+                  </span>
+
+                  <label class="hospitalisation-rider-switch">
+                    <input
+                      id="hospitalisationRiderCheckbox"
+                      type="checkbox"
+                      aria-label="Hospitalisation Rider"
+                    />
+
+                    <span
+                      class="hospitalisation-rider-slider"
+                      aria-hidden="true"
+                    ></span>
+                  </label>
+                </div>
 
                 <p class="form-helper-text">
                   Select this if a rider is attached to the base plan.
