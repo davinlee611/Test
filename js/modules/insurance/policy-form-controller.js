@@ -81,7 +81,15 @@ export function createPolicyFormController({
       !usesFixedAnnualPremium &&
       elements.policyStatusSelect.value === "paid_up";
 
+    const isLimitedPay =
+      !usesFixedAnnualPremium &&
+      elements.policyStatusSelect.value === "limited_pay";
+
     elements.policyStatusGroup.hidden = usesFixedAnnualPremium;
+
+    elements.premiumPaymentEndDateGroup.hidden = !isLimitedPay;
+
+    elements.premiumPaymentEndDateInput.required = isLimitedPay;
 
     elements.premiumAmountGroup.hidden = isPaidUp;
 
@@ -92,10 +100,6 @@ export function createPolicyFormController({
     elements.premiumFrequencySelect.required =
       !isPaidUp && !usesFixedAnnualPremium;
 
-    elements.premiumPaymentEndDateGroup.hidden = !isLimitedPay;
-
-    elements.premiumPaymentEndDateInput.required = isLimitedPay;
-
     if (isHospitalisation) {
       elements.policyPremiumLabel.textContent = "Annual Premium";
     } else if (isLongTermCare) {
@@ -103,15 +107,10 @@ export function createPolicyFormController({
     } else {
       elements.policyPremiumLabel.textContent = "Premium";
     }
-
-    const isLimitedPay =
-      !usesFixedAnnualPremium &&
-      elements.policyStatusSelect.value === "limited_pay";
   }
-
   /* ========================================
    POLICY TYPE DETAILS
-======================================== */
+  ======================================== */
 
   function updatePolicyTypeDetailSections() {
     const policyType = elements.policyTypeSelect.value;
