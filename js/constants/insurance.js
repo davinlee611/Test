@@ -17,6 +17,9 @@ export const POLICY_TYPE_LABELS = {
 
 export const POLICY_STATUS_LABELS = {
   active: "Active",
+
+  limited_pay: "Active (Limited-Pay)",
+
   paid_up: "Active (Paid-up)",
 };
 
@@ -37,7 +40,6 @@ export const BENEFIT_LABELS = {
   medical_reimbursement: "Medical Reimbursement",
   disability_income: "Disability Income",
   long_term_care_income: "Long-Term Care",
-  monthly_benefit: "Monthly Benefit",
   other: "Other",
 };
 
@@ -64,7 +66,7 @@ export const POLICY_TYPE_DEFAULT_BENEFITS = {
 
   endowment: ["death"],
 
-  retirement: ["death", "monthly_benefit"],
+  retirement: ["death"],
 
   ilp_protection: ["death", "tpd"],
 
@@ -105,9 +107,9 @@ export const POLICY_TYPE_BENEFIT_OPTIONS = {
 
   term: ["death", "tpd", "critical_illness", "early_critical_illness", "other"],
 
-  endowment: ["death", "other"],
+  endowment: ["death", "tpd", "other"],
 
-  retirement: ["death", "monthly_benefit", "other"],
+  retirement: ["death", "tpd", "other"],
 
   ilp_protection: [
     "death",

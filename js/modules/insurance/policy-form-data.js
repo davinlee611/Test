@@ -80,6 +80,12 @@ export function readPolicyFormData(elements) {
 
     premiumAmount,
 
+    premiumPaymentEndDate:
+      !usesFixedAnnualPremium &&
+      elements.policyStatusSelect.value === "limited_pay"
+        ? elements.premiumPaymentEndDateInput.value
+        : null,
+
     premiumFrequency: usesFixedAnnualPremium
       ? "annual"
       : elements.premiumFrequencySelect.value,
@@ -105,5 +111,41 @@ export function readPolicyFormData(elements) {
           },
         }
       : null,
+
+    endowment:
+      policyType === "endowment"
+        ? {
+            maturityDate: elements.endowmentMaturityDateInput.value,
+
+            guaranteedMaturityAmount: getWholeNumber(
+              elements.endowmentGuaranteedAmountInput.value,
+            ),
+
+            projectedNonGuaranteedAmount: getWholeNumber(
+              elements.endowmentNonGuaranteedAmountInput.value,
+            ),
+          }
+        : null,
+
+    retirement:
+      policyType === "retirement"
+        ? {
+            payoutStartAge: getWholeNumber(
+              elements.retirementPayoutStartAgeInput.value,
+            ),
+
+            monthlyIncome: getWholeNumber(
+              elements.retirementMonthlyIncomeInput.value,
+            ),
+
+            payoutTerm: elements.retirementPayoutTermSelect.value,
+
+            payoutDurationMonths:
+              elements.retirementPayoutTermSelect.value === "limited"
+                ? getWholeNumber(elements.retirementPayoutDurationInput.value) *
+                  12
+                : null,
+          }
+        : null,
   };
 }

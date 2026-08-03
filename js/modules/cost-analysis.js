@@ -49,6 +49,8 @@ import {
 
 import { calculateMonthlyCpfInterest } from "../services/cpf-interest-calculator.js";
 
+import { getPolicyCashInflow } from "../services/policy-cashflow-service.js";
+
 /* ========================================
    CONFIGURATION
 ======================================== */
@@ -169,6 +171,10 @@ const bonusIncomeElement = document.getElementById(
 
 const otherIncomeElement = document.getElementById(
   "analysisOtherMonthlyIncome",
+);
+
+const retirementPolicyIncomeElement = document.getElementById(
+  "analysisRetirementPolicyIncome",
 );
 
 const totalMonthlyIncomeElement = document.getElementById(
@@ -446,6 +452,20 @@ function calculateCurrentMonthlyCashflow() {
 
   const otherMonthlyIncome = incomeSummary.monthlyOtherIncome;
 
+  const currentPolicyCashInflow = getPolicyCashInflow({
+    projectionDate: now,
+
+    dateOfBirth: profile.dateOfBirth,
+  });
+
+  const retirementPolicyIncome = currentPolicyCashInflow.items
+    .filter(function (item) {
+      return item.policyType === "retirement";
+    })
+    .reduce(function (total, item) {
+      return total + item.amount;
+    }, 0);
+
   const employmentIncomeAfterCpf =
     employmentIncome - incomeSummary.monthlyEmployeeCpf;
 
@@ -455,8 +475,11 @@ function calculateCurrentMonthlyCashflow() {
   const monthlyBonusAfterCpf = annualBonusAfterCpf / 12;
 
   const totalMonthlyIncome = isSelfEmployed
-    ? incomeSummary.monthlyTakeHomeIncome
-    : employmentIncomeAfterCpf + monthlyBonusAfterCpf + otherMonthlyIncome;
+    ? incomeSummary.monthlyTakeHomeIncome + retirementPolicyIncome
+    : employmentIncomeAfterCpf +
+      monthlyBonusAfterCpf +
+      otherMonthlyIncome +
+      retirementPolicyIncome;
 
   const monthlyExpenses = calculateTotalMonthlyExpenses(getExpenses());
 
@@ -477,6 +500,8 @@ function calculateCurrentMonthlyCashflow() {
     annualNetTradeIncome,
 
     otherMonthlyIncome,
+
+    retirementPolicyIncome,
 
     isSelfEmployed,
 
@@ -559,6 +584,8 @@ function renderCurrentMonthlyCashflow(cashflow) {
   );
 
   setCurrency(otherIncomeElement, cashflow.otherMonthlyIncome);
+
+  setCurrency(retirementPolicyIncomeElement, cashflow.retirementPolicyIncome);
 
   setCurrency(totalMonthlyIncomeElement, cashflow.totalMonthlyIncome);
 
@@ -952,8 +979,9 @@ function calculateProjection({
       ? 0
       : currentCashflow.annualBonus * salaryGrowthFactor;
 
-    const projectedAnnualNetTradeIncome =
-      currentCashflow.annualNetTradeIncome * salaryGrowthFactor;
+    const projectedAnnualNetTradeIncome = hasReachedFybc
+      ? 0
+      : currentCashflow.annualNetTradeIncome * salaryGrowthFactor;
 
     const age = calculateAgeOnDate(profile.dateOfBirth, projectionDate);
 
@@ -985,9 +1013,10 @@ function calculateProjection({
 
       annualNetTradeIncome: projectedAnnualNetTradeIncome,
 
-      netPlatformEarnings:
-        getNonNegativeNumber(assets.income?.netPlatformEarnings) *
-        salaryGrowthFactor,
+      netPlatformEarnings: hasReachedFybc
+        ? 0
+        : getNonNegativeNumber(assets.income?.netPlatformEarnings) *
+          salaryGrowthFactor,
 
       sepMedisaveOverrideEnabled: assets.income?.sepMedisaveOverrideEnabled,
 
@@ -1019,15 +1048,23 @@ function calculateProjection({
       projectionDate,
     );
 
-    const insurancePremiums = getEffectiveMonthlyInsurancePremium();
+    const insurancePremiums =
+      getEffectiveMonthlyInsurancePremium(projectionDate);
 
     const monthlyCommitments = activeCashCommitments + insurancePremiums;
+
+    const policyCashInflow = getPolicyCashInflow({
+      projectionDate,
+
+      dateOfBirth: profile.dateOfBirth,
+    });
 
     const cashflowBeforeCpfLife =
       projectedIncome.monthlyTakeHomeIncome +
       projectedIncome.monthlyBonusAfterCpf -
       monthlyExpenses -
-      monthlyCommitments;
+      monthlyCommitments +
+      policyCashInflow.total;
 
     const goalsDue = getGoalsDueInMonth(goals, projectionDate);
 
@@ -1358,6 +1395,11 @@ function calculateProjection({
 
       startWithdrawableBalance,
       netCashflow,
+
+      policyCashInflow: policyCashInflow.total,
+
+      policyCashInflowItems: policyCashInflow.items,
+
       bigTicketOutflow,
       endWithdrawableBalance: withdrawableBalance,
 
@@ -1560,6 +1602,10 @@ function aggregateProjectionIntoAnnualRows(monthlyRows) {
 
       netCashflow: sumProjectionValues(periodRows, "netCashflow"),
 
+      policyCashInflow: sumProjectionValues(periodRows, "policyCashInflow"),
+
+      policyCashInflowItems: aggregatePolicyCashInflowItems(periodRows),
+
       bigTicketOutflow: sumProjectionValues(periodRows, "bigTicketOutflow"),
 
       endWithdrawableBalance: lastRow.endWithdrawableBalance,
@@ -1623,6 +1669,34 @@ function sumNestedProjectionValues(rows, objectName, propertyName) {
   return rows.reduce(function (total, row) {
     return total + getFiniteNumber(row[objectName]?.[propertyName]);
   }, 0);
+}
+
+function aggregatePolicyCashInflowItems(rows) {
+  const itemsByPolicy = new Map();
+
+  rows
+    .flatMap(function (row) {
+      return row.policyCashInflowItems || [];
+    })
+    .forEach(function (item) {
+      const key = item.policyId || `${item.policyType}:${item.policyName}`;
+
+      const existing = itemsByPolicy.get(key);
+
+      if (existing) {
+        existing.amount += getFiniteNumber(item.amount);
+
+        return;
+      }
+
+      itemsByPolicy.set(key, {
+        ...item,
+
+        amount: getFiniteNumber(item.amount),
+      });
+    });
+
+  return Array.from(itemsByPolicy.values());
 }
 
 function calculateProjectedIncome({
@@ -1758,6 +1832,8 @@ function renderCashflowProjectionTable({
       createCurrencyCell(row.startWithdrawableBalance),
 
       createCurrencyCell(row.netCashflow, true),
+
+      createPolicyInflowCell(row),
 
       createGoalOutflowCell(row),
 
@@ -2076,6 +2152,38 @@ function createBhsCell(row) {
       : "Confirmed";
 
   cell.append(amount, basis);
+
+  return cell;
+}
+
+function createPolicyInflowCell(row) {
+  const cell = document.createElement("td");
+
+  cell.className = "analysis-policy-inflow-cell";
+
+  if (getFiniteNumber(row.policyCashInflow) <= 0) {
+    cell.textContent = "—";
+
+    return cell;
+  }
+
+  const amount = document.createElement("strong");
+
+  amount.textContent = `+${formatCurrency(row.policyCashInflow)}`;
+
+  cell.append(amount);
+
+  const names = (row.policyCashInflowItems || []).map(function (item) {
+    return item.policyName;
+  });
+
+  if (names.length > 0) {
+    const note = document.createElement("small");
+
+    note.textContent = names.join(", ");
+
+    cell.append(note);
+  }
 
   return cell;
 }

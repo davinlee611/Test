@@ -31,8 +31,6 @@ export function getBenefitAmountDescription(benefit) {
 
     case "disability_income":
     case "long_term_care_income":
-    case "monthly_benefit":
-      return `${formattedAmount} per month`;
 
     default:
       return formattedAmount;

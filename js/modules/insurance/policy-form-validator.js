@@ -84,13 +84,53 @@ export function validatePolicyDraft({
     return "Select the policy status.";
   }
 
-  if (formData.status === "active") {
+  if (["active", "limited_pay"].includes(formData.status)) {
     if (formData.premiumAmount <= 0) {
       return "Enter the policy premium.";
     }
 
     if (!formData.premiumFrequency) {
       return "Select the premium frequency.";
+    }
+  }
+
+  if (
+    formData.status === "limited_pay" &&
+    !/^\d{4}-\d{2}$/.test(formData.premiumPaymentEndDate || "")
+  ) {
+    return "Select the premium payment end date.";
+  }
+
+  if (formData.policyType === "endowment") {
+    if (!/^\d{4}-\d{2}$/.test(formData.endowment?.maturityDate || "")) {
+      return "Select the endowment maturity date.";
+    }
+
+    if (formData.endowment.guaranteedMaturityAmount <= 0) {
+      return "Enter the guaranteed maturity amount.";
+    }
+  }
+
+  if (formData.policyType === "retirement") {
+    const retirement = formData.retirement;
+
+    if (retirement?.payoutStartAge <= 0) {
+      return "Enter the retirement payout start age.";
+    }
+
+    if (retirement?.monthlyIncome <= 0) {
+      return "Enter the monthly retirement income.";
+    }
+
+    if (!retirement?.payoutTerm) {
+      return "Select the retirement payout term.";
+    }
+
+    if (
+      retirement.payoutTerm === "limited" &&
+      retirement.payoutDurationMonths <= 0
+    ) {
+      return "Enter the retirement payout duration.";
     }
   }
 

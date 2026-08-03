@@ -8,8 +8,6 @@ export const CPF_OA_BASE_INTEREST_RATE = 0.025;
 
 export const CPF_SMRA_BASE_INTEREST_RATE = 0.04;
 
-export const CPF_EXTRA_INTEREST_LIMIT = 60000;
-
 export const CPF_OA_EXTRA_INTEREST_CAP = 20000;
 
 /* ========================================

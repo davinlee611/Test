@@ -5256,7 +5256,7 @@ button.insurance-validation-count:disabled {
 }
 
 .analysis-projection-table--cashflow {
-  min-width: 900px;
+  min-width: 1050px;
 }
 
 .analysis-projection-table--cpf {
@@ -5328,6 +5328,28 @@ button.insurance-validation-count:disabled {
 
 .analysis-projection-table td.is-positive {
   color: var(--success-color);
+}
+
+.analysis-policy-inflow-cell {
+  color: var(--success-color) !important;
+  text-align: center !important;
+}
+
+.analysis-policy-inflow-cell strong,
+.analysis-policy-inflow-cell small {
+  display: block;
+}
+
+.analysis-policy-inflow-cell small {
+  max-width: 190px;
+  margin: 4px auto 0;
+  overflow: hidden;
+
+  color: var(--text-secondary);
+
+  font-size: 11px;
+  font-weight: 500;
+  text-overflow: ellipsis;
 }
 
 .analysis-projection-goal-cell {

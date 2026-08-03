@@ -92,6 +92,10 @@ export function createPolicyFormController({
     elements.premiumFrequencySelect.required =
       !isPaidUp && !usesFixedAnnualPremium;
 
+    elements.premiumPaymentEndDateGroup.hidden = !isLimitedPay;
+
+    elements.premiumPaymentEndDateInput.required = isLimitedPay;
+
     if (isHospitalisation) {
       elements.policyPremiumLabel.textContent = "Annual Premium";
     } else if (isLongTermCare) {
@@ -100,11 +104,47 @@ export function createPolicyFormController({
       elements.policyPremiumLabel.textContent = "Premium";
     }
 
-    if (isPaidUp) {
-      elements.premiumInput.value = "";
+    const isLimitedPay =
+      !usesFixedAnnualPremium &&
+      elements.policyStatusSelect.value === "limited_pay";
+  }
 
-      elements.premiumFrequencySelect.value = "";
-    }
+  /* ========================================
+   POLICY TYPE DETAILS
+======================================== */
+
+  function updatePolicyTypeDetailSections() {
+    const policyType = elements.policyTypeSelect.value;
+
+    const isEndowment = policyType === "endowment";
+
+    const isRetirement = policyType === "retirement";
+
+    elements.endowmentDetailsSection.hidden = !isEndowment;
+
+    elements.endowmentMaturityDateInput.required = isEndowment;
+
+    elements.endowmentGuaranteedAmountInput.required = isEndowment;
+
+    elements.retirementDetailsSection.hidden = !isRetirement;
+
+    elements.retirementPayoutStartAgeInput.required = isRetirement;
+
+    elements.retirementMonthlyIncomeInput.required = isRetirement;
+
+    elements.retirementPayoutTermSelect.required = isRetirement;
+
+    updateRetirementPayoutDurationField();
+  }
+
+  function updateRetirementPayoutDurationField() {
+    const needsDuration =
+      elements.policyTypeSelect.value === "retirement" &&
+      elements.retirementPayoutTermSelect.value === "limited";
+
+    elements.retirementPayoutDurationGroup.hidden = !needsDuration;
+
+    elements.retirementPayoutDurationInput.required = needsDuration;
   }
 
   /* ========================================
@@ -206,7 +246,7 @@ export function createPolicyFormController({
     elements.longTermCareCashInput.value = String(payment.cashAmount);
   }
 
-/* ========================================
+  /* ========================================
    POLICY TYPE
 ======================================== */
 
@@ -232,6 +272,8 @@ export function createPolicyFormController({
         updateHospitalisationFields();
 
         updatePremiumFields();
+
+        updatePolicyTypeDetailSections();
 
         renderDraftBenefits();
 
@@ -267,6 +309,8 @@ export function createPolicyFormController({
     });
 
     updatePremiumFields();
+
+    updatePolicyTypeDetailSections();
 
     if (policyType === "long_term_care") {
       handleLongTermCarePremiumInput();
@@ -493,6 +537,9 @@ export function createPolicyFormController({
     syncHospitalisationBaseBenefit,
     handleInsurerChange,
     updatePremiumFields,
+    updatePolicyTypeDetailSections,
+
+    updateRetirementPayoutDurationField,
     updateLongTermCareBasePlanField,
     handleLongTermCareBasePlanChange,
     handleLongTermCarePremiumInput,

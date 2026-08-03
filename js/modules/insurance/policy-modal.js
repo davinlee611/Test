@@ -23,6 +23,7 @@ export function createPolicyModal({
   populateBenefitTypeOptions,
   updateLongTermCareBasePlanField,
   updatePremiumFields,
+  updatePolicyTypeDetailSections,
   updateHospitalisationFields,
   handleInsurerChange,
 
@@ -46,6 +47,8 @@ export function createPolicyModal({
     elements.policyLifeAssuredInput.value = getClientProfile().fullName || "";
 
     updatePremiumFields();
+
+    updatePolicyTypeDetailSections();
 
     openModal(elements.policyModal);
   }
@@ -86,6 +89,8 @@ export function createPolicyModal({
 
     updatePremiumFields();
 
+    updatePolicyTypeDetailSections();
+
     updateHospitalisationFields();
 
     renderDraftBenefits();
@@ -122,6 +127,8 @@ export function createPolicyModal({
 
     elements.policyStatusSelect.value = "";
 
+    elements.premiumPaymentEndDateInput.value = "";
+
     elements.premiumInput.value = "";
 
     elements.premiumFrequencySelect.value = "";
@@ -142,6 +149,20 @@ export function createPolicyModal({
 
     elements.longTermCareCashInput.value = "0";
 
+    elements.endowmentMaturityDateInput.value = "";
+
+    elements.endowmentGuaranteedAmountInput.value = "";
+
+    elements.endowmentNonGuaranteedAmountInput.value = "";
+
+    elements.retirementPayoutStartAgeInput.value = "";
+
+    elements.retirementMonthlyIncomeInput.value = "";
+
+    elements.retirementPayoutTermSelect.value = "";
+
+    elements.retirementPayoutDurationInput.value = "";
+
     updateHospitalisationFields();
 
     elements.policyFormMessage.textContent = "";
@@ -153,6 +174,8 @@ export function createPolicyModal({
     setPreviousPolicyType("");
 
     updatePremiumFields();
+
+    updatePolicyTypeDetailSections();
 
     closeBenefitEditor();
 

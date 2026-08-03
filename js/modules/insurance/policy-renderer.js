@@ -52,10 +52,79 @@ function createPolicyCardContent(policy, validationSummary) {
 
     createPolicyValidationPreview(validationSummary),
 
+    createPolicyPayoutSummary(policy),
+
     createPolicyCoverageSummary(policy),
   );
 
   return content;
+}
+
+function createPolicyPayoutSummary(policy) {
+  const section = document.createElement("section");
+
+  section.className = "policy-coverage-summary";
+
+  const heading = document.createElement("h5");
+
+  heading.className = "policy-coverage-summary__title";
+
+  const row = document.createElement("div");
+
+  row.className = "policy-coverage-summary__row";
+
+  const detail = document.createElement("span");
+
+  const amount = document.createElement("strong");
+
+  if (policy.policyType === "endowment") {
+    const endowment = policy.endowment || {};
+
+    const total =
+      (Number(endowment.guaranteedMaturityAmount) || 0) +
+      (Number(endowment.projectedNonGuaranteedAmount) || 0);
+
+    if (!endowment.maturityDate && total <= 0) {
+      section.hidden = true;
+
+      return section;
+    }
+
+    heading.textContent = "Maturity Payout";
+
+    detail.textContent = formatYearMonth(endowment.maturityDate);
+
+    amount.textContent = formatCurrency(total);
+  } else if (policy.policyType === "retirement") {
+    const retirement = policy.retirement || {};
+
+    if (Number(retirement.monthlyIncome) <= 0) {
+      section.hidden = true;
+
+      return section;
+    }
+
+    const duration =
+      retirement.payoutTerm === "lifetime"
+        ? "Lifetime"
+        : `${Number(retirement.payoutDurationMonths) / 12} years`;
+
+    heading.textContent = "Retirement Payout";
+
+    detail.textContent = `From age ${retirement.payoutStartAge} · ${duration}`;
+
+    amount.textContent = `${formatCurrency(retirement.monthlyIncome)} / month`;
+  } else {
+    section.hidden = true;
+
+    return section;
+  }
+
+  row.append(detail, amount);
+
+  section.append(heading, row);
+
+  return section;
 }
 
 /* ========================================
@@ -285,8 +354,6 @@ function getBenefitAmount(benefit) {
 
     case "disability_income":
     case "long_term_care_income":
-    case "monthly_benefit":
-      return `${formattedAmount} / month`;
 
     case "medical_reimbursement":
       return `${formattedAmount} / event`;
@@ -358,7 +425,9 @@ function createPolicyMetadata(policy) {
     POLICY_STATUS_LABELS[policy.status] || "Status not specified",
   );
 
-  if (policy.policyType === "hospitalisation") {
+  if (policy.status === "paid_up") {
+    appendMetadataItem(metadata, "No further premiums");
+  } else if (policy.policyType === "hospitalisation") {
     appendMetadataItem(
       metadata,
 
@@ -379,6 +448,14 @@ function createPolicyMetadata(policy) {
       metadata,
 
       getPremiumDescription(policy.premium),
+    );
+  }
+
+  if (policy.status === "limited_pay" && policy.premiumPaymentEndDate) {
+    appendMetadataItem(
+      metadata,
+
+      `Premiums end ${formatYearMonth(policy.premiumPaymentEndDate)}`,
     );
   }
 
@@ -421,20 +498,11 @@ function createPolicyMetadata(policy) {
    POLICY DESCRIPTION
 ======================================== */
 
-function createPolicyDescription({
-  insurer,
-  policyType,
-  lifeAssured,
-}) {
-  const descriptionParts = [
-    insurer,
-    policyType,
-  ];
+function createPolicyDescription({ insurer, policyType, lifeAssured }) {
+  const descriptionParts = [insurer, policyType];
 
   if (lifeAssured) {
-    descriptionParts.push(
-      `Life Assured: ${lifeAssured}`,
-    );
+    descriptionParts.push(`Life Assured: ${lifeAssured}`);
   }
 
   return descriptionParts.join(" · ");
@@ -444,39 +512,26 @@ function createPolicyDescription({
    POLICY TYPE CLASS
 ======================================== */
 
-function getPolicyTypeClass(
-  policyType,
-) {
+function getPolicyTypeClass(policyType) {
   const policyTypeClasses = {
-    hospitalisation:
-      "policy-card-content--hospitalisation",
+    hospitalisation: "policy-card-content--hospitalisation",
 
-    whole_life:
-      "policy-card-content--life",
+    whole_life: "policy-card-content--life",
 
-    term:
-      "policy-card-content--critical-illness",
+    term: "policy-card-content--critical-illness",
 
-    disability_income:
-      "policy-card-content--disability",
+    disability_income: "policy-card-content--disability",
 
-    personal_accident:
-      "policy-card-content--accident",
+    personal_accident: "policy-card-content--accident",
 
-    ilp_protection:
-      "policy-card-content--investment",
+    ilp_protection: "policy-card-content--investment",
 
-    endowment:
-      "policy-card-content--endowment",
+    endowment: "policy-card-content--endowment",
 
-    long_term_care:
-      "policy-card-content--long-term-care",
+    long_term_care: "policy-card-content--long-term-care",
   };
 
-  return (
-    policyTypeClasses[policyType] ||
-    "policy-card-content--other"
-  );
+  return policyTypeClasses[policyType] || "policy-card-content--other";
 }
 
 /* ========================================
@@ -512,4 +567,26 @@ function appendMetadataItem(container, text) {
   item.textContent = text;
 
   container.appendChild(item);
+}
+
+function formatYearMonth(value) {
+  const match = /^(\d{4})-(\d{2})$/.exec(value || "");
+
+  if (!match) {
+    return "Date not provided";
+  }
+
+  return new Intl.DateTimeFormat("en-SG", {
+    month: "short",
+
+    year: "numeric",
+  }).format(
+    new Date(
+      Number(match[1]),
+
+      Number(match[2]) - 1,
+
+      1,
+    ),
+  );
 }

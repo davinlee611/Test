@@ -103,8 +103,6 @@ function getBenefitAmountValidationMessage(benefitType) {
 
     case "disability_income":
     case "long_term_care_income":
-    case "monthly_benefit":
-      return "Enter the monthly benefit.";
 
     default:
       return "Enter a coverage amount " + "greater than zero.";

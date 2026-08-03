@@ -43,22 +43,6 @@ export function initializeAssetsIncome() {
 }
 
 /* ========================================
-   RESET
-======================================== */
-
-export function resetAssetsIncome() {
-  controller?.reset();
-}
-
-/* ========================================
-   RENDER
-======================================== */
-
-export function renderAssetsIncome() {
-  controller?.render();
-}
-
-/* ========================================
    COMPONENT CREATION
 ======================================== */
 

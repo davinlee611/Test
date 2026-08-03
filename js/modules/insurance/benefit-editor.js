@@ -221,7 +221,6 @@ export function createBenefitEditor({
         showBenefitAmountField("Medical Reimbursement per Event");
         break;
 
-      case "monthly_benefit":
       case "disability_income":
         showBenefitAmountField("Monthly Benefit");
         break;

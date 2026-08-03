@@ -121,18 +121,6 @@ export function getPolicyValidationItems(
     });
   }
 
-  const monthlyBenefits = benefitsByType["monthly_benefit"] ?? [];
-
-  if (monthlyBenefits.length > 1) {
-    items.push({
-      severity: "review",
-
-      valid: true,
-
-      message: `Multiple Monthly Benefits found (${monthlyBenefits.length}).`,
-    });
-  }
-
   const criticalIllnessBenefits = benefitsByType["critical_illness"] ?? [];
 
   const acceleratedCiBenefits = criticalIllnessBenefits.filter(

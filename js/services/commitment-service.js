@@ -6,16 +6,13 @@ import { getCommitments, getPolicies } from "../state/client-plan.js";
    MONTHLY INSURANCE PREMIUM
 ======================================== */
 
-export function getEffectiveMonthlyInsurancePremium() {
+export function getEffectiveMonthlyInsurancePremium(
+  projectionDate = new Date(),
+) {
   const policies = getPolicies();
 
-  /*
-   * Once the Insurance Portfolio contains policies,
-   * it takes precedence even when the cash premium
-   * happens to be zero.
-   */
   if (Array.isArray(policies) && policies.length > 0) {
-    return calculatePortfolioMonthlyPremium(policies);
+    return calculatePortfolioMonthlyPremium(policies, projectionDate);
   }
 
   return getNonNegativeNumber(getCommitments()?.insurancePremiums);
@@ -25,13 +22,16 @@ export function getEffectiveMonthlyInsurancePremium() {
    INSURANCE PORTFOLIO
 ======================================== */
 
-export function calculatePortfolioMonthlyPremium(policies = []) {
+export function calculatePortfolioMonthlyPremium(
+  policies = [],
+  projectionDate = new Date(),
+) {
   if (!Array.isArray(policies)) {
     return 0;
   }
 
   return policies.reduce(function (runningTotal, policy) {
-    return runningTotal + getPolicyMonthlyCashPremium(policy);
+    return runningTotal + getPolicyMonthlyCashPremium(policy, projectionDate);
   }, 0);
 }
 
@@ -106,7 +106,11 @@ function getPolicyAnnualMedisavePremium(
    PREMIUM CONVERSION
 ======================================== */
 
-function getPolicyMonthlyCashPremium(policy) {
+function getPolicyMonthlyCashPremium(policy, projectionDate) {
+  if (!isPolicyPremiumPayable(policy, projectionDate)) {
+    return 0;
+  }
+
   if (policy?.policyType === "hospitalisation") {
     const annualCashAmount = getNonNegativeNumber(
       policy.hospitalisation?.premiumPayment?.cashAmount,
@@ -124,6 +128,50 @@ function getPolicyMonthlyCashPremium(policy) {
   }
 
   return convertPremiumToMonthly(policy?.premium);
+}
+
+function isPolicyPremiumPayable(policy, projectionDate) {
+  if (policy?.status === "paid_up") {
+    return false;
+  }
+
+  if (policy?.status !== "limited_pay") {
+    return true;
+  }
+
+  const endDate = parseYearMonth(policy.premiumPaymentEndDate);
+
+  if (!endDate || !(projectionDate instanceof Date)) {
+    return false;
+  }
+
+  const projectionMonth =
+    projectionDate.getFullYear() * 12 + projectionDate.getMonth();
+
+  const finalPremiumMonth = endDate.year * 12 + endDate.month;
+
+  return projectionMonth <= finalPremiumMonth;
+}
+
+function parseYearMonth(value) {
+  const match = /^(\d{4})-(\d{2})$/.exec(value || "");
+
+  if (!match) {
+    return null;
+  }
+
+  const year = Number(match[1]);
+
+  const month = Number(match[2]) - 1;
+
+  if (month < 0 || month > 11) {
+    return null;
+  }
+
+  return {
+    year,
+    month,
+  };
 }
 
 export function convertPremiumToMonthly(premium) {

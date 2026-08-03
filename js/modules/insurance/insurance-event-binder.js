@@ -22,6 +22,7 @@ export function bindInsuranceEvents({
   onInsurerChange,
   onPolicyStatusChange,
   onPolicyTypeChange,
+  onRetirementPayoutTermChange,
   onLongTermCareBasePlanChange,
   onLongTermCarePremiumChange,
   onPolicyLifeAssuredInput,
@@ -61,6 +62,11 @@ export function bindInsuranceEvents({
   elements.policyStatusSelect?.addEventListener("change", onPolicyStatusChange);
 
   elements.policyTypeSelect?.addEventListener("change", onPolicyTypeChange);
+
+  elements.retirementPayoutTermSelect?.addEventListener(
+    "change",
+    onRetirementPayoutTermChange,
+  );
 
   elements.hospitalisationWardTypeSelect?.addEventListener(
     "change",

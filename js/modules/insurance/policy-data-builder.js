@@ -24,28 +24,26 @@ export function buildPolicyData({ formData, benefits }) {
 
     status: formData.status,
 
-    premium: getPolicyPremium(formData),
+    premiumPaymentEndDate: formData.premiumPaymentEndDate,
+
+    /*
+     * Keep the recorded premium even when
+     * the policy is paid-up.
+     *
+     * Paid-up status determines whether the
+     * premium affects cashflow. It should not
+     * destroy the policy's historical premium.
+     */
+    premium: {
+      amount: formData.premiumAmount,
+
+      frequency: formData.premiumFrequency,
+    },
+
+    endowment: formData.endowment,
+
+    retirement: formData.retirement,
 
     benefits,
-  };
-}
-
-/* ========================================
-   PREMIUM
-======================================== */
-
-function getPolicyPremium(formData) {
-  if (formData.status === "paid_up") {
-    return {
-      amount: 0,
-
-      frequency: null,
-    };
-  }
-
-  return {
-    amount: formData.premiumAmount,
-
-    frequency: formData.premiumFrequency,
   };
 }

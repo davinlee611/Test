@@ -60,6 +60,14 @@ export function getInsuranceElements() {
 
     policyStatusSelect: document.getElementById("policyStatusSelect"),
 
+    premiumPaymentEndDateGroup: document.getElementById(
+      "premiumPaymentEndDateGroup",
+    ),
+
+    premiumPaymentEndDateInput: document.getElementById(
+      "premiumPaymentEndDateInput",
+    ),
+
     premiumAmountGroup: document.getElementById("premiumAmountGroup"),
 
     premiumFrequencyGroup: document.getElementById("premiumFrequencyGroup"),
@@ -211,5 +219,43 @@ export function getInsuranceElements() {
     ),
 
     longTermCareCashInput: document.getElementById("longTermCareCashInput"),
+
+    endowmentDetailsSection: document.getElementById("endowmentDetailsSection"),
+
+    endowmentMaturityDateInput: document.getElementById(
+      "endowmentMaturityDateInput",
+    ),
+
+    endowmentGuaranteedAmountInput: document.getElementById(
+      "endowmentGuaranteedAmountInput",
+    ),
+
+    endowmentNonGuaranteedAmountInput: document.getElementById(
+      "endowmentNonGuaranteedAmountInput",
+    ),
+
+    retirementDetailsSection: document.getElementById(
+      "retirementDetailsSection",
+    ),
+
+    retirementPayoutStartAgeInput: document.getElementById(
+      "retirementPayoutStartAgeInput",
+    ),
+
+    retirementMonthlyIncomeInput: document.getElementById(
+      "retirementMonthlyIncomeInput",
+    ),
+
+    retirementPayoutTermSelect: document.getElementById(
+      "retirementPayoutTermSelect",
+    ),
+
+    retirementPayoutDurationGroup: document.getElementById(
+      "retirementPayoutDurationGroup",
+    ),
+
+    retirementPayoutDurationInput: document.getElementById(
+      "retirementPayoutDurationInput",
+    ),
   };
 }

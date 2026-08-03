@@ -216,6 +216,10 @@ function createPolicyModalController() {
       policyFormController.updatePremiumFields();
     },
 
+    updatePolicyTypeDetailSections() {
+      policyFormController.updatePolicyTypeDetailSections();
+    },
+
     updateHospitalisationFields() {
       policyFormController.updateHospitalisationFields();
     },
@@ -324,6 +328,10 @@ function bindModuleEvents() {
 
     onPolicyTypeChange() {
       policyFormController.handlePolicyTypeChange();
+    },
+
+    onRetirementPayoutTermChange() {
+      policyFormController.updateRetirementPayoutDurationField();
     },
 
     onLongTermCareBasePlanChange() {

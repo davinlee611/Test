@@ -66,6 +66,14 @@ export function updatePolicy(policyId, updates) {
         updatedPolicy.longTermCare = cloneLongTermCare(updates.longTermCare);
       }
 
+      if (Object.prototype.hasOwnProperty.call(updates, "endowment")) {
+        updatedPolicy.endowment = cloneEndowment(updates.endowment);
+      }
+
+      if (Object.prototype.hasOwnProperty.call(updates, "retirement")) {
+        updatedPolicy.retirement = cloneRetirement(updates.retirement);
+      }
+
       if (Object.prototype.hasOwnProperty.call(updates, "benefits")) {
         updatedPolicy.benefits = cloneBenefits(updates.benefits);
       }
@@ -113,12 +121,17 @@ function createPolicyRecord({
   policyNumber,
   lifeAssured,
   status,
+  premiumPaymentEndDate = null,
   premium,
+  endowment = null,
+  retirement = null,
   benefits = [],
 }) {
   return {
     id: createPlannerId(),
+
     policyName,
+
     policyType,
 
     hospitalisation: cloneHospitalisation(hospitalisation),
@@ -126,12 +139,22 @@ function createPolicyRecord({
     longTermCare: cloneLongTermCare(longTermCare),
 
     longTermCareBasePlan,
+
     insurer,
+
     policyNumber,
+
     lifeAssured,
+
     status,
 
+    premiumPaymentEndDate,
+
     premium: clonePolicyPremium(premium),
+
+    endowment: cloneEndowment(endowment),
+
+    retirement: cloneRetirement(retirement),
 
     benefits: cloneBenefits(benefits),
   };
@@ -197,5 +220,39 @@ function cloneLongTermCare(longTermCare) {
 
       cashAmount: Number(premiumPayment.cashAmount) || 0,
     },
+  };
+}
+
+function cloneEndowment(endowment) {
+  if (!endowment || typeof endowment !== "object") {
+    return null;
+  }
+
+  return {
+    maturityDate: endowment.maturityDate || "",
+
+    guaranteedMaturityAmount: Number(endowment.guaranteedMaturityAmount) || 0,
+
+    projectedNonGuaranteedAmount:
+      Number(endowment.projectedNonGuaranteedAmount) || 0,
+  };
+}
+
+function cloneRetirement(retirement) {
+  if (!retirement || typeof retirement !== "object") {
+    return null;
+  }
+
+  return {
+    payoutStartAge: Number(retirement.payoutStartAge) || 0,
+
+    monthlyIncome: Number(retirement.monthlyIncome) || 0,
+
+    payoutTerm: retirement.payoutTerm || "",
+
+    payoutDurationMonths:
+      retirement.payoutTerm === "limited"
+        ? Number(retirement.payoutDurationMonths) || 0
+        : null,
   };
 }

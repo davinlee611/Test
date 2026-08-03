@@ -53,14 +53,6 @@ export function resetLiabilities() {
 }
 
 /* ========================================
-   RENDERING
-======================================== */
-
-export function renderLiabilities() {
-  liabilityController?.render();
-}
-
-/* ========================================
    COMPONENT CREATION
 ======================================== */
 

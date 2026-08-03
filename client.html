@@ -2656,6 +2656,11 @@
                         <td id="analysisOtherMonthlyIncome">$0</td>
                       </tr>
 
+                      <tr>
+                        <td>Retirement Policy Income</td>
+                        <td id="analysisRetirementPolicyIncome">$0</td>
+                      </tr>
+
                       <tr class="analysis-table-total">
                         <td>Total Monthly Income</td>
                         <td id="analysisTotalMonthlyIncome">$0</td>
@@ -2777,8 +2782,9 @@
                     projections are summarised into calendar years. Employment
                     income and annual bonus increase at the selected rate at the
                     beginning of each new projection year. Expenses and
-                    insurance premiums remain unchanged, while liabilities stop
-                    after their recorded repayment end dates.
+                    insurance premium amounts remain unchanged. Limited-pay
+                    premiums and liabilities stop after their recorded end
+                    dates.
                   </p>
                 </div>
 
@@ -2817,6 +2823,7 @@
                         <th id="analysisCashflowPeriodHeading">Month</th>
                         <th>Start Balance</th>
                         <th>Net Cashflow</th>
+                        <th>Policy Inflow</th>
                         <th>Big Ticket Outflow</th>
                         <th>End Balance</th>
                       </tr>
@@ -2999,7 +3006,7 @@
               <div>
                 <span class="analysis-section-eyebrow">Next Stage</span>
 
-                <h3>Savings Plan Analysis</h3>
+                <h3>Analysis</h3>
 
                 <p>
                   This section will compare the client's projected assets
@@ -3814,8 +3821,28 @@
 
                   <option value="active">Active</option>
 
+                  <option value="limited_pay">Active (Limited-Pay)</option>
+
                   <option value="paid_up">Active (Paid-up)</option>
                 </select>
+              </div>
+
+              <!-- Premium Payment End Date -->
+              <div id="premiumPaymentEndDateGroup" class="form-group" hidden>
+                <label for="premiumPaymentEndDateInput">
+                  Premium Payment End Date
+                  <span class="required-label">*</span>
+                </label>
+
+                <input
+                  id="premiumPaymentEndDateInput"
+                  class="form-control"
+                  type="month"
+                />
+
+                <p class="form-helper-text">
+                  Cashflow will stop this premium after the selected month.
+                </p>
               </div>
 
               <!-- Premium -->
@@ -4084,6 +4111,180 @@
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================
+    ENDOWMENT DETAILS
+======================================== -->
+
+          <section
+            id="endowmentDetailsSection"
+            class="policy-modal-section"
+            hidden
+          >
+            <div class="policy-modal-section-header">
+              <div>
+                <h3>Endowment Payout</h3>
+
+                <p>
+                  Record the maturity proceeds that will become a cash inflow.
+                </p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="endowmentMaturityDateInput">
+                  Maturity Date
+                  <span class="required-label">*</span>
+                </label>
+
+                <input
+                  id="endowmentMaturityDateInput"
+                  class="form-control"
+                  type="month"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="endowmentGuaranteedAmountInput">
+                  Guaranteed Maturity Amount
+                  <span class="required-label">*</span>
+                </label>
+
+                <div class="currency-input">
+                  <span>$</span>
+
+                  <input
+                    id="endowmentGuaranteedAmountInput"
+                    class="form-control"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group form-group--full">
+                <label for="endowmentNonGuaranteedAmountInput">
+                  Projected Non-Guaranteed Amount
+                  <span class="optional-label">(Optional)</span>
+                </label>
+
+                <div class="currency-input">
+                  <span>$</span>
+
+                  <input
+                    id="endowmentNonGuaranteedAmountInput"
+                    class="form-control"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="0"
+                  />
+                </div>
+
+                <p class="form-helper-text">
+                  The projection will add both amounts in the maturity month.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================
+    RETIREMENT POLICY DETAILS
+======================================== -->
+
+          <section
+            id="retirementDetailsSection"
+            class="policy-modal-section"
+            hidden
+          >
+            <div class="policy-modal-section-header">
+              <div>
+                <h3>Retirement Income</h3>
+
+                <p>
+                  Record when the policy income starts and how long it is paid.
+                </p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="retirementPayoutStartAgeInput">
+                  Payout Start Age
+                  <span class="required-label">*</span>
+                </label>
+
+                <input
+                  id="retirementPayoutStartAgeInput"
+                  class="form-control"
+                  type="number"
+                  min="1"
+                  max="120"
+                  step="1"
+                  inputmode="numeric"
+                  placeholder="65"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="retirementMonthlyIncomeInput">
+                  Monthly Retirement Income
+                  <span class="required-label">*</span>
+                </label>
+
+                <div class="currency-input">
+                  <span>$</span>
+
+                  <input
+                    id="retirementMonthlyIncomeInput"
+                    class="form-control"
+                    type="number"
+                    min="1"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="retirementPayoutTermSelect">
+                  Payout Term
+                  <span class="required-label">*</span>
+                </label>
+
+                <select id="retirementPayoutTermSelect" class="form-control">
+                  <option value="">Select payout term</option>
+
+                  <option value="lifetime">Lifetime</option>
+
+                  <option value="limited">Limited Duration</option>
+                </select>
+              </div>
+
+              <div id="retirementPayoutDurationGroup" class="form-group" hidden>
+                <label for="retirementPayoutDurationInput">
+                  Payout Duration (Years)
+                  <span class="required-label">*</span>
+                </label>
+
+                <input
+                  id="retirementPayoutDurationInput"
+                  class="form-control"
+                  type="number"
+                  min="1"
+                  step="1"
+                  inputmode="numeric"
+                  placeholder="10"
+                />
               </div>
             </div>
           </section>

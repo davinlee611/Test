@@ -24,6 +24,9 @@ export function writePolicyFormData(
 
   elements.policyStatusSelect.value = policy.status || "";
 
+  elements.premiumPaymentEndDateInput.value =
+    policy.premiumPaymentEndDate || "";
+
   elements.premiumInput.value = policy.premium?.amount || "";
 
   elements.premiumFrequencySelect.value = policy.premium?.frequency || "annual";
@@ -31,6 +34,78 @@ export function writePolicyFormData(
   writeHospitalisationFields(elements, policy);
 
   writeLongTermCareFields(elements, policy);
+
+  writeEndowmentFields(elements, policy);
+
+  writeRetirementFields(elements, policy);
+}
+
+/* ========================================
+   ENDOWMENT WRITER
+======================================== */
+
+function writeEndowmentFields(
+  elements,
+  policy,
+) {
+  const endowment =
+    policy.endowment || {};
+
+  elements.endowmentMaturityDateInput.value =
+    endowment.maturityDate || "";
+
+  elements.endowmentGuaranteedAmountInput.value =
+    Number(
+      endowment.guaranteedMaturityAmount,
+    ) > 0
+      ? String(
+          endowment.guaranteedMaturityAmount,
+        )
+      : "";
+
+  elements.endowmentNonGuaranteedAmountInput.value =
+    Number(
+      endowment.projectedNonGuaranteedAmount,
+    ) > 0
+      ? String(
+          endowment.projectedNonGuaranteedAmount,
+        )
+      : "";
+}
+
+/* ========================================
+   RETIREMENT WRITER
+======================================== */
+
+function writeRetirementFields(
+  elements,
+  policy,
+) {
+  const retirement =
+    policy.retirement || {};
+
+  elements.retirementPayoutStartAgeInput.value =
+    Number(retirement.payoutStartAge) > 0
+      ? String(retirement.payoutStartAge)
+      : "";
+
+  elements.retirementMonthlyIncomeInput.value =
+    Number(retirement.monthlyIncome) > 0
+      ? String(retirement.monthlyIncome)
+      : "";
+
+  elements.retirementPayoutTermSelect.value =
+    retirement.payoutTerm || "";
+
+  elements.retirementPayoutDurationInput.value =
+    Number(
+      retirement.payoutDurationMonths,
+    ) > 0
+      ? String(
+          retirement.payoutDurationMonths /
+            12,
+        )
+      : "";
 }
 
 /* ========================================

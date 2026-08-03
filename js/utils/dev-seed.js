@@ -550,6 +550,10 @@ export function seedPolicies() {
 
       policyType: "endowment",
 
+      hospitalisation: null,
+
+      longTermCare: null,
+
       longTermCareBasePlan: null,
 
       insurer: "Manulife",
@@ -560,11 +564,23 @@ export function seedPolicies() {
 
       status: "paid_up",
 
+      premiumPaymentEndDate: null,
+
       premium: {
         amount: 0,
 
         frequency: null,
       },
+
+      endowment: {
+        maturityDate: createFutureMonthString(10),
+
+        guaranteedMaturityAmount: 60000,
+
+        projectedNonGuaranteedAmount: 20000,
+      },
+
+      retirement: null,
 
       benefits: [
         createSeedBenefit({
@@ -574,17 +590,57 @@ export function seedPolicies() {
 
           amount: 50000,
         }),
+      ],
+    },
 
+    {
+      id: createPlannerId(),
+
+      policyName: "Lifetime Retirement Income Plan",
+
+      policyType: "retirement",
+
+      hospitalisation: null,
+
+      longTermCare: null,
+
+      longTermCareBasePlan: null,
+
+      insurer: "Income Insurance",
+
+      policyNumber: "NTUC-RET-100009",
+
+      lifeAssured,
+
+      status: "paid_up",
+
+      premiumPaymentEndDate: null,
+
+      premium: {
+        amount: 0,
+
+        frequency: null,
+      },
+
+      endowment: null,
+
+      retirement: {
+        payoutStartAge: 65,
+
+        monthlyIncome: 1200,
+
+        payoutTerm: "lifetime",
+
+        payoutDurationMonths: null,
+      },
+
+      benefits: [
         createSeedBenefit({
-          type: "other",
+          type: "death",
 
-          customName: "Maturity Benefit",
+          lifeAssured,
 
-          lifeAssured: "Emily Tan",
-
-          amount: 80000,
-
-          notes: "Estimated maturity value for education funding.",
+          amount: 50000,
         }),
       ],
     },
