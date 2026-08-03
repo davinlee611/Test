@@ -5577,15 +5577,6 @@ button.insurance-validation-count:disabled {
   line-height: 1.45;
 }
 
-.analysis-position-item--primary {
-  background: var(--primary-soft);
-  border-color: rgba(93, 63, 211, 0.3);
-}
-
-.analysis-position-item--primary > strong {
-  color: var(--primary-color);
-}
-
 .analysis-subsection-divider {
   height: 1px;
   margin: 24px 0;
