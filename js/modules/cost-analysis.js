@@ -51,6 +51,13 @@ import { calculateMonthlyCpfInterest } from "../services/cpf-interest-calculator
 
 import { getPolicyCashInflow } from "../services/policy-cashflow-service.js";
 
+import {
+  openModal,
+  closeModal,
+  closeModalOnOverlayClick,
+  closeModalOnEscape,
+} from "../utils/modal.js";
+
 /* ========================================
    CONFIGURATION
 ======================================== */
@@ -193,6 +200,26 @@ const remainingSurplusElement = document.getElementById(
   "analysisRemainingSurplus",
 );
 
+const projectionBreakdownModal = document.getElementById(
+  "projectionBreakdownModal",
+);
+
+const projectionBreakdownTitle = document.getElementById(
+  "projectionBreakdownTitle",
+);
+
+const projectionBreakdownSubtitle = document.getElementById(
+  "projectionBreakdownSubtitle",
+);
+
+const projectionBreakdownContent = document.getElementById(
+  "projectionBreakdownContent",
+);
+
+const closeProjectionBreakdownButton = document.getElementById(
+  "closeProjectionBreakdownButton",
+);
+
 /* ========================================
    INITIALIZATION
 ======================================== */
@@ -240,6 +267,14 @@ export function initializeCostAnalysis() {
   goalFilterOptions?.addEventListener("change", handleGoalFilterChange);
 
   selectAllGoalsButton?.addEventListener("click", handleSelectAllGoals);
+
+  closeProjectionBreakdownButton?.addEventListener("click", function () {
+    closeModal(projectionBreakdownModal);
+  });
+
+  closeModalOnOverlayClick(projectionBreakdownModal);
+
+  closeModalOnEscape(projectionBreakdownModal);
 
   moduleInitialized = true;
 
@@ -1059,9 +1094,10 @@ function calculateProjection({
       dateOfBirth: profile.dateOfBirth,
     });
 
-    const cashflowBeforeCpfLife =
+    const operatingCashflowBeforeCpfLife =
       projectedIncome.monthlyTakeHomeIncome +
-      projectedIncome.monthlyBonusAfterCpf -
+      projectedIncome.monthlyBonusAfterCpf +
+      projectedIncome.monthlyOtherIncome -
       monthlyExpenses -
       monthlyCommitments +
       policyCashInflow.total;
@@ -1157,6 +1193,8 @@ function calculateProjection({
 
     let cpfLifeProjectionStatus = cpfLifeHasStarted ? "started" : "not_started";
 
+    let cpfLifeStartedThisMonth = false;
+
     if (
       !cpfLifeHasStarted &&
       isCpfLifeStartMonth({
@@ -1184,6 +1222,8 @@ function calculateProjection({
         });
 
         cpfLifeHasStarted = true;
+
+        cpfLifeStartedThisMonth = true;
 
         cpfLifeProjectionStatus = "started";
       } else {
@@ -1360,10 +1400,48 @@ function calculateProjection({
       ? activeCpfLifeMonthlyPayout
       : 0;
 
-    const netCashflow = cashflowBeforeCpfLife + cpfLifeCashInflow;
+    const operatingCashflow =
+      operatingCashflowBeforeCpfLife + cpfLifeCashInflow;
 
-    withdrawableBalance =
-      startWithdrawableBalance + netCashflow - bigTicketOutflow;
+    const netMovement = operatingCashflow - bigTicketOutflow;
+
+    const goalOutflowItems = goalsDue.map(function (goal) {
+      return {
+        goalId: goal.id || "",
+
+        goalName: goal.name || "Goal",
+
+        amount: getNonNegativeNumber(goal.targetAmount),
+      };
+    });
+
+    const cashflowBreakdown = {
+      takeHomeIncome: projectedIncome.monthlyTakeHomeIncome,
+
+      bonusIncome: projectedIncome.monthlyBonusAfterCpf,
+
+      otherIncome: projectedIncome.monthlyOtherIncome,
+
+      cpfLifeIncome: cpfLifeCashInflow,
+
+      expenses: monthlyExpenses,
+
+      liabilities: activeCashCommitments,
+
+      insurancePremiums,
+    };
+
+    const cashflowEvents = createCashflowEvents({
+      policyItems: policyCashInflow.items,
+
+      goalItems: goalOutflowItems,
+
+      cpfLifeStartedThisMonth,
+
+      cpfLifeCashInflow,
+    });
+
+    withdrawableBalance = startWithdrawableBalance + netMovement;
 
     const accountNetFlows = {
       oa: oaBalance - startingCpfBalances.oa,
@@ -1394,13 +1472,23 @@ function calculateProjection({
       frsMetAt55,
 
       startWithdrawableBalance,
-      netCashflow,
+
+      operatingCashflow,
+
+      netMovement,
+
+      cashflowBreakdown,
+
+      cashflowEvents,
 
       policyCashInflow: policyCashInflow.total,
 
       policyCashInflowItems: policyCashInflow.items,
 
       bigTicketOutflow,
+
+      goalOutflowItems,
+
       endWithdrawableBalance: withdrawableBalance,
 
       cpfInflow: totalCpfInflow,
@@ -1600,13 +1688,25 @@ function aggregateProjectionIntoAnnualRows(monthlyRows) {
 
       startWithdrawableBalance: firstRow.startWithdrawableBalance,
 
-      netCashflow: sumProjectionValues(periodRows, "netCashflow"),
+      operatingCashflow: sumProjectionValues(periodRows, "operatingCashflow"),
+
+      netMovement: sumProjectionValues(periodRows, "netMovement"),
+
+      cashflowBreakdown: aggregateCashflowBreakdown(periodRows),
+
+      cashflowEvents: periodRows.flatMap(function (row) {
+        return row.cashflowEvents || [];
+      }),
 
       policyCashInflow: sumProjectionValues(periodRows, "policyCashInflow"),
 
       policyCashInflowItems: aggregatePolicyCashInflowItems(periodRows),
 
       bigTicketOutflow: sumProjectionValues(periodRows, "bigTicketOutflow"),
+
+      goalOutflowItems: periodRows.flatMap(function (row) {
+        return row.goalOutflowItems || [];
+      }),
 
       endWithdrawableBalance: lastRow.endWithdrawableBalance,
 
@@ -1686,6 +1786,15 @@ function aggregatePolicyCashInflowItems(rows) {
       if (existing) {
         existing.amount += getFiniteNumber(item.amount);
 
+        existing.maturedThisMonth =
+          existing.maturedThisMonth || item.maturedThisMonth;
+
+        existing.startedThisMonth =
+          existing.startedThisMonth || item.startedThisMonth;
+
+        existing.endedThisMonth =
+          existing.endedThisMonth || item.endedThisMonth;
+
         return;
       }
 
@@ -1697,6 +1806,93 @@ function aggregatePolicyCashInflowItems(rows) {
     });
 
   return Array.from(itemsByPolicy.values());
+}
+
+function aggregateCashflowBreakdown(rows) {
+  const properties = [
+    "takeHomeIncome",
+    "bonusIncome",
+    "otherIncome",
+    "cpfLifeIncome",
+    "expenses",
+    "liabilities",
+    "insurancePremiums",
+  ];
+
+  return properties.reduce(function (breakdown, propertyName) {
+    breakdown[propertyName] = rows.reduce(function (total, row) {
+      return total + getFiniteNumber(row.cashflowBreakdown?.[propertyName]);
+    }, 0);
+
+    return breakdown;
+  }, {});
+}
+
+function createCashflowEvents({
+  policyItems,
+  goalItems,
+  cpfLifeStartedThisMonth,
+  cpfLifeCashInflow,
+}) {
+  const events = [];
+
+  policyItems.forEach(function (item) {
+    if (item.maturedThisMonth) {
+      events.push({
+        label: `${item.policyName} matured`,
+
+        amount: item.amount,
+
+        direction: "inflow",
+      });
+    }
+
+    if (item.startedThisMonth) {
+      events.push({
+        label: `${item.policyName} payout started`,
+
+        amount: item.amount,
+
+        direction: "inflow",
+      });
+    }
+
+    if (item.endedThisMonth) {
+      events.push({
+        label: `${item.policyName} payout ended`,
+
+        amount: item.amount,
+
+        direction: "inflow",
+      });
+    }
+  });
+
+  if (cpfLifeStartedThisMonth && cpfLifeCashInflow > 0) {
+    events.push({
+      label: "CPF LIFE payout started",
+
+      amount: cpfLifeCashInflow,
+
+      direction: "inflow",
+    });
+  }
+
+  goalItems.forEach(function (item) {
+    if (item.amount <= 0) {
+      return;
+    }
+
+    events.push({
+      label: `${item.goalName} paid`,
+
+      amount: item.amount,
+
+      direction: "outflow",
+    });
+  });
+
+  return events;
 }
 
 function calculateProjectedIncome({
@@ -1754,10 +1950,11 @@ function calculateProjectedIncome({
 
   return {
     monthlyTakeHomeIncome: summary.isSelfEmployed
-      ? summary.monthlyTakeHomeIncome
+      ? summary.monthlyNetTradeIncome - summary.monthlySepMedisaveContribution
       : getNonNegativeNumber(monthlyEmploymentIncome) -
-        summary.monthlyEmployeeCpf +
-        getNonNegativeNumber(otherMonthlyIncome),
+        summary.monthlyEmployeeCpf,
+
+    monthlyOtherIncome: getNonNegativeNumber(otherMonthlyIncome),
 
     monthlyBonusAfterCpf: summary.isSelfEmployed ? 0 : monthlyBonusAfterCpf,
 
@@ -1831,11 +2028,7 @@ function renderCashflowProjectionTable({
 
       createCurrencyCell(row.startWithdrawableBalance),
 
-      createCurrencyCell(row.netCashflow, true),
-
-      createPolicyInflowCell(row),
-
-      createGoalOutflowCell(row),
+      createNetMovementCell(row, usesAnnualRows),
 
       createCurrencyCell(row.endWithdrawableBalance, true),
     );
@@ -2156,61 +2349,255 @@ function createBhsCell(row) {
   return cell;
 }
 
-function createPolicyInflowCell(row) {
+function createNetMovementCell(row, usesAnnualRows) {
   const cell = document.createElement("td");
 
-  cell.className = "analysis-policy-inflow-cell";
+  cell.className = "analysis-net-movement-cell analysis-breakdown-cell";
 
-  if (getFiniteNumber(row.policyCashInflow) <= 0) {
-    cell.textContent = "—";
+  cell.classList.toggle("is-positive", row.netMovement > 0);
 
-    return cell;
-  }
+  cell.classList.toggle("is-negative", row.netMovement < 0);
+
+  cell.tabIndex = 0;
+
+  cell.setAttribute("role", "button");
+
+  const periodLabel = getProjectionRowLabel(row, usesAnnualRows);
+
+  cell.setAttribute(
+    "aria-label",
+    `View Net Movement breakdown for ${periodLabel}`,
+  );
 
   const amount = document.createElement("strong");
 
-  amount.textContent = `+${formatCurrency(row.policyCashInflow)}`;
+  amount.className = "analysis-net-movement-amount";
+
+  amount.textContent = formatSignedCurrency(row.netMovement);
 
   cell.append(amount);
 
-  const names = (row.policyCashInflowItems || []).map(function (item) {
-    return item.policyName;
-  });
+  const events = row.cashflowEvents || [];
 
-  if (names.length > 0) {
-    const note = document.createElement("small");
+  if (events.length > 0) {
+    const eventList = document.createElement("div");
 
-    note.textContent = names.join(", ");
+    eventList.className = "analysis-cashflow-event-list";
 
-    cell.append(note);
+    events.forEach(function (event) {
+      const eventLine = document.createElement("small");
+
+      eventLine.className = [
+        "analysis-cashflow-event",
+        `analysis-cashflow-event--${event.direction}`,
+      ].join(" ");
+
+      eventLine.textContent = [
+        event.label,
+        event.direction === "outflow" ? "-" : "+",
+        formatCurrency(event.amount),
+      ].join(" ");
+
+      eventList.append(eventLine);
+    });
+
+    cell.append(eventList);
   }
+
+  const action = document.createElement("small");
+
+  action.className = "analysis-breakdown-cell__action";
+
+  action.textContent = "View breakdown";
+
+  cell.append(action);
+
+  function openBreakdown() {
+    openNetMovementBreakdown({
+      row,
+      periodLabel,
+    });
+  }
+
+  cell.addEventListener("click", openBreakdown);
+
+  cell.addEventListener("keydown", function (event) {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+
+    openBreakdown();
+  });
 
   return cell;
 }
 
-function createGoalOutflowCell(row) {
-  const cell = document.createElement("td");
-
-  cell.className = "analysis-projection-goal-cell";
-
-  if (row.bigTicketOutflow <= 0) {
-    cell.textContent = "—";
-    return cell;
+function openNetMovementBreakdown({ row, periodLabel }) {
+  if (!projectionBreakdownModal || !projectionBreakdownContent) {
+    return;
   }
 
-  const amount = document.createElement("strong");
+  setText(projectionBreakdownTitle, "Net Movement Breakdown");
 
-  amount.textContent = `-${formatCurrency(row.bigTicketOutflow)}`;
+  setText(projectionBreakdownSubtitle, periodLabel);
 
-  const note = document.createElement("small");
+  projectionBreakdownContent.replaceChildren();
 
-  note.className = "analysis-projection-goal-note";
-  note.textContent = row.goalNames.join(", ");
-  note.title = row.goalNames.join(", ");
+  const inflows = [
+    {
+      label: "Take-home income",
+      amount: row.cashflowBreakdown?.takeHomeIncome,
+    },
 
-  cell.append(amount, note);
+    {
+      label: "Annual bonus",
+      amount: row.cashflowBreakdown?.bonusIncome,
+    },
 
-  return cell;
+    {
+      label: "Other income",
+      amount: row.cashflowBreakdown?.otherIncome,
+    },
+
+    ...(row.policyCashInflowItems || []).map(function (item) {
+      return {
+        label: item.policyName,
+        amount: item.amount,
+      };
+    }),
+
+    {
+      label: "CPF LIFE payout",
+      amount: row.cashflowBreakdown?.cpfLifeIncome,
+    },
+  ];
+
+  const outflows = [
+    {
+      label: "Expenses",
+      amount: row.cashflowBreakdown?.expenses,
+    },
+
+    {
+      label: "Liability repayments",
+      amount: row.cashflowBreakdown?.liabilities,
+    },
+
+    {
+      label: "Insurance premiums",
+      amount: row.cashflowBreakdown?.insurancePremiums,
+    },
+
+    ...(row.goalOutflowItems || []).map(function (item) {
+      return {
+        label: item.goalName,
+        amount: item.amount,
+      };
+    }),
+  ];
+
+  appendBreakdownSection({
+    heading: "Inflows",
+    items: inflows,
+    direction: "inflow",
+  });
+
+  appendBreakdownSection({
+    heading: "Outflows",
+    items: outflows,
+    direction: "outflow",
+  });
+
+  const total = document.createElement("div");
+
+  total.className = "projection-breakdown-total";
+
+  const totalLabel = document.createElement("strong");
+
+  totalLabel.textContent = "Net Movement";
+
+  const totalAmount = document.createElement("strong");
+
+  totalAmount.textContent = formatSignedCurrency(row.netMovement);
+
+  totalAmount.classList.toggle("is-positive", row.netMovement > 0);
+
+  totalAmount.classList.toggle("is-negative", row.netMovement < 0);
+
+  total.append(totalLabel, totalAmount);
+
+  projectionBreakdownContent.append(total);
+
+  openModal(projectionBreakdownModal);
+}
+
+function appendBreakdownSection({ heading, items, direction }) {
+  const section = document.createElement("section");
+
+  section.className = "projection-breakdown-section";
+
+  const title = document.createElement("h3");
+
+  title.textContent = heading;
+
+  section.append(title);
+
+  const visibleItems = items.filter(function (item) {
+    return getFiniteNumber(item.amount) > 0;
+  });
+
+  if (visibleItems.length === 0) {
+    const empty = document.createElement("p");
+
+    empty.className = "projection-breakdown-empty";
+
+    empty.textContent = "None";
+
+    section.append(empty);
+  } else {
+    visibleItems.forEach(function (item) {
+      const detailRow = document.createElement("div");
+
+      detailRow.className = "projection-breakdown-row";
+
+      const label = document.createElement("span");
+
+      label.textContent = item.label;
+
+      const amount = document.createElement("strong");
+
+      amount.className =
+        direction === "outflow" ? "is-negative" : "is-positive";
+
+      amount.textContent = [
+        direction === "outflow" ? "-" : "+",
+
+        formatCurrency(item.amount),
+      ].join("");
+
+      detailRow.append(label, amount);
+
+      section.append(detailRow);
+    });
+  }
+
+  projectionBreakdownContent.append(section);
+}
+
+function formatSignedCurrency(value) {
+  const amount = getFiniteNumber(value);
+
+  if (amount > 0) {
+    return `+${formatCurrency(amount)}`;
+  }
+
+  if (amount < 0) {
+    return `-${formatCurrency(Math.abs(amount))}`;
+  }
+
+  return formatCurrency(0);
 }
 
 /* ========================================

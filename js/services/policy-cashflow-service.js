@@ -20,7 +20,7 @@ export function getPolicyCashInflow({
   const items = [];
 
   policies.forEach(function (policy) {
-    const amount = getPolicyInflowAmount({
+    const inflow = getPolicyInflow({
       policy,
 
       projectionDate,
@@ -28,7 +28,7 @@ export function getPolicyCashInflow({
       dateOfBirth,
     });
 
-    if (amount <= 0) {
+    if (inflow.amount <= 0) {
       return;
     }
 
@@ -39,7 +39,13 @@ export function getPolicyCashInflow({
 
       policyType: policy.policyType,
 
-      amount,
+      amount: inflow.amount,
+
+      maturedThisMonth: inflow.maturedThisMonth,
+
+      startedThisMonth: inflow.startedThisMonth,
+
+      endedThisMonth: inflow.endedThisMonth,
     });
   });
 
@@ -56,7 +62,13 @@ export function getPolicyCashInflow({
    POLICY TYPE ROUTING
 ======================================== */
 
-function getPolicyInflowAmount({ policy, projectionDate, dateOfBirth }) {
+function getPolicyInflow({
+  policy,
+
+  projectionDate,
+
+  dateOfBirth,
+}) {
   if (policy?.policyType === "endowment") {
     return getEndowmentMaturityInflow(policy, projectionDate);
   }
@@ -65,7 +77,7 @@ function getPolicyInflowAmount({ policy, projectionDate, dateOfBirth }) {
     return getRetirementMonthlyInflow(policy, projectionDate, dateOfBirth);
   }
 
-  return 0;
+  return createEmptyPolicyInflow();
 }
 
 /* ========================================
@@ -76,7 +88,7 @@ function getEndowmentMaturityInflow(policy, projectionDate) {
   const maturityDate = parseYearMonth(policy.endowment?.maturityDate);
 
   if (!maturityDate) {
-    return 0;
+    return createEmptyPolicyInflow();
   }
 
   const isMaturityMonth =
@@ -84,13 +96,20 @@ function getEndowmentMaturityInflow(policy, projectionDate) {
     projectionDate.getMonth() === maturityDate.month;
 
   if (!isMaturityMonth) {
-    return 0;
+    return createEmptyPolicyInflow();
   }
 
-  return (
-    getNonNegativeNumber(policy.endowment?.guaranteedMaturityAmount) +
-    getNonNegativeNumber(policy.endowment?.projectedNonGuaranteedAmount)
-  );
+  return {
+    amount:
+      getNonNegativeNumber(policy.endowment?.guaranteedMaturityAmount) +
+      getNonNegativeNumber(policy.endowment?.projectedNonGuaranteedAmount),
+
+    maturedThisMonth: true,
+
+    startedThisMonth: false,
+
+    endedThisMonth: false,
+  };
 }
 
 /* ========================================
@@ -107,7 +126,7 @@ function getRetirementMonthlyInflow(policy, projectionDate, dateOfBirth) {
   const birthDate = parseDateOfBirth(dateOfBirth);
 
   if (!birthDate || startAge <= 0 || monthlyIncome <= 0) {
-    return 0;
+    return createEmptyPolicyInflow();
   }
 
   const startMonthIndex = (birthDate.year + startAge) * 12 + birthDate.month;
@@ -118,20 +137,32 @@ function getRetirementMonthlyInflow(policy, projectionDate, dateOfBirth) {
   const elapsedMonths = projectionMonthIndex - startMonthIndex;
 
   if (elapsedMonths < 0) {
-    return 0;
-  }
-
-  if (retirement.payoutTerm === "lifetime") {
-    return monthlyIncome;
+    return createEmptyPolicyInflow();
   }
 
   const durationMonths = getNonNegativeNumber(retirement.payoutDurationMonths);
 
-  if (retirement.payoutTerm === "limited" && elapsedMonths < durationMonths) {
-    return monthlyIncome;
+  const isLifetime = retirement.payoutTerm === "lifetime";
+
+  const isLimitedAndPayable =
+    retirement.payoutTerm === "limited" && elapsedMonths < durationMonths;
+
+  if (!isLifetime && !isLimitedAndPayable) {
+    return createEmptyPolicyInflow();
   }
 
-  return 0;
+  return {
+    amount: monthlyIncome,
+
+    maturedThisMonth: false,
+
+    startedThisMonth: elapsedMonths === 0,
+
+    endedThisMonth:
+      retirement.payoutTerm === "limited" &&
+      durationMonths > 0 &&
+      elapsedMonths === durationMonths - 1,
+  };
 }
 
 /* ========================================
@@ -191,5 +222,17 @@ function createEmptyResult() {
     total: 0,
 
     items: [],
+  };
+}
+
+function createEmptyPolicyInflow() {
+  return {
+    amount: 0,
+
+    maturedThisMonth: false,
+
+    startedThisMonth: false,
+
+    endedThisMonth: false,
   };
 }

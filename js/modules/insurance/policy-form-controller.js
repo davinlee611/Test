@@ -108,6 +108,7 @@ export function createPolicyFormController({
       elements.policyPremiumLabel.textContent = "Premium";
     }
   }
+
   /* ========================================
    POLICY TYPE DETAILS
   ======================================== */

@@ -2822,9 +2822,7 @@
                       <tr>
                         <th id="analysisCashflowPeriodHeading">Month</th>
                         <th>Start Balance</th>
-                        <th>Net Cashflow</th>
-                        <th>Policy Inflow</th>
-                        <th>Big Ticket Outflow</th>
+                        <th>Net Movement</th>
                         <th>End Balance</th>
                       </tr>
                     </thead>
@@ -4606,7 +4604,48 @@
     </div>
     <!-- closes #policyModal -->
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Projection Breakdown Modal -->
+<div
+  id="projectionBreakdownModal"
+  class="modal-overlay"
+  hidden
+>
+  <div
+    class="modal projection-breakdown-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="projectionBreakdownTitle"
+  >
+    <div class="modal-header projection-breakdown-header">
+      <div>
+        <h2 id="projectionBreakdownTitle">
+          Net Movement Breakdown
+        </h2>
+
+        <p id="projectionBreakdownSubtitle"></p>
+      </div>
+
+      <button
+        id="closeProjectionBreakdownButton"
+        type="button"
+        class="modal-close-button"
+        aria-label="Close projection breakdown"
+      >
+        <i
+          class="fa-solid fa-xmark"
+          aria-hidden="true"
+        ></i>
+      </button>
+    </div>
+
+    <div
+      id="projectionBreakdownContent"
+      class="projection-breakdown-content"
+    ></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script type="module" src="js/client.js"></script>
   </body>
