@@ -2,7 +2,7 @@
 
 export const POLICY_TYPE_LABELS = {
   whole_life: "Whole Life",
-  term: "Term",
+  term: "Term Life / Critical Illness",
   endowment: "Endowment",
   retirement: "Retirement",
   ilp_protection: "Investment-Linked (Protection)",
@@ -16,7 +16,7 @@ export const POLICY_TYPE_LABELS = {
 };
 
 export const POLICY_STATUS_LABELS = {
-  active: "Active",
+  active: "Active (Regular-Pay)",
 
   limited_pay: "Active (Limited-Pay)",
 

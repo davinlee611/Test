@@ -69,6 +69,12 @@ export function createPolicyFormController({
 
     const isLongTermCare = policyType === "long_term_care";
 
+    const isWholeLife = policyType === "whole_life";
+
+    const isTerm = policyType === "term";
+
+    const isDisabilityIncome = policyType === "disability_income";
+
     const usesFixedAnnualPremium = isHospitalisation || isLongTermCare;
 
     if (usesFixedAnnualPremium) {
@@ -85,11 +91,45 @@ export function createPolicyFormController({
       !usesFixedAnnualPremium &&
       elements.policyStatusSelect.value === "limited_pay";
 
+    const showsOptionalWholeLifeEndDate =
+      isWholeLife && !isPaidUp && !isLimitedPay;
+
+    const showsPremiumEndDate = isLimitedPay || showsOptionalWholeLifeEndDate;
+
     elements.policyStatusGroup.hidden = usesFixedAnnualPremium;
 
-    elements.premiumPaymentEndDateGroup.hidden = !isLimitedPay;
+    /*
+     * Term Life / CI uses a fixed coverage
+     * end month.
+     */
+    elements.coverageEndDateGroup.hidden = !isTerm;
+
+    elements.coverageEndDateInput.required = isTerm;
+
+    /*
+     * Disability Income uses an age instead
+     * of a calendar end date.
+     */
+    elements.disabilityCoverageEndAgeGroup.hidden = !isDisabilityIncome;
+
+    elements.disabilityCoverageEndAgeInput.required = isDisabilityIncome;
+
+    if (isDisabilityIncome && !elements.disabilityCoverageEndAgeInput.value) {
+      elements.disabilityCoverageEndAgeInput.value = "65";
+    }
+
+    elements.premiumPaymentEndDateGroup.hidden = !showsPremiumEndDate;
 
     elements.premiumPaymentEndDateInput.required = isLimitedPay;
+
+    elements.premiumPaymentEndDateRequiredLabel.hidden = !isLimitedPay;
+
+    elements.premiumPaymentEndDateOptionalLabel.hidden =
+      !showsOptionalWholeLifeEndDate;
+
+    elements.premiumPaymentEndDateHelper.textContent = isLimitedPay
+      ? "Cashflow will stop this premium after the selected month."
+      : "Leave blank if regular premiums continue for life.";
 
     elements.premiumAmountGroup.hidden = isPaidUp;
 
@@ -284,6 +324,13 @@ export function createPolicyFormController({
     setPreviousPolicyType(policyType);
 
     setDraftBenefits([]);
+
+    elements.coverageEndDateInput.value = "";
+
+    elements.premiumPaymentEndDateInput.value = "";
+
+    elements.disabilityCoverageEndAgeInput.value =
+      policyType === "disability_income" ? "65" : "";
 
     elements.longTermCareBasePlanSelect.value = "";
 

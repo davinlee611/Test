@@ -26,6 +26,10 @@ export function readPolicyFormData(elements) {
 
   const usesFixedAnnualPremium = isHospitalisation || isLongTermCare;
 
+  const status = usesFixedAnnualPremium
+    ? "active"
+    : elements.policyStatusSelect.value;
+
   const premiumAmount = getWholeNumber(elements.premiumInput.value);
 
   const riderIncluded =
@@ -74,15 +78,22 @@ export function readPolicyFormData(elements) {
 
     policyNumber: elements.policyNumberInput.value.trim(),
 
-    status: usesFixedAnnualPremium
-      ? "active"
-      : elements.policyStatusSelect.value,
+    status,
+
+    coverageEndDate:
+      policyType === "term" ? elements.coverageEndDateInput.value : null,
+
+    coverageEndAge:
+      policyType === "disability_income"
+        ? getWholeNumber(elements.disabilityCoverageEndAgeInput.value)
+        : null,
 
     premiumAmount,
 
     premiumPaymentEndDate:
       !usesFixedAnnualPremium &&
-      elements.policyStatusSelect.value === "limited_pay"
+      status !== "paid_up" &&
+      elements.premiumPaymentEndDateInput.value
         ? elements.premiumPaymentEndDateInput.value
         : null,
 

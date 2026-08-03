@@ -121,6 +121,8 @@ function createPolicyRecord({
   policyNumber,
   lifeAssured,
   status,
+  coverageEndDate = null,
+  coverageEndAge = null,
   premiumPaymentEndDate = null,
   premium,
   endowment = null,
@@ -147,6 +149,10 @@ function createPolicyRecord({
     lifeAssured,
 
     status,
+
+    coverageEndDate,
+
+    coverageEndAge: Number(coverageEndAge) > 0 ? Number(coverageEndAge) : null,
 
     premiumPaymentEndDate,
 

@@ -24,6 +24,15 @@ export function writePolicyFormData(
 
   elements.policyStatusSelect.value = policy.status || "";
 
+  elements.coverageEndDateInput.value = policy.coverageEndDate || "";
+
+  elements.disabilityCoverageEndAgeInput.value =
+    Number(policy.coverageEndAge) >= 60
+      ? String(policy.coverageEndAge)
+      : policy.policyType === "disability_income"
+        ? "65"
+        : "";
+
   elements.premiumPaymentEndDateInput.value =
     policy.premiumPaymentEndDate || "";
 

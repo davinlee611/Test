@@ -3673,7 +3673,7 @@
 
                   <option value="whole_life">Whole Life</option>
 
-                  <option value="term">Term</option>
+                  <option value="term">Term Life / Critical Illness</option>
 
                   <option value="endowment">Endowment</option>
 
@@ -3817,7 +3817,7 @@
                 <select id="policyStatusSelect" class="form-control">
                   <option value="">Select status</option>
 
-                  <option value="active">Active</option>
+                  <option value="active">Active (Regular-Pay)</option>
 
                   <option value="limited_pay">Active (Limited-Pay)</option>
 
@@ -3825,11 +3825,65 @@
                 </select>
               </div>
 
+              <!-- Coverage End Date -->
+              <div id="coverageEndDateGroup" class="form-group" hidden>
+                <label for="coverageEndDateInput">
+                  Coverage End Date
+                  <span class="required-label">*</span>
+                </label>
+
+                <input
+                  id="coverageEndDateInput"
+                  class="form-control"
+                  type="month"
+                />
+
+                <p class="form-helper-text">
+                  Regular-pay premiums stop after this month.
+                </p>
+              </div>
+
+              <!-- Disability Income Coverage End Age -->
+              <div id="disabilityCoverageEndAgeGroup" class="form-group" hidden>
+                <label for="disabilityCoverageEndAgeInput">
+                  Coverage End Age
+                  <span class="required-label">*</span>
+                </label>
+
+                <input
+                  id="disabilityCoverageEndAgeInput"
+                  class="form-control"
+                  type="number"
+                  min="60"
+                  max="70"
+                  step="1"
+                  inputmode="numeric"
+                  value="65"
+                />
+
+                <p class="form-helper-text">
+                  Enter an age from 60 to 70. Regular-pay premiums stop in the
+                  month the life assured reaches this age.
+                </p>
+              </div>
+
               <!-- Premium Payment End Date -->
               <div id="premiumPaymentEndDateGroup" class="form-group" hidden>
                 <label for="premiumPaymentEndDateInput">
                   Premium Payment End Date
-                  <span class="required-label">*</span>
+
+                  <span
+                    id="premiumPaymentEndDateRequiredLabel"
+                    class="required-label"
+                    >*</span
+                  >
+
+                  <span
+                    id="premiumPaymentEndDateOptionalLabel"
+                    class="optional-label"
+                    hidden
+                    >(Optional)</span
+                  >
                 </label>
 
                 <input
@@ -3838,7 +3892,7 @@
                   type="month"
                 />
 
-                <p class="form-helper-text">
+                <p id="premiumPaymentEndDateHelper" class="form-helper-text">
                   Cashflow will stop this premium after the selected month.
                 </p>
               </div>
@@ -4604,48 +4658,39 @@
     </div>
     <!-- closes #policyModal -->
 
-<!-- Projection Breakdown Modal -->
-<div
-  id="projectionBreakdownModal"
-  class="modal-overlay"
-  hidden
->
-  <div
-    class="modal projection-breakdown-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="projectionBreakdownTitle"
-  >
-    <div class="modal-header projection-breakdown-header">
-      <div>
-        <h2 id="projectionBreakdownTitle">
-          Net Movement Breakdown
-        </h2>
-
-        <p id="projectionBreakdownSubtitle"></p>
-      </div>
-
-      <button
-        id="closeProjectionBreakdownButton"
-        type="button"
-        class="modal-close-button"
-        aria-label="Close projection breakdown"
+    <!-- Projection Breakdown Modal -->
+    <div id="projectionBreakdownModal" class="modal-overlay" hidden>
+      <div
+        class="modal projection-breakdown-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="projectionBreakdownTitle"
       >
-        <i
-          class="fa-solid fa-xmark"
-          aria-hidden="true"
-        ></i>
-      </button>
+        <div class="modal-header projection-breakdown-header">
+          <div>
+            <h2 id="projectionBreakdownTitle">Net Movement Breakdown</h2>
+
+            <p id="projectionBreakdownSubtitle"></p>
+          </div>
+
+          <button
+            id="closeProjectionBreakdownButton"
+            type="button"
+            class="modal-close-button"
+            aria-label="Close projection breakdown"
+          >
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <div
+          id="projectionBreakdownContent"
+          class="projection-breakdown-content"
+        ></div>
+      </div>
     </div>
 
-    <div
-      id="projectionBreakdownContent"
-      class="projection-breakdown-content"
-    ></div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script type="module" src="js/client.js"></script>
   </body>

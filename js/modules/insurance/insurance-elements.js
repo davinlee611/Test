@@ -60,12 +60,36 @@ export function getInsuranceElements() {
 
     policyStatusSelect: document.getElementById("policyStatusSelect"),
 
+    coverageEndDateGroup: document.getElementById("coverageEndDateGroup"),
+
+    coverageEndDateInput: document.getElementById("coverageEndDateInput"),
+
+    disabilityCoverageEndAgeGroup: document.getElementById(
+      "disabilityCoverageEndAgeGroup",
+    ),
+
+    disabilityCoverageEndAgeInput: document.getElementById(
+      "disabilityCoverageEndAgeInput",
+    ),
+
     premiumPaymentEndDateGroup: document.getElementById(
       "premiumPaymentEndDateGroup",
     ),
 
     premiumPaymentEndDateInput: document.getElementById(
       "premiumPaymentEndDateInput",
+    ),
+
+    premiumPaymentEndDateRequiredLabel: document.getElementById(
+      "premiumPaymentEndDateRequiredLabel",
+    ),
+
+    premiumPaymentEndDateOptionalLabel: document.getElementById(
+      "premiumPaymentEndDateOptionalLabel",
+    ),
+
+    premiumPaymentEndDateHelper: document.getElementById(
+      "premiumPaymentEndDateHelper",
     ),
 
     premiumAmountGroup: document.getElementById("premiumAmountGroup"),

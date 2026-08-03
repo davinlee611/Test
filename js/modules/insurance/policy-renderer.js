@@ -459,6 +459,37 @@ function createPolicyMetadata(policy) {
     );
   }
 
+  if (policy.policyType === "term" && policy.coverageEndDate) {
+    appendMetadataItem(
+      metadata,
+
+      `Coverage ends ${formatYearMonth(policy.coverageEndDate)}`,
+    );
+  }
+
+  if (
+    policy.policyType === "disability_income" &&
+    Number(policy.coverageEndAge) >= 60
+  ) {
+    appendMetadataItem(
+      metadata,
+
+      `Coverage ends at age ${policy.coverageEndAge}`,
+    );
+  }
+
+  if (
+    policy.policyType === "whole_life" &&
+    policy.status === "active" &&
+    policy.premiumPaymentEndDate
+  ) {
+    appendMetadataItem(
+      metadata,
+
+      `Premiums end ${formatYearMonth(policy.premiumPaymentEndDate)}`,
+    );
+  }
+
   if (policy.policyType === "long_term_care" && policy.longTermCareBasePlan) {
     const basePlanLabel = getLongTermCareBasePlanLabel(
       policy.longTermCareBasePlan,

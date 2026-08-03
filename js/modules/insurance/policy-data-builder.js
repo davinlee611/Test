@@ -24,6 +24,10 @@ export function buildPolicyData({ formData, benefits }) {
 
     status: formData.status,
 
+    coverageEndDate: formData.coverageEndDate,
+
+    coverageEndAge: formData.coverageEndAge,
+
     premiumPaymentEndDate: formData.premiumPaymentEndDate,
 
     /*

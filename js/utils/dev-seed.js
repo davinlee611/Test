@@ -390,7 +390,11 @@ export function seedPolicies() {
 
       lifeAssured,
 
-      status: "active",
+      status: "limited_pay",
+
+      premiumPaymentEndDate: "2044-06",
+
+      coverageEndDate: "2054-06",
 
       premium: {
         amount: 900,
@@ -427,6 +431,8 @@ export function seedPolicies() {
       lifeAssured,
 
       status: "active",
+
+      coverageEndAge: 65,
 
       premium: {
         amount: 350,

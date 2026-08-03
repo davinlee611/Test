@@ -101,6 +101,53 @@ export function validatePolicyDraft({
     return "Select the premium payment end date.";
   }
 
+  /*
+   * Whole Life regular-pay may optionally
+   * include a premium payment end date.
+   */
+  if (
+    formData.policyType === "whole_life" &&
+    formData.premiumPaymentEndDate &&
+    !/^\d{4}-\d{2}$/.test(formData.premiumPaymentEndDate)
+  ) {
+    return "Select a valid premium payment " + "end date.";
+  }
+
+  /*
+   * Term Life and Critical Illness share
+   * the same term-based coverage model.
+   */
+  if (formData.policyType === "term") {
+    if (!/^\d{4}-\d{2}$/.test(formData.coverageEndDate || "")) {
+      return "Select the Term Life / Critical " + "Illness coverage end date.";
+    }
+
+    if (
+      formData.premiumPaymentEndDate &&
+      formData.premiumPaymentEndDate > formData.coverageEndDate
+    ) {
+      return (
+        "The premium payment end date " +
+        "cannot be after the coverage " +
+        "end date."
+      );
+    }
+  }
+
+  /*
+   * Disability Income coverage normally
+   * ends between ages 60 and 70.
+   */
+  if (formData.policyType === "disability_income") {
+    if (
+      !Number.isInteger(formData.coverageEndAge) ||
+      formData.coverageEndAge < 60 ||
+      formData.coverageEndAge > 70
+    ) {
+      return "Enter a Disability Income " + "coverage end age from 60 to 70.";
+    }
+  }
+
   if (formData.policyType === "endowment") {
     if (!/^\d{4}-\d{2}$/.test(formData.endowment?.maturityDate || "")) {
       return "Select the endowment maturity date.";

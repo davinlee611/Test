@@ -1,6 +1,10 @@
 "use strict";
 
-import { getCommitments, getPolicies } from "../state/client-plan.js";
+import {
+  getClientProfile,
+  getCommitments,
+  getPolicies,
+} from "../state/client-plan.js";
 
 /* ========================================
    MONTHLY INSURANCE PREMIUM
@@ -12,7 +16,11 @@ export function getEffectiveMonthlyInsurancePremium(
   const policies = getPolicies();
 
   if (Array.isArray(policies) && policies.length > 0) {
-    return calculatePortfolioMonthlyPremium(policies, projectionDate);
+    return calculatePortfolioMonthlyPremium(
+      policies,
+      projectionDate,
+      getClientProfile().dateOfBirth,
+    );
   }
 
   return getNonNegativeNumber(getCommitments()?.insurancePremiums);
@@ -25,13 +33,17 @@ export function getEffectiveMonthlyInsurancePremium(
 export function calculatePortfolioMonthlyPremium(
   policies = [],
   projectionDate = new Date(),
+  dateOfBirth = getClientProfile().dateOfBirth,
 ) {
   if (!Array.isArray(policies)) {
     return 0;
   }
 
   return policies.reduce(function (runningTotal, policy) {
-    return runningTotal + getPolicyMonthlyCashPremium(policy, projectionDate);
+    return (
+      runningTotal +
+      getPolicyMonthlyCashPremium(policy, projectionDate, dateOfBirth)
+    );
   }, 0);
 }
 
@@ -106,8 +118,8 @@ function getPolicyAnnualMedisavePremium(
    PREMIUM CONVERSION
 ======================================== */
 
-function getPolicyMonthlyCashPremium(policy, projectionDate) {
-  if (!isPolicyPremiumPayable(policy, projectionDate)) {
+function getPolicyMonthlyCashPremium(policy, projectionDate, dateOfBirth) {
+  if (!isPolicyPremiumPayable(policy, projectionDate, dateOfBirth)) {
     return 0;
   }
 
@@ -130,27 +142,110 @@ function getPolicyMonthlyCashPremium(policy, projectionDate) {
   return convertPremiumToMonthly(policy?.premium);
 }
 
-function isPolicyPremiumPayable(policy, projectionDate) {
+function isPolicyPremiumPayable(policy, projectionDate, dateOfBirth) {
   if (policy?.status === "paid_up") {
     return false;
   }
 
-  if (policy?.status !== "limited_pay") {
-    return true;
+  if (!(projectionDate instanceof Date)) {
+    return false;
   }
 
-  const endDate = parseYearMonth(policy.premiumPaymentEndDate);
+  const effectiveEndDate = getEffectivePremiumEndDate(policy, dateOfBirth);
 
-  if (!endDate || !(projectionDate instanceof Date)) {
-    return false;
+  /*
+   * No end date means an Active policy
+   * continues throughout the projection.
+   *
+   * A Limited-Pay policy without its
+   * required end date is not counted.
+   */
+  if (!effectiveEndDate) {
+    return policy?.status === "active";
   }
 
   const projectionMonth =
     projectionDate.getFullYear() * 12 + projectionDate.getMonth();
 
-  const finalPremiumMonth = endDate.year * 12 + endDate.month;
+  const finalPremiumMonth = effectiveEndDate.year * 12 + effectiveEndDate.month;
 
   return projectionMonth <= finalPremiumMonth;
+}
+
+function getEffectivePremiumEndDate(policy, dateOfBirth) {
+  const recordedPremiumEndDate = parseYearMonth(policy?.premiumPaymentEndDate);
+
+  const coverageEndDate = getPolicyCoverageEndDate(policy, dateOfBirth);
+
+  /*
+   * Limited-pay uses the earlier of the
+   * premium end and coverage end.
+   */
+  if (policy?.status === "limited_pay") {
+    return getEarlierYearMonth(recordedPremiumEndDate, coverageEndDate);
+  }
+
+  /*
+   * Whole Life regular-pay can optionally
+   * have a recorded premium end date.
+   */
+  if (recordedPremiumEndDate) {
+    return getEarlierYearMonth(recordedPremiumEndDate, coverageEndDate);
+  }
+
+  /*
+   * Term and Disability Income regular-pay
+   * default to their coverage end.
+   */
+  return coverageEndDate;
+}
+
+function getPolicyCoverageEndDate(policy, dateOfBirth) {
+  if (policy?.policyType === "term") {
+    return parseYearMonth(policy.coverageEndDate);
+  }
+
+  if (policy?.policyType === "disability_income") {
+    return getCoverageEndDateFromAge({
+      dateOfBirth,
+
+      coverageEndAge: policy.coverageEndAge,
+    });
+  }
+
+  return null;
+}
+
+function getEarlierYearMonth(firstDate, secondDate) {
+  if (!firstDate) {
+    return secondDate;
+  }
+
+  if (!secondDate) {
+    return firstDate;
+  }
+
+  const firstMonth = firstDate.year * 12 + firstDate.month;
+
+  const secondMonth = secondDate.year * 12 + secondDate.month;
+
+  return firstMonth <= secondMonth ? firstDate : secondDate;
+}
+
+function getCoverageEndDateFromAge({ dateOfBirth, coverageEndAge }) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateOfBirth || "");
+
+  const age = Number(coverageEndAge);
+
+  if (!match || !Number.isInteger(age) || age <= 0) {
+    return null;
+  }
+
+  return {
+    year: Number(match[1]) + age,
+
+    month: Number(match[2]) - 1,
+  };
 }
 
 function parseYearMonth(value) {

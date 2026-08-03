@@ -127,6 +127,10 @@ export function createPolicyModal({
 
     elements.policyStatusSelect.value = "";
 
+    elements.coverageEndDateInput.value = "";
+
+    elements.disabilityCoverageEndAgeInput.value = "";
+
     elements.premiumPaymentEndDateInput.value = "";
 
     elements.premiumInput.value = "";
