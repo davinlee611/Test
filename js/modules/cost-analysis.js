@@ -426,7 +426,7 @@ export function renderCostAnalysis() {
     projectedCohortBhs,
   });
 
-  const monthlyProjection = calculateProjection({
+  const projectionSettings = {
     currentCashflow,
 
     annualEmploymentIncrement:
@@ -435,13 +435,17 @@ export function renderCostAnalysis() {
     annualExpenseInflation:
       getNonNegativeNumber(expenseInflationInput?.value) / 100,
 
-    projectionMonths,
-
     startingDate,
 
     cohortFrsAmount: cohortFrs.isValid ? cohortFrs.amount : 0,
 
     cpfLifeStartAge,
+  };
+
+  const monthlyProjection = calculateProjection({
+    ...projectionSettings,
+
+    projectionMonths,
   });
 
   renderCpfLifeProjectionStatus({
@@ -466,6 +470,26 @@ export function renderCostAnalysis() {
   renderCpfProjectionTable({
     rows: displayRows,
     usesAnnualRows,
+  });
+
+  const analysisProjectionMonths = getProjectionMonthCount(
+    "mortality",
+    startingDate,
+  );
+
+  const analysisProjection =
+    projectionMonths === analysisProjectionMonths
+      ? monthlyProjection
+      : calculateProjection({
+          ...projectionSettings,
+
+          projectionMonths: analysisProjectionMonths,
+        });
+
+  renderRetirementPositionAnalysis({
+    rows: analysisProjection,
+
+    cpfLifeStartAge,
   });
 }
 
@@ -504,6 +528,675 @@ function renderRetirementGoalSummary() {
   setText(incomeGapElement, `${formatCurrency(summary.incomeGap)}/mth`);
 
   setCurrency(totalCapitalNeededElement, summary.totalCapitalNeeded);
+}
+
+/* ========================================
+   RETIREMENT POSITION ANALYSIS
+======================================== */
+
+function renderRetirementPositionAnalysis({
+  rows,
+  cpfLifeStartAge,
+}) {
+  const summary =
+    getRetirementGoalSummary();
+
+  const desiredFybcAge =
+    getDesiredFybcAge();
+
+  const fybcRow = rows.find(function (row) {
+    return row.fybcReachedThisMonth;
+  });
+
+  const age65Row = rows.find(function (row) {
+    return getFiniteNumber(row.age) >= 65;
+  });
+
+  const cpfLifeStartRow = rows.find(
+    function (row) {
+      return (
+        getFiniteNumber(
+          row.cpfLifePremiumOutflow,
+        ) > 0
+      );
+    },
+  );
+
+  if (!summary.isValid || !fybcRow) {
+    renderIncompleteRetirementPositionAnalysis(
+      desiredFybcAge,
+    );
+
+    return;
+  }
+
+  const projectedWithdrawableAssets =
+    getFiniteNumber(
+      fybcRow.endWithdrawableBalance,
+    );
+
+  const retirementAccount =
+    fybcRow.retirementAccount === "ra"
+      ? "RA"
+      : "SA";
+
+  const projectedCpfLifePremium =
+    getNonNegativeNumber(
+      cpfLifeStartRow
+        ?.affordableCpfLifePremium,
+    );
+
+  const projectedCpfLifeIncome =
+    getNonNegativeNumber(
+      cpfLifeStartRow
+        ?.cpfLifeMonthlyPayout,
+    );
+
+  const recordedIncomeAtFybc =
+    getRetirementPolicyIncomeForRow(
+      fybcRow,
+    ) +
+    getNonNegativeNumber(
+      fybcRow.cpfLifeCashInflow,
+    );
+
+  const recordedIncomeAt65 =
+    age65Row
+      ? getRetirementPolicyIncomeForRow(
+          age65Row,
+        ) +
+        getNonNegativeNumber(
+          age65Row.cpfLifeCashInflow,
+        )
+      : 0;
+
+  const incomeGapAtFybc = Math.max(
+    summary.monthlyPassiveIncomeNeeded -
+      recordedIncomeAtFybc,
+
+    0,
+  );
+
+  const incomeGapAt65 = Math.max(
+    summary.monthlyIncomeAt65 -
+      recordedIncomeAt65,
+
+    0,
+  );
+
+  const cpfLifeIncomeGap = Math.max(
+    summary.cpfLifeIncome -
+      projectedCpfLifeIncome,
+
+    0,
+  );
+
+  const projectedRetirementCapital =
+    Math.max(
+      projectedWithdrawableAssets,
+      0,
+    );
+
+  const capitalDifference =
+    projectedRetirementCapital -
+    summary.totalCapitalNeeded;
+
+  const capitalGap =
+    Math.max(-capitalDifference, 0);
+
+  const isOnTrack =
+    capitalDifference >= 0;
+
+  setText(
+    retirementAnalysisElements
+      .positionTitle,
+
+    `Projected Position at FYBC Age ${desiredFybcAge}`,
+  );
+
+  setText(
+    retirementAnalysisElements
+      .withdrawableAssets,
+
+    formatCurrency(
+      projectedWithdrawableAssets,
+    ),
+  );
+
+  setText(
+    retirementAnalysisElements
+      .oaBalance,
+
+    formatCurrency(
+      fybcRow.oaBalance,
+    ),
+  );
+
+  setText(
+    retirementAnalysisElements
+      .retirementBalanceLabel,
+
+    `Projected ${retirementAccount} Balance`,
+  );
+
+  setText(
+    retirementAnalysisElements
+      .retirementBalance,
+
+    formatCurrency(
+      fybcRow.retirementBalance,
+    ),
+  );
+
+  setText(
+    retirementAnalysisElements
+      .maBalance,
+
+    formatCurrency(
+      fybcRow.maBalance,
+    ),
+  );
+
+  setText(
+    retirementAnalysisElements
+      .cpfLifePremium,
+
+    formatCurrency(
+      projectedCpfLifePremium,
+    ),
+  );
+
+  setText(
+    retirementAnalysisElements
+      .cpfLifePremiumBasis,
+
+    projectedCpfLifePremium > 0
+      ? `Deducted from RA at age ${cpfLifeStartAge}`
+      : `No affordable CPF LIFE premium projected at age ${cpfLifeStartAge}`,
+  );
+
+  setText(
+    retirementAnalysisElements
+      .cpfLifeIncome,
+
+    `${formatCurrency(
+      projectedCpfLifeIncome,
+    )}/mth`,
+  );
+
+  setText(
+    retirementAnalysisElements
+      .cpfLifeIncomeBasis,
+
+    `Projected to start from age ${cpfLifeStartAge}`,
+  );
+
+  setAnalysisComparisonValue(
+    retirementAnalysisElements
+      .desiredIncomeAtFybc,
+
+    summary.monthlyPassiveIncomeNeeded,
+  );
+
+  setAnalysisComparisonValue(
+    retirementAnalysisElements
+      .recordedIncomeAtFybc,
+
+    recordedIncomeAtFybc,
+  );
+
+  setAnalysisGapValue(
+    retirementAnalysisElements
+      .incomeGapAtFybc,
+
+    incomeGapAtFybc,
+  );
+
+  setAnalysisComparisonValue(
+    retirementAnalysisElements
+      .desiredIncomeAt65,
+
+    summary.monthlyIncomeAt65,
+  );
+
+  setAnalysisComparisonValue(
+    retirementAnalysisElements
+      .recordedIncomeAt65,
+
+    recordedIncomeAt65,
+  );
+
+  setAnalysisGapValue(
+    retirementAnalysisElements
+      .incomeGapAt65,
+
+    incomeGapAt65,
+  );
+
+  setAnalysisComparisonValue(
+    retirementAnalysisElements
+      .desiredCpfLifeIncome,
+
+    summary.cpfLifeIncome,
+  );
+
+  setAnalysisComparisonValue(
+    retirementAnalysisElements
+      .actualCpfLifeIncome,
+
+    projectedCpfLifeIncome,
+  );
+
+  setAnalysisGapValue(
+    retirementAnalysisElements
+      .cpfLifeIncomeGap,
+
+    cpfLifeIncomeGap,
+  );
+
+  setAnalysisComparisonValue(
+    retirementAnalysisElements
+      .desiredRetirementCapital,
+
+    summary.totalCapitalNeeded,
+  );
+
+  setAnalysisComparisonValue(
+    retirementAnalysisElements
+      .projectedRetirementCapital,
+
+    projectedRetirementCapital,
+  );
+
+  setAnalysisGapValue(
+    retirementAnalysisElements
+      .retirementCapitalGap,
+
+    capitalGap,
+  );
+
+  renderFundingResult({
+    isOnTrack,
+
+    capitalDifference,
+
+    desiredFybcAge,
+  });
+
+  renderRetirementAnalysisFindings({
+    rows,
+
+    desiredFybcAge,
+
+    projectedWithdrawableAssets,
+
+    projectedCpfLifeIncome,
+
+    cpfLifeIncomeGap,
+
+    incomeGapAtFybc,
+
+    capitalGap,
+
+    cpfLifeStartAge,
+  });
+}
+
+function renderIncompleteRetirementPositionAnalysis(
+  desiredFybcAge,
+) {
+  const emptyValue = "—";
+
+  setText(
+    retirementAnalysisElements
+      .positionTitle,
+
+    desiredFybcAge > 0
+      ? `Projected Position at FYBC Age ${desiredFybcAge}`
+      : "Projected Position at FYBC",
+  );
+
+  setText(
+    retirementAnalysisElements.retirementBalanceLabel,
+    "Projected SA / RA Balance",
+  );
+
+  setText(
+    retirementAnalysisElements.cpfLifePremiumBasis,
+    "Based on the projected RA balance",
+  );
+
+  setText(
+    retirementAnalysisElements.cpfLifeIncomeBasis,
+    "Monthly payout from the selected start age",
+  );
+
+  [
+    retirementAnalysisElements
+      .withdrawableAssets,
+
+    retirementAnalysisElements
+      .oaBalance,
+
+    retirementAnalysisElements
+      .retirementBalance,
+
+    retirementAnalysisElements
+      .maBalance,
+
+    retirementAnalysisElements
+      .cpfLifePremium,
+
+    retirementAnalysisElements
+      .cpfLifeIncome,
+
+    retirementAnalysisElements
+      .desiredIncomeAtFybc,
+
+    retirementAnalysisElements
+      .recordedIncomeAtFybc,
+
+    retirementAnalysisElements
+      .incomeGapAtFybc,
+
+    retirementAnalysisElements
+      .desiredIncomeAt65,
+
+    retirementAnalysisElements
+      .recordedIncomeAt65,
+
+    retirementAnalysisElements
+      .incomeGapAt65,
+
+    retirementAnalysisElements
+      .desiredCpfLifeIncome,
+
+    retirementAnalysisElements
+      .actualCpfLifeIncome,
+
+    retirementAnalysisElements
+      .cpfLifeIncomeGap,
+
+    retirementAnalysisElements
+      .desiredRetirementCapital,
+
+    retirementAnalysisElements
+      .projectedRetirementCapital,
+
+    retirementAnalysisElements
+      .retirementCapitalGap,
+  ].forEach(function (element) {
+    setText(element, emptyValue);
+
+    element?.classList.remove(
+      "is-positive",
+      "is-negative",
+    );
+  });
+
+  setText(
+    retirementAnalysisElements
+      .readinessBadge,
+
+    "Complete the retirement goal",
+  );
+
+  retirementAnalysisElements
+    .readinessBadge
+    ?.classList.remove(
+      "is-on-track",
+      "is-shortfall",
+    );
+
+  retirementAnalysisElements
+    .fundingResult
+    ?.classList.remove(
+      "is-on-track",
+      "is-shortfall",
+    );
+
+  setText(
+    retirementAnalysisElements
+      .fundingResultLabel,
+
+    "Retirement Funding Position",
+  );
+
+  setText(
+    retirementAnalysisElements
+      .fundingResultAmount,
+
+    emptyValue,
+  );
+
+  setText(
+    retirementAnalysisElements
+      .fundingResultMessage,
+
+    "Complete the retirement goal and projection assumptions.",
+  );
+
+  retirementAnalysisElements
+    .keyFindingsList
+    ?.replaceChildren();
+}
+
+function getRetirementPolicyIncomeForRow(
+  row,
+) {
+  return (
+    row?.policyCashInflowItems || []
+  ).reduce(function (total, item) {
+    if (
+      item.policyType !== "retirement"
+    ) {
+      return total;
+    }
+
+    return (
+      total +
+      getNonNegativeNumber(
+        item.amount,
+      )
+    );
+  }, 0);
+}
+
+function setAnalysisComparisonValue(
+  element,
+  value,
+) {
+  setText(
+    element,
+    formatCurrency(value),
+  );
+
+  element?.classList.remove(
+    "is-positive",
+    "is-negative",
+  );
+}
+
+function setAnalysisGapValue(
+  element,
+  value,
+) {
+  const safeValue =
+    getNonNegativeNumber(value);
+
+  setText(
+    element,
+    formatCurrency(safeValue),
+  );
+
+  element?.classList.toggle(
+    "is-negative",
+    safeValue > 0,
+  );
+
+  element?.classList.toggle(
+    "is-positive",
+    safeValue <= 0,
+  );
+}
+
+function renderFundingResult({
+  isOnTrack,
+  capitalDifference,
+  desiredFybcAge,
+}) {
+  const resultElement =
+    retirementAnalysisElements
+      .fundingResult;
+
+  resultElement?.classList.toggle(
+    "is-on-track",
+    isOnTrack,
+  );
+
+  resultElement?.classList.toggle(
+    "is-shortfall",
+    !isOnTrack,
+  );
+
+  retirementAnalysisElements
+    .readinessBadge
+    ?.classList.toggle(
+      "is-on-track",
+      isOnTrack,
+    );
+
+  retirementAnalysisElements
+    .readinessBadge
+    ?.classList.toggle(
+      "is-shortfall",
+      !isOnTrack,
+    );
+
+  setText(
+    retirementAnalysisElements
+      .readinessBadge,
+
+    isOnTrack
+      ? "Capital target met"
+      : "Capital shortfall projected",
+  );
+
+  setText(
+    retirementAnalysisElements
+      .fundingResultLabel,
+
+    isOnTrack
+      ? "Projected Retirement Surplus"
+      : "Retirement Funding Shortfall",
+  );
+
+  setText(
+    retirementAnalysisElements
+      .fundingResultAmount,
+
+    formatCurrency(
+      Math.abs(capitalDifference),
+    ),
+  );
+
+  setText(
+    retirementAnalysisElements
+      .fundingResultMessage,
+
+    isOnTrack
+      ? `The projected withdrawable assets at FYBC age ${desiredFybcAge} meet the current Cost of Wants capital target.`
+      : `The projected withdrawable assets at FYBC age ${desiredFybcAge} do not fully meet the current Cost of Wants capital target.`,
+  );
+}
+
+function renderRetirementAnalysisFindings({
+  rows,
+  desiredFybcAge,
+  projectedWithdrawableAssets,
+  projectedCpfLifeIncome,
+  cpfLifeIncomeGap,
+  incomeGapAtFybc,
+  capitalGap,
+  cpfLifeStartAge,
+}) {
+  const findings = [];
+
+  findings.push(
+    `Employment and net trade income stop when the client reaches FYBC age ${desiredFybcAge}.`,
+  );
+
+  findings.push(
+    projectedWithdrawableAssets >= 0
+      ? `Projected withdrawable retirement assets at FYBC are ${formatCurrency(projectedWithdrawableAssets)}.`
+      : `The cash projection is already in deficit by ${formatCurrency(
+          Math.abs(
+            projectedWithdrawableAssets,
+          ),
+        )} at FYBC.`,
+  );
+
+  findings.push(
+    projectedCpfLifeIncome > 0
+      ? `Projected CPF LIFE income is ${formatCurrency(projectedCpfLifeIncome)} per month from age ${cpfLifeStartAge}.`
+      : `The projected RA balance does not currently start CPF LIFE at age ${cpfLifeStartAge}.`,
+  );
+
+  if (cpfLifeIncomeGap > 0) {
+    findings.push(
+      `Projected CPF LIFE income is ${formatCurrency(cpfLifeIncomeGap)} per month below the payout assumed in the retirement goal.`,
+    );
+  }
+
+  if (incomeGapAtFybc > 0) {
+    findings.push(
+      `${formatCurrency(incomeGapAtFybc)} per month at FYBC must still be funded from retirement assets or other income sources.`,
+    );
+  }
+
+  if (capitalGap > 0) {
+    findings.push(
+      `Projected withdrawable assets are ${formatCurrency(capitalGap)} below the current retirement capital target.`,
+    );
+  }
+
+  const depletionRow = rows.find(
+    function (row) {
+      return (
+        getFiniteNumber(
+          row.endWithdrawableBalance,
+        ) < 0
+      );
+    },
+  );
+
+  if (depletionRow) {
+    findings.push(
+      `The projected cash reserve first becomes negative in ${formatMonthYear(
+        depletionRow.date,
+      )}, at approximately age ${depletionRow.age}.`,
+    );
+  } else {
+    findings.push(
+      "The projected cash reserve remains non-negative through the planned mortality age.",
+    );
+  }
+
+  const fragment =
+    document.createDocumentFragment();
+
+  findings.forEach(function (finding) {
+    const item =
+      document.createElement("li");
+
+    item.textContent = finding;
+
+    fragment.append(item);
+  });
+
+  retirementAnalysisElements
+    .keyFindingsList
+    ?.replaceChildren(fragment);
 }
 
 /* ========================================

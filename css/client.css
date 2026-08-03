@@ -4458,16 +4458,14 @@ button.insurance-validation-count:disabled {
   gap: 24px;
 }
 
-.analysis-section-heading h3,
-.analysis-placeholder-card h3 {
+.analysis-section-heading h3 {
   margin: 4px 0 7px;
 
   color: var(--text-primary);
   font-size: 21px;
 }
 
-.analysis-section-heading p,
-.analysis-placeholder-card p {
+.analysis-section-heading p {
   margin: 0;
 
   color: var(--text-secondary);
@@ -5477,87 +5475,6 @@ button.insurance-validation-count:disabled {
   color: var(--text-secondary);
 }
 
-/* Placeholder */
-
-.analysis-placeholder-card {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.analysis-placeholder-icon {
-  display: grid;
-  width: 52px;
-  height: 52px;
-  flex-shrink: 0;
-  place-items: center;
-
-  color: var(--primary-color);
-  background: var(--primary-soft);
-  border-radius: 50%;
-
-  font-size: 20px;
-}
-
-.analysis-placeholder-badge {
-  padding: 7px 11px;
-  margin-left: auto;
-
-  color: var(--text-secondary);
-  background: var(--surface-muted);
-  border-radius: 999px;
-
-  font-size: 12px;
-  font-weight: 800;
-}
-
-@media (max-width: 1050px) {
-  .analysis-goal-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .analysis-section-heading--split {
-    flex-direction: column;
-  }
-
-  .analysis-projection-period {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .analysis-assumption-stack {
-  width: 100%;
-  flex-basis: auto;
-}
-}
-
-@media (max-width: 700px) {
-  .analysis-goal-summary-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .analysis-placeholder-card {
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .analysis-placeholder-badge {
-    margin-left: 70px;
-  }
-
-  .analysis-projection-period-options {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .analysis-section-surround {
-  padding: 12px;
-}
-
-.analysis-section-group-divider {
-  margin: 12px 0;
-}
-}
-
 /* ========================================
    RETIREMENT POSITION ANALYSIS
 ======================================== */
@@ -5885,4 +5802,42 @@ button.insurance-validation-count:disabled {
   .analysis-funding-result {
     align-items: flex-start;
   }
+}
+
+@media (max-width: 1050px) {
+  .analysis-goal-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .analysis-section-heading--split {
+    flex-direction: column;
+  }
+
+  .analysis-projection-period {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .analysis-assumption-stack {
+  width: 100%;
+  flex-basis: auto;
+}
+}
+
+@media (max-width: 700px) {
+  .analysis-goal-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-projection-period-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .analysis-section-surround {
+  padding: 12px;
+}
+
+.analysis-section-group-divider {
+  margin: 12px 0;
+}
 }
