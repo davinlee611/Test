@@ -2995,26 +2995,217 @@
               </section>
             </div>
 
-            <!-- Placeholder -->
-            <section class="analysis-section-card analysis-placeholder-card">
-              <div class="analysis-placeholder-icon">
-                <i class="fa-solid fa-piggy-bank" aria-hidden="true"></i>
-              </div>
+            <!-- Retirement Position Analysis -->
+            <div class="analysis-section-surround analysis-retirement-analysis">
+              <section class="analysis-section-card">
+                <div class="analysis-section-heading">
+                  <div>
+                    <span class="analysis-section-eyebrow">
+                      Retirement Readiness
+                    </span>
 
-              <div>
-                <span class="analysis-section-eyebrow">Next Stage</span>
+                    <h3>Analysis</h3>
 
-                <h3>Analysis</h3>
+                    <p>
+                      Compares the selected retirement goal with the assets, CPF
+                      position and recorded recurring income projected under the
+                      client's current plan.
+                    </p>
+                  </div>
+                </div>
 
-                <p>
-                  This section will compare the client's projected assets
-                  against the Total Capital Needed and assess the required
-                  savings plan.
+                <div class="analysis-position-heading">
+                  <div>
+                    <h4 id="analysisProjectedPositionTitle">
+                      Projected Position at FYBC
+                    </h4>
+
+                    <p>
+                      These balances are taken from the projection in the month
+                      the client reaches the selected FYBC age.
+                    </p>
+                  </div>
+
+                  <span
+                    id="analysisReadinessBadge"
+                    class="analysis-readiness-badge"
+                  >
+                    Complete the retirement goal
+                  </span>
+                </div>
+
+                <div class="analysis-position-grid">
+                  <article class="analysis-position-item">
+                    <span>Withdrawable Retirement Assets</span>
+
+                    <strong id="analysisProjectedWithdrawableAssets">
+                      —
+                    </strong>
+
+                    <small>
+                      Cash, liquid assets and accumulated net cashflow
+                    </small>
+                  </article>
+
+                  <article class="analysis-position-item">
+                    <span>Projected OA Balance</span>
+
+                    <strong id="analysisProjectedOaBalance"> — </strong>
+
+                    <small> Shown separately from withdrawable assets </small>
+                  </article>
+
+                  <article class="analysis-position-item">
+                    <span id="analysisProjectedRetirementBalanceLabel">
+                      Projected SA / RA Balance
+                    </span>
+
+                    <strong id="analysisProjectedRetirementBalance"> — </strong>
+
+                    <small> Supports the projected CPF LIFE premium </small>
+                  </article>
+
+                  <article class="analysis-position-item">
+                    <span>Projected MA Balance</span>
+
+                    <strong id="analysisProjectedMaBalance"> — </strong>
+
+                    <small> Not counted as retirement spending capital </small>
+                  </article>
+
+                  <article class="analysis-position-item">
+                    <span>Affordable CPF LIFE Premium</span>
+
+                    <strong id="analysisProjectedCpfLifePremium"> — </strong>
+
+                    <small id="analysisProjectedCpfLifePremiumBasis">
+                      Based on the projected RA balance
+                    </small>
+                  </article>
+
+                  <article
+                    class="analysis-position-item analysis-position-item--primary"
+                  >
+                    <span>Projected CPF LIFE Income</span>
+
+                    <strong id="analysisProjectedCpfLifeIncome"> — </strong>
+
+                    <small id="analysisProjectedCpfLifeIncomeBasis">
+                      Monthly payout from the selected start age
+                    </small>
+                  </article>
+                </div>
+
+                <div
+                  class="analysis-subsection-divider"
+                  aria-hidden="true"
+                ></div>
+
+                <div class="analysis-comparison-heading">
+                  <div>
+                    <h4>Desired versus Projected</h4>
+
+                    <p>
+                      Recorded recurring income reduces the amount that must be
+                      funded from retirement assets.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="analysis-comparison-table-wrap">
+                  <table class="analysis-comparison-table">
+                    <thead>
+                      <tr>
+                        <th>Retirement Measure</th>
+                        <th>Desired</th>
+                        <th>Current Projection</th>
+                        <th>Gap / Amount to Fund</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr>
+                        <td>Monthly Passive Income at FYBC Age</td>
+
+                        <td id="analysisDesiredIncomeAtFybc">—</td>
+
+                        <td id="analysisRecordedIncomeAtFybc">—</td>
+
+                        <td id="analysisIncomeGapAtFybc">—</td>
+                      </tr>
+
+                      <tr>
+                        <td>Monthly Passive Income at Age 65</td>
+
+                        <td id="analysisDesiredIncomeAt65">—</td>
+
+                        <td id="analysisRecordedIncomeAt65">—</td>
+
+                        <td id="analysisIncomeGapAt65">—</td>
+                      </tr>
+
+                      <tr>
+                        <td>CPF LIFE Monthly Income</td>
+
+                        <td id="analysisDesiredCpfLifeIncome">—</td>
+
+                        <td id="analysisActualCpfLifeIncome">—</td>
+
+                        <td id="analysisCpfLifeIncomeGap">—</td>
+                      </tr>
+
+                      <tr class="analysis-comparison-total-row">
+                        <td>Total Retirement Capital</td>
+
+                        <td id="analysisDesiredRetirementCapital">—</td>
+
+                        <td id="analysisProjectedRetirementCapital">—</td>
+
+                        <td id="analysisRetirementCapitalGap">—</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div id="analysisFundingResult" class="analysis-funding-result">
+                  <div class="analysis-funding-result-icon">
+                    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                  </div>
+
+                  <div>
+                    <span id="analysisFundingResultLabel">
+                      Retirement Funding Position
+                    </span>
+
+                    <strong id="analysisFundingResultAmount"> — </strong>
+
+                    <p id="analysisFundingResultMessage">
+                      Complete the retirement goal and projection assumptions.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="analysis-key-findings">
+                  <div class="analysis-key-findings-heading">
+                    <div>
+                      <h4>Key Findings</h4>
+
+                      <p>What is driving the current retirement position.</p>
+                    </div>
+                  </div>
+
+                  <ul id="analysisKeyFindingsList"></ul>
+                </div>
+
+                <p class="analysis-method-note">
+                  This first analysis compares projected withdrawable assets
+                  directly with the Cost of Wants capital target. OA, RA and MA
+                  remain separately identified. Recorded policy income is shown
+                  as recurring income and is not yet converted into a capital
+                  equivalent.
                 </p>
-              </div>
-
-              <span class="analysis-placeholder-badge">Coming Soon</span>
-            </section>
+              </section>
+            </div>
 
             <div class="form-actions form-actions--between">
               <button

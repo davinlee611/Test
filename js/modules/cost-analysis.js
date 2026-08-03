@@ -220,6 +220,78 @@ const closeProjectionBreakdownButton = document.getElementById(
   "closeProjectionBreakdownButton",
 );
 
+const retirementAnalysisElements = {
+  positionTitle: document.getElementById("analysisProjectedPositionTitle"),
+
+  readinessBadge: document.getElementById("analysisReadinessBadge"),
+
+  withdrawableAssets: document.getElementById(
+    "analysisProjectedWithdrawableAssets",
+  ),
+
+  oaBalance: document.getElementById("analysisProjectedOaBalance"),
+
+  retirementBalanceLabel: document.getElementById(
+    "analysisProjectedRetirementBalanceLabel",
+  ),
+
+  retirementBalance: document.getElementById(
+    "analysisProjectedRetirementBalance",
+  ),
+
+  maBalance: document.getElementById("analysisProjectedMaBalance"),
+
+  cpfLifePremium: document.getElementById("analysisProjectedCpfLifePremium"),
+
+  cpfLifePremiumBasis: document.getElementById(
+    "analysisProjectedCpfLifePremiumBasis",
+  ),
+
+  cpfLifeIncome: document.getElementById("analysisProjectedCpfLifeIncome"),
+
+  cpfLifeIncomeBasis: document.getElementById(
+    "analysisProjectedCpfLifeIncomeBasis",
+  ),
+
+  desiredIncomeAtFybc: document.getElementById("analysisDesiredIncomeAtFybc"),
+
+  recordedIncomeAtFybc: document.getElementById("analysisRecordedIncomeAtFybc"),
+
+  incomeGapAtFybc: document.getElementById("analysisIncomeGapAtFybc"),
+
+  desiredIncomeAt65: document.getElementById("analysisDesiredIncomeAt65"),
+
+  recordedIncomeAt65: document.getElementById("analysisRecordedIncomeAt65"),
+
+  incomeGapAt65: document.getElementById("analysisIncomeGapAt65"),
+
+  desiredCpfLifeIncome: document.getElementById("analysisDesiredCpfLifeIncome"),
+
+  actualCpfLifeIncome: document.getElementById("analysisActualCpfLifeIncome"),
+
+  cpfLifeIncomeGap: document.getElementById("analysisCpfLifeIncomeGap"),
+
+  desiredRetirementCapital: document.getElementById(
+    "analysisDesiredRetirementCapital",
+  ),
+
+  projectedRetirementCapital: document.getElementById(
+    "analysisProjectedRetirementCapital",
+  ),
+
+  retirementCapitalGap: document.getElementById("analysisRetirementCapitalGap"),
+
+  fundingResult: document.getElementById("analysisFundingResult"),
+
+  fundingResultLabel: document.getElementById("analysisFundingResultLabel"),
+
+  fundingResultAmount: document.getElementById("analysisFundingResultAmount"),
+
+  fundingResultMessage: document.getElementById("analysisFundingResultMessage"),
+
+  keyFindingsList: document.getElementById("analysisKeyFindingsList"),
+};
+
 /* ========================================
    INITIALIZATION
 ======================================== */
