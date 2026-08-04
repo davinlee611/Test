@@ -1817,7 +1817,19 @@ function calculateProjection({
       employeeCpfInflow * allocationRates.maRate +
       projectedIncome.monthlySepMedisaveContribution;
 
-    const hasReachedAge55 = age !== null && age >= 55;
+    /*
+     * Monthly projections treat the client's birthday month
+     * as the age-transition month. This ensures RA is formed
+     * in June 2044 for a client born on 15 June 1989, rather
+     * than one month late in July.
+     */
+    const hasReachedAge55 = hasReachedTargetAgeMonth({
+      dateOfBirth: profile.dateOfBirth,
+
+      projectionDate,
+
+      targetAge: 55,
+    });
 
     let frsMetAt55 = false;
 
@@ -1874,7 +1886,7 @@ function calculateProjection({
       frsMetAt55 =
         cohortFrsAmount > 0 && retirementSumSetAside >= cohortFrsAmount - 0.5;
     }
-    
+
     let cpfLifePremiumOutflow = 0;
 
     let targetCpfLifePremium = 0;
