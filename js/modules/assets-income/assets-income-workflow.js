@@ -31,6 +31,8 @@ function createEmptyIncome() {
     sepMedisaveOverrideAmount: 0,
 
     otherMonthly: 0,
+
+    otherMonthlyContinuesAfterFybc: true,
   };
 }
 
@@ -134,6 +136,9 @@ export function createAssetsIncomeWorkflow() {
          * employment status, so preserve it.
          */
         otherMonthly: Number(currentAssets.income?.otherMonthly) || 0,
+
+        otherMonthlyContinuesAfterFybc:
+          currentAssets.income?.otherMonthlyContinuesAfterFybc !== false,
       },
 
       properties: Array.isArray(currentAssets.properties)

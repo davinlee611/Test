@@ -53,6 +53,7 @@ export function saveFybcAssumptions({
   desiredFybcAge,
   plannedMortalityAge,
   inflationRate,
+  postFybcReturnRate,
 }) {
   updateCostOfWants({
     desiredFybcAge: getWholeNumber(desiredFybcAge),
@@ -60,6 +61,8 @@ export function saveFybcAssumptions({
     plannedMortalityAge: getWholeNumber(plannedMortalityAge),
 
     inflationRate: getNonNegativeNumber(inflationRate),
+
+    postFybcReturnRate: getNonNegativeNumber(postFybcReturnRate),
   });
 }
 

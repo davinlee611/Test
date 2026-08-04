@@ -44,6 +44,9 @@ export function readAssetsIncomeFormData(elements) {
       ),
 
       otherMonthly: getInputWholeNumber(elements.otherMonthlyIncomeInput),
+
+      otherMonthlyContinuesAfterFybc:
+        elements.otherMonthlyContinuesAfterFybcInput?.checked !== false,
     },
 
     cpf: {
@@ -105,6 +108,11 @@ export function writeAssetsIncomeFormData(elements, assets) {
   );
 
   setInputValue(elements.otherMonthlyIncomeInput, income.otherMonthly);
+
+  if (elements.otherMonthlyContinuesAfterFybcInput) {
+    elements.otherMonthlyContinuesAfterFybcInput.checked =
+      income.otherMonthlyContinuesAfterFybc !== false;
+  }
 
   setInputValue(elements.cpfOaInput, cpf.oa);
 

@@ -67,6 +67,8 @@ export function createEmptyClientPlan() {
           sepMedisaveOverrideAmount: 0,
 
           otherMonthly: 0,
+
+          otherMonthlyContinuesAfterFybc: true,
         },
 
         cpf: {

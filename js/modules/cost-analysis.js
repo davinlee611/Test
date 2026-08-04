@@ -2616,7 +2616,11 @@ function calculateProjection({
 
       sepMedisaveOverrideAmount: assets.income?.sepMedisaveOverrideAmount,
 
-      otherMonthlyIncome: currentCashflow.otherMonthlyIncome,
+      otherMonthlyIncome:
+        !hasReachedFybc ||
+        assets.income?.otherMonthlyContinuesAfterFybc !== false
+          ? currentCashflow.otherMonthlyIncome
+          : 0,
 
       employmentStatus: profile.employmentStatus,
 

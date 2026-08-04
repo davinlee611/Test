@@ -52,6 +52,10 @@ export function getAssetsIncomeElements() {
 
     otherMonthlyIncomeInput: document.getElementById("otherMonthlyIncome"),
 
+    otherMonthlyContinuesAfterFybcInput: document.getElementById(
+      "otherMonthlyContinuesAfterFybc",
+    ),
+
     /* Income summary */
 
     employeeCpfContributionElement: document.getElementById(
@@ -192,6 +196,7 @@ export function getFinancialInputs(elements) {
     elements.sepMedisaveOverrideAmountInput,
 
     elements.otherMonthlyIncomeInput,
+    elements.otherMonthlyContinuesAfterFybcInput,
 
     elements.cpfOaInput,
     elements.cpfSaInput,

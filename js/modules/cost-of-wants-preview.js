@@ -34,6 +34,10 @@ const elements = {
     "costOfWantsPreviewInflationRateInput",
   ),
 
+  postFybcReturnRateInput: document.getElementById(
+    "costOfWantsPreviewPostFybcReturnRateInput",
+  ),
+
   lifestyleButtons: Array.from(
     document.querySelectorAll("[data-preview-lifestyle-option]"),
   ),
@@ -114,6 +118,7 @@ function attachInputListeners() {
     elements.desiredFybcAgeInput,
     elements.mortalityAgeInput,
     elements.inflationRateInput,
+    elements.postFybcReturnRateInput,
   ];
 
   assumptionInputs.forEach(function (input) {
@@ -173,6 +178,8 @@ function savePreviewAssumptions() {
     plannedMortalityAge: elements.mortalityAgeInput?.value,
 
     inflationRate: elements.inflationRateInput?.value,
+
+    postFybcReturnRate: elements.postFybcReturnRateInput?.value,
   });
 
   isSavingPreviewInputs = false;
@@ -270,6 +277,11 @@ function syncInputValues() {
   setInputValue(elements.mortalityAgeInput, costOfWants.plannedMortalityAge);
 
   setInputValue(elements.inflationRateInput, costOfWants.inflationRate);
+
+  setInputValue(
+    elements.postFybcReturnRateInput,
+    costOfWants.postFybcReturnRate,
+  );
 
   setInputValue(elements.customIncomeInput, costOfWants.customMonthlyIncome);
 }
@@ -392,6 +404,8 @@ function validatePreviewInputs() {
 
   const inflationRate = Number(elements.inflationRateInput?.value);
 
+  const postFybcReturnRate = Number(elements.postFybcReturnRateInput?.value);
+
   if (!Number.isFinite(currentAge)) {
     showValidationMessage(
       "Complete the client's date of birth first.",
@@ -432,6 +446,19 @@ function validatePreviewInputs() {
     showValidationMessage(
       "Inflation rate cannot be negative.",
       elements.inflationRateInput,
+    );
+
+    return false;
+  }
+
+  if (
+    !Number.isFinite(postFybcReturnRate) ||
+    postFybcReturnRate < 0 ||
+    postFybcReturnRate > 20
+  ) {
+    showValidationMessage(
+      "Post-FYBC return must be between 0% and 20%.",
+      elements.postFybcReturnRateInput,
     );
 
     return false;
