@@ -1255,8 +1255,8 @@ function renderCurrentMonthlyCashflow(cashflow) {
     cashflowDescriptionElement,
 
     cashflow.isSelfEmployed
-      ? "Net trade income is shown after the estimated mandatory MediSave contribution."
-      : "Employment and bonus income are shown after the employee's CPF contribution.",
+      ? "A snapshot of the client's current monthly income and outflows in today's value. Mandatory MediSave contributions are deducted from self-employed income. Trade-income increments and expense inflation are applied only in the projections below."
+      : "A snapshot of the client's current monthly income and outflows in today's value. Employment and bonus income are shown after employee CPF contributions. Employment increments and expense inflation are applied only in the projections below.",
   );
 
   setText(
