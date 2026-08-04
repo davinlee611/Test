@@ -6,6 +6,8 @@ import {
   getPolicies,
 } from "../state/client-plan.js";
 
+import { getHospitalisationAwl } from "../modules/insurance/hospitalisation-premium.js";
+
 /* ========================================
    MONTHLY INSURANCE PREMIUM
 ======================================== */
@@ -51,7 +53,9 @@ export function calculatePortfolioMonthlyPremium(
    MONTHLY MEDISAVE INSURANCE OUTFLOW
 ======================================== */
 
-export function getMonthlyInsuranceMedisaveOutflow() {
+export function getMonthlyInsuranceMedisaveOutflow(
+  projectionDate = new Date(),
+) {
   const policies = getPolicies();
 
   if (!Array.isArray(policies)) {
@@ -60,54 +64,53 @@ export function getMonthlyInsuranceMedisaveOutflow() {
 
   return calculatePortfolioMonthlyMedisaveOutflow(
     policies,
+    projectionDate,
+    getClientProfile().dateOfBirth,
   );
 }
 
 export function calculatePortfolioMonthlyMedisaveOutflow(
   policies = [],
+  projectionDate = new Date(),
+  dateOfBirth = getClientProfile().dateOfBirth,
 ) {
   if (!Array.isArray(policies)) {
     return 0;
   }
 
-  const annualMedisaveOutflow =
-    policies.reduce(
-      function (runningTotal, policy) {
-        return (
-          runningTotal +
-          getPolicyAnnualMedisavePremium(
-            policy,
-          )
-        );
-      },
-      0,
+  const annualMedisaveOutflow = policies.reduce(function (
+    runningTotal,
+    policy,
+  ) {
+    return (
+      runningTotal +
+      getPolicyAnnualMedisavePremium({
+        policy,
+        projectionDate,
+        dateOfBirth,
+      })
     );
+  }, 0);
 
   return annualMedisaveOutflow / 12;
 }
 
-function getPolicyAnnualMedisavePremium(
+function getPolicyAnnualMedisavePremium({
   policy,
-) {
-  if (
-    policy?.policyType ===
-    "hospitalisation"
-  ) {
-    return getNonNegativeNumber(
-      policy.hospitalisation
-        ?.premiumPayment
-        ?.medisaveAmount,
-    );
+  projectionDate,
+  dateOfBirth,
+}) {
+  if (policy?.policyType === "hospitalisation") {
+    return getProjectedHospitalisationPayment({
+      policy,
+      projectionDate,
+      dateOfBirth,
+    }).medisaveAmount;
   }
 
-  if (
-    policy?.policyType ===
-    "long_term_care"
-  ) {
+  if (policy?.policyType === "long_term_care") {
     return getNonNegativeNumber(
-      policy.longTermCare
-        ?.premiumPayment
-        ?.medisaveAmount,
+      policy.longTermCare?.premiumPayment?.medisaveAmount,
     );
   }
 
@@ -124,11 +127,13 @@ function getPolicyMonthlyCashPremium(policy, projectionDate, dateOfBirth) {
   }
 
   if (policy?.policyType === "hospitalisation") {
-    const annualCashAmount = getNonNegativeNumber(
-      policy.hospitalisation?.premiumPayment?.cashAmount,
-    );
+    const projectedPayment = getProjectedHospitalisationPayment({
+      policy,
+      projectionDate,
+      dateOfBirth,
+    });
 
-    return annualCashAmount / 12;
+    return projectedPayment.cashAmount / 12;
   }
 
   if (policy?.policyType === "long_term_care") {
@@ -140,6 +145,92 @@ function getPolicyMonthlyCashPremium(policy, projectionDate, dateOfBirth) {
   }
 
   return convertPremiumToMonthly(policy?.premium);
+}
+
+function getProjectedHospitalisationPayment({
+  policy,
+  projectionDate,
+  dateOfBirth,
+}) {
+  const annualBasePremium = getNonNegativeNumber(policy?.premium?.amount);
+
+  const annualRiderPremium =
+    policy?.hospitalisation?.rider?.included === true
+      ? getNonNegativeNumber(policy.hospitalisation?.rider?.annualPremium)
+      : 0;
+
+  const recordedMedisaveAmount = getNonNegativeNumber(
+    policy?.hospitalisation?.premiumPayment?.medisaveAmount,
+  );
+
+  const currentAge = calculateAgeOnDate(dateOfBirth, new Date());
+
+  const projectedAge = calculateAgeOnDate(dateOfBirth, projectionDate);
+
+  if (currentAge === null || projectedAge === null) {
+    const medisaveAmount = Math.min(recordedMedisaveAmount, annualBasePremium);
+
+    return {
+      medisaveAmount,
+
+      cashAmount: Math.max(
+        annualBasePremium + annualRiderPremium - medisaveAmount,
+        0,
+      ),
+    };
+  }
+
+  const currentAwl = getHospitalisationAwl(currentAge);
+
+  const projectedAwl = getHospitalisationAwl(projectedAge);
+
+  /*
+   * Preserve the insurer's recorded MediSave
+   * amount while the client remains in the
+   * current AWL age band.
+   *
+   * When the client enters another age band,
+   * use that projected AWL, capped by the
+   * recorded base-plan premium.
+   */
+  const projectedMedisaveAmount =
+    projectedAwl === currentAwl
+      ? Math.min(recordedMedisaveAmount, annualBasePremium)
+      : Math.min(projectedAwl, annualBasePremium);
+
+  return {
+    medisaveAmount: projectedMedisaveAmount,
+
+    cashAmount: Math.max(
+      annualBasePremium + annualRiderPremium - projectedMedisaveAmount,
+      0,
+    ),
+  };
+}
+
+function calculateAgeOnDate(dateOfBirth, referenceDate) {
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth || "") ||
+    !(referenceDate instanceof Date) ||
+    Number.isNaN(referenceDate.getTime())
+  ) {
+    return null;
+  }
+
+  const birthDate = new Date(`${dateOfBirth}T00:00:00`);
+
+  let age = referenceDate.getFullYear() - birthDate.getFullYear();
+
+  const birthdayHasPassed =
+    referenceDate.getMonth() > birthDate.getMonth() ||
+    (referenceDate.getMonth() === birthDate.getMonth() &&
+      referenceDate.getDate() >= birthDate.getDate());
+
+  if (!birthdayHasPassed) {
+    age -= 1;
+  }
+
+  return age;
 }
 
 function isPolicyPremiumPayable(policy, projectionDate, dateOfBirth) {
