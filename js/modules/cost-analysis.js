@@ -12,7 +12,10 @@ import { getCpfAllocationRates } from "../services/cpf-service.js";
 
 import { calculateIncomeSummary } from "../services/income-calculator.js";
 
-import { calculateLiquidAssetTotal } from "./assets-income/assets-income-calculator.js";
+import {
+  calculateCpfBalanceTotal,
+  calculateLiquidAssetTotal,
+} from "./assets-income/assets-income-calculator.js";
 
 import {
   getApplicableErsForYear,
@@ -295,6 +298,12 @@ const pathPreviewElements = {
   lifetimeSpending: document.getElementById("analysisPathLifetimeSpending"),
 
   currentAssets: document.getElementById("analysisPathCurrentAssets"),
+
+  currentCpfSavings: document.getElementById("analysisPathCurrentCpfSavings"),
+
+  currentCpfBreakdown: document.getElementById(
+    "analysisPathCurrentCpfBreakdown",
+  ),
 
   affordableAmount: document.getElementById("analysisPathAffordableAmount"),
 
@@ -1076,14 +1085,18 @@ function renderYourPathPreview(currentCashflow) {
     assets?.liquidAssets,
   );
 
+  const currentCpfSavings = calculateCpfBalanceTotal(assets?.cpf);
+
   /*
-   * A negative current surplus is not treated as an
-   * affordable monthly investment amount.
+   * The starting-position card shows the actual signed
+   * monthly surplus. The suggested-plan calculation must
+   * not treat a negative surplus as investable.
    */
-  const affordableMonthlyAmount = Math.max(
-    getFiniteNumber(currentCashflow?.remainingSurplus),
-    0,
+  const currentMonthlySurplus = getFiniteNumber(
+    currentCashflow?.remainingSurplus,
   );
+
+  const affordableMonthlyAmount = Math.max(currentMonthlySurplus, 0);
 
   setText(
     pathPreviewElements.fybcAge,
@@ -1122,6 +1135,53 @@ function renderYourPathPreview(currentCashflow) {
       : "Adjusted for annual inflation",
   );
 
+  renderYourPathLifestyleMethodology(summary);
+
+  setCurrency(pathPreviewElements.currentAssets, currentWithdrawableAssets);
+
+  setCurrency(pathPreviewElements.currentCpfSavings, currentCpfSavings);
+
+  setText(
+    pathPreviewElements.currentCpfBreakdown,
+    formatCurrentCpfBreakdown(assets?.cpf),
+  );
+
+  /*
+   * Show the signed amount in the starting-position card.
+   * This may display a positive or negative value.
+   */
+  setSignedCurrency(
+    pathPreviewElements.affordableAmount,
+    currentMonthlySurplus,
+  );
+
+  /*
+   * The future suggested-plan calculation can only use a
+   * positive amount as currently affordable.
+   */
+  setCurrency(
+    pathPreviewElements.planAffordableAmount,
+    affordableMonthlyAmount,
+  );
+
+  /*
+   * The suggested monthly investment will be calculated
+   * after the investment-return assumption is agreed.
+   */
+  setText(pathPreviewElements.suggestedInvestment, "—");
+
+  setText(pathPreviewElements.monthlyGap, "—");
+
+  setText(pathPreviewElements.planStatus, "Pending calculation");
+
+  renderYourPathCurrentStatus({
+    summary,
+
+    remainingSurplus: currentMonthlySurplus,
+  });
+}
+
+function renderYourPathLifestyleMethodology(summary) {
   setText(
     pathPreviewElements.methodologyLifestyleToday,
     summary.isValid
@@ -1163,32 +1223,35 @@ function renderYourPathPreview(currentCashflow) {
     pathPreviewElements.lifetimeSpending,
     summary.grossCapitalRequired,
   );
+}
 
-  setCurrency(pathPreviewElements.currentAssets, currentWithdrawableAssets);
+function formatCurrentCpfBreakdown(cpf) {
+  const oa = getNonNegativeNumber(cpf?.oa);
 
-  setCurrency(pathPreviewElements.affordableAmount, affordableMonthlyAmount);
+  const sa = getNonNegativeNumber(cpf?.sa);
 
-  setCurrency(
-    pathPreviewElements.planAffordableAmount,
-    affordableMonthlyAmount,
-  );
+  const ra = getNonNegativeNumber(cpf?.ra);
+
+  const ma = getNonNegativeNumber(cpf?.ma);
+
+  const accountParts = [`OA ${formatCurrency(oa)}`];
 
   /*
-   * We deliberately do not calculate the suggested
-   * investment yet. It requires an agreed investment
-   * return assumption.
+   * Ordinarily the client will have either SA or RA.
+   * If both contain a balance, show both so the displayed
+   * account breakdown still matches the total.
    */
-  setText(pathPreviewElements.suggestedInvestment, "—");
+  if (sa > 0 || ra <= 0) {
+    accountParts.push(`SA ${formatCurrency(sa)}`);
+  }
 
-  setText(pathPreviewElements.monthlyGap, "—");
+  if (ra > 0) {
+    accountParts.push(`RA ${formatCurrency(ra)}`);
+  }
 
-  setText(pathPreviewElements.planStatus, "Pending calculation");
+  accountParts.push(`MA ${formatCurrency(ma)}`);
 
-  renderYourPathCurrentStatus({
-    summary,
-
-    remainingSurplus: getFiniteNumber(currentCashflow?.remainingSurplus),
-  });
+  return accountParts.join(" · ");
 }
 
 function renderYourPathCurrentStatus({ summary, remainingSurplus }) {
@@ -1198,7 +1261,12 @@ function renderYourPathCurrentStatus({ summary, remainingSurplus }) {
     return;
   }
 
-  statusElement.classList.remove("is-positive", "is-warning", "is-incomplete");
+  statusElement.classList.remove(
+    "is-positive",
+    "is-warning",
+    "is-neutral",
+    "is-incomplete",
+  );
 
   if (!summary.isValid) {
     statusElement.classList.add("is-incomplete");
@@ -1216,21 +1284,41 @@ function renderYourPathCurrentStatus({ summary, remainingSurplus }) {
 
     setText(
       statusElement,
-      `${formatCurrency(
-        remainingSurplus,
-      )} is currently available each month before future inflation or income growth.`,
+      [
+        `${formatCurrency(remainingSurplus)} currently remains each month.`,
+        `This surplus may be used for goals, emergency savings`,
+        `and long-term investing.`,
+      ].join(" "),
     );
 
     return;
   }
 
-  statusElement.classList.add("is-warning");
+  if (remainingSurplus < 0) {
+    statusElement.classList.add("is-warning");
+
+    setText(
+      statusElement,
+      [
+        `Current monthly outflows exceed inflow by`,
+        `${formatCurrency(Math.abs(remainingSurplus))}.`,
+        `Review the current expenses and commitments before`,
+        `setting a long-term investment amount.`,
+      ].join(" "),
+    );
+
+    return;
+  }
+
+  statusElement.classList.add("is-neutral");
 
   setText(
     statusElement,
-    `Current outflows exceed income by ${formatCurrency(
-      Math.abs(remainingSurplus),
-    )} per month.`,
+    [
+      `Current monthly inflow and outflows are equal.`,
+      `There is no monthly surplus available yet for`,
+      `additional goals or long-term investing.`,
+    ].join(" "),
   );
 }
 

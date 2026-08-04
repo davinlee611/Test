@@ -5296,3 +5296,35 @@ button.insurance-validation-count:disabled {
     flex-direction: column;
   }
 }
+
+/* ========================================
+   YOUR STARTING POSITION
+======================================== */
+
+.analysis-path-cpf-breakdown {
+  max-width: 310px;
+}
+
+.analysis-path-metric--surplus strong {
+  transition: color 0.2s ease;
+}
+
+.analysis-path-metric--surplus strong.is-positive {
+  color: #08783e;
+}
+
+.analysis-path-metric--surplus strong.is-negative {
+  color: #cf2027;
+}
+
+.analysis-path-status.is-neutral {
+  background: var(--background-secondary);
+  color: var(--text-secondary);
+}
+
+.analysis-path-starting-position-note {
+  margin: 12px 2px 0;
+  color: var(--text-secondary);
+  font-size: 9px;
+  line-height: 1.5;
+}

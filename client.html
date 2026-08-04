@@ -2103,8 +2103,8 @@
                       <h4>Your Starting Position</h4>
 
                       <p>
-                        A simple snapshot based on the information entered so
-                        far.
+                        What you currently have and the monthly surplus
+                        available before future projections.
                       </p>
                     </div>
                   </div>
@@ -2113,9 +2113,10 @@
                     <div class="analysis-path-metric">
                       <div>
                         <span>Current Withdrawable Assets</span>
+
                         <small>
-                          Cash, fixed deposits, investments and other liquid
-                          assets
+                          Cash, deposits and investments currently available
+                          outside CPF
                         </small>
                       </div>
 
@@ -2124,26 +2125,32 @@
 
                     <div class="analysis-path-metric">
                       <div>
-                        <span>Current Monthly Amount Available</span>
+                        <span>Current CPF Savings</span>
+
+                        <small
+                          id="analysisPathCurrentCpfBreakdown"
+                          class="analysis-path-cpf-breakdown"
+                        >
+                          OA $0 · SA $0 · MA $0
+                        </small>
+                      </div>
+
+                      <strong id="analysisPathCurrentCpfSavings">$0</strong>
+                    </div>
+
+                    <div
+                      class="analysis-path-metric analysis-path-metric--surplus"
+                    >
+                      <div>
+                        <span>Current Monthly Surplus</span>
+
                         <small>
-                          Current income less expenses and commitments
+                          Current monthly inflow less expenses and cash-paid
+                          commitments
                         </small>
                       </div>
 
                       <strong id="analysisPathAffordableAmount">$0</strong>
-                    </div>
-
-                    <div class="analysis-path-metric">
-                      <div>
-                        <span>CPF and Policy Support</span>
-                        <small>
-                          Projected in the detailed sections below
-                        </small>
-                      </div>
-
-                      <strong class="analysis-path-pending-value">
-                        Calculated below
-                      </strong>
                     </div>
                   </div>
 
@@ -2151,8 +2158,14 @@
                     class="analysis-path-status"
                     id="analysisPathCurrentStatus"
                   >
-                    Complete the planning inputs to check your position.
+                    Complete the planning inputs to check your current position.
                   </div>
+
+                  <p class="analysis-path-starting-position-note">
+                    This is a snapshot in today’s value. Future income growth,
+                    expense inflation and goal withdrawals are reflected only in
+                    the projection sections.
+                  </p>
                 </article>
               </div>
 
