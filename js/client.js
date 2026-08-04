@@ -39,11 +39,6 @@ import {
   resetInsurancePortfolio,
 } from "./modules/insurance-portfolio.js";
 
-import {
-  initializeCostOfWants,
-  resetCostOfWants,
-} from "./modules/cost-of-wants.js";
-
 import { initializeCostOfWantsPreview } from "./modules/cost-of-wants-preview.js";
 
 import {
@@ -104,7 +99,6 @@ initializeAssetsIncome();
 initializeExpenses();
 initializeCommitments();
 initializeInsurancePortfolio();
-initializeCostOfWants();
 initializeCostOfWantsPreview();
 initializeCostAnalysis();
 initializePage();
@@ -213,9 +207,10 @@ function clearFinancialPlan() {
   resetInsurancePortfolio();
 
   /*
-   * Reset Cost of Wants.
+   * Re-render Cost of Wants from the newly reset
+   * shared planner state.
    */
-  resetCostOfWants();
+  initializeCostOfWantsPreview();
 
   /*
    * Reset Cost Analysis.
