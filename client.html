@@ -3050,7 +3050,7 @@
                   <article class="analysis-position-item">
                     <span>Projected OA Balance</span>
 
-                    <strong id="analysisProjectedOaBalance"> — </strong>
+                    <strong id="analysisProjectedOaBalance">—</strong>
 
                     <small> Shown separately from withdrawable assets </small>
                   </article>
@@ -3062,15 +3062,59 @@
 
                     <strong id="analysisProjectedRetirementBalance"> — </strong>
 
-                    <small> Supports the projected CPF LIFE premium </small>
+                    <small>
+                      Retirement Account balance at the selected FYBC age
+                    </small>
+                  </article>
+                </div>
+
+                <p class="analysis-position-exclusion-note">
+                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+
+                  MediSave is excluded from the retirement position because it
+                  is reserved for healthcare expenses.
+                </p>
+
+                <div
+                  class="analysis-subsection-divider"
+                  aria-hidden="true"
+                ></div>
+
+                <div
+                  class="analysis-position-heading analysis-cpf-life-heading"
+                >
+                  <div>
+                    <h4 id="analysisCpfLifeSectionTitle">
+                      Projected CPF LIFE at Age 65
+                    </h4>
+
+                    <p>
+                      Shows what the projected Retirement Account can support
+                      when CPF LIFE begins.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="analysis-cpf-life-grid">
+                  <article class="analysis-position-item">
+                    <span>RA Balance Before CPF LIFE</span>
+
+                    <strong id="analysisCpfLifeRaBeforePremium"> — </strong>
+
+                    <small>
+                      Projected RA balance before the CPF LIFE premium is
+                      deducted
+                    </small>
                   </article>
 
                   <article class="analysis-position-item">
-                    <span>Projected MA Balance</span>
+                    <span>Target CPF LIFE Premium</span>
 
-                    <strong id="analysisProjectedMaBalance"> — </strong>
+                    <strong id="analysisCpfLifeTargetPremium"> — </strong>
 
-                    <small> Not counted as retirement spending capital </small>
+                    <small>
+                      Based on the projected cohort FRS and selected start age
+                    </small>
                   </article>
 
                   <article class="analysis-position-item">
@@ -3079,7 +3123,7 @@
                     <strong id="analysisProjectedCpfLifePremium"> — </strong>
 
                     <small id="analysisProjectedCpfLifePremiumBasis">
-                      Based on the projected RA balance
+                      Limited by the available RA balance
                     </small>
                   </article>
 
@@ -3090,6 +3134,27 @@
 
                     <small id="analysisProjectedCpfLifeIncomeBasis">
                       Monthly payout from the selected start age
+                    </small>
+                  </article>
+
+                  <article class="analysis-position-item">
+                    <span>Cost of Wants Assumed CPF LIFE Income</span>
+
+                    <strong id="analysisDesiredCpfLifeIncome"> — </strong>
+
+                    <small>
+                      Assumed payout used for the desired retirement calculation
+                    </small>
+                  </article>
+
+                  <article class="analysis-position-item">
+                    <span>Projected CPF LIFE Income Shortfall</span>
+
+                    <strong id="analysisCpfLifeIncomeGap"> — </strong>
+
+                    <small>
+                      Difference between the assumed and affordable monthly
+                      payout
                     </small>
                   </article>
                 </div>
@@ -3117,7 +3182,7 @@
                         <th>Retirement Measure</th>
                         <th>Desired</th>
                         <th>Projected From Current Plan</th>
-                        <th>Gap / Amount to Fund</th>
+                        <th>Amount to Fund From Assets</th>
                       </tr>
                     </thead>
 
@@ -3140,16 +3205,6 @@
                         <td id="analysisRecordedIncomeAt65">—</td>
 
                         <td id="analysisIncomeGapAt65">—</td>
-                      </tr>
-
-                      <tr>
-                        <td>CPF LIFE Monthly Income</td>
-
-                        <td id="analysisDesiredCpfLifeIncome">—</td>
-
-                        <td id="analysisActualCpfLifeIncome">—</td>
-
-                        <td id="analysisCpfLifeIncomeGap">—</td>
                       </tr>
 
                       <tr class="analysis-comparison-total-row">

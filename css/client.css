@@ -3234,9 +3234,9 @@ button.insurance-validation-count:disabled {
   }
 
   .sep-medisave-override-amount {
-  grid-template-columns: 1fr;
-  gap: 8px;
-}
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
 
   .financial-input-grid {
     grid-template-columns: 1fr;
@@ -4718,8 +4718,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-cpf-assumption-grid {
   display: grid;
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 14px;
 }
@@ -4777,8 +4776,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-cpf-life-result-grid {
   display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -5112,10 +5110,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-goal-filter-options {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(210px, 280px)
-  );
+  grid-template-columns: repeat(auto-fit, minmax(210px, 280px));
   gap: 10px;
 }
 
@@ -5160,9 +5155,7 @@ button.insurance-validation-count:disabled {
   border-radius: 5px;
 }
 
-.analysis-goal-filter-option
-  input:checked
-  + .analysis-goal-filter-checkbox {
+.analysis-goal-filter-option input:checked + .analysis-goal-filter-checkbox {
   background: var(--primary-color);
   border-color: var(--primary-color);
 }
@@ -5437,8 +5430,7 @@ button.insurance-validation-count:disabled {
   padding: 12px 14px;
 }
 
-.projection-breakdown-row
-  + .projection-breakdown-row {
+.projection-breakdown-row + .projection-breakdown-row {
   border-top: 1px solid var(--border-color);
 }
 
@@ -5546,6 +5538,43 @@ button.insurance-validation-count:disabled {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+}
+
+.analysis-cpf-life-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.analysis-cpf-life-heading {
+  margin-top: 0;
+}
+
+.analysis-position-exclusion-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  color: var(--text-secondary);
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.analysis-position-exclusion-note i {
+  margin-top: 2px;
+  color: var(--primary-color);
+}
+
+.analysis-position-item > strong.is-positive {
+  color: var(--success-color);
+}
+
+.analysis-position-item > strong.is-negative {
+  color: var(--danger-color);
 }
 
 .analysis-position-item {
@@ -5684,13 +5713,11 @@ button.insurance-validation-count:disabled {
   font-size: 18px;
 }
 
-.analysis-funding-result.is-on-track
-.analysis-funding-result-icon {
+.analysis-funding-result.is-on-track .analysis-funding-result-icon {
   color: var(--success-color);
 }
 
-.analysis-funding-result.is-shortfall
-.analysis-funding-result-icon {
+.analysis-funding-result.is-shortfall .analysis-funding-result-icon {
   color: var(--danger-color);
 }
 
@@ -5776,7 +5803,8 @@ button.insurance-validation-count:disabled {
 }
 
 @media (max-width: 950px) {
-  .analysis-position-grid {
+  .analysis-position-grid,
+  .analysis-cpf-life-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -5786,7 +5814,8 @@ button.insurance-validation-count:disabled {
     flex-direction: column;
   }
 
-  .analysis-position-grid {
+  .analysis-position-grid,
+  .analysis-cpf-life-grid {
     grid-template-columns: 1fr;
   }
 
@@ -5810,9 +5839,9 @@ button.insurance-validation-count:disabled {
   }
 
   .analysis-assumption-stack {
-  width: 100%;
-  flex-basis: auto;
-}
+    width: 100%;
+    flex-basis: auto;
+  }
 }
 
 @media (max-width: 700px) {
@@ -5825,10 +5854,10 @@ button.insurance-validation-count:disabled {
   }
 
   .analysis-section-surround {
-  padding: 12px;
-}
+    padding: 12px;
+  }
 
-.analysis-section-group-divider {
-  margin: 12px 0;
-}
+  .analysis-section-group-divider {
+    margin: 12px 0;
+  }
 }

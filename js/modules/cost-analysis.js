@@ -239,7 +239,13 @@ const retirementAnalysisElements = {
     "analysisProjectedRetirementBalance",
   ),
 
-  maBalance: document.getElementById("analysisProjectedMaBalance"),
+  cpfLifeSectionTitle: document.getElementById("analysisCpfLifeSectionTitle"),
+
+  cpfLifeRaBeforePremium: document.getElementById(
+    "analysisCpfLifeRaBeforePremium",
+  ),
+
+  cpfLifeTargetPremium: document.getElementById("analysisCpfLifeTargetPremium"),
 
   cpfLifePremium: document.getElementById("analysisProjectedCpfLifePremium"),
 
@@ -266,8 +272,6 @@ const retirementAnalysisElements = {
   incomeGapAt65: document.getElementById("analysisIncomeGapAt65"),
 
   desiredCpfLifeIncome: document.getElementById("analysisDesiredCpfLifeIncome"),
-
-  actualCpfLifeIncome: document.getElementById("analysisActualCpfLifeIncome"),
 
   cpfLifeIncomeGap: document.getElementById("analysisCpfLifeIncomeGap"),
 
@@ -534,15 +538,10 @@ function renderRetirementGoalSummary() {
    RETIREMENT POSITION ANALYSIS
 ======================================== */
 
-function renderRetirementPositionAnalysis({
-  rows,
-  cpfLifeStartAge,
-}) {
-  const summary =
-    getRetirementGoalSummary();
+function renderRetirementPositionAnalysis({ rows, cpfLifeStartAge }) {
+  const summary = getRetirementGoalSummary();
 
-  const desiredFybcAge =
-    getDesiredFybcAge();
+  const desiredFybcAge = getDesiredFybcAge();
 
   const fybcRow = rows.find(function (row) {
     return row.fybcReachedThisMonth;
@@ -552,265 +551,219 @@ function renderRetirementPositionAnalysis({
     return getFiniteNumber(row.age) >= 65;
   });
 
-  const cpfLifeStartRow = rows.find(
-    function (row) {
-      return (
-        getFiniteNumber(
-          row.cpfLifePremiumOutflow,
-        ) > 0
-      );
-    },
-  );
+  /*
+   * Find the first projected month at the selected
+   * CPF LIFE start age. Do not search only for a
+   * positive premium because the client may have
+   * insufficient RA to start CPF LIFE.
+   */
+  const cpfLifeStartRow = rows.find(function (row) {
+    return getFiniteNumber(row.age) >= cpfLifeStartAge;
+  });
 
   if (!summary.isValid || !fybcRow) {
-    renderIncompleteRetirementPositionAnalysis(
-      desiredFybcAge,
-    );
+    renderIncompleteRetirementPositionAnalysis(desiredFybcAge, cpfLifeStartAge);
 
     return;
   }
 
-  const projectedWithdrawableAssets =
-    getFiniteNumber(
-      fybcRow.endWithdrawableBalance,
-    );
+  const projectedWithdrawableAssets = getFiniteNumber(
+    fybcRow.endWithdrawableBalance,
+  );
 
-  const retirementAccount =
-    fybcRow.retirementAccount === "ra"
-      ? "RA"
-      : "SA";
+  const retirementAccount = fybcRow.retirementAccount === "ra" ? "RA" : "SA";
 
-  const projectedCpfLifePremium =
-    getNonNegativeNumber(
-      cpfLifeStartRow
-        ?.affordableCpfLifePremium,
-    );
+  const raBalanceBeforeCpfLife = getNonNegativeNumber(
+    cpfLifeStartRow?.raBalanceBeforeCpfLife,
+  );
 
-  const projectedCpfLifeIncome =
-    getNonNegativeNumber(
-      cpfLifeStartRow
-        ?.cpfLifeMonthlyPayout,
-    );
+  const targetCpfLifePremium = getNonNegativeNumber(
+    cpfLifeStartRow?.targetCpfLifePremium,
+  );
+
+  const projectedCpfLifePremium = getNonNegativeNumber(
+    cpfLifeStartRow?.affordableCpfLifePremium,
+  );
+
+  const projectedCpfLifeIncome = getNonNegativeNumber(
+    cpfLifeStartRow?.cpfLifeMonthlyPayout,
+  );
 
   const recordedIncomeAtFybc =
-    getRetirementPolicyIncomeForRow(
-      fybcRow,
-    ) +
-    getNonNegativeNumber(
-      fybcRow.cpfLifeCashInflow,
-    );
+    getRetirementPolicyIncomeForRow(fybcRow) +
+    getNonNegativeNumber(fybcRow.cpfLifeCashInflow);
 
-  const recordedIncomeAt65 =
-    age65Row
-      ? getRetirementPolicyIncomeForRow(
-          age65Row,
-        ) +
-        getNonNegativeNumber(
-          age65Row.cpfLifeCashInflow,
-        )
-      : 0;
+  const recordedIncomeAt65 = age65Row
+    ? getRetirementPolicyIncomeForRow(age65Row) +
+      getNonNegativeNumber(age65Row.cpfLifeCashInflow)
+    : 0;
 
   const incomeGapAtFybc = Math.max(
-    summary.monthlyPassiveIncomeNeeded -
-      recordedIncomeAtFybc,
+    summary.monthlyPassiveIncomeNeeded - recordedIncomeAtFybc,
 
     0,
   );
 
   const incomeGapAt65 = Math.max(
-    summary.monthlyIncomeAt65 -
-      recordedIncomeAt65,
+    summary.monthlyIncomeAt65 - recordedIncomeAt65,
 
     0,
   );
 
   const cpfLifeIncomeGap = Math.max(
-    summary.cpfLifeIncome -
-      projectedCpfLifeIncome,
+    summary.cpfLifeIncome - projectedCpfLifeIncome,
 
     0,
   );
 
-  const projectedRetirementCapital =
-    Math.max(
-      projectedWithdrawableAssets,
-      0,
-    );
+  const projectedRetirementCapital = Math.max(projectedWithdrawableAssets, 0);
 
   const capitalDifference =
-    projectedRetirementCapital -
-    summary.totalCapitalNeeded;
+    projectedRetirementCapital - summary.totalCapitalNeeded;
 
-  const capitalGap =
-    Math.max(-capitalDifference, 0);
+  const capitalGap = Math.max(-capitalDifference, 0);
 
-  const isOnTrack =
-    capitalDifference >= 0;
+  const isOnTrack = capitalDifference >= 0;
 
   setText(
-    retirementAnalysisElements
-      .positionTitle,
+    retirementAnalysisElements.positionTitle,
 
     `Projected Position at FYBC Age ${desiredFybcAge}`,
   );
 
   setText(
-    retirementAnalysisElements
-      .withdrawableAssets,
+    retirementAnalysisElements.withdrawableAssets,
 
-    formatCurrency(
-      projectedWithdrawableAssets,
-    ),
+    formatCurrency(projectedWithdrawableAssets),
   );
 
   setText(
-    retirementAnalysisElements
-      .oaBalance,
+    retirementAnalysisElements.oaBalance,
 
-    formatCurrency(
-      fybcRow.oaBalance,
-    ),
+    formatCurrency(fybcRow.oaBalance),
   );
 
   setText(
-    retirementAnalysisElements
-      .retirementBalanceLabel,
+    retirementAnalysisElements.retirementBalanceLabel,
 
     `Projected ${retirementAccount} Balance`,
   );
 
   setText(
-    retirementAnalysisElements
-      .retirementBalance,
+    retirementAnalysisElements.retirementBalance,
 
-    formatCurrency(
-      fybcRow.retirementBalance,
-    ),
+    formatCurrency(fybcRow.retirementBalance),
   );
 
   setText(
-    retirementAnalysisElements
-      .maBalance,
-
-    formatCurrency(
-      fybcRow.maBalance,
-    ),
+    retirementAnalysisElements.cpfLifeSectionTitle,
+    `Projected CPF LIFE at Age ${cpfLifeStartAge}`,
   );
 
   setText(
-    retirementAnalysisElements
-      .cpfLifePremium,
-
-    formatCurrency(
-      projectedCpfLifePremium,
-    ),
+    retirementAnalysisElements.cpfLifeRaBeforePremium,
+    formatCurrency(raBalanceBeforeCpfLife),
   );
 
   setText(
-    retirementAnalysisElements
-      .cpfLifePremiumBasis,
+    retirementAnalysisElements.cpfLifeTargetPremium,
+    formatCurrency(targetCpfLifePremium),
+  );
 
+  setText(
+    retirementAnalysisElements.cpfLifePremium,
+    formatCurrency(projectedCpfLifePremium),
+  );
+
+  setText(
+    retirementAnalysisElements.cpfLifePremiumBasis,
     projectedCpfLifePremium > 0
       ? `Deducted from RA at age ${cpfLifeStartAge}`
-      : `No affordable CPF LIFE premium projected at age ${cpfLifeStartAge}`,
+      : `Insufficient RA to start CPF LIFE at age ${cpfLifeStartAge}`,
   );
 
   setText(
-    retirementAnalysisElements
-      .cpfLifeIncome,
-
-    `${formatCurrency(
-      projectedCpfLifeIncome,
-    )}/mth`,
+    retirementAnalysisElements.cpfLifeIncome,
+    `${formatCurrency(projectedCpfLifeIncome)}/mth`,
   );
 
   setText(
-    retirementAnalysisElements
-      .cpfLifeIncomeBasis,
+    retirementAnalysisElements.cpfLifeIncomeBasis,
+    projectedCpfLifePremium > 0
+      ? `Projected to start from age ${cpfLifeStartAge}`
+      : "No monthly payout projected",
+  );
 
-    `Projected to start from age ${cpfLifeStartAge}`,
+  setText(
+    retirementAnalysisElements.desiredCpfLifeIncome,
+    `${formatCurrency(summary.cpfLifeIncome)}/mth`,
+  );
+
+  setText(
+    retirementAnalysisElements.cpfLifeIncomeGap,
+    `${formatCurrency(cpfLifeIncomeGap)}/mth`,
+  );
+
+  retirementAnalysisElements.cpfLifeIncomeGap?.classList.toggle(
+    "is-negative",
+    cpfLifeIncomeGap > 0,
+  );
+
+  retirementAnalysisElements.cpfLifeIncomeGap?.classList.toggle(
+    "is-positive",
+    cpfLifeIncomeGap <= 0,
   );
 
   setAnalysisComparisonValue(
-    retirementAnalysisElements
-      .desiredIncomeAtFybc,
+    retirementAnalysisElements.desiredIncomeAtFybc,
 
     summary.monthlyPassiveIncomeNeeded,
   );
 
   setAnalysisComparisonValue(
-    retirementAnalysisElements
-      .recordedIncomeAtFybc,
+    retirementAnalysisElements.recordedIncomeAtFybc,
 
     recordedIncomeAtFybc,
   );
 
   setAnalysisGapValue(
-    retirementAnalysisElements
-      .incomeGapAtFybc,
+    retirementAnalysisElements.incomeGapAtFybc,
 
     incomeGapAtFybc,
   );
 
   setAnalysisComparisonValue(
-    retirementAnalysisElements
-      .desiredIncomeAt65,
+    retirementAnalysisElements.desiredIncomeAt65,
 
     summary.monthlyIncomeAt65,
   );
 
   setAnalysisComparisonValue(
-    retirementAnalysisElements
-      .recordedIncomeAt65,
+    retirementAnalysisElements.recordedIncomeAt65,
 
     recordedIncomeAt65,
   );
 
   setAnalysisGapValue(
-    retirementAnalysisElements
-      .incomeGapAt65,
+    retirementAnalysisElements.incomeGapAt65,
 
     incomeGapAt65,
   );
 
   setAnalysisComparisonValue(
-    retirementAnalysisElements
-      .desiredCpfLifeIncome,
-
-    summary.cpfLifeIncome,
-  );
-
-  setAnalysisComparisonValue(
-    retirementAnalysisElements
-      .actualCpfLifeIncome,
-
-    projectedCpfLifeIncome,
-  );
-
-  setAnalysisGapValue(
-    retirementAnalysisElements
-      .cpfLifeIncomeGap,
-
-    cpfLifeIncomeGap,
-  );
-
-  setAnalysisComparisonValue(
-    retirementAnalysisElements
-      .desiredRetirementCapital,
+    retirementAnalysisElements.desiredRetirementCapital,
 
     summary.totalCapitalNeeded,
   );
 
   setAnalysisComparisonValue(
-    retirementAnalysisElements
-      .projectedRetirementCapital,
+    retirementAnalysisElements.projectedRetirementCapital,
 
     projectedRetirementCapital,
   );
 
   setAnalysisGapValue(
-    retirementAnalysisElements
-      .retirementCapitalGap,
+    retirementAnalysisElements.retirementCapitalGap,
 
     capitalGap,
   );
@@ -844,12 +797,12 @@ function renderRetirementPositionAnalysis({
 
 function renderIncompleteRetirementPositionAnalysis(
   desiredFybcAge,
+  cpfLifeStartAge,
 ) {
   const emptyValue = "—";
 
   setText(
-    retirementAnalysisElements
-      .positionTitle,
+    retirementAnalysisElements.positionTitle,
 
     desiredFybcAge > 0
       ? `Projected Position at FYBC Age ${desiredFybcAge}`
@@ -871,114 +824,88 @@ function renderIncompleteRetirementPositionAnalysis(
     "Monthly payout from the selected start age",
   );
 
+  setText(
+    retirementAnalysisElements.cpfLifeSectionTitle,
+    `Projected CPF LIFE at Age ${cpfLifeStartAge}`,
+  );
+
   [
-    retirementAnalysisElements
-      .withdrawableAssets,
+    retirementAnalysisElements.withdrawableAssets,
 
-    retirementAnalysisElements
-      .oaBalance,
+    retirementAnalysisElements.oaBalance,
 
-    retirementAnalysisElements
-      .retirementBalance,
+    retirementAnalysisElements.retirementBalance,
 
-    retirementAnalysisElements
-      .maBalance,
+    retirementAnalysisElements.cpfLifeRaBeforePremium,
 
-    retirementAnalysisElements
-      .cpfLifePremium,
+    retirementAnalysisElements.cpfLifeTargetPremium,
 
-    retirementAnalysisElements
-      .cpfLifeIncome,
+    retirementAnalysisElements.cpfLifePremium,
 
-    retirementAnalysisElements
-      .desiredIncomeAtFybc,
+    retirementAnalysisElements.cpfLifeIncome,
 
-    retirementAnalysisElements
-      .recordedIncomeAtFybc,
+    retirementAnalysisElements.desiredIncomeAtFybc,
 
-    retirementAnalysisElements
-      .incomeGapAtFybc,
+    retirementAnalysisElements.recordedIncomeAtFybc,
 
-    retirementAnalysisElements
-      .desiredIncomeAt65,
+    retirementAnalysisElements.incomeGapAtFybc,
 
-    retirementAnalysisElements
-      .recordedIncomeAt65,
+    retirementAnalysisElements.desiredIncomeAt65,
 
-    retirementAnalysisElements
-      .incomeGapAt65,
+    retirementAnalysisElements.recordedIncomeAt65,
 
-    retirementAnalysisElements
-      .desiredCpfLifeIncome,
+    retirementAnalysisElements.incomeGapAt65,
 
-    retirementAnalysisElements
-      .actualCpfLifeIncome,
+    retirementAnalysisElements.desiredCpfLifeIncome,
 
-    retirementAnalysisElements
-      .cpfLifeIncomeGap,
+    retirementAnalysisElements.cpfLifeIncomeGap,
 
-    retirementAnalysisElements
-      .desiredRetirementCapital,
+    retirementAnalysisElements.desiredRetirementCapital,
 
-    retirementAnalysisElements
-      .projectedRetirementCapital,
+    retirementAnalysisElements.projectedRetirementCapital,
 
-    retirementAnalysisElements
-      .retirementCapitalGap,
+    retirementAnalysisElements.retirementCapitalGap,
   ].forEach(function (element) {
     setText(element, emptyValue);
 
-    element?.classList.remove(
-      "is-positive",
-      "is-negative",
-    );
+    element?.classList.remove("is-positive", "is-negative");
   });
 
   setText(
-    retirementAnalysisElements
-      .readinessBadge,
+    retirementAnalysisElements.readinessBadge,
 
     "Complete the retirement goal",
   );
 
-  retirementAnalysisElements
-    .readinessBadge
-    ?.classList.remove(
-      "is-on-track",
-      "is-shortfall",
-    );
+  retirementAnalysisElements.readinessBadge?.classList.remove(
+    "is-on-track",
+    "is-shortfall",
+  );
 
-  retirementAnalysisElements
-    .fundingResult
-    ?.classList.remove(
-      "is-on-track",
-      "is-shortfall",
-    );
+  retirementAnalysisElements.fundingResult?.classList.remove(
+    "is-on-track",
+    "is-shortfall",
+  );
 
   setText(
-    retirementAnalysisElements
-      .fundingResultLabel,
+    retirementAnalysisElements.fundingResultLabel,
 
     "Retirement Funding Position",
   );
 
   setText(
-    retirementAnalysisElements
-      .fundingResultAmount,
+    retirementAnalysisElements.fundingResultAmount,
 
     emptyValue,
   );
 
   setText(
-    retirementAnalysisElements
-      .fundingResultMessage,
+    retirementAnalysisElements.fundingResultMessage,
 
     "Complete the retirement goal and projection assumptions.",
   );
 
-  retirementAnalysisElements
-    .keyFindingsList
-    ?.replaceChildren();
+  retirementAnalysisElements.keyFindingsList?.replaceChildren();
 }
 
 function getRetirementPolicyIncomeForRow(
@@ -1954,6 +1881,12 @@ function calculateProjection({
 
     let affordableCpfLifePremium = 0;
 
+    /*
+     * Preserve the RA balance immediately before
+     * the CPF LIFE premium is deducted.
+     */
+    let raBalanceBeforeCpfLife = 0;
+
     let cpfLifeProjectionStatus = cpfLifeHasStarted ? "started" : "not_started";
 
     let cpfLifeStartedThisMonth = false;
@@ -1966,6 +1899,12 @@ function calculateProjection({
         cpfLifeStartAge,
       })
     ) {
+      /*
+       * Capture the balance before CPF LIFE removes
+       * the affordable premium from RA.
+       */
+      raBalanceBeforeCpfLife = raBalance;
+
       targetCpfLifePremium = calculateTargetCpfLifePremium({
         cohortFrsAmount,
         cpfLifeStartAge,
@@ -2282,6 +2221,8 @@ function calculateProjection({
       cpfLifeCashInflow,
 
       cpfLifePremiumOutflow,
+
+      raBalanceBeforeCpfLife,
 
       targetCpfLifePremium,
 
