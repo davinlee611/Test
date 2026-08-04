@@ -16,6 +16,65 @@ export const LATEST_OFFICIAL_RETIREMENT_SUM_YEAR = 2027;
  * - 2025 onwards: 2 times FRS
  */
 const OFFICIAL_RETIREMENT_SUMS = Object.freeze({
+  /*
+   * The 2015 amount requires a date-specific override.
+   *
+   * Before 1 July 2015:
+   * BRS $77,500
+   * FRS $155,000
+   * ERS $232,500
+   *
+   * From 1 July 2015:
+   * BRS $80,500
+   * FRS $161,000
+   * ERS $241,500
+   *
+   * The values below represent the amount from
+   * 1 July 2015. calculateCpfRetirementSums() applies
+   * the earlier amount when required.
+   */
+  2015: Object.freeze({
+    brs: 80500,
+    frs: 161000,
+    ers: 241500,
+  }),
+
+  2016: Object.freeze({
+    brs: 80500,
+    frs: 161000,
+    ers: 241500,
+  }),
+
+  2017: Object.freeze({
+    brs: 83000,
+    frs: 166000,
+    ers: 249000,
+  }),
+
+  2018: Object.freeze({
+    brs: 85500,
+    frs: 171000,
+    ers: 256500,
+  }),
+
+  2019: Object.freeze({
+    brs: 88000,
+    frs: 176000,
+    ers: 264000,
+  }),
+
+  2020: Object.freeze({
+    brs: 90500,
+    frs: 181000,
+    ers: 271500,
+  }),
+
+  2021: Object.freeze({
+    brs: 93000,
+    frs: 186000,
+    ers: 279000,
+  }),
+
   2022: Object.freeze({
     brs: 96000,
     frs: 192000,
@@ -213,6 +272,9 @@ export function calculateClientCpfRetirementProjection({
 
   const calculatedRetirementSums = calculateCpfRetirementSums({
     yearTurning55,
+
+    dateOfBirth,
+
     annualGrowthRate: safeAnnualGrowthRate,
   });
 
@@ -263,24 +325,35 @@ export function calculateClientCpfRetirementProjection({
 
 export function calculateCpfRetirementSums({
   yearTurning55,
+  dateOfBirth = "",
   annualGrowthRate,
 }) {
-  const officialRetirementSums = OFFICIAL_RETIREMENT_SUMS[yearTurning55];
+  const officialRetirementSums = getOfficialRetirementSums({
+    yearTurning55,
+
+    dateOfBirth,
+  });
 
   if (officialRetirementSums) {
     return {
       brs: officialRetirementSums.brs,
+
       frs: officialRetirementSums.frs,
+
       ers: officialRetirementSums.ers,
-      basis: "official",
+
+      basis: officialRetirementSums.basis || "official",
     };
   }
 
   if (yearTurning55 < LATEST_OFFICIAL_RETIREMENT_SUM_YEAR) {
     return {
       brs: 0,
+
       frs: 0,
+
       ers: 0,
+
       basis: "unavailable",
     };
   }
@@ -294,8 +367,15 @@ export function calculateCpfRetirementSums({
 
   return {
     brs: projectedFrs / 2,
+
     frs: projectedFrs,
+
+    /*
+     * All projected years are after the
+     * 1 January 2025 ERS enhancement.
+     */
     ers: projectedFrs * 2,
+
     basis: "projected",
   };
 }
@@ -573,6 +653,70 @@ export function getCpfCohortAgeText(
 /* ========================================
    INTERNAL HELPERS
 ======================================== */
+
+function getOfficialRetirementSums({ yearTurning55, dateOfBirth }) {
+  /*
+   * A client born in 1960 turned 55 during 2015.
+   * The applicable retirement sum changed on
+   * 1 July 2015, so the exact birthday matters.
+   */
+  if (yearTurning55 === 2015) {
+    const age55Date = getDateAtTargetAge(dateOfBirth, 55);
+
+    const july2015EffectiveDate = new Date(2015, 6, 1);
+
+    if (age55Date && age55Date < july2015EffectiveDate) {
+      return {
+        brs: 77500,
+
+        frs: 155000,
+
+        ers: 232500,
+
+        basis: "official_historical",
+      };
+    }
+  }
+
+  const official = OFFICIAL_RETIREMENT_SUMS[yearTurning55];
+
+  if (!official) {
+    return null;
+  }
+
+  return {
+    brs: official.brs,
+
+    frs: official.frs,
+
+    ers: official.ers,
+
+    basis: "official",
+  };
+}
+
+function getDateAtTargetAge(dateOfBirth, targetAge) {
+  if (
+    typeof dateOfBirth !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)
+  ) {
+    return null;
+  }
+
+  const [birthYear, birthMonth, birthDay] = dateOfBirth.split("-").map(Number);
+
+  if (
+    !Number.isInteger(birthYear) ||
+    !Number.isInteger(birthMonth) ||
+    !Number.isInteger(birthDay)
+  ) {
+    return null;
+  }
+
+  const targetDate = new Date(birthYear + targetAge, birthMonth - 1, birthDay);
+
+  return Number.isNaN(targetDate.getTime()) ? null : targetDate;
+}
 
 function getEarliestOfficialRetirementSumYear() {
   return Math.min(...Object.keys(OFFICIAL_RETIREMENT_SUMS).map(Number));

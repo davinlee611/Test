@@ -24,7 +24,9 @@ import { getLiabilityMonthlyCashRepayment } from "../liabilities/liability-calcu
 import {
   DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE,
   calculateClientCpfRetirementProjection as calculateCpfRetirementProjection,
+  calculateCpfRetirementSums,
   calculateFybcProjection as calculateFybcProjectionValues,
+  roundCpfProjectionAmount,
 } from "./cost-of-wants-calculator.js";
 
 import { getEffectiveMonthlyInsurancePremium } from "../../services/commitment-service.js";
@@ -246,6 +248,45 @@ export function getProjectedCohortFrs() {
     basis: cpfProjection.retirementSumBasis,
 
     annualGrowthRate: cpfProjection.annualGrowthRate,
+  };
+}
+
+export function getApplicableErsForYear(targetYear) {
+  const safeYear = Number(targetYear);
+
+  if (!Number.isInteger(safeYear) || safeYear < 2015) {
+    return {
+      isValid: false,
+
+      amount: 0,
+
+      year: null,
+
+      basis: "unavailable",
+    };
+  }
+
+  const retirementSums = calculateCpfRetirementSums({
+    /*
+     * This deliberately treats targetYear as
+     * the year whose prevailing retirement
+     * sums are required.
+     */
+    yearTurning55: safeYear,
+
+    annualGrowthRate: getSavedCpfRetirementSumGrowthRate(),
+  });
+
+  const ers = Number(retirementSums?.ers);
+
+  return {
+    isValid: Number.isFinite(ers) && ers > 0,
+
+    amount: Number.isFinite(ers) ? roundCpfProjectionAmount(ers) : 0,
+
+    year: safeYear,
+
+    basis: retirementSums?.basis || "unavailable",
   };
 }
 

@@ -15,6 +15,7 @@ import { calculateIncomeSummary } from "../services/income-calculator.js";
 import { calculateLiquidAssetTotal } from "./assets-income/assets-income-calculator.js";
 
 import {
+  getApplicableErsForYear,
   getCpfLifePayoutStartAge,
   getDesiredFybcAge,
   getGrossRetirementGoalSummary,
@@ -84,8 +85,6 @@ const RETIREMENT_STRATEGY_MULTIPLIERS = Object.freeze({
   brs: 0.5,
 
   frs: 1,
-
-  ers: 2,
 });
 
 /* ========================================
@@ -531,26 +530,69 @@ function normaliseRetirementStrategy(
   return strategy;
 }
 
+function getRetirementStrategyApplicationYear({ dateOfBirth, startingDate }) {
+  const startYear = startingDate.getFullYear();
+
+  if (
+    typeof dateOfBirth !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)
+  ) {
+    return startYear;
+  }
+
+  const birthYear = Number(dateOfBirth.slice(0, 4));
+
+  if (!Number.isInteger(birthYear)) {
+    return startYear;
+  }
+
+  const yearTurning55 = birthYear + 55;
+
+  /*
+   * Clients already aged 55 use the prevailing
+   * ERS in the projection's starting year.
+   *
+   * Younger clients use the prevailing ERS in
+   * the year they will reach age 55.
+   */
+  return Math.max(startYear, yearTurning55);
+}
+
 function getRetirementStrategyTarget({
   strategy,
   cohortFrsAmount,
+  strategyApplicationYear,
 }) {
-  const safeFrs =
-    getNonNegativeNumber(cohortFrsAmount);
-
-  const multiplier =
-    RETIREMENT_STRATEGY_MULTIPLIERS[strategy];
+  const safeFrs = getNonNegativeNumber(cohortFrsAmount);
 
   /*
-   * Current Path and No Cash Top-up retain the
-   * normal projected FRS ceiling for CPF flows.
-   * They do not force a cash top-up.
+   * ERS is the prevailing annual ceiling
+   * applicable when the strategy is applied.
+   *
+   * For a client already aged 55, this is the
+   * projection's current year ERS.
+   *
+   * For a younger client, this is the ERS in
+   * the year they reach age 55.
    */
-  if (!Number.isFinite(multiplier)) {
-    return safeFrs;
+  if (strategy === RETIREMENT_STRATEGIES.ERS) {
+    const applicableErs = getApplicableErsForYear(strategyApplicationYear);
+
+    return applicableErs.isValid ? applicableErs.amount : 0;
   }
 
-  return safeFrs * multiplier;
+  const multiplier = RETIREMENT_STRATEGY_MULTIPLIERS[strategy];
+
+  if (Number.isFinite(multiplier)) {
+    return safeFrs * multiplier;
+  }
+
+  /*
+   * Current Path and No Cash Top-up use the
+   * client's cohort FRS as the normal RA
+   * funding ceiling.
+   */
+  return safeFrs;
 }
 
 function strategyUsesCashTopUp(strategy) {
@@ -582,27 +624,24 @@ function getRetirementStrategyLabel(strategy) {
 
 function renderRetirementStrategySelection({
   cohortFrsAmount,
+  strategyApplicationYear,
 }) {
   const profile = getClientProfile();
 
-  const isSelfEmployed =
-    profile.employmentStatus === "self_employed";
+  const isSelfEmployed = profile.employmentStatus === "self_employed";
 
-  selectedRetirementStrategy =
-    normaliseRetirementStrategy(
-      selectedRetirementStrategy,
-      profile.employmentStatus,
-    );
+  selectedRetirementStrategy = normaliseRetirementStrategy(
+    selectedRetirementStrategy,
+    profile.employmentStatus,
+  );
 
-  const currentPathCard =
-    retirementStrategyOptionsElement?.querySelector(
-      '[data-retirement-strategy-card="current_path"]',
-    );
+  const currentPathCard = retirementStrategyOptionsElement?.querySelector(
+    '[data-retirement-strategy-card="current_path"]',
+  );
 
-  const noTopUpCard =
-    retirementStrategyOptionsElement?.querySelector(
-      '[data-retirement-strategy-card="no_top_up"]',
-    );
+  const noTopUpCard = retirementStrategyOptionsElement?.querySelector(
+    '[data-retirement-strategy-card="no_top_up"]',
+  );
 
   if (currentPathCard) {
     currentPathCard.hidden = isSelfEmployed;
@@ -619,95 +658,67 @@ function renderRetirementStrategySelection({
   );
 
   inputs.forEach(function (input) {
-    input.checked =
-      input.value === selectedRetirementStrategy;
+    input.checked = input.value === selectedRetirementStrategy;
 
     input
       .closest(".analysis-retirement-strategy-option")
-      ?.classList.toggle(
-        "is-selected",
-        input.checked,
-      );
+      ?.classList.toggle("is-selected", input.checked);
   });
 
-  const targetAmount =
-    getRetirementStrategyTarget({
-      strategy: selectedRetirementStrategy,
+  const targetAmount = getRetirementStrategyTarget({
+    strategy: selectedRetirementStrategy,
 
-      cohortFrsAmount,
-    });
+    cohortFrsAmount,
+
+    strategyApplicationYear,
+  });
 
   setText(
     retirementStrategyStatusElement,
-    getRetirementStrategyLabel(
-      selectedRetirementStrategy,
-    ),
+    getRetirementStrategyLabel(selectedRetirementStrategy),
   );
 
   setText(
     retirementStrategyTargetElement,
-    targetAmount > 0
-      ? formatCurrency(targetAmount)
-      : "—",
+    targetAmount > 0 ? formatCurrency(targetAmount) : "—",
   );
 
   setText(
     retirementStrategyCashTopUpElement,
-    strategyUsesCashTopUp(
-      selectedRetirementStrategy,
-    )
+    strategyUsesCashTopUp(selectedRetirementStrategy)
       ? "Calculated at age 55"
       : "$0",
   );
 
   setText(
     retirementStrategyFundingResultElement,
-    strategyUsesCashTopUp(
-      selectedRetirementStrategy,
-    )
+    strategyUsesCashTopUp(selectedRetirementStrategy)
       ? "Uses SA, OA, then available cash"
       : "Uses projected CPF balances",
   );
 
-  let note =
-    "Current Path does not force an additional cash top-up.";
+  let note = "Current Path does not force an additional cash top-up.";
 
-  if (
-    selectedRetirementStrategy ===
-    RETIREMENT_STRATEGIES.NO_TOP_UP
-  ) {
+  if (selectedRetirementStrategy === RETIREMENT_STRATEGIES.NO_TOP_UP) {
     note =
       "No Cash Top-up uses existing CPF balances and future mandatory CPF flows. It does not deduct cash to meet BRS, FRS or ERS.";
   }
 
-  if (
-    selectedRetirementStrategy ===
-    RETIREMENT_STRATEGIES.BRS
-  ) {
+  if (selectedRetirementStrategy === RETIREMENT_STRATEGIES.BRS) {
     note =
       "The BRS scenario targets 50% of projected FRS. Property pledge eligibility and withdrawal conditions are not validated by this projection.";
   }
 
-  if (
-    selectedRetirementStrategy ===
-    RETIREMENT_STRATEGIES.FRS
-  ) {
+  if (selectedRetirementStrategy === RETIREMENT_STRATEGIES.FRS) {
     note =
       "The FRS scenario uses SA first, followed by OA, then available cash to meet the projected cohort FRS at age 55.";
   }
 
-  if (
-    selectedRetirementStrategy ===
-    RETIREMENT_STRATEGIES.ERS
-  ) {
-    note =
-      "The ERS scenario targets 200% of projected FRS. Any amount not covered by SA and OA is funded from available withdrawable cash.";
+  if (selectedRetirementStrategy === RETIREMENT_STRATEGIES.ERS) {
+    note = `The ERS scenario uses the prevailing ${strategyApplicationYear} ERS. Any amount not covered by SA and OA is funded from available withdrawable cash.`;
   }
 
-  setText(
-    retirementStrategyNoteElement,
-    note,
-  );
+  setText(retirementStrategyNoteElement, note);
 }
 
 function renderRetirementStrategyResult(rows) {
@@ -814,8 +825,17 @@ export function renderCostAnalysis() {
 
   const cohortFrsAmount = cohortFrs.isValid ? cohortFrs.amount : 0;
 
+  const retirementStrategyApplicationYear =
+    getRetirementStrategyApplicationYear({
+      dateOfBirth: getClientProfile().dateOfBirth,
+
+      startingDate,
+    });
+
   renderRetirementStrategySelection({
     cohortFrsAmount,
+
+    strategyApplicationYear: retirementStrategyApplicationYear,
   });
 
   const projectedCohortBhs = getProjectedCohortBasicHealthcareSum({
@@ -841,6 +861,8 @@ export function renderCostAnalysis() {
     cohortFrsAmount,
 
     retirementStrategy: selectedRetirementStrategy,
+
+    retirementStrategyApplicationYear,
 
     cpfLifeStartAge,
   };
@@ -1992,6 +2014,7 @@ function calculateProjection({
   startingDate,
   cohortFrsAmount,
   retirementStrategy,
+  retirementStrategyApplicationYear,
   cpfLifeStartAge,
 }) {
   const assets = getAssets();
@@ -2009,6 +2032,8 @@ function calculateProjection({
     strategy: normalisedRetirementStrategy,
 
     cohortFrsAmount,
+
+    strategyApplicationYear: retirementStrategyApplicationYear,
   });
 
   const shouldUseStrategyCashTopUp = strategyUsesCashTopUp(
