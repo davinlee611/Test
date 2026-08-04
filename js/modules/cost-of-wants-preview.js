@@ -169,7 +169,7 @@ export function renderCostOfWantsPreview() {
 
   setText(
     elements.monthlySpending,
-    formatCurrency(spending.totalMonthlySpending),
+    formatCurrency(spending.totalMonthlyOutflow),
   );
 
   setText(

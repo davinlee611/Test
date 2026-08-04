@@ -6070,8 +6070,10 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-preview-result-row--total {
-  margin: 0 -12px -4px;
-  padding: 18px 12px;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 8px 0 0;
+  padding: 18px 14px;
   background: rgba(91, 78, 246, 0.06);
   border: 1px solid rgba(91, 78, 246, 0.2);
   border-radius: var(--radius-md);
