@@ -6069,14 +6069,28 @@ button.insurance-validation-count:disabled {
   background: var(--card-background);
 }
 
-.cost-preview-result-row--total {
+.cost-preview-result-row--total,
+.cost-preview-result-row--total:last-child {
   box-sizing: border-box;
   width: 100%;
+  min-height: 92px;
   margin: 8px 0 0;
-  padding: 18px 14px;
+  padding: 18px 16px;
+  align-items: center;
+  overflow: visible;
   background: rgba(91, 78, 246, 0.06);
   border: 1px solid rgba(91, 78, 246, 0.2);
   border-radius: var(--radius-md);
+}
+
+.cost-preview-result-row--total > div {
+  padding-bottom: 2px;
+}
+
+.cost-preview-result-row--total small {
+  display: block;
+  margin-top: 5px;
+  line-height: 1.5;
 }
 
 .cost-preview-result-row--total > strong {
