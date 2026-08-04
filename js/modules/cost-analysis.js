@@ -1521,6 +1521,12 @@ function calculateYourPathProjectedPosition({
 
   let capitalNeededAtFybc = 0;
 
+  let otherIncomeCapitalOffset = 0;
+
+  let retirementPolicyCapitalOffset = 0;
+
+  let cpfLifeCapitalOffset = 0;
+
   retirementRows.forEach(function (
     row,
     monthIndex,
@@ -1551,30 +1557,52 @@ function calculateYourPathProjectedPosition({
       );
 
     const recordedRecurringIncome =
-      continuingOtherIncome +
-      retirementPolicyIncome +
-      cpfLifeIncome;
+      continuingOtherIncome + retirementPolicyIncome + cpfLifeIncome;
+
+    /*
+     * If total recorded income exceeds the lifestyle
+     * required that month, only the amount actually
+     * offsetting the lifestyle should be counted.
+     *
+     * Allocate that usable amount proportionally across
+     * the active income sources.
+     */
+    const usableIncomeRatio =
+      recordedRecurringIncome > 0
+        ? Math.min(lifestyleNeeded / recordedRecurringIncome, 1)
+        : 0;
+
+    const usableOtherIncome = continuingOtherIncome * usableIncomeRatio;
+
+    const usableRetirementPolicyIncome =
+      retirementPolicyIncome * usableIncomeRatio;
+
+    const usableCpfLifeIncome = cpfLifeIncome * usableIncomeRatio;
+
+    const usableRecordedIncome =
+      usableOtherIncome + usableRetirementPolicyIncome + usableCpfLifeIncome;
 
     const amountFundedFromCapital = Math.max(
-      lifestyleNeeded -
-        recordedRecurringIncome,
+      lifestyleNeeded - usableRecordedIncome,
       0,
     );
 
-    grossLifestyleCapitalAtFybc +=
-      lifestyleNeeded / discountFactor;
+    grossLifestyleCapitalAtFybc += lifestyleNeeded / discountFactor;
 
-    capitalNeededAtFybc +=
-      amountFundedFromCapital /
-      discountFactor;
+    otherIncomeCapitalOffset += usableOtherIncome / discountFactor;
+
+    retirementPolicyCapitalOffset +=
+      usableRetirementPolicyIncome / discountFactor;
+
+    cpfLifeCapitalOffset += usableCpfLifeIncome / discountFactor;
+
+    capitalNeededAtFybc += amountFundedFromCapital / discountFactor;
   });
 
   const recordedIncomeCapitalOffset =
-    Math.max(
-      grossLifestyleCapitalAtFybc -
-        capitalNeededAtFybc,
-      0,
-    );
+    otherIncomeCapitalOffset +
+    retirementPolicyCapitalOffset +
+    cpfLifeCapitalOffset;
 
   const projectedWithdrawableAssets =
     getFiniteNumber(
@@ -1669,6 +1697,12 @@ function calculateYourPathProjectedPosition({
     grossLifestyleCapitalAtFybc,
 
     recordedIncomeCapitalOffset,
+
+    otherIncomeCapitalOffset,
+
+    retirementPolicyCapitalOffset,
+
+    cpfLifeCapitalOffset,
 
     capitalNeededAtFybc,
 
@@ -2069,35 +2103,130 @@ function renderIncomeCapitalBreakdown(result) {
 
   setText(
     projectionBreakdownSubtitle,
-    "Income received after FYBC reduces the amount that must be funded from personal capital.",
+    "Income may start at different ages. The monthly figures show what is active at FYBC, while the capital values include income received later in retirement.",
   );
 
-  appendCapitalBreakdownSection({
-    heading: "Income active at FYBC",
+  appendMonthlyIncomeAtFybcSection(income);
 
-    rows: [
-      {
-        label: "Other monthly income",
-        value: `${formatCurrency(income.otherIncome)}/mth`,
-      },
-      {
-        label: "Retirement-policy income",
-        value: `${formatCurrency(income.retirementPolicyIncome)}/mth`,
-      },
-      {
-        label: "CPF LIFE income",
-        value: `${formatCurrency(income.cpfLifeIncome)}/mth`,
-      },
-      {
-        label: "Total income active at FYBC",
-        value: `${formatCurrency(income.total)}/mth`,
-      },
-    ],
+  appendCapitalIncomeOffsetSection(result);
+}
 
-    totalLabel: "Capital value of all recorded retirement income",
+function appendMonthlyIncomeAtFybcSection(income) {
+  const section = document.createElement("section");
 
-    totalValue: result.recordedIncomeCapitalOffset,
+  section.className = "projection-breakdown-section";
+
+  const heading = document.createElement("h3");
+
+  heading.textContent = "Monthly income active at FYBC";
+
+  section.append(heading);
+
+  appendCapitalDisplayRow({
+    section,
+
+    label: "Other monthly income",
+
+    value: `${formatCurrency(income.otherIncome)}/mth`,
   });
+
+  appendCapitalDisplayRow({
+    section,
+
+    label: "Retirement-policy income",
+
+    value: `${formatCurrency(income.retirementPolicyIncome)}/mth`,
+  });
+
+  appendCapitalDisplayRow({
+    section,
+
+    label: "CPF LIFE income",
+
+    value: `${formatCurrency(income.cpfLifeIncome)}/mth`,
+  });
+
+  appendCapitalDisplayRow({
+    section,
+
+    label: "Total income active at FYBC",
+
+    value: `${formatCurrency(income.total)}/mth`,
+  });
+
+  projectionBreakdownContent.append(section);
+}
+
+function appendCapitalIncomeOffsetSection(result) {
+  const section = document.createElement("section");
+
+  section.className = "projection-breakdown-section";
+
+  const heading = document.createElement("h3");
+
+  heading.textContent = "Capital value across retirement";
+
+  section.append(heading);
+
+  appendCapitalDisplayRow({
+    section,
+
+    label: "Other monthly income",
+
+    value: formatCurrency(result.otherIncomeCapitalOffset),
+  });
+
+  appendCapitalDisplayRow({
+    section,
+
+    label: "Retirement-policy income",
+
+    value: formatCurrency(result.retirementPolicyCapitalOffset),
+  });
+
+  appendCapitalDisplayRow({
+    section,
+
+    label: "CPF LIFE after it starts",
+
+    value: formatCurrency(result.cpfLifeCapitalOffset),
+  });
+
+  projectionBreakdownContent.append(section);
+
+  const total = document.createElement("div");
+
+  total.className = "projection-breakdown-total";
+
+  const totalLabel = document.createElement("strong");
+
+  totalLabel.textContent = "Capital value of all recorded retirement income";
+
+  const totalValue = document.createElement("strong");
+
+  totalValue.textContent = formatCurrency(result.recordedIncomeCapitalOffset);
+
+  total.append(totalLabel, totalValue);
+
+  projectionBreakdownContent.append(total);
+}
+
+function appendCapitalDisplayRow({ section, label, value }) {
+  const row = document.createElement("div");
+
+  row.className = "projection-breakdown-row";
+
+  const labelElement = document.createElement("span");
+
+  labelElement.textContent = label;
+
+  const valueElement = document.createElement("strong");
+
+  valueElement.textContent = value;
+
+  row.append(labelElement, valueElement);
+
+  section.append(row);
 }
 
 function renderNetCapitalBreakdown(result) {
