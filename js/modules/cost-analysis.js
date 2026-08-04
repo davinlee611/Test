@@ -851,8 +851,6 @@ export function renderCostAnalysis() {
     projectionMonths,
   });
 
-  renderRetirementStrategyResult(monthlyProjection);
-
   renderCpfLifeProjectionStatus({
     rows: monthlyProjection,
     cpfLifeStartAge,
@@ -890,6 +888,13 @@ export function renderCostAnalysis() {
 
           projectionMonths: analysisProjectionMonths,
         });
+
+  /*
+   * Use the full mortality-age projection for the strategy
+   * result. Otherwise a client who reaches age 55 outside
+   * the selected 10-year table would show no top-up result.
+   */
+  renderRetirementStrategyResult(analysisProjection);
 
   renderRetirementPositionAnalysis({
     rows: analysisProjection,
@@ -2042,7 +2047,7 @@ function calculateProjection({
    * contributions back into RA.
    */
   let retirementSumSetAside = raHasBeenFormed
-    ? Math.min(raBalance, retirementStrategyTarget)
+    ? Math.min(raBalance, Math.max(cohortFrsAmount, retirementStrategyTarget))
     : 0;
 
   const pendingCpfInterest = {
@@ -2236,6 +2241,37 @@ function calculateProjection({
 
     let retirementStrategyAppliedThisMonth = false;
 
+    /*
+     * If the client is already 55 or older, their entered RA
+     * represents the current post-55 position.
+     *
+     * Apply an explicitly selected BRS, FRS or ERS cash
+     * top-up in the first projection month. Do not transfer
+     * OA automatically because RA has already been formed.
+     */
+    if (raHasBeenFormed && monthIndex === 0 && shouldUseStrategyCashTopUp) {
+      retirementStrategyAppliedThisMonth = true;
+
+      const remainingTarget = Math.max(retirementStrategyTarget - raBalance, 0);
+
+      const availableWithdrawableCash = Math.max(withdrawableBalance, 0);
+
+      retirementStrategyCashTopUp = Math.min(
+        remainingTarget,
+        availableWithdrawableCash,
+      );
+
+      raBalance += retirementStrategyCashTopUp;
+
+      retirementSumSetAside = Math.max(
+        retirementSumSetAside,
+        Math.min(
+          raBalance,
+          Math.max(cohortFrsAmount, retirementStrategyTarget),
+        ),
+      );
+    }
+
     if (hasReachedAge55 && !raHasBeenFormed) {
       retirementStrategyAppliedThisMonth = true;
 
@@ -2404,7 +2440,7 @@ function calculateProjection({
       const amountAvailableForRa = retirementInflow + maOverflow;
 
       const remainingRaCapacity = Math.max(
-        cohortFrsAmount - retirementSumSetAside,
+        retirementStrategyTarget - retirementSumSetAside,
         0,
       );
 
@@ -2507,7 +2543,7 @@ function calculateProjection({
           oaBalance += maInterestOverflow - overflowToSa;
         } else {
           const remainingRaCapacity = Math.max(
-            cohortFrsAmount - retirementSumSetAside,
+            retirementStrategyTarget - retirementSumSetAside,
             0,
           );
 
@@ -3005,6 +3041,7 @@ function aggregateCashflowBreakdown(rows) {
     "expenses",
     "liabilities",
     "insurancePremiums",
+    "retirementStrategyCashTopUp",
   ];
 
   return properties.reduce(function (breakdown, propertyName) {
@@ -3688,6 +3725,14 @@ function openNetMovementBreakdown({ row, periodLabel }) {
     {
       label: "Insurance premiums",
       amount: row.cashflowBreakdown?.insurancePremiums,
+    },
+
+    {
+      label: `${getRetirementStrategyLabel(
+        row.retirementStrategy,
+      )} cash top-up to RA`,
+
+      amount: row.cashflowBreakdown?.retirementStrategyCashTopUp,
     },
 
     ...(row.goalOutflowItems || []).map(function (item) {

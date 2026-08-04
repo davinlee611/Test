@@ -4806,36 +4806,6 @@ button.insurance-validation-count:disabled {
   white-space: nowrap;
 }
 
-.analysis-retirement-scenario-coming-soon {
-  display: inline-flex;
-  width: fit-content;
-  padding: 7px 9px;
-  align-items: center;
-  gap: 6px;
-
-  color: var(--text-secondary);
-  background: var(--card-background);
-  border: 1px dashed var(--border-color);
-  border-radius: var(--radius-md);
-
-  font: inherit;
-  font-size: 10px;
-  font-weight: 700;
-  cursor: not-allowed;
-}
-
-.analysis-retirement-scenario-coming-soon small {
-  padding: 2px 5px;
-
-  color: var(--primary-color);
-  background: var(--primary-soft);
-  border-radius: 999px;
-
-  font-size: 9px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
 .analysis-cpf-calculation-details {
   margin-bottom: 18px;
 }
