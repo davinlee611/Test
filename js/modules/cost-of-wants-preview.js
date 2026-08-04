@@ -4,11 +4,14 @@ import {
   getCostOfWantsState,
   getGrossRetirementGoalSummary,
   getSelectedMonthlyIncome,
+  saveFybcAssumptions,
+  setCustomMonthlyIncome,
+  setLifestyleOption,
 } from "./cost-of-wants/cost-of-wants-service.js";
 
 import { getClientAge } from "./client-profile.js";
 
-import { on } from "../events/event-bus.js";
+import { emit, on } from "../events/event-bus.js";
 
 import { EVENTS } from "../events/events.js";
 
@@ -19,15 +22,35 @@ import { EVENTS } from "../events/events.js";
 const elements = {
   currentAge: document.getElementById("costOfWantsPreviewCurrentAge"),
 
-  desiredFybcAge: document.getElementById("costOfWantsPreviewDesiredFybcAge"),
+  desiredFybcAgeInput: document.getElementById(
+    "costOfWantsPreviewDesiredFybcAgeInput",
+  ),
 
-  mortalityAge: document.getElementById("costOfWantsPreviewMortalityAge"),
+  mortalityAgeInput: document.getElementById(
+    "costOfWantsPreviewMortalityAgeInput",
+  ),
 
-  inflationRate: document.getElementById("costOfWantsPreviewInflationRate"),
+  inflationRateInput: document.getElementById(
+    "costOfWantsPreviewInflationRateInput",
+  ),
 
-  lifestyleName: document.getElementById("costOfWantsPreviewLifestyleName"),
+  lifestyleButtons: Array.from(
+    document.querySelectorAll("[data-preview-lifestyle-option]"),
+  ),
+
+  customIncomeGroup: document.getElementById(
+    "costOfWantsPreviewCustomIncomeGroup",
+  ),
+
+  customIncomeInput: document.getElementById(
+    "costOfWantsPreviewCustomIncomeInput",
+  ),
 
   selectedIncome: document.getElementById("costOfWantsPreviewSelectedIncome"),
+
+  validationMessage: document.getElementById(
+    "costOfWantsPreviewValidationMessage",
+  ),
 
   yearsRemaining: document.getElementById("costOfWantsPreviewYearsRemaining"),
 
@@ -56,6 +79,8 @@ const elements = {
 
 let moduleInitialized = false;
 
+let isSavingPreviewInputs = false;
+
 /* ========================================
    INITIALIZATION
 ======================================== */
@@ -67,6 +92,10 @@ export function initializeCostOfWantsPreview() {
     return;
   }
 
+  attachInputListeners();
+
+  attachLifestyleListeners();
+
   attachNavigationListeners();
 
   attachApplicationListeners();
@@ -77,11 +106,117 @@ export function initializeCostOfWantsPreview() {
 }
 
 /* ========================================
+   INPUT LISTENERS
+======================================== */
+
+function attachInputListeners() {
+  const assumptionInputs = [
+    elements.desiredFybcAgeInput,
+    elements.mortalityAgeInput,
+    elements.inflationRateInput,
+  ];
+
+  assumptionInputs.forEach(function (input) {
+    input?.addEventListener("input", handleAssumptionInput);
+
+    input?.addEventListener("blur", handleAssumptionBlur);
+  });
+
+  elements.customIncomeInput?.addEventListener(
+    "input",
+    handleCustomIncomeInput,
+  );
+
+  elements.customIncomeInput?.addEventListener("blur", validatePreviewInputs);
+}
+
+function handleAssumptionInput() {
+  savePreviewAssumptions();
+
+  clearValidationMessage();
+
+  renderProjectionResults();
+
+  emitCostOfWantsChanged();
+}
+
+function handleAssumptionBlur() {
+  savePreviewAssumptions();
+
+  validatePreviewInputs();
+
+  renderProjectionResults();
+}
+
+function handleCustomIncomeInput() {
+  setCustomMonthlyIncome(elements.customIncomeInput?.value);
+
+  clearValidationMessage();
+
+  renderSelectedIncome();
+
+  renderProjectionResults();
+
+  emitCostOfWantsChanged();
+}
+
+function savePreviewAssumptions() {
+  if (isSavingPreviewInputs) {
+    return;
+  }
+
+  isSavingPreviewInputs = true;
+
+  saveFybcAssumptions({
+    desiredFybcAge: elements.desiredFybcAgeInput?.value,
+
+    plannedMortalityAge: elements.mortalityAgeInput?.value,
+
+    inflationRate: elements.inflationRateInput?.value,
+  });
+
+  isSavingPreviewInputs = false;
+}
+
+/* ========================================
+   LIFESTYLE SELECTION
+======================================== */
+
+function attachLifestyleListeners() {
+  elements.lifestyleButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      selectLifestyleOption(button.dataset.previewLifestyleOption);
+    });
+  });
+}
+
+function selectLifestyleOption(option) {
+  const optionWasSaved = setLifestyleOption(option);
+
+  if (!optionWasSaved) {
+    return;
+  }
+
+  clearValidationMessage();
+
+  renderLifestyleSelection();
+
+  renderSelectedIncome();
+
+  renderProjectionResults();
+
+  emitCostOfWantsChanged();
+
+  if (option === "custom") {
+    elements.customIncomeInput?.focus();
+  }
+}
+
+/* ========================================
    NAVIGATION
 ======================================== */
 
 function attachNavigationListeners() {
-
   elements.analysisButton?.addEventListener("click", function () {
     navigateToSection("cost-analysis");
   });
@@ -96,21 +231,13 @@ function navigateToSection(sectionName) {
 }
 
 /* ========================================
-   EVENTS
+   APPLICATION EVENTS
 ======================================== */
 
 function attachApplicationListeners() {
   on(EVENTS.COST_OF_WANTS_CHANGED, renderCostOfWantsPreview);
 
   on(EVENTS.PROFILE_CHANGED, renderCostOfWantsPreview);
-
-  on(EVENTS.EXPENSES_CHANGED, renderCostOfWantsPreview);
-
-  on(EVENTS.COMMITMENTS_CHANGED, renderCostOfWantsPreview);
-
-  on(EVENTS.LIABILITIES_CHANGED, renderCostOfWantsPreview);
-
-  on(EVENTS.POLICIES_CHANGED, renderCostOfWantsPreview);
 
   on(EVENTS.SECTION_CHANGED, function ({ section }) {
     if (section === "cost") {
@@ -120,35 +247,61 @@ function attachApplicationListeners() {
 }
 
 /* ========================================
-   RENDERING
+   MAIN RENDER
 ======================================== */
 
 export function renderCostOfWantsPreview() {
+  syncInputValues();
+
+  renderCurrentAge();
+
+  renderLifestyleSelection();
+
+  renderSelectedIncome();
+
+  renderProjectionResults();
+}
+
+function syncInputValues() {
   const costOfWants = getCostOfWantsState();
 
-  const summary = getGrossRetirementGoalSummary();
+  setInputValue(elements.desiredFybcAgeInput, costOfWants.desiredFybcAge);
 
-  const selectedIncome = getSelectedMonthlyIncome();
+  setInputValue(elements.mortalityAgeInput, costOfWants.plannedMortalityAge);
 
+  setInputValue(elements.inflationRateInput, costOfWants.inflationRate);
+
+  setInputValue(elements.customIncomeInput, costOfWants.customMonthlyIncome);
+}
+
+function renderCurrentAge() {
   const currentAge = getClientAge();
-
-  const lifestyleName = getLifestyleName(costOfWants.lifestyleOption);
 
   setText(
     elements.currentAge,
     Number.isFinite(currentAge) ? String(currentAge) : "—",
   );
+}
 
-  setText(elements.desiredFybcAge, getAgeText(costOfWants.desiredFybcAge));
+function renderLifestyleSelection() {
+  const { lifestyleOption } = getCostOfWantsState();
 
-  setText(elements.mortalityAge, getAgeText(costOfWants.plannedMortalityAge));
+  elements.lifestyleButtons.forEach(function (button) {
+    const isSelected =
+      button.dataset.previewLifestyleOption === lifestyleOption;
 
-  setText(
-    elements.inflationRate,
-    `${formatNumber(costOfWants.inflationRate)}% p.a.`,
-  );
+    button.classList.toggle("selected", isSelected);
 
-  setText(elements.lifestyleName, lifestyleName);
+    button.setAttribute("aria-checked", String(isSelected));
+  });
+
+  if (elements.customIncomeGroup) {
+    elements.customIncomeGroup.hidden = lifestyleOption !== "custom";
+  }
+}
+
+function renderSelectedIncome() {
+  const selectedIncome = getSelectedMonthlyIncome();
 
   setText(
     elements.selectedIncome,
@@ -156,11 +309,21 @@ export function renderCostOfWantsPreview() {
       ? `${formatCurrency(selectedIncome)}/mth`
       : "Not selected",
   );
+}
+
+/* ========================================
+   PROJECTION RESULTS
+======================================== */
+
+function renderProjectionResults() {
+  const summary = getGrossRetirementGoalSummary();
+
+  const desiredFybcAge = Number(getCostOfWantsState().desiredFybcAge);
 
   setText(
     elements.incomeAtFybcLabel,
-    summary.desiredFybcAge > 0
-      ? `Income Needed at FYBC Age ${summary.desiredFybcAge}`
+    desiredFybcAge > 0
+      ? `Income Needed at FYBC Age ${desiredFybcAge}`
       : "Income Needed at FYBC Age",
   );
 
@@ -209,10 +372,7 @@ function renderIncompleteSummary() {
     setText(element, "—");
   });
 
-  setText(
-    elements.incomeAtFybcBasis,
-    "Complete the existing Cost of Wants inputs",
-  );
+  setText(elements.incomeAtFybcBasis, "Complete the retirement target inputs");
 
   if (elements.emptyMessage) {
     elements.emptyMessage.hidden = false;
@@ -220,32 +380,127 @@ function renderIncompleteSummary() {
 }
 
 /* ========================================
+   VALIDATION
+======================================== */
+
+function validatePreviewInputs() {
+  const currentAge = getClientAge();
+
+  const desiredFybcAge = Number(elements.desiredFybcAgeInput?.value);
+
+  const mortalityAge = Number(elements.mortalityAgeInput?.value);
+
+  const inflationRate = Number(elements.inflationRateInput?.value);
+
+  if (!Number.isFinite(currentAge)) {
+    showValidationMessage(
+      "Complete the client's date of birth first.",
+      elements.desiredFybcAgeInput,
+    );
+
+    return false;
+  }
+
+  if (!Number.isInteger(desiredFybcAge) || desiredFybcAge <= currentAge) {
+    showValidationMessage(
+      `Desired FYBC age must be above the current age of ${currentAge}.`,
+      elements.desiredFybcAgeInput,
+    );
+
+    return false;
+  }
+
+  if (!Number.isInteger(mortalityAge) || mortalityAge <= desiredFybcAge) {
+    showValidationMessage(
+      "Planned mortality age must be above the desired FYBC age.",
+      elements.mortalityAgeInput,
+    );
+
+    return false;
+  }
+
+  if (mortalityAge <= 65) {
+    showValidationMessage(
+      "Planned mortality age must be above age 65.",
+      elements.mortalityAgeInput,
+    );
+
+    return false;
+  }
+
+  if (!Number.isFinite(inflationRate) || inflationRate < 0) {
+    showValidationMessage(
+      "Inflation rate cannot be negative.",
+      elements.inflationRateInput,
+    );
+
+    return false;
+  }
+
+  if (getSelectedMonthlyIncome() <= 0) {
+    showValidationMessage("Select an ideal monthly passive income.");
+
+    return false;
+  }
+
+  clearValidationMessage();
+
+  return true;
+}
+
+function showValidationMessage(message, input) {
+  if (elements.validationMessage) {
+    elements.validationMessage.textContent = message;
+
+    elements.validationMessage.hidden = false;
+  }
+
+  input?.classList.add("is-invalid");
+}
+
+function clearValidationMessage() {
+  if (elements.validationMessage) {
+    elements.validationMessage.textContent = "";
+
+    elements.validationMessage.hidden = true;
+  }
+
+  [
+    elements.desiredFybcAgeInput,
+    elements.mortalityAgeInput,
+    elements.inflationRateInput,
+    elements.customIncomeInput,
+  ].forEach(function (input) {
+    input?.classList.remove("is-invalid");
+  });
+}
+
+/* ========================================
+   EVENTS
+======================================== */
+
+function emitCostOfWantsChanged() {
+  emit(EVENTS.COST_OF_WANTS_CHANGED, {
+    costOfWants: {
+      ...getCostOfWantsState(),
+    },
+  });
+}
+
+/* ========================================
    HELPERS
 ======================================== */
 
-function getLifestyleName(option) {
-  switch (option) {
-    case "basic":
-      return "Basic";
-
-    case "average":
-      return "Average";
-
-    case "comfort":
-      return "Comfort";
-
-    case "custom":
-      return "Custom";
-
-    default:
-      return "Not selected";
+function setInputValue(input, value) {
+  if (!input) {
+    return;
   }
-}
 
-function getAgeText(value) {
-  const age = Number(value);
+  const nextValue = Number(value) > 0 ? String(value) : "";
 
-  return Number.isFinite(age) && age > 0 ? String(age) : "—";
+  if (document.activeElement !== input && input.value !== nextValue) {
+    input.value = nextValue;
+  }
 }
 
 function formatNumber(value) {

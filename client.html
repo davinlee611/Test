@@ -2518,8 +2518,8 @@
             </div>
 
             <div class="cost-preview-layout">
-              <!-- Left column -->
               <section class="cost-preview-input-column">
+                <!-- FYBC inputs -->
                 <article class="cost-preview-card">
                   <header class="cost-preview-card-header">
                     <div>
@@ -2531,89 +2531,228 @@
 
                   <div class="cost-preview-divider"></div>
 
-                  <div class="cost-preview-detail-list">
-                    <div class="cost-preview-detail-row">
+                  <div class="cost-preview-form-list">
+                    <!-- Current age -->
+                    <div class="cost-preview-form-row">
                       <div>
-                        <strong>Current Age</strong>
-
-                        <small> Calculated from the Client Profile </small>
-                      </div>
-
-                      <span id="costOfWantsPreviewCurrentAge"> — </span>
-                    </div>
-
-                    <div class="cost-preview-detail-row">
-                      <div>
-                        <strong>Desired FYBC Age</strong>
+                        <label> Current Age </label>
 
                         <small>
-                          The age where the client plans to Fire their own boss
+                          Calculated automatically from the Client Profile.
                         </small>
                       </div>
 
-                      <span id="costOfWantsPreviewDesiredFybcAge"> — </span>
+                      <div class="cost-preview-readonly-value">
+                        <span id="costOfWantsPreviewCurrentAge"> — </span>
+                      </div>
                     </div>
 
-                    <div class="cost-preview-detail-row">
+                    <!-- Desired FYBC age -->
+                    <div class="cost-preview-form-row">
                       <div>
-                        <strong>Planned Mortality Age</strong>
+                        <label for="costOfWantsPreviewDesiredFybcAgeInput">
+                          Desired FYBC Age
+                        </label>
 
                         <small>
-                          Used to determine the retirement funding period
+                          The age where the client plans to Fire their own boss.
                         </small>
                       </div>
 
-                      <span id="costOfWantsPreviewMortalityAge"> — </span>
+                      <input
+                        id="costOfWantsPreviewDesiredFybcAgeInput"
+                        class="form-control cost-preview-number-input"
+                        type="number"
+                        min="1"
+                        max="120"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="Enter age"
+                      />
                     </div>
 
-                    <div class="cost-preview-detail-row">
+                    <!-- Mortality age -->
+                    <div class="cost-preview-form-row">
                       <div>
-                        <strong>Inflation Rate</strong>
+                        <label for="costOfWantsPreviewMortalityAgeInput">
+                          Planned Mortality Age
+                        </label>
 
                         <small>
-                          Applied to the selected lifestyle income
+                          Used to determine the retirement funding period.
                         </small>
                       </div>
 
-                      <span id="costOfWantsPreviewInflationRate"> — </span>
+                      <input
+                        id="costOfWantsPreviewMortalityAgeInput"
+                        class="form-control cost-preview-number-input"
+                        type="number"
+                        min="66"
+                        max="120"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="Enter age"
+                      />
+                    </div>
+
+                    <!-- Inflation -->
+                    <div class="cost-preview-form-row">
+                      <div>
+                        <label for="costOfWantsPreviewInflationRateInput">
+                          Inflation Rate
+                        </label>
+
+                        <small>
+                          Applied to the selected monthly lifestyle income.
+                        </small>
+                      </div>
+
+                      <div class="cost-preview-percentage-input">
+                        <input
+                          id="costOfWantsPreviewInflationRateInput"
+                          class="form-control"
+                          type="number"
+                          min="0"
+                          max="20"
+                          step="0.1"
+                          inputmode="decimal"
+                          placeholder="0"
+                        />
+
+                        <span>%</span>
+                      </div>
                     </div>
                   </div>
+
+                  <p
+                    id="costOfWantsPreviewValidationMessage"
+                    class="cost-preview-validation-message"
+                    role="alert"
+                    aria-live="polite"
+                    hidden
+                  ></p>
                 </article>
 
+                <!-- Lifestyle inputs -->
                 <article class="cost-preview-card">
                   <header class="cost-preview-card-header">
                     <div>
-                      <h3>Desired Lifestyle</h3>
+                      <h3>
+                        Ideal Monthly Passive Income
+                        <span class="cost-preview-heading-note">
+                          (Today's Value)
+                        </span>
+                      </h3>
 
                       <p>
-                        The selected monthly passive income in today's value.
+                        Select the monthly passive income that best reflects the
+                        client's desired lifestyle.
                       </p>
                     </div>
                   </header>
 
                   <div class="cost-preview-divider"></div>
 
-                  <div class="cost-preview-lifestyle-summary">
-                    <div>
-                      <span>Selected Lifestyle</span>
+                  <div
+                    class="cost-preview-lifestyle-grid"
+                    role="radiogroup"
+                    aria-label="Ideal monthly passive income"
+                  >
+                    <button
+                      class="cost-preview-lifestyle-option"
+                      type="button"
+                      data-preview-lifestyle-option="basic"
+                      role="radio"
+                      aria-checked="false"
+                    >
+                      <span>Basic</span>
 
-                      <strong id="costOfWantsPreviewLifestyleName">
-                        Not selected
-                      </strong>
+                      <strong>$3,000</strong>
+
+                      <small>per month</small>
+                    </button>
+
+                    <button
+                      class="cost-preview-lifestyle-option"
+                      type="button"
+                      data-preview-lifestyle-option="average"
+                      role="radio"
+                      aria-checked="false"
+                    >
+                      <span>Average</span>
+
+                      <strong>$5,000</strong>
+
+                      <small>per month</small>
+                    </button>
+
+                    <button
+                      class="cost-preview-lifestyle-option"
+                      type="button"
+                      data-preview-lifestyle-option="comfort"
+                      role="radio"
+                      aria-checked="false"
+                    >
+                      <span>Comfort</span>
+
+                      <strong>$8,000</strong>
+
+                      <small>per month</small>
+                    </button>
+
+                    <button
+                      class="cost-preview-lifestyle-option"
+                      type="button"
+                      data-preview-lifestyle-option="custom"
+                      role="radio"
+                      aria-checked="false"
+                    >
+                      <span>Custom</span>
+
+                      <strong>Enter amount</strong>
+
+                      <small>per month</small>
+                    </button>
+                  </div>
+
+                  <div
+                    id="costOfWantsPreviewCustomIncomeGroup"
+                    class="cost-preview-custom-income"
+                    hidden
+                  >
+                    <label for="costOfWantsPreviewCustomIncomeInput">
+                      Custom Monthly Passive Income
+                    </label>
+
+                    <div class="cost-preview-currency-input">
+                      <span>$</span>
+
+                      <input
+                        id="costOfWantsPreviewCustomIncomeInput"
+                        class="form-control"
+                        type="number"
+                        min="0"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="Enter monthly amount"
+                      />
                     </div>
 
-                    <div>
-                      <span>Monthly Passive Income</span>
+                    <small>
+                      Enter the desired monthly amount in today's value.
+                    </small>
+                  </div>
 
-                      <strong id="costOfWantsPreviewSelectedIncome">
-                        Not selected
-                      </strong>
-                    </div>
+                  <div class="cost-preview-selected-income">
+                    <span> Selected monthly passive income </span>
+
+                    <strong id="costOfWantsPreviewSelectedIncome">
+                      Not selected
+                    </strong>
                   </div>
                 </article>
               </section>
 
-              <!-- Right column -->
               <aside class="cost-preview-target-column">
                 <article class="cost-preview-card cost-preview-target-card">
                   <header class="cost-preview-card-header">

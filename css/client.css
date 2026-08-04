@@ -6151,3 +6151,311 @@ button.insurance-validation-count:disabled {
     justify-self: stretch;
   }
 }
+
+/* ========================================
+   COST OF WANTS EDITABLE INPUTS
+======================================== */
+
+.cost-preview-form-list {
+  display: grid;
+}
+
+.cost-preview-form-row {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    160px;
+  min-height: 82px;
+  padding: 15px 0;
+  align-items: center;
+  gap: 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cost-preview-form-row:first-child {
+  padding-top: 0;
+}
+
+.cost-preview-form-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.cost-preview-form-row > div:first-child {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.cost-preview-form-row label {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cost-preview-form-row small {
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.cost-preview-number-input {
+  width: 160px;
+}
+
+.cost-preview-readonly-value {
+  display: flex;
+  width: 160px;
+  min-height: 44px;
+  padding: 0 14px;
+  align-items: center;
+  justify-content: flex-start;
+  color: var(--text-secondary);
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.cost-preview-readonly-value span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cost-preview-percentage-input {
+  position: relative;
+  width: 160px;
+}
+
+.cost-preview-percentage-input input {
+  width: 100%;
+  padding-right: 38px;
+}
+
+.cost-preview-percentage-input > span {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.cost-preview-heading-note {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cost-preview-lifestyle-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cost-preview-lifestyle-option {
+  display: flex;
+  min-height: 112px;
+  padding: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  color: var(--text-primary);
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.cost-preview-lifestyle-option:hover {
+  border-color: rgba(91, 78, 246, 0.45);
+  transform: translateY(-1px);
+}
+
+.cost-preview-lifestyle-option.selected,
+.cost-preview-lifestyle-option[aria-checked="true"] {
+  color: var(--primary-color);
+  background: rgba(91, 78, 246, 0.07);
+  border-color: var(--primary-color);
+  box-shadow:
+    0 0 0 2px
+    rgba(91, 78, 246, 0.08);
+}
+
+.cost-preview-lifestyle-option > span {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cost-preview-lifestyle-option.selected > span,
+.cost-preview-lifestyle-option[aria-checked="true"] > span {
+  color: #6257b8;
+}
+
+.cost-preview-lifestyle-option > strong {
+  color: inherit;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.cost-preview-lifestyle-option > small {
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.cost-preview-custom-income {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 16px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.cost-preview-custom-income[hidden] {
+  display: none;
+}
+
+.cost-preview-custom-income > label {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cost-preview-custom-income > small {
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.cost-preview-currency-input {
+  position: relative;
+}
+
+.cost-preview-currency-input > span {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  z-index: 1;
+  color: var(--text-secondary);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.cost-preview-currency-input input {
+  width: 100%;
+  padding-left: 34px;
+}
+
+.cost-preview-selected-income {
+  display: flex;
+  margin-top: 14px;
+  padding: 14px 16px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: var(--surface-muted);
+  border-radius: var(--radius-md);
+}
+
+.cost-preview-selected-income > span {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cost-preview-selected-income > strong {
+  color: var(--primary-color);
+  font-size: 18px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.cost-preview-validation-message {
+  margin: 16px 0 0;
+  padding: 11px 13px;
+  color: var(--danger-color);
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.cost-preview-validation-message[hidden] {
+  display: none;
+}
+
+.cost-preview-form-row input.is-invalid,
+.cost-preview-custom-income input.is-invalid {
+  border-color: var(--danger-color);
+  box-shadow:
+    0 0 0 3px
+    rgba(225, 29, 72, 0.08);
+}
+
+/* Fix total card bottom spacing */
+.cost-preview-result-row--total,
+.cost-preview-result-row--total:last-child {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 96px;
+  margin: 10px 0 0;
+  padding: 18px 16px;
+  align-items: center;
+  overflow: visible;
+  background: rgba(91, 78, 246, 0.06);
+  border: 1px solid rgba(91, 78, 246, 0.2);
+  border-radius: var(--radius-md);
+}
+
+.cost-preview-result-row--total > div {
+  padding: 2px 0 4px;
+}
+
+.cost-preview-result-row--total small {
+  display: block;
+  margin-top: 5px;
+  padding-bottom: 1px;
+  line-height: 1.5;
+}
+
+/* ========================================
+   COST OF WANTS EDITABLE RESPONSIVE
+======================================== */
+
+@media (max-width: 650px) {
+  .cost-preview-form-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .cost-preview-number-input,
+  .cost-preview-readonly-value,
+  .cost-preview-percentage-input {
+    width: 100%;
+  }
+
+  .cost-preview-lifestyle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cost-preview-selected-income {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .cost-preview-selected-income > strong {
+    text-align: left;
+  }
+}
