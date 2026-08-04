@@ -2275,12 +2275,12 @@
                     </article>
 
                     <article class="analysis-path-projected-item">
-                      <span>Future Maturity Benefits</span>
+                      <span>Recorded Monthly Income at FYBC</span>
 
-                      <strong id="analysisPathFutureMaturityValue">—</strong>
+                      <strong id="analysisPathRecordedIncomeAtFybc">—</strong>
 
-                      <small id="analysisPathFutureMaturityBasis">
-                        Endowment proceeds received after FYBC
+                      <small id="analysisPathRecordedIncomeAtFybcBasis">
+                        Other income and policy payouts active at FYBC
                       </small>
                     </article>
 
@@ -2383,32 +2383,52 @@
                       </p>
 
                       <div class="analysis-path-capital-methodology-grid">
-                        <div>
+                        <button
+                          type="button"
+                          data-capital-breakdown="lifestyle"
+                          aria-label="View lifestyle capital calculation"
+                        >
                           <span>
                             Lifestyle capital before recorded income
                           </span>
 
                           <strong id="analysisPathGrossCapitalAtFybc">—</strong>
-                        </div>
 
-                        <div>
+                          <small>View breakdown</small>
+                        </button>
+
+                        <button
+                          type="button"
+                          data-capital-breakdown="income"
+                          aria-label="View recorded retirement income calculation"
+                        >
                           <span>Value of recorded retirement income</span>
 
                           <strong id="analysisPathIncomeCapitalOffset"
                             >—</strong
                           >
-                        </div>
 
-                        <div>
+                          <small>View breakdown</small>
+                        </button>
+
+                        <button
+                          type="button"
+                          data-capital-breakdown="capital"
+                          aria-label="View capital needed at FYBC calculation"
+                        >
                           <span>Capital needed at FYBC</span>
 
                           <strong id="analysisPathNetCapitalAtFybc">—</strong>
-                        </div>
+
+                          <small>View breakdown</small>
+                        </button>
 
                         <div>
                           <span>Post-FYBC return assumption</span>
 
                           <strong id="analysisPathPostFybcReturn">—</strong>
+
+                          <small>Editable on Cost of Wants</small>
                         </div>
                       </div>
 
@@ -2447,9 +2467,9 @@
                         Retirement-policy payouts reduce the lifestyle
                         requirement only during their recorded payout term.
                         Endowment maturities are treated as lump-sum assets
-                        instead of monthly income. Existing other monthly income
-                        is assumed to continue through the planned mortality age
-                        because it currently has no recorded end date.
+                        instead of monthly income. Other monthly income
+                        continues after FYBC only when selected in Priorities
+                        &amp; Situation.
                       </p>
                     </div>
                   </details>

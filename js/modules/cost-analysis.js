@@ -330,12 +330,12 @@ const pathPreviewElements = {
     "analysisPathProjectedAssetsAtFybc",
   ),
 
-  futureMaturityValue: document.getElementById(
-    "analysisPathFutureMaturityValue",
+  recordedIncomeAtFybc: document.getElementById(
+    "analysisPathRecordedIncomeAtFybc",
   ),
 
-  futureMaturityBasis: document.getElementById(
-    "analysisPathFutureMaturityBasis",
+  recordedIncomeAtFybcBasis: document.getElementById(
+    "analysisPathRecordedIncomeAtFybcBasis",
   ),
 
   projectedCpfLifeIncome: document.getElementById(
@@ -379,6 +379,10 @@ const pathPreviewElements = {
   postFybcReturn: document.getElementById("analysisPathPostFybcReturn"),
 };
 
+const capitalMethodologyButtons = Array.from(
+  document.querySelectorAll("[data-capital-breakdown]"),
+);
+
 const projectionBreakdownModal = document.getElementById(
   "projectionBreakdownModal",
 );
@@ -408,6 +412,8 @@ let moduleInitialized = false;
 let expenseInflationWasOverridden = false;
 
 let includeProjectedOa = false;
+
+let latestYourPathProjectedPosition = null;
 
 let selectedRetirementStrategy = RETIREMENT_STRATEGIES.CURRENT_PATH;
 
@@ -485,6 +491,10 @@ export function initializeCostAnalysis() {
   goalFilterOptions?.addEventListener("change", handleGoalFilterChange);
 
   selectAllGoalsButton?.addEventListener("click", handleSelectAllGoals);
+
+  capitalMethodologyButtons.forEach(function (button) {
+    button.addEventListener("click", handleCapitalMethodologyClick);
+  });
 
   closeProjectionBreakdownButton?.addEventListener("click", function () {
     closeModal(projectionBreakdownModal);
@@ -1297,6 +1307,8 @@ function renderYourPathProjectedPosition({
       cpfLifeStartAge,
     });
 
+    latestYourPathProjectedPosition = result.isValid ? result : null;
+
   if (!result.isValid) {
     renderIncompleteYourPathProjectedPosition();
 
@@ -1336,21 +1348,7 @@ function renderYourPathProjectedPosition({
     result.projectedWithdrawableAssets,
   );
 
-  setCurrency(
-    pathPreviewElements.futureMaturityValue,
-    result.futureMaturityPresentValue,
-  );
-
-  setText(
-    pathPreviewElements.futureMaturityBasis,
-    result.futureMaturityCount > 0
-      ? `${result.futureMaturityCount} future ${
-          result.futureMaturityCount === 1
-            ? "maturity"
-            : "maturities"
-        } converted to their value at FYBC`
-      : "No endowment maturity recorded after FYBC",
-  );
+  renderRecordedIncomeAtFybc(result.recordedIncomeAtFybc);
 
   setText(
     pathPreviewElements.projectedCpfLifeIncome,
@@ -1419,6 +1417,44 @@ function renderYourPathProjectedPosition({
   );
 }
 
+function renderRecordedIncomeAtFybc(recordedIncome = {}) {
+  const otherIncome = getNonNegativeNumber(recordedIncome.otherIncome);
+
+  const retirementPolicyIncome = getNonNegativeNumber(
+    recordedIncome.retirementPolicyIncome,
+  );
+
+  const cpfLifeIncome = getNonNegativeNumber(recordedIncome.cpfLifeIncome);
+
+  const total = getNonNegativeNumber(recordedIncome.total);
+
+  setText(
+    pathPreviewElements.recordedIncomeAtFybc,
+    `${formatCurrency(total)}/mth`,
+  );
+
+  const sources = [];
+
+  if (otherIncome > 0) {
+    sources.push(`Other income ${formatCurrency(otherIncome)}`);
+  }
+
+  if (retirementPolicyIncome > 0) {
+    sources.push(`Policy income ${formatCurrency(retirementPolicyIncome)}`);
+  }
+
+  if (cpfLifeIncome > 0) {
+    sources.push(`CPF LIFE ${formatCurrency(cpfLifeIncome)}`);
+  }
+
+  setText(
+    pathPreviewElements.recordedIncomeAtFybcBasis,
+    sources.length > 0
+      ? sources.join(" · ")
+      : "No recorded monthly income active at FYBC",
+  );
+}
+
 function calculateYourPathProjectedPosition({
   rows,
   cpfLifeStartAge,
@@ -1439,6 +1475,19 @@ function calculateYourPathProjectedPosition({
   }
 
   const fybcRow = rows[fybcRowIndex];
+
+  const recordedIncomeAtFybc = {
+    otherIncome: getNonNegativeNumber(fybcRow.cashflowBreakdown?.otherIncome),
+
+    retirementPolicyIncome: getRetirementPolicyIncomeForRow(fybcRow),
+
+    cpfLifeIncome: getNonNegativeNumber(fybcRow.cpfLifeCashInflow),
+  };
+
+  recordedIncomeAtFybc.total =
+    recordedIncomeAtFybc.otherIncome +
+    recordedIncomeAtFybc.retirementPolicyIncome +
+    recordedIncomeAtFybc.cpfLifeIncome;
 
   const retirementRows = rows
     .slice(fybcRowIndex)
@@ -1605,10 +1654,17 @@ function calculateYourPathProjectedPosition({
   return {
     isValid: true,
 
-    desiredFybcAge:
-      summary.desiredFybcAge,
+    desiredFybcAge: summary.desiredFybcAge,
+
+    plannedMortalityAge: summary.plannedMortalityAge,
+
+    monthlyIncomeAtFybc: summary.monthlyIncomeAtFybc,
+
+    retirementFundingMonths: retirementRows.length,
 
     postFybcReturnRate,
+
+    recordedIncomeAtFybc,
 
     grossLifestyleCapitalAtFybc,
 
@@ -1618,26 +1674,19 @@ function calculateYourPathProjectedPosition({
 
     projectedWithdrawableAssets,
 
-    futureMaturityPresentValue:
-      maturityResult.presentValueAtFybc,
+    futureMaturityPresentValue: maturityResult.presentValueAtFybc,
 
-    futureMaturityCount:
-      maturityResult.count,
+    futureMaturityCount: maturityResult.count,
 
-    eligibleOaAmount:
-      eligibleOaResult.amountAtAvailability,
+    eligibleOaAmount: eligibleOaResult.amountAtAvailability,
 
-    eligibleOaPresentValue:
-      eligibleOaResult.presentValueAtFybc,
+    eligibleOaPresentValue: eligibleOaResult.presentValueAtFybc,
 
-    eligibleOaAvailabilityAge:
-      eligibleOaResult.availabilityAge,
+    eligibleOaAvailabilityAge: eligibleOaResult.availabilityAge,
 
-    eligibleOaHousingReserve:
-      eligibleOaResult.housingReserve,
+    eligibleOaHousingReserve: eligibleOaResult.housingReserve,
 
-    canIncludeEligibleOa:
-      eligibleOaResult.canInclude,
+    canIncludeEligibleOa: eligibleOaResult.canInclude,
 
     includedOaPresentValue,
 
@@ -1651,11 +1700,9 @@ function calculateYourPathProjectedPosition({
 
     cpfLifeStartAge,
 
-    projectedCpfLifeIncome:
-      getNonNegativeNumber(
-        cpfLifeStartRow
-          ?.cpfLifeMonthlyPayout,
-      ),
+    projectedCpfLifeIncome: getNonNegativeNumber(
+      cpfLifeStartRow?.cpfLifeMonthlyPayout,
+    ),
   };
 }
 
@@ -1923,6 +1970,8 @@ function renderYourPathFundingProgress(result) {
 }
 
 function renderIncompleteYourPathProjectedPosition() {
+  latestYourPathProjectedPosition = null;
+
   setHidden(
     pathPreviewElements.projectionIncomplete,
     false,
@@ -1942,6 +1991,196 @@ function renderIncompleteYourPathProjectedPosition() {
     pathPreviewElements.includeOaInput.disabled =
       true;
   }
+}
+
+function handleCapitalMethodologyClick(event) {
+  const breakdownType = event.currentTarget.dataset.capitalBreakdown;
+
+  if (!latestYourPathProjectedPosition) {
+    return;
+  }
+
+  renderCapitalMethodologyBreakdown(
+    breakdownType,
+    latestYourPathProjectedPosition,
+  );
+}
+
+function renderCapitalMethodologyBreakdown(breakdownType, result) {
+  if (!projectionBreakdownModal || !projectionBreakdownContent) {
+    return;
+  }
+
+  projectionBreakdownContent.replaceChildren();
+
+  if (breakdownType === "lifestyle") {
+    renderLifestyleCapitalBreakdown(result);
+  } else if (breakdownType === "income") {
+    renderIncomeCapitalBreakdown(result);
+  } else if (breakdownType === "capital") {
+    renderNetCapitalBreakdown(result);
+  } else {
+    return;
+  }
+
+  openModal(projectionBreakdownModal);
+}
+
+function renderLifestyleCapitalBreakdown(result) {
+  setText(projectionBreakdownTitle, "Lifestyle Capital");
+
+  setText(
+    projectionBreakdownSubtitle,
+    "The estimated value at FYBC of the client's desired monthly lifestyle.",
+  );
+
+  appendCapitalBreakdownSection({
+    heading: "Lifestyle assumptions",
+
+    rows: [
+      {
+        label: "Monthly income needed at FYBC",
+        value: `${formatCurrency(result.monthlyIncomeAtFybc)}/mth`,
+      },
+      {
+        label: "Planned funding period",
+        value: `${result.retirementFundingMonths} months`,
+      },
+      {
+        label: "Planned mortality age",
+        value: `Age ${result.plannedMortalityAge}`,
+      },
+      {
+        label: "Post-FYBC return",
+        value: formatRate(result.postFybcReturnRate),
+      },
+    ],
+
+    totalLabel: "Lifestyle capital before recorded income",
+
+    totalValue: result.grossLifestyleCapitalAtFybc,
+  });
+}
+
+function renderIncomeCapitalBreakdown(result) {
+  const income = result.recordedIncomeAtFybc || {};
+
+  setText(projectionBreakdownTitle, "Recorded Retirement Income");
+
+  setText(
+    projectionBreakdownSubtitle,
+    "Income received after FYBC reduces the amount that must be funded from personal capital.",
+  );
+
+  appendCapitalBreakdownSection({
+    heading: "Income active at FYBC",
+
+    rows: [
+      {
+        label: "Other monthly income",
+        value: `${formatCurrency(income.otherIncome)}/mth`,
+      },
+      {
+        label: "Retirement-policy income",
+        value: `${formatCurrency(income.retirementPolicyIncome)}/mth`,
+      },
+      {
+        label: "CPF LIFE income",
+        value: `${formatCurrency(income.cpfLifeIncome)}/mth`,
+      },
+      {
+        label: "Total income active at FYBC",
+        value: `${formatCurrency(income.total)}/mth`,
+      },
+    ],
+
+    totalLabel: "Capital value of all recorded retirement income",
+
+    totalValue: result.recordedIncomeCapitalOffset,
+  });
+}
+
+function renderNetCapitalBreakdown(result) {
+  setText(projectionBreakdownTitle, "Capital Needed at FYBC");
+
+  setText(
+    projectionBreakdownSubtitle,
+    "Lifestyle capital less the value of recurring income received during retirement.",
+  );
+
+  appendCapitalBreakdownSection({
+    heading: "Capital calculation",
+
+    rows: [
+      {
+        label: "Lifestyle capital before recorded income",
+
+        value: formatCurrency(result.grossLifestyleCapitalAtFybc),
+      },
+      {
+        label: "Less: value of recorded retirement income",
+
+        value: `-${formatCurrency(result.recordedIncomeCapitalOffset)}`,
+      },
+    ],
+
+    totalLabel: "Capital needed at FYBC",
+
+    totalValue: result.capitalNeededAtFybc,
+  });
+}
+
+function appendCapitalBreakdownSection({
+  heading,
+  rows,
+  totalLabel,
+  totalValue,
+}) {
+  const section = document.createElement("section");
+
+  section.className = "projection-breakdown-section";
+
+  const title = document.createElement("h3");
+
+  title.textContent = heading;
+
+  section.append(title);
+
+  rows.forEach(function (row) {
+    const detailRow = document.createElement("div");
+
+    detailRow.className = "projection-breakdown-row";
+
+    const label = document.createElement("span");
+
+    label.textContent = row.label;
+
+    const value = document.createElement("strong");
+
+    value.textContent = row.value;
+
+    detailRow.append(label, value);
+
+    section.append(detailRow);
+  });
+
+  projectionBreakdownContent.append(section);
+
+  const total = document.createElement("div");
+
+  total.className = "projection-breakdown-total";
+
+  const totalLabelElement = document.createElement("strong");
+
+  totalLabelElement.textContent = totalLabel;
+
+  const totalValueElement = document.createElement("strong");
+
+  totalValueElement.textContent = formatCurrency(totalValue);
+
+  total.append(totalLabelElement, totalValueElement);
+
+  projectionBreakdownContent.append(total);
 }
 
 function createInvalidProjectedPosition() {

@@ -5305,7 +5305,8 @@ button.insurance-validation-count:disabled {
   gap: 10px;
 }
 
-.analysis-path-capital-methodology-grid > div {
+.analysis-path-capital-methodology-grid > div,
+.analysis-path-capital-methodology-grid > button {
   display: flex;
   min-height: 82px;
   padding: 12px;
@@ -5316,7 +5317,30 @@ button.insurance-validation-count:disabled {
   border: 1px solid var(--border-color);
   border-radius: 9px;
   background: #ffffff;
+  color: inherit;
+  font: inherit;
   text-align: center;
+}
+
+.analysis-path-capital-methodology-grid > button {
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.analysis-path-capital-methodology-grid > button:hover {
+  border-color: var(--primary-color);
+  background: var(--primary-surface);
+  transform: translateY(-1px);
+}
+
+.analysis-path-capital-methodology-grid > button:focus-visible {
+  outline: 3px solid rgb(87 77 255 / 18%);
+  outline-offset: 2px;
 }
 
 .analysis-path-capital-methodology-grid span {
@@ -5328,6 +5352,12 @@ button.insurance-validation-count:disabled {
 .analysis-path-capital-methodology-grid strong {
   color: var(--text-primary);
   font-size: 14px;
+}
+
+.analysis-path-capital-methodology-grid small {
+  color: var(--primary-color);
+  font-size: 8px;
+  font-weight: 700;
 }
 
 .analysis-path-capital-formula {
