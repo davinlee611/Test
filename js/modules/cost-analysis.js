@@ -1705,8 +1705,6 @@ function calculateProjection({
 
   let raBalance = getNonNegativeNumber(assets.cpf?.ra);
 
-  const monthlyInsuranceMedisaveOutflow = getMonthlyInsuranceMedisaveOutflow();
-
   let maBalance = getNonNegativeNumber(assets.cpf?.ma);
 
   const startingAge = calculateAgeOnDate(profile.dateOfBirth, startingDate);
@@ -2056,6 +2054,9 @@ function calculateProjection({
     oaBalance = Math.max(0, oaBalance + oaInflow - oaOutflow);
 
     const availableMaBalance = maBalance + maInflow;
+
+    const monthlyInsuranceMedisaveOutflow =
+      getMonthlyInsuranceMedisaveOutflow(projectionDate);
 
     const maInsuranceOutflow = Math.min(
       monthlyInsuranceMedisaveOutflow,
