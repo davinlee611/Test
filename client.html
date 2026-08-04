@@ -2905,29 +2905,29 @@
                   </div>
 
                   <div class="analysis-summary-item">
+                    <span>Planned Mortality Age</span>
+                    <strong id="analysisPlannedMortalityAge">—</strong>
+                  </div>
+
+                  <div class="analysis-summary-item">
+                    <span>Monthly Passive Income in Today's Value</span>
+                    <strong id="analysisMonthlyIncomeToday">$0</strong>
+                  </div>
+
+                  <div class="analysis-summary-item">
                     <span>Monthly Passive Income Needed at FYBC Age</span>
                     <strong id="analysisMonthlyIncomeNeeded">$0</strong>
                   </div>
 
                   <div class="analysis-summary-item">
-                    <span>Monthly Income Needed at 65</span>
+                    <span>Monthly Passive Income Needed at Age 65</span>
                     <strong id="analysisMonthlyIncomeAt65">$0</strong>
-                  </div>
-
-                  <div class="analysis-summary-item">
-                    <span>Estimated CPF LIFE Income</span>
-                    <strong id="analysisCpfLifeIncome">$0</strong>
-                  </div>
-
-                  <div class="analysis-summary-item">
-                    <span>Income Gap</span>
-                    <strong id="analysisIncomeGap">$0/mth</strong>
                   </div>
 
                   <div
                     class="analysis-summary-item analysis-summary-item--primary"
                   >
-                    <span>Total Capital Needed</span>
+                    <span>Gross Retirement Capital Target</span>
                     <strong id="analysisTotalCapitalNeeded">$0</strong>
                   </div>
                 </div>
@@ -3437,6 +3437,32 @@
                   </article>
                 </div>
 
+                <div class="analysis-oa-inclusion-control">
+                  <div class="analysis-oa-inclusion-copy">
+                    <strong>
+                      Include eligible projected OA in retirement funding
+                    </strong>
+
+                    <small id="analysisIncludeProjectedOaHelper">
+                      Available only after the projected cohort FRS has been
+                      fully set aside.
+                    </small>
+                  </div>
+
+                  <label class="analysis-oa-switch">
+                    <input
+                      id="analysisIncludeProjectedOaInput"
+                      type="checkbox"
+                      aria-label="Include eligible projected OA in retirement funding"
+                    />
+
+                    <span
+                      class="analysis-oa-switch-slider"
+                      aria-hidden="true"
+                    ></span>
+                  </label>
+                </div>
+
                 <p class="analysis-position-exclusion-note">
                   <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
 
@@ -3505,27 +3531,6 @@
                       Monthly payout from the selected start age
                     </small>
                   </article>
-
-                  <article class="analysis-position-item">
-                    <span>Cost of Wants Assumed CPF LIFE Income</span>
-
-                    <strong id="analysisDesiredCpfLifeIncome"> — </strong>
-
-                    <small>
-                      Assumed payout used for the desired retirement calculation
-                    </small>
-                  </article>
-
-                  <article class="analysis-position-item">
-                    <span>Projected CPF LIFE Income Shortfall</span>
-
-                    <strong id="analysisCpfLifeIncomeGap"> — </strong>
-
-                    <small>
-                      Difference between the assumed and affordable monthly
-                      payout
-                    </small>
-                  </article>
                 </div>
 
                 <div
@@ -3577,7 +3582,7 @@
                       </tr>
 
                       <tr class="analysis-comparison-total-row">
-                        <td>Total Retirement Capital</td>
+                        <td>Gross Retirement Capital Target</td>
 
                         <td id="analysisDesiredRetirementCapital">—</td>
 
