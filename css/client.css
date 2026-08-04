@@ -6031,40 +6031,6 @@ button.insurance-validation-count:disabled {
   font-size: 20px;
 }
 
-.cost-preview-spending-reference {
-  display: flex;
-  margin-top: 14px;
-  padding: 15px 17px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  background: var(--surface-muted);
-  border-radius: var(--radius-md);
-}
-
-.cost-preview-spending-reference > div {
-  display: grid;
-  gap: 4px;
-}
-
-.cost-preview-spending-reference strong {
-  color: var(--text-primary);
-  font-size: 12px;
-}
-
-.cost-preview-spending-reference small {
-  color: var(--text-secondary);
-  font-size: 10px;
-  line-height: 1.45;
-}
-
-.cost-preview-spending-reference > span {
-  color: var(--primary-color);
-  font-size: 18px;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
 .cost-preview-target-card {
   background: var(--card-background);
 }
@@ -6163,12 +6129,6 @@ button.insurance-validation-count:disabled {
 }
 
 @media (max-width: 650px) {
-  .cost-preview-title-row,
-  .cost-preview-card-header,
-  .cost-preview-spending-reference {
-    align-items: flex-start;
-    flex-direction: column;
-  }
 
   .cost-preview-lifestyle-summary {
     grid-template-columns: 1fr;

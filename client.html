@@ -109,16 +109,6 @@
             <button
               class="sidebar-item sidebar-item--subsection"
               type="button"
-              data-section="cost-preview"
-            >
-              <i class="fa-solid fa-eye"></i>
-
-              <span>Cost of Wants Preview</span>
-            </button>
-
-            <button
-              class="sidebar-item sidebar-item--subsection"
-              type="button"
               data-section="cost-analysis"
             >
               <i class="fa-solid fa-chart-line"></i>
@@ -1531,8 +1521,8 @@
             </div>
           </section>
 
-          <!-- Cost of Wants -->
-          <section class="workspace-section" data-content="cost">
+          <!-- Legacy Cost of Wants retained temporarily for rollback -->
+          <section class="workspace-section" data-content="cost-legacy">
             <div class="section-header">
               <div>
                 <h2>Cost of Wants</h2>
@@ -2512,19 +2502,17 @@
             </div>
           </section>
 
-          <!-- Cost of Wants Preview -->
-          <section class="workspace-section" data-content="cost-preview">
+          <!-- Cost of Wants -->
+          <section class="workspace-section" data-content="cost">
             <div class="section-header">
               <div>
                 <div class="cost-preview-title-row">
-                  <h2>Cost of Wants Preview</h2>
-
-                  <span class="cost-preview-badge"> Temporary Preview </span>
+                  <h2>Cost of Wants</h2>
                 </div>
 
                 <p>
-                  Review the proposed simplified Cost of Wants design without
-                  changing the existing page.
+                  Define when the client wants to stop working and the monthly
+                  lifestyle income they want to achieve.
                 </p>
               </div>
             </div>
@@ -2539,16 +2527,6 @@
 
                       <p>Fire Your Own Boss Cost</p>
                     </div>
-
-                    <button
-                      id="costOfWantsPreviewEditButton"
-                      class="header-button header-button-secondary"
-                      type="button"
-                    >
-                      <i class="fa-solid fa-pen" aria-hidden="true"></i>
-
-                      Edit Existing Inputs
-                    </button>
                   </header>
 
                   <div class="cost-preview-divider"></div>
@@ -2631,19 +2609,6 @@
                         Not selected
                       </strong>
                     </div>
-                  </div>
-
-                  <div class="cost-preview-spending-reference">
-                    <div>
-                      <strong>Current Monthly Spending</strong>
-
-                      <small>
-                        Reference from Priorities &amp; Situation and the
-                        Insurance Portfolio
-                      </small>
-                    </div>
-
-                    <span id="costOfWantsPreviewMonthlySpending"> $0 </span>
                   </div>
                 </article>
               </section>

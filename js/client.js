@@ -114,7 +114,7 @@ on(EVENTS.SECTION_CHANGED, function ({ section }) {
     initializeInsurancePortfolio();
   }
 
-  if (section === "cost-preview") {
+  if (section === "cost") {
     initializeCostOfWantsPreview();
   }
 

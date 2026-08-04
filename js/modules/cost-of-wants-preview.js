@@ -1,7 +1,6 @@
 "use strict";
 
 import {
-  calculateMonthlySpendingBreakdown,
   getCostOfWantsState,
   getGrossRetirementGoalSummary,
   getSelectedMonthlyIncome,
@@ -30,8 +29,6 @@ const elements = {
 
   selectedIncome: document.getElementById("costOfWantsPreviewSelectedIncome"),
 
-  monthlySpending: document.getElementById("costOfWantsPreviewMonthlySpending"),
-
   yearsRemaining: document.getElementById("costOfWantsPreviewYearsRemaining"),
 
   incomeAtFybcLabel: document.getElementById(
@@ -49,8 +46,6 @@ const elements = {
   grossCapital: document.getElementById("costOfWantsPreviewGrossCapital"),
 
   emptyMessage: document.getElementById("costOfWantsPreviewEmptyMessage"),
-
-  editButton: document.getElementById("costOfWantsPreviewEditButton"),
 
   analysisButton: document.getElementById("costOfWantsPreviewAnalysisButton"),
 };
@@ -86,9 +81,6 @@ export function initializeCostOfWantsPreview() {
 ======================================== */
 
 function attachNavigationListeners() {
-  elements.editButton?.addEventListener("click", function () {
-    navigateToSection("cost");
-  });
 
   elements.analysisButton?.addEventListener("click", function () {
     navigateToSection("cost-analysis");
@@ -121,7 +113,7 @@ function attachApplicationListeners() {
   on(EVENTS.POLICIES_CHANGED, renderCostOfWantsPreview);
 
   on(EVENTS.SECTION_CHANGED, function ({ section }) {
-    if (section === "cost-preview") {
+    if (section === "cost") {
       renderCostOfWantsPreview();
     }
   });
@@ -135,8 +127,6 @@ export function renderCostOfWantsPreview() {
   const costOfWants = getCostOfWantsState();
 
   const summary = getGrossRetirementGoalSummary();
-
-  const spending = calculateMonthlySpendingBreakdown();
 
   const selectedIncome = getSelectedMonthlyIncome();
 
@@ -165,11 +155,6 @@ export function renderCostOfWantsPreview() {
     selectedIncome > 0
       ? `${formatCurrency(selectedIncome)}/mth`
       : "Not selected",
-  );
-
-  setText(
-    elements.monthlySpending,
-    formatCurrency(spending.totalMonthlyOutflow),
   );
 
   setText(
