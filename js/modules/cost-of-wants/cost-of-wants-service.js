@@ -298,6 +298,96 @@ export function getSelectedCpfLifeMonthlyPayout({
 }
 
 /* ========================================
+   GROSS RETIREMENT TARGET
+======================================== */
+
+/*
+ * Returns the complete cost of funding the selected
+ * retirement lifestyle without deducting CPF LIFE,
+ * projected assets, OA or policy income.
+ *
+ * Those resources are applied later by the Analysis page.
+ */
+export function getGrossRetirementGoalSummary() {
+  const projection = calculateFybcProjectionValues({
+    currentAge: getClientAge(),
+
+    desiredFybcAge: getDesiredFybcAge(),
+
+    mortalityAge: getPlannedMortalityAge(),
+
+    inflationRatePercent: getInflationRate(),
+
+    monthlyPassiveIncome:
+      getSelectedMonthlyPassiveIncome(),
+
+    /*
+     * Cost of Wants measures the gross lifestyle target.
+     * No CPF LIFE assumption is applied here.
+     */
+    cpfLifePayout: 0,
+  });
+
+  if (!projection.isValid) {
+    return {
+      isValid: false,
+
+      currentAge: getClientAge(),
+
+      desiredFybcAge: getDesiredFybcAge(),
+
+      plannedMortalityAge:
+        getPlannedMortalityAge(),
+
+      inflationRate:
+        getInflationRate(),
+
+      yearsRemaining: 0,
+
+      monthlyIncomeToday:
+        getSelectedMonthlyPassiveIncome(),
+
+      monthlyIncomeAtFybc: 0,
+
+      monthlyIncomeAt65: 0,
+
+      grossCapitalRequired: 0,
+    };
+  }
+
+  return {
+    isValid: true,
+
+    currentAge:
+      projection.currentAge,
+
+    desiredFybcAge:
+      projection.desiredFybcAge,
+
+    plannedMortalityAge:
+      projection.mortalityAge,
+
+    inflationRate:
+      getInflationRate(),
+
+    yearsRemaining:
+      projection.yearsRemaining,
+
+    monthlyIncomeToday:
+      projection.monthlyPassiveIncome,
+
+    monthlyIncomeAtFybc:
+      projection.monthlyIncomeAtFybc,
+
+    monthlyIncomeAt65:
+      projection.monthlyIncomeAt65,
+
+    grossCapitalRequired:
+      projection.totalCapitalRequired,
+  };
+}
+
+/* ========================================
    RETIREMENT GOAL SUMMARY
 ======================================== */
 

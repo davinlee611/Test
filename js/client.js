@@ -44,6 +44,8 @@ import {
   resetCostOfWants,
 } from "./modules/cost-of-wants.js";
 
+import { initializeCostOfWantsPreview } from "./modules/cost-of-wants-preview.js";
+
 import {
   initializeCostAnalysis,
   resetCostAnalysis,
@@ -103,12 +105,17 @@ initializeExpenses();
 initializeCommitments();
 initializeInsurancePortfolio();
 initializeCostOfWants();
+initializeCostOfWantsPreview();
 initializeCostAnalysis();
 initializePage();
 
 on(EVENTS.SECTION_CHANGED, function ({ section }) {
   if (section === "insurance") {
     initializeInsurancePortfolio();
+  }
+
+  if (section === "cost-preview") {
+    initializeCostOfWantsPreview();
   }
 
   if (section === "cost-analysis") {

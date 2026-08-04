@@ -102,7 +102,18 @@
 
             <button class="sidebar-item" type="button" data-section="cost">
               <i class="fa-solid fa-coins"></i>
+
               <span>Cost of Wants</span>
+            </button>
+
+            <button
+              class="sidebar-item sidebar-item--subsection"
+              type="button"
+              data-section="cost-preview"
+            >
+              <i class="fa-solid fa-eye"></i>
+
+              <span>Cost of Wants Preview</span>
             </button>
 
             <button
@@ -111,6 +122,7 @@
               data-section="cost-analysis"
             >
               <i class="fa-solid fa-chart-line"></i>
+
               <span>Analyse Commitments &amp; Savings Plan</span>
             </button>
 
@@ -2497,6 +2509,259 @@
                 Next
                 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
               </button>
+            </div>
+          </section>
+
+          <!-- Cost of Wants Preview -->
+          <section class="workspace-section" data-content="cost-preview">
+            <div class="section-header">
+              <div>
+                <div class="cost-preview-title-row">
+                  <h2>Cost of Wants Preview</h2>
+
+                  <span class="cost-preview-badge"> Temporary Preview </span>
+                </div>
+
+                <p>
+                  Review the proposed simplified Cost of Wants design without
+                  changing the existing page.
+                </p>
+              </div>
+            </div>
+
+            <div class="cost-preview-layout">
+              <!-- Left column -->
+              <section class="cost-preview-input-column">
+                <article class="cost-preview-card">
+                  <header class="cost-preview-card-header">
+                    <div>
+                      <h3>FYBC</h3>
+
+                      <p>Fire Your Own Boss Cost</p>
+                    </div>
+
+                    <button
+                      id="costOfWantsPreviewEditButton"
+                      class="header-button header-button-secondary"
+                      type="button"
+                    >
+                      <i class="fa-solid fa-pen" aria-hidden="true"></i>
+
+                      Edit Existing Inputs
+                    </button>
+                  </header>
+
+                  <div class="cost-preview-divider"></div>
+
+                  <div class="cost-preview-detail-list">
+                    <div class="cost-preview-detail-row">
+                      <div>
+                        <strong>Current Age</strong>
+
+                        <small> Calculated from the Client Profile </small>
+                      </div>
+
+                      <span id="costOfWantsPreviewCurrentAge"> — </span>
+                    </div>
+
+                    <div class="cost-preview-detail-row">
+                      <div>
+                        <strong>Desired FYBC Age</strong>
+
+                        <small>
+                          The age where the client plans to Fire their own boss
+                        </small>
+                      </div>
+
+                      <span id="costOfWantsPreviewDesiredFybcAge"> — </span>
+                    </div>
+
+                    <div class="cost-preview-detail-row">
+                      <div>
+                        <strong>Planned Mortality Age</strong>
+
+                        <small>
+                          Used to determine the retirement funding period
+                        </small>
+                      </div>
+
+                      <span id="costOfWantsPreviewMortalityAge"> — </span>
+                    </div>
+
+                    <div class="cost-preview-detail-row">
+                      <div>
+                        <strong>Inflation Rate</strong>
+
+                        <small>
+                          Applied to the selected lifestyle income
+                        </small>
+                      </div>
+
+                      <span id="costOfWantsPreviewInflationRate"> — </span>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="cost-preview-card">
+                  <header class="cost-preview-card-header">
+                    <div>
+                      <h3>Desired Lifestyle</h3>
+
+                      <p>
+                        The selected monthly passive income in today's value.
+                      </p>
+                    </div>
+                  </header>
+
+                  <div class="cost-preview-divider"></div>
+
+                  <div class="cost-preview-lifestyle-summary">
+                    <div>
+                      <span>Selected Lifestyle</span>
+
+                      <strong id="costOfWantsPreviewLifestyleName">
+                        Not selected
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span>Monthly Passive Income</span>
+
+                      <strong id="costOfWantsPreviewSelectedIncome">
+                        Not selected
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div class="cost-preview-spending-reference">
+                    <div>
+                      <strong>Current Monthly Spending</strong>
+
+                      <small>
+                        Reference from Priorities &amp; Situation and the
+                        Insurance Portfolio
+                      </small>
+                    </div>
+
+                    <span id="costOfWantsPreviewMonthlySpending"> $0 </span>
+                  </div>
+                </article>
+              </section>
+
+              <!-- Right column -->
+              <aside class="cost-preview-target-column">
+                <article class="cost-preview-card cost-preview-target-card">
+                  <header class="cost-preview-card-header">
+                    <div>
+                      <h3>Your Retirement Target</h3>
+
+                      <p>
+                        The complete lifestyle target before applying CPF or
+                        existing assets.
+                      </p>
+                    </div>
+                  </header>
+
+                  <div class="cost-preview-divider"></div>
+
+                  <p
+                    id="costOfWantsPreviewEmptyMessage"
+                    class="cost-preview-empty-message"
+                    hidden
+                  >
+                    Complete the existing Cost of Wants page to generate this
+                    retirement target.
+                  </p>
+
+                  <div class="cost-preview-result-list">
+                    <div class="cost-preview-result-row">
+                      <span>Time Remaining to FYBC</span>
+
+                      <strong id="costOfWantsPreviewYearsRemaining"> — </strong>
+                    </div>
+
+                    <div class="cost-preview-result-row">
+                      <div>
+                        <span id="costOfWantsPreviewIncomeAtFybcLabel">
+                          Income Needed at FYBC Age
+                        </span>
+
+                        <small id="costOfWantsPreviewIncomeAtFybcBasis">
+                          Complete the existing inputs
+                        </small>
+                      </div>
+
+                      <strong id="costOfWantsPreviewIncomeAtFybc"> — </strong>
+                    </div>
+
+                    <div class="cost-preview-result-row">
+                      <div>
+                        <span>Income Needed at Age 65</span>
+
+                        <small>
+                          Before applying CPF LIFE or policy income
+                        </small>
+                      </div>
+
+                      <strong id="costOfWantsPreviewIncomeAt65"> — </strong>
+                    </div>
+
+                    <div
+                      class="cost-preview-result-row cost-preview-result-row--total"
+                    >
+                      <div>
+                        <span>Gross Retirement Capital Target</span>
+
+                        <small>
+                          Full target before CPF, assets and recurring
+                          retirement income
+                        </small>
+                      </div>
+
+                      <strong id="costOfWantsPreviewGrossCapital"> — </strong>
+                    </div>
+                  </div>
+
+                  <div class="cost-preview-scope-note">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+
+                    <p>
+                      CPF LIFE strategies, eligible OA, projected assets,
+                      retirement-policy income and required top-ups will be
+                      applied on the Analysis page.
+                    </p>
+                  </div>
+                </article>
+
+                <article class="cost-preview-next-card">
+                  <div>
+                    <h3>What happens next?</h3>
+
+                    <p>
+                      Analysis compares this target against what the client is
+                      projected to have.
+                    </p>
+                  </div>
+
+                  <ul>
+                    <li>Projected withdrawable assets and eligible OA</li>
+
+                    <li>Current Path, BRS, FRS, ERS or No Top-up</li>
+
+                    <li>Affordable CPF LIFE income and remaining gap</li>
+                  </ul>
+
+                  <button
+                    id="costOfWantsPreviewAnalysisButton"
+                    class="next-button"
+                    type="button"
+                  >
+                    Continue to Analysis
+
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                  </button>
+                </article>
+              </aside>
             </div>
           </section>
 
