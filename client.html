@@ -3243,20 +3243,6 @@
                     <small id="analysisProjectedFrsBasis">
                       Complete the Client Profile
                     </small>
-
-                    <button
-                      class="analysis-retirement-scenario-coming-soon"
-                      type="button"
-                      aria-disabled="true"
-                      tabindex="-1"
-                      title="Future modelling may allow BRS, FRS or ERS to be applied. FRS is currently used."
-                    >
-                      <i class="fa-solid fa-sliders" aria-hidden="true"></i>
-
-                      <span>Retirement Sum Scenarios</span>
-
-                      <small>Coming Soon</small>
-                    </button>
                   </div>
 
                   <div class="analysis-cpf-assumption-item">
@@ -3303,6 +3289,190 @@
                       Complete the projection assumptions.
                     </small>
                   </div>
+                </div>
+
+                <div class="analysis-retirement-strategy">
+                  <div class="analysis-retirement-strategy-heading">
+                    <div>
+                      <span class="analysis-section-eyebrow">
+                        Retirement Funding Scenario
+                      </span>
+
+                      <h4>Select the CPF retirement strategy to model</h4>
+
+                      <p>
+                        The selected strategy changes RA funding, available OA
+                        and cash, the affordable CPF LIFE premium, and the
+                        projected retirement position.
+                      </p>
+                    </div>
+
+                    <div
+                      id="analysisRetirementStrategyStatus"
+                      class="analysis-retirement-strategy-status"
+                    >
+                      Current CPF path
+                    </div>
+                  </div>
+
+                  <div
+                    id="analysisRetirementStrategyOptions"
+                    class="analysis-retirement-strategy-options"
+                  >
+                    <label
+                      class="analysis-retirement-strategy-option"
+                      data-retirement-strategy-card="current_path"
+                    >
+                      <input
+                        type="radio"
+                        name="analysisRetirementStrategy"
+                        value="current_path"
+                        checked
+                      />
+
+                      <span class="analysis-retirement-strategy-icon">
+                        <i class="fa-solid fa-route" aria-hidden="true"></i>
+                      </span>
+
+                      <span class="analysis-retirement-strategy-copy">
+                        <strong>Current Path</strong>
+
+                        <small>
+                          Use projected CPF balances and contributions without
+                          adding a cash top-up.
+                        </small>
+                      </span>
+                    </label>
+
+                    <label
+                      class="analysis-retirement-strategy-option"
+                      data-retirement-strategy-card="brs"
+                    >
+                      <input
+                        type="radio"
+                        name="analysisRetirementStrategy"
+                        value="brs"
+                      />
+
+                      <span class="analysis-retirement-strategy-icon">
+                        <i class="fa-solid fa-house" aria-hidden="true"></i>
+                      </span>
+
+                      <span class="analysis-retirement-strategy-copy">
+                        <strong>BRS</strong>
+
+                        <small> Target 50% of the projected cohort FRS. </small>
+                      </span>
+                    </label>
+
+                    <label
+                      class="analysis-retirement-strategy-option"
+                      data-retirement-strategy-card="frs"
+                    >
+                      <input
+                        type="radio"
+                        name="analysisRetirementStrategy"
+                        value="frs"
+                      />
+
+                      <span class="analysis-retirement-strategy-icon">
+                        <i
+                          class="fa-solid fa-circle-check"
+                          aria-hidden="true"
+                        ></i>
+                      </span>
+
+                      <span class="analysis-retirement-strategy-copy">
+                        <strong>FRS</strong>
+
+                        <small>
+                          Target 100% of the projected cohort FRS.
+                        </small>
+                      </span>
+                    </label>
+
+                    <label
+                      class="analysis-retirement-strategy-option"
+                      data-retirement-strategy-card="ers"
+                    >
+                      <input
+                        type="radio"
+                        name="analysisRetirementStrategy"
+                        value="ers"
+                      />
+
+                      <span class="analysis-retirement-strategy-icon">
+                        <i
+                          class="fa-solid fa-arrow-trend-up"
+                          aria-hidden="true"
+                        ></i>
+                      </span>
+
+                      <span class="analysis-retirement-strategy-copy">
+                        <strong>ERS</strong>
+
+                        <small>
+                          Target 200% of the projected cohort FRS.
+                        </small>
+                      </span>
+                    </label>
+
+                    <label
+                      class="analysis-retirement-strategy-option"
+                      data-retirement-strategy-card="no_top_up"
+                      hidden
+                    >
+                      <input
+                        type="radio"
+                        name="analysisRetirementStrategy"
+                        value="no_top_up"
+                      />
+
+                      <span class="analysis-retirement-strategy-icon">
+                        <i class="fa-solid fa-wallet" aria-hidden="true"></i>
+                      </span>
+
+                      <span class="analysis-retirement-strategy-copy">
+                        <strong>No Cash Top-up</strong>
+
+                        <small>
+                          Use current CPF balances and mandatory self-employed
+                          MediSave contributions only.
+                        </small>
+                      </span>
+                    </label>
+                  </div>
+
+                  <div class="analysis-retirement-strategy-summary">
+                    <div>
+                      <span>Selected Target</span>
+
+                      <strong id="analysisRetirementStrategyTarget">—</strong>
+                    </div>
+
+                    <div>
+                      <span>Cash Top-up at Age 55</span>
+
+                      <strong id="analysisRetirementStrategyCashTopUp"
+                        >—</strong
+                      >
+                    </div>
+
+                    <div>
+                      <span>Funding Result</span>
+
+                      <strong id="analysisRetirementStrategyFundingResult">
+                        Current path
+                      </strong>
+                    </div>
+                  </div>
+
+                  <p
+                    id="analysisRetirementStrategyNote"
+                    class="analysis-retirement-strategy-note"
+                  >
+                    Current Path does not force an additional cash top-up.
+                  </p>
                 </div>
 
                 <details class="analysis-cpf-calculation-details">

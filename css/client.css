@@ -6564,3 +6564,193 @@ button.insurance-validation-count:disabled {
     text-align: left;
   }
 }
+
+/* ========================================
+   RETIREMENT FUNDING STRATEGY
+======================================== */
+
+.analysis-retirement-strategy {
+  margin-top: 18px;
+  padding: 20px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.analysis-retirement-strategy-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.analysis-retirement-strategy-heading h4 {
+  margin: 5px 0 5px;
+  color: var(--text-primary);
+  font-size: 16px;
+}
+
+.analysis-retirement-strategy-heading p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.analysis-retirement-strategy-status {
+  flex: 0 0 auto;
+  padding: 7px 11px;
+  color: var(--primary-color);
+  background: var(--primary-soft);
+  border: 1px solid rgb(93 63 211 / 20%);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.analysis-retirement-strategy-options {
+  display: grid;
+  margin-top: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.analysis-retirement-strategy-option {
+  position: relative;
+  display: flex;
+  min-height: 112px;
+  padding: 15px;
+  align-items: flex-start;
+  gap: 11px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.analysis-retirement-strategy-option:hover {
+  border-color: var(--primary-color);
+}
+
+.analysis-retirement-strategy-option.is-selected {
+  background: var(--primary-soft);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 1px rgb(93 63 211 / 8%);
+}
+
+.analysis-retirement-strategy-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  border: 0;
+  white-space: nowrap;
+}
+
+.analysis-retirement-strategy-icon {
+  display: inline-flex;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  background: var(--primary-soft);
+  border-radius: 10px;
+}
+
+.analysis-retirement-strategy-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.analysis-retirement-strategy-copy strong {
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.analysis-retirement-strategy-copy small {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.analysis-retirement-strategy-option.is-selected
+  .analysis-retirement-strategy-copy strong {
+  color: var(--primary-color);
+}
+
+.analysis-retirement-strategy-summary {
+  display: grid;
+  margin-top: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.analysis-retirement-strategy-summary > div {
+  display: flex;
+  min-height: 84px;
+  padding: 14px 16px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+}
+
+.analysis-retirement-strategy-summary > div + div {
+  border-left: 1px solid var(--border-color);
+}
+
+.analysis-retirement-strategy-summary span {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.analysis-retirement-strategy-summary strong {
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.analysis-retirement-strategy-note {
+  margin: 12px 0 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1000px) {
+  .analysis-retirement-strategy-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .analysis-retirement-strategy-heading {
+    flex-direction: column;
+  }
+
+  .analysis-retirement-strategy-options,
+  .analysis-retirement-strategy-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-retirement-strategy-summary > div + div {
+    border-top: 1px solid var(--border-color);
+    border-left: 0;
+  }
+}

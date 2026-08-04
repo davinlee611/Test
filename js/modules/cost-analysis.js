@@ -68,6 +68,26 @@ const DEFAULT_PROJECTION_YEARS = 10;
 const DEFAULT_EMPLOYMENT_INCREMENT = 2;
 const MINIMUM_AUTOMATIC_CPF_LIFE_PREMIUM = 60000;
 
+const RETIREMENT_STRATEGIES = Object.freeze({
+  CURRENT_PATH: "current_path",
+
+  BRS: "brs",
+
+  FRS: "frs",
+
+  ERS: "ers",
+
+  NO_TOP_UP: "no_top_up",
+});
+
+const RETIREMENT_STRATEGY_MULTIPLIERS = Object.freeze({
+  brs: 0.5,
+
+  frs: 1,
+
+  ers: 2,
+});
+
 /* ========================================
    ELEMENTS
 ======================================== */
@@ -142,6 +162,30 @@ const cpfLifePayoutElement = document.getElementById("analysisCpfLifePayout");
 
 const cpfLifeProjectionStatusElement = document.getElementById(
   "analysisCpfLifeProjectionStatus",
+);
+
+const retirementStrategyOptionsElement = document.getElementById(
+  "analysisRetirementStrategyOptions",
+);
+
+const retirementStrategyStatusElement = document.getElementById(
+  "analysisRetirementStrategyStatus",
+);
+
+const retirementStrategyTargetElement = document.getElementById(
+  "analysisRetirementStrategyTarget",
+);
+
+const retirementStrategyCashTopUpElement = document.getElementById(
+  "analysisRetirementStrategyCashTopUp",
+);
+
+const retirementStrategyFundingResultElement = document.getElementById(
+  "analysisRetirementStrategyFundingResult",
+);
+
+const retirementStrategyNoteElement = document.getElementById(
+  "analysisRetirementStrategyNote",
 );
 
 const goalFilterOptions = document.getElementById("analysisGoalFilterOptions");
@@ -310,6 +354,8 @@ let expenseInflationWasOverridden = false;
 
 let includeProjectedOa = false;
 
+let selectedRetirementStrategy = RETIREMENT_STRATEGIES.CURRENT_PATH;
+
 const excludedProjectionGoalIds = new Set();
 
 export function initializeCostAnalysis() {
@@ -355,6 +401,28 @@ export function initializeCostAnalysis() {
     },
   );
 
+  retirementStrategyOptionsElement?.addEventListener(
+    "change",
+    function (event) {
+      const input = event.target.closest(
+        'input[name="analysisRetirementStrategy"]',
+      );
+
+      if (!input) {
+        return;
+      }
+
+      selectedRetirementStrategy = normaliseRetirementStrategy(
+        input.value,
+        getClientProfile().employmentStatus,
+      );
+
+      includeProjectedOa = false;
+
+      renderCostAnalysis();
+    },
+  );
+
   goalFilterOptions?.addEventListener("change", handleGoalFilterChange);
 
   selectAllGoalsButton?.addEventListener("click", handleSelectAllGoals);
@@ -389,6 +457,10 @@ export function resetCostAnalysis() {
 
   includeProjectedOa = false;
 
+  selectedRetirementStrategy = getDefaultRetirementStrategy(
+    getClientProfile().employmentStatus,
+  );
+
   if (retirementAnalysisElements.includeOaInput) {
     retirementAnalysisElements.includeOaInput.checked = false;
     retirementAnalysisElements.includeOaInput.disabled = true;
@@ -404,6 +476,303 @@ function syncExpenseInflationDefault() {
 
   expenseInflationInput.value = String(
     getNonNegativeNumber(getInflationRate()),
+  );
+}
+
+/* ========================================
+   RETIREMENT STRATEGY
+======================================== */
+
+function getDefaultRetirementStrategy(
+  employmentStatus,
+) {
+  return employmentStatus === "self_employed"
+    ? RETIREMENT_STRATEGIES.NO_TOP_UP
+    : RETIREMENT_STRATEGIES.CURRENT_PATH;
+}
+
+function normaliseRetirementStrategy(
+  strategy,
+  employmentStatus,
+) {
+  const isSelfEmployed =
+    employmentStatus === "self_employed";
+
+  const validStrategies = [
+    RETIREMENT_STRATEGIES.CURRENT_PATH,
+    RETIREMENT_STRATEGIES.BRS,
+    RETIREMENT_STRATEGIES.FRS,
+    RETIREMENT_STRATEGIES.ERS,
+    RETIREMENT_STRATEGIES.NO_TOP_UP,
+  ];
+
+  if (!validStrategies.includes(strategy)) {
+    return getDefaultRetirementStrategy(
+      employmentStatus,
+    );
+  }
+
+  if (
+    strategy ===
+      RETIREMENT_STRATEGIES.NO_TOP_UP &&
+    !isSelfEmployed
+  ) {
+    return RETIREMENT_STRATEGIES.CURRENT_PATH;
+  }
+
+  if (
+    strategy ===
+      RETIREMENT_STRATEGIES.CURRENT_PATH &&
+    isSelfEmployed
+  ) {
+    return RETIREMENT_STRATEGIES.NO_TOP_UP;
+  }
+
+  return strategy;
+}
+
+function getRetirementStrategyTarget({
+  strategy,
+  cohortFrsAmount,
+}) {
+  const safeFrs =
+    getNonNegativeNumber(cohortFrsAmount);
+
+  const multiplier =
+    RETIREMENT_STRATEGY_MULTIPLIERS[strategy];
+
+  /*
+   * Current Path and No Cash Top-up retain the
+   * normal projected FRS ceiling for CPF flows.
+   * They do not force a cash top-up.
+   */
+  if (!Number.isFinite(multiplier)) {
+    return safeFrs;
+  }
+
+  return safeFrs * multiplier;
+}
+
+function strategyUsesCashTopUp(strategy) {
+  return [
+    RETIREMENT_STRATEGIES.BRS,
+    RETIREMENT_STRATEGIES.FRS,
+    RETIREMENT_STRATEGIES.ERS,
+  ].includes(strategy);
+}
+
+function getRetirementStrategyLabel(strategy) {
+  switch (strategy) {
+    case RETIREMENT_STRATEGIES.BRS:
+      return "BRS";
+
+    case RETIREMENT_STRATEGIES.FRS:
+      return "FRS";
+
+    case RETIREMENT_STRATEGIES.ERS:
+      return "ERS";
+
+    case RETIREMENT_STRATEGIES.NO_TOP_UP:
+      return "No Cash Top-up";
+
+    default:
+      return "Current Path";
+  }
+}
+
+function renderRetirementStrategySelection({
+  cohortFrsAmount,
+}) {
+  const profile = getClientProfile();
+
+  const isSelfEmployed =
+    profile.employmentStatus === "self_employed";
+
+  selectedRetirementStrategy =
+    normaliseRetirementStrategy(
+      selectedRetirementStrategy,
+      profile.employmentStatus,
+    );
+
+  const currentPathCard =
+    retirementStrategyOptionsElement?.querySelector(
+      '[data-retirement-strategy-card="current_path"]',
+    );
+
+  const noTopUpCard =
+    retirementStrategyOptionsElement?.querySelector(
+      '[data-retirement-strategy-card="no_top_up"]',
+    );
+
+  if (currentPathCard) {
+    currentPathCard.hidden = isSelfEmployed;
+  }
+
+  if (noTopUpCard) {
+    noTopUpCard.hidden = !isSelfEmployed;
+  }
+
+  const inputs = Array.from(
+    retirementStrategyOptionsElement?.querySelectorAll(
+      'input[name="analysisRetirementStrategy"]',
+    ) || [],
+  );
+
+  inputs.forEach(function (input) {
+    input.checked =
+      input.value === selectedRetirementStrategy;
+
+    input
+      .closest(".analysis-retirement-strategy-option")
+      ?.classList.toggle(
+        "is-selected",
+        input.checked,
+      );
+  });
+
+  const targetAmount =
+    getRetirementStrategyTarget({
+      strategy: selectedRetirementStrategy,
+
+      cohortFrsAmount,
+    });
+
+  setText(
+    retirementStrategyStatusElement,
+    getRetirementStrategyLabel(
+      selectedRetirementStrategy,
+    ),
+  );
+
+  setText(
+    retirementStrategyTargetElement,
+    targetAmount > 0
+      ? formatCurrency(targetAmount)
+      : "—",
+  );
+
+  setText(
+    retirementStrategyCashTopUpElement,
+    strategyUsesCashTopUp(
+      selectedRetirementStrategy,
+    )
+      ? "Calculated at age 55"
+      : "$0",
+  );
+
+  setText(
+    retirementStrategyFundingResultElement,
+    strategyUsesCashTopUp(
+      selectedRetirementStrategy,
+    )
+      ? "Uses SA, OA, then available cash"
+      : "Uses projected CPF balances",
+  );
+
+  let note =
+    "Current Path does not force an additional cash top-up.";
+
+  if (
+    selectedRetirementStrategy ===
+    RETIREMENT_STRATEGIES.NO_TOP_UP
+  ) {
+    note =
+      "No Cash Top-up uses existing CPF balances and future mandatory CPF flows. It does not deduct cash to meet BRS, FRS or ERS.";
+  }
+
+  if (
+    selectedRetirementStrategy ===
+    RETIREMENT_STRATEGIES.BRS
+  ) {
+    note =
+      "The BRS scenario targets 50% of projected FRS. Property pledge eligibility and withdrawal conditions are not validated by this projection.";
+  }
+
+  if (
+    selectedRetirementStrategy ===
+    RETIREMENT_STRATEGIES.FRS
+  ) {
+    note =
+      "The FRS scenario uses SA first, followed by OA, then available cash to meet the projected cohort FRS at age 55.";
+  }
+
+  if (
+    selectedRetirementStrategy ===
+    RETIREMENT_STRATEGIES.ERS
+  ) {
+    note =
+      "The ERS scenario targets 200% of projected FRS. Any amount not covered by SA and OA is funded from available withdrawable cash.";
+  }
+
+  setText(
+    retirementStrategyNoteElement,
+    note,
+  );
+}
+
+function renderRetirementStrategyResult(rows) {
+  const topUpRow = rows.find(function (row) {
+    return (
+      getNonNegativeNumber(
+        row.retirementStrategyCashTopUp,
+      ) > 0 ||
+      row.retirementStrategyAppliedThisMonth
+    );
+  });
+
+  const cashTopUp = getNonNegativeNumber(
+    topUpRow?.retirementStrategyCashTopUp,
+  );
+
+  setText(
+    retirementStrategyCashTopUpElement,
+    strategyUsesCashTopUp(
+      selectedRetirementStrategy,
+    )
+      ? formatCurrency(cashTopUp)
+      : "$0",
+  );
+
+  if (
+    !strategyUsesCashTopUp(
+      selectedRetirementStrategy,
+    )
+  ) {
+    setText(
+      retirementStrategyFundingResultElement,
+      "No forced cash top-up",
+    );
+
+    return;
+  }
+
+  if (!topUpRow) {
+    setText(
+      retirementStrategyFundingResultElement,
+      "Applied when age 55 is reached",
+    );
+
+    return;
+  }
+
+  const target = getNonNegativeNumber(
+    topUpRow.retirementStrategyTarget,
+  );
+
+  const funded = getNonNegativeNumber(
+    topUpRow.retirementSumSetAside,
+  );
+
+  const shortfall = Math.max(
+    target - funded,
+    0,
+  );
+
+  setText(
+    retirementStrategyFundingResultElement,
+    shortfall > 0
+      ? `${formatCurrency(shortfall)} unfunded`
+      : "Target fully funded",
   );
 }
 
@@ -443,6 +812,12 @@ export function renderCostAnalysis() {
 
   const cohortFrs = getProjectedCohortFrs();
 
+  const cohortFrsAmount = cohortFrs.isValid ? cohortFrs.amount : 0;
+
+  renderRetirementStrategySelection({
+    cohortFrsAmount,
+  });
+
   const projectedCohortBhs = getProjectedCohortBasicHealthcareSum({
     dateOfBirth: getClientProfile().dateOfBirth,
   });
@@ -463,7 +838,9 @@ export function renderCostAnalysis() {
 
     startingDate,
 
-    cohortFrsAmount: cohortFrs.isValid ? cohortFrs.amount : 0,
+    cohortFrsAmount,
+
+    retirementStrategy: selectedRetirementStrategy,
 
     cpfLifeStartAge,
   };
@@ -473,6 +850,8 @@ export function renderCostAnalysis() {
 
     projectionMonths,
   });
+
+  renderRetirementStrategyResult(monthlyProjection);
 
   renderCpfLifeProjectionStatus({
     rows: monthlyProjection,
@@ -1607,6 +1986,7 @@ function calculateProjection({
   projectionMonths,
   startingDate,
   cohortFrsAmount,
+  retirementStrategy,
   cpfLifeStartAge,
 }) {
   const assets = getAssets();
@@ -1614,6 +1994,21 @@ function calculateProjection({
   const profile = getClientProfile();
 
   const desiredFybcAge = getDesiredFybcAge();
+
+  const normalisedRetirementStrategy = normaliseRetirementStrategy(
+    retirementStrategy,
+    profile.employmentStatus,
+  );
+
+  const retirementStrategyTarget = getRetirementStrategyTarget({
+    strategy: normalisedRetirementStrategy,
+
+    cohortFrsAmount,
+  });
+
+  const shouldUseStrategyCashTopUp = strategyUsesCashTopUp(
+    normalisedRetirementStrategy,
+  );
 
   const goals = getGoals();
 
@@ -1647,7 +2042,7 @@ function calculateProjection({
    * contributions back into RA.
    */
   let retirementSumSetAside = raHasBeenFormed
-    ? Math.min(raBalance, cohortFrsAmount)
+    ? Math.min(raBalance, retirementStrategyTarget)
     : 0;
 
   const pendingCpfInterest = {
@@ -1837,36 +2232,64 @@ function calculateProjection({
      * into OA because SA no longer remains the
      * displayed retirement account.
      */
+    let retirementStrategyCashTopUp = 0;
+
+    let retirementStrategyAppliedThisMonth = false;
+
     if (hasReachedAge55 && !raHasBeenFormed) {
-      const remainingFrsBeforeTransfer = Math.max(
-        cohortFrsAmount - raBalance,
+      retirementStrategyAppliedThisMonth = true;
+
+      /*
+       * Fund the selected retirement target using:
+       *
+       * 1. SA
+       * 2. OA
+       * 3. Available withdrawable cash, but only for the
+       *    explicit BRS, FRS and ERS scenarios.
+       */
+      const remainingTargetBeforeSa = Math.max(
+        retirementStrategyTarget - raBalance,
         0,
       );
 
-      const saTransferredToRa = Math.min(saBalance, remainingFrsBeforeTransfer);
+      const saTransferredToRa = Math.min(saBalance, remainingTargetBeforeSa);
 
       raBalance += saTransferredToRa;
       saBalance -= saTransferredToRa;
 
-      const remainingFrsAfterSa = Math.max(cohortFrsAmount - raBalance, 0);
+      const remainingTargetBeforeOa = Math.max(
+        retirementStrategyTarget - raBalance,
+        0,
+      );
 
-      const oaTransferredToRa = Math.min(oaBalance, remainingFrsAfterSa);
+      const oaTransferredToRa = Math.min(oaBalance, remainingTargetBeforeOa);
 
       raBalance += oaTransferredToRa;
       oaBalance -= oaTransferredToRa;
 
       /*
-       * Any SA remaining after RA reaches FRS
-       * is redirected into OA.
+       * SA closes when RA is formed. Any SA remaining after
+       * the selected retirement target is met moves to OA.
        */
       oaBalance += saBalance;
       saBalance = 0;
 
-      /*
-       * Interest accrued for SA before age 55
-       * follows the retirement balance after
-       * SA closes.
-       */
+      if (shouldUseStrategyCashTopUp) {
+        const remainingTargetBeforeCash = Math.max(
+          retirementStrategyTarget - raBalance,
+          0,
+        );
+
+        const availableWithdrawableCash = Math.max(withdrawableBalance, 0);
+
+        retirementStrategyCashTopUp = Math.min(
+          remainingTargetBeforeCash,
+          availableWithdrawableCash,
+        );
+
+        raBalance += retirementStrategyCashTopUp;
+      }
+
       pendingCpfInterest.ra += pendingCpfInterest.sa;
 
       pendingCpfInterest.sa = 0;
@@ -1875,9 +2298,13 @@ function calculateProjection({
 
       retirementSumSetAside = Math.max(
         retirementSumSetAside,
-        Math.min(raBalance, cohortFrsAmount),
+        Math.min(raBalance, retirementStrategyTarget),
       );
 
+      /*
+       * This indicator continues to use the actual cohort
+       * FRS—not the selected BRS or ERS strategy.
+       */
       frsMetAt55 =
         cohortFrsAmount > 0 && retirementSumSetAside >= cohortFrsAmount - 0.5;
     }
@@ -1913,7 +2340,8 @@ function calculateProjection({
       raBalanceBeforeCpfLife = raBalance;
 
       targetCpfLifePremium = calculateTargetCpfLifePremium({
-        cohortFrsAmount,
+        cohortFrsAmount: retirementStrategyTarget,
+
         cpfLifeStartAge,
       });
 
@@ -2043,7 +2471,7 @@ function calculateProjection({
 
       retirementSumSetAside = Math.max(
         retirementSumSetAside,
-        Math.min(raBalance, cohortFrsAmount),
+        Math.min(raBalance, retirementStrategyTarget),
       );
 
       /*
@@ -2115,7 +2543,8 @@ function calculateProjection({
     const operatingCashflow =
       operatingCashflowBeforeCpfLife + cpfLifeCashInflow;
 
-    const netMovement = operatingCashflow - bigTicketOutflow;
+    const netMovement =
+      operatingCashflow - bigTicketOutflow - retirementStrategyCashTopUp;
 
     const goalOutflowItems = goalsDue.map(function (goal) {
       return {
@@ -2141,6 +2570,8 @@ function calculateProjection({
       liabilities: activeCashCommitments,
 
       insurancePremiums,
+
+      retirementStrategyCashTopUp,
     };
 
     const cashflowEvents = createCashflowEvents({
@@ -2151,6 +2582,10 @@ function calculateProjection({
       cpfLifeStartedThisMonth,
 
       cpfLifeCashInflow,
+
+      retirementStrategyCashTopUp,
+
+      retirementStrategy: normalisedRetirementStrategy,
     });
 
     withdrawableBalance = startWithdrawableBalance + netMovement;
@@ -2194,6 +2629,16 @@ function calculateProjection({
       frsMetAt55,
 
       hasMetCohortFrs,
+
+      retirementStrategy: normalisedRetirementStrategy,
+
+      retirementStrategyTarget,
+
+      retirementStrategyCashTopUp,
+
+      retirementStrategyAppliedThisMonth,
+
+      retirementSumSetAside,
 
       startWithdrawableBalance,
 
@@ -2404,6 +2849,21 @@ function aggregateProjectionIntoAnnualRows(monthlyRows) {
 
       hasMetCohortFrs: Boolean(lastRow.hasMetCohortFrs),
 
+      retirementStrategy: lastRow.retirementStrategy,
+
+      retirementStrategyTarget: lastRow.retirementStrategyTarget,
+
+      retirementStrategyCashTopUp: sumProjectionValues(
+        periodRows,
+        "retirementStrategyCashTopUp",
+      ),
+
+      retirementStrategyAppliedThisMonth: periodRows.some(function (row) {
+        return row.retirementStrategyAppliedThisMonth;
+      }),
+
+      retirementSumSetAside: lastRow.retirementSumSetAside,
+
       calendarYear,
 
       projectionYear: calendarYear - currentYear,
@@ -2561,6 +3021,8 @@ function createCashflowEvents({
   goalItems,
   cpfLifeStartedThisMonth,
   cpfLifeCashInflow,
+  retirementStrategyCashTopUp = 0,
+  retirementStrategy = "",
 }) {
   const events = [];
 
@@ -2603,6 +3065,16 @@ function createCashflowEvents({
       amount: cpfLifeCashInflow,
 
       direction: "inflow",
+    });
+  }
+
+  if (retirementStrategyCashTopUp > 0) {
+    events.push({
+      label: `${getRetirementStrategyLabel(retirementStrategy)} cash top-up to RA`,
+
+      amount: retirementStrategyCashTopUp,
+
+      direction: "outflow",
     });
   }
 
