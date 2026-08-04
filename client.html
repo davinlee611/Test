@@ -3143,63 +3143,78 @@
                       </label>
                     </div>
                   </fieldset>
+                  <button
+                    class="analysis-section-collapse-button"
+                    type="button"
+                    data-analysis-collapse-target="analysisCashflowProjectionContent"
+                    aria-expanded="true"
+                    aria-controls="analysisCashflowProjectionContent"
+                  >
+                    <span>Hide Section</span>
+
+                    <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+                  </button>
                 </div>
+                <div
+                  id="analysisCashflowProjectionContent"
+                  class="analysis-collapsible-content"
+                >
+                  <div class="analysis-projection-note">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
 
-                <div class="analysis-projection-note">
-                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-
-                  <p>
-                    The 10-year projection shows monthly rows. Longer
-                    projections are summarised into calendar years. Employment
-                    income and annual bonus increase at the selected rate at the
-                    beginning of each new projection year. Expenses and
-                    insurance premium amounts remain unchanged. Limited-pay
-                    premiums and liabilities stop after their recorded end
-                    dates.
-                  </p>
-                </div>
-
-                <div class="analysis-goal-filter">
-                  <div class="analysis-goal-filter-heading">
-                    <div>
-                      <strong>Goals Included in Projection</strong>
-
-                      <p>
-                        Select which current goals should be included as
-                        big-ticket cash outflows.
-                      </p>
-                    </div>
-
-                    <button
-                      id="analysisSelectAllGoalsButton"
-                      class="analysis-goal-filter-action"
-                      type="button"
-                    >
-                      Select All
-                    </button>
+                    <p>
+                      The 10-year projection shows monthly rows. Longer
+                      projections are summarised into calendar years. Employment
+                      income and annual bonus increase at the selected rate at
+                      the beginning of each new projection year. Expenses and
+                      insurance premium amounts remain unchanged. Limited-pay
+                      premiums and liabilities stop after their recorded end
+                      dates.
+                    </p>
                   </div>
 
-                  <div
-                    id="analysisGoalFilterOptions"
-                    class="analysis-goal-filter-options"
-                  ></div>
-                </div>
+                  <div class="analysis-goal-filter">
+                    <div class="analysis-goal-filter-heading">
+                      <div>
+                        <strong>Goals Included in Projection</strong>
 
-                <div class="analysis-projection-table-wrap">
-                  <table
-                    class="analysis-projection-table analysis-projection-table--cashflow"
-                  >
-                    <thead>
-                      <tr>
-                        <th id="analysisCashflowPeriodHeading">Month</th>
-                        <th>Start Balance</th>
-                        <th>Net Movement</th>
-                        <th>End Balance</th>
-                      </tr>
-                    </thead>
+                        <p>
+                          Select which current goals should be included as
+                          big-ticket cash outflows.
+                        </p>
+                      </div>
 
-                    <tbody id="analysisCashflowProjectionTableBody"></tbody>
-                  </table>
+                      <button
+                        id="analysisSelectAllGoalsButton"
+                        class="analysis-goal-filter-action"
+                        type="button"
+                      >
+                        Select All
+                      </button>
+                    </div>
+
+                    <div
+                      id="analysisGoalFilterOptions"
+                      class="analysis-goal-filter-options"
+                    ></div>
+                  </div>
+
+                  <div class="analysis-projection-table-wrap">
+                    <table
+                      class="analysis-projection-table analysis-projection-table--cashflow"
+                    >
+                      <thead>
+                        <tr>
+                          <th id="analysisCashflowPeriodHeading">Month</th>
+                          <th>Start Balance</th>
+                          <th>Net Movement</th>
+                          <th>End Balance</th>
+                        </tr>
+                      </thead>
+
+                      <tbody id="analysisCashflowProjectionTableBody"></tbody>
+                    </table>
+                  </div>
                 </div>
               </section>
 
@@ -3210,7 +3225,9 @@
 
               <!-- CPF Flow Projection -->
               <section class="analysis-section-card">
-                <div class="analysis-section-heading">
+                <div
+                  class="analysis-section-heading analysis-section-heading--split"
+                >
                   <div>
                     <span class="analysis-section-eyebrow">CPF Position</span>
 
@@ -3221,317 +3238,334 @@
                       and the resulting OA, SA or RA, and MA balances.
                     </p>
                   </div>
-                </div>
-
-                <div class="analysis-projection-note">
-                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-
-                  <p>
-                    This projection uses CPF contribution and allocation rates
-                    effective from 1 January 2027. CPF interest is accumulated
-                    monthly and credited in December. Longer ranges use the same
-                    annual periods selected above.
-                  </p>
-                </div>
-
-                <div class="analysis-cpf-assumption-grid">
-                  <div class="analysis-cpf-assumption-item">
-                    <span>Projected Cohort FRS</span>
-
-                    <strong id="analysisProjectedFrs">$0</strong>
-
-                    <small id="analysisProjectedFrsBasis">
-                      Complete the Client Profile
-                    </small>
-                  </div>
-
-                  <div class="analysis-cpf-assumption-item">
-                    <span>Projected Cohort BHS at Age 65</span>
-
-                    <strong id="analysisProjectedCohortBhs">$0</strong>
-
-                    <small id="analysisProjectedCohortBhsBasis">
-                      Complete the Client Profile
-                    </small>
-                  </div>
-
-                  <div
-                    class="analysis-cpf-assumption-item analysis-cpf-life-assumption"
+                  <button
+                    class="analysis-section-collapse-button"
+                    type="button"
+                    data-analysis-collapse-target="analysisCpfProjectionContent"
+                    aria-expanded="true"
+                    aria-controls="analysisCpfProjectionContent"
                   >
-                    <label for="analysisCpfLifeStartAgeInput">
-                      CPF LIFE Payout Start Age
-                    </label>
+                    <span>Hide Section</span>
 
-                    <select id="analysisCpfLifeStartAgeInput">
-                      <option value="65">Age 65</option>
-                      <option value="66">Age 66</option>
-                      <option value="67">Age 67</option>
-                      <option value="68">Age 68</option>
-                      <option value="69">Age 69</option>
-                      <option value="70">Age 70</option>
-                    </select>
+                    <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <div
+                  id="analysisCpfProjectionContent"
+                  class="analysis-collapsible-content"
+                >
+                  <div class="analysis-projection-note">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
 
-                    <div class="analysis-cpf-life-result-grid">
-                      <div>
-                        <span>Affordable Premium</span>
+                    <p>
+                      This projection uses CPF contribution and allocation rates
+                      effective from 1 January 2027. CPF interest is accumulated
+                      monthly and credited in December. Longer ranges use the
+                      same annual periods selected above.
+                    </p>
+                  </div>
 
-                        <strong id="analysisCpfLifePremium"> — </strong>
-                      </div>
+                  <div class="analysis-cpf-assumption-grid">
+                    <div class="analysis-cpf-assumption-item">
+                      <span>Projected Cohort FRS</span>
 
-                      <div>
-                        <span>Estimated Payout</span>
+                      <strong id="analysisProjectedFrs">$0</strong>
 
-                        <strong id="analysisCpfLifePayout"> — </strong>
-                      </div>
+                      <small id="analysisProjectedFrsBasis">
+                        Complete the Client Profile
+                      </small>
                     </div>
 
-                    <small id="analysisCpfLifeProjectionStatus">
-                      Complete the projection assumptions.
-                    </small>
-                  </div>
-                </div>
+                    <div class="analysis-cpf-assumption-item">
+                      <span>Projected Cohort BHS at Age 65</span>
 
-                <div class="analysis-retirement-strategy">
-                  <div class="analysis-retirement-strategy-heading">
-                    <div>
-                      <span class="analysis-section-eyebrow">
-                        Retirement Funding Scenario
-                      </span>
+                      <strong id="analysisProjectedCohortBhs">$0</strong>
 
-                      <h4>Select the CPF retirement strategy to model</h4>
-
-                      <p>
-                        The selected strategy changes RA funding, available OA
-                        and cash, the affordable CPF LIFE premium, and the
-                        projected retirement position.
-                      </p>
+                      <small id="analysisProjectedCohortBhsBasis">
+                        Complete the Client Profile
+                      </small>
                     </div>
 
                     <div
-                      id="analysisRetirementStrategyStatus"
-                      class="analysis-retirement-strategy-status"
+                      class="analysis-cpf-assumption-item analysis-cpf-life-assumption"
                     >
-                      Current CPF path
+                      <label for="analysisCpfLifeStartAgeInput">
+                        CPF LIFE Payout Start Age
+                      </label>
+
+                      <select id="analysisCpfLifeStartAgeInput">
+                        <option value="65">Age 65</option>
+                        <option value="66">Age 66</option>
+                        <option value="67">Age 67</option>
+                        <option value="68">Age 68</option>
+                        <option value="69">Age 69</option>
+                        <option value="70">Age 70</option>
+                      </select>
+
+                      <div class="analysis-cpf-life-result-grid">
+                        <div>
+                          <span>Affordable Premium</span>
+
+                          <strong id="analysisCpfLifePremium"> — </strong>
+                        </div>
+
+                        <div>
+                          <span>Estimated Payout</span>
+
+                          <strong id="analysisCpfLifePayout"> — </strong>
+                        </div>
+                      </div>
+
+                      <small id="analysisCpfLifeProjectionStatus">
+                        Complete the projection assumptions.
+                      </small>
                     </div>
                   </div>
 
-                  <div
-                    id="analysisRetirementStrategyOptions"
-                    class="analysis-retirement-strategy-options"
-                  >
-                    <label
-                      class="analysis-retirement-strategy-option"
-                      data-retirement-strategy-card="current_path"
-                    >
-                      <input
-                        type="radio"
-                        name="analysisRetirementStrategy"
-                        value="current_path"
-                        checked
-                      />
+                  <div class="analysis-retirement-strategy">
+                    <div class="analysis-retirement-strategy-heading">
+                      <div>
+                        <span class="analysis-section-eyebrow">
+                          Retirement Funding Scenario
+                        </span>
 
-                      <span class="analysis-retirement-strategy-icon">
-                        <i class="fa-solid fa-route" aria-hidden="true"></i>
-                      </span>
+                        <h4>Select the CPF retirement strategy to model</h4>
 
-                      <span class="analysis-retirement-strategy-copy">
-                        <strong>Current Path</strong>
+                        <p>
+                          The selected strategy changes RA funding, available OA
+                          and cash, the affordable CPF LIFE premium, and the
+                          projected retirement position.
+                        </p>
+                      </div>
 
-                        <small>
-                          Use projected CPF balances and contributions without
-                          adding a cash top-up.
-                        </small>
-                      </span>
-                    </label>
-
-                    <label
-                      class="analysis-retirement-strategy-option"
-                      data-retirement-strategy-card="brs"
-                    >
-                      <input
-                        type="radio"
-                        name="analysisRetirementStrategy"
-                        value="brs"
-                      />
-
-                      <span class="analysis-retirement-strategy-icon">
-                        <i class="fa-solid fa-house" aria-hidden="true"></i>
-                      </span>
-
-                      <span class="analysis-retirement-strategy-copy">
-                        <strong>BRS</strong>
-
-                        <small> Target 50% of the projected cohort FRS. </small>
-                      </span>
-                    </label>
-
-                    <label
-                      class="analysis-retirement-strategy-option"
-                      data-retirement-strategy-card="frs"
-                    >
-                      <input
-                        type="radio"
-                        name="analysisRetirementStrategy"
-                        value="frs"
-                      />
-
-                      <span class="analysis-retirement-strategy-icon">
-                        <i
-                          class="fa-solid fa-circle-check"
-                          aria-hidden="true"
-                        ></i>
-                      </span>
-
-                      <span class="analysis-retirement-strategy-copy">
-                        <strong>FRS</strong>
-
-                        <small>
-                          Target 100% of the projected cohort FRS.
-                        </small>
-                      </span>
-                    </label>
-
-                    <label
-                      class="analysis-retirement-strategy-option"
-                      data-retirement-strategy-card="ers"
-                    >
-                      <input
-                        type="radio"
-                        name="analysisRetirementStrategy"
-                        value="ers"
-                      />
-
-                      <span class="analysis-retirement-strategy-icon">
-                        <i
-                          class="fa-solid fa-arrow-trend-up"
-                          aria-hidden="true"
-                        ></i>
-                      </span>
-
-                      <span class="analysis-retirement-strategy-copy">
-                        <strong>ERS</strong>
-
-                        <small>
-                          Target 200% of the projected cohort FRS.
-                        </small>
-                      </span>
-                    </label>
-
-                    <label
-                      class="analysis-retirement-strategy-option"
-                      data-retirement-strategy-card="no_top_up"
-                      hidden
-                    >
-                      <input
-                        type="radio"
-                        name="analysisRetirementStrategy"
-                        value="no_top_up"
-                      />
-
-                      <span class="analysis-retirement-strategy-icon">
-                        <i class="fa-solid fa-wallet" aria-hidden="true"></i>
-                      </span>
-
-                      <span class="analysis-retirement-strategy-copy">
-                        <strong>No Cash Top-up</strong>
-
-                        <small>
-                          Use current CPF balances and mandatory self-employed
-                          MediSave contributions only.
-                        </small>
-                      </span>
-                    </label>
-                  </div>
-
-                  <div class="analysis-retirement-strategy-summary">
-                    <div>
-                      <span>Selected Target</span>
-
-                      <strong id="analysisRetirementStrategyTarget">—</strong>
-                    </div>
-
-                    <div>
-                      <span>Strategy Cash Top-up</span>
-
-                      <strong id="analysisRetirementStrategyCashTopUp"
-                        >—</strong
+                      <div
+                        id="analysisRetirementStrategyStatus"
+                        class="analysis-retirement-strategy-status"
                       >
+                        Current CPF path
+                      </div>
                     </div>
 
-                    <div>
-                      <span>Funding Result</span>
+                    <div
+                      id="analysisRetirementStrategyOptions"
+                      class="analysis-retirement-strategy-options"
+                    >
+                      <label
+                        class="analysis-retirement-strategy-option"
+                        data-retirement-strategy-card="current_path"
+                      >
+                        <input
+                          type="radio"
+                          name="analysisRetirementStrategy"
+                          value="current_path"
+                          checked
+                        />
 
-                      <strong id="analysisRetirementStrategyFundingResult">
-                        Current path
-                      </strong>
+                        <span class="analysis-retirement-strategy-icon">
+                          <i class="fa-solid fa-route" aria-hidden="true"></i>
+                        </span>
+
+                        <span class="analysis-retirement-strategy-copy">
+                          <strong>Current Path</strong>
+
+                          <small>
+                            Use projected CPF balances and contributions without
+                            adding a cash top-up.
+                          </small>
+                        </span>
+                      </label>
+
+                      <label
+                        class="analysis-retirement-strategy-option"
+                        data-retirement-strategy-card="brs"
+                      >
+                        <input
+                          type="radio"
+                          name="analysisRetirementStrategy"
+                          value="brs"
+                        />
+
+                        <span class="analysis-retirement-strategy-icon">
+                          <i class="fa-solid fa-house" aria-hidden="true"></i>
+                        </span>
+
+                        <span class="analysis-retirement-strategy-copy">
+                          <strong>BRS</strong>
+
+                          <small>
+                            Target 50% of the projected cohort FRS.
+                          </small>
+                        </span>
+                      </label>
+
+                      <label
+                        class="analysis-retirement-strategy-option"
+                        data-retirement-strategy-card="frs"
+                      >
+                        <input
+                          type="radio"
+                          name="analysisRetirementStrategy"
+                          value="frs"
+                        />
+
+                        <span class="analysis-retirement-strategy-icon">
+                          <i
+                            class="fa-solid fa-circle-check"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+
+                        <span class="analysis-retirement-strategy-copy">
+                          <strong>FRS</strong>
+
+                          <small>
+                            Target 100% of the projected cohort FRS.
+                          </small>
+                        </span>
+                      </label>
+
+                      <label
+                        class="analysis-retirement-strategy-option"
+                        data-retirement-strategy-card="ers"
+                      >
+                        <input
+                          type="radio"
+                          name="analysisRetirementStrategy"
+                          value="ers"
+                        />
+
+                        <span class="analysis-retirement-strategy-icon">
+                          <i
+                            class="fa-solid fa-arrow-trend-up"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+
+                        <span class="analysis-retirement-strategy-copy">
+                          <strong>ERS</strong>
+
+                          <small>
+                            Target 200% of the projected cohort FRS.
+                          </small>
+                        </span>
+                      </label>
+
+                      <label
+                        class="analysis-retirement-strategy-option"
+                        data-retirement-strategy-card="no_top_up"
+                        hidden
+                      >
+                        <input
+                          type="radio"
+                          name="analysisRetirementStrategy"
+                          value="no_top_up"
+                        />
+
+                        <span class="analysis-retirement-strategy-icon">
+                          <i class="fa-solid fa-wallet" aria-hidden="true"></i>
+                        </span>
+
+                        <span class="analysis-retirement-strategy-copy">
+                          <strong>No Cash Top-up</strong>
+
+                          <small>
+                            Use current CPF balances and mandatory self-employed
+                            MediSave contributions only.
+                          </small>
+                        </span>
+                      </label>
                     </div>
-                  </div>
 
-                  <p
-                    id="analysisRetirementStrategyNote"
-                    class="analysis-retirement-strategy-note"
-                  >
-                    Current Path does not force an additional cash top-up.
-                  </p>
-                </div>
+                    <div class="analysis-retirement-strategy-summary">
+                      <div>
+                        <span>Selected Target</span>
 
-                <details class="analysis-cpf-calculation-details">
-                  <summary>
-                    <i
-                      class="fa-regular fa-circle-question"
-                      aria-hidden="true"
-                    ></i>
+                        <strong id="analysisRetirementStrategyTarget">—</strong>
+                      </div>
 
-                    How is the BHS calculated?
-                  </summary>
+                      <div>
+                        <span>Strategy Cash Top-up</span>
 
-                  <div class="analysis-cpf-calculation-content">
-                    <p>
-                      Confirmed Basic Healthcare Sum amounts are used for
-                      cohorts turning 65 up to 2026.
-                    </p>
+                        <strong id="analysisRetirementStrategyCashTopUp"
+                          >—</strong
+                        >
+                      </div>
 
-                    <p>
-                      From 2027, the Basic Healthcare Sum is projected to
-                      increase by <strong>4.72% each year</strong> and is
-                      rounded to the nearest <strong>$500</strong>.
-                    </p>
+                      <div>
+                        <span>Funding Result</span>
 
-                    <p>
-                      Before age 65, the applicable limit changes annually. The
-                      Basic Healthcare Sum in the year the client turns 65 is
-                      fixed for life.
-                    </p>
+                        <strong id="analysisRetirementStrategyFundingResult">
+                          Current path
+                        </strong>
+                      </div>
+                    </div>
 
-                    <p>
-                      When MA reaches the applicable limit, excess allocation is
-                      redirected to SA before age 55. From age 55, excess is
-                      redirected to RA until the client’s projected cohort FRS
-                      is reached, after which it is redirected to OA.
+                    <p
+                      id="analysisRetirementStrategyNote"
+                      class="analysis-retirement-strategy-note"
+                    >
+                      Current Path does not force an additional cash top-up.
                     </p>
                   </div>
-                </details>
 
-                <div class="analysis-projection-table-wrap">
-                  <table
-                    class="analysis-projection-table analysis-projection-table--cpf"
-                  >
-                    <thead>
-                      <tr>
-                        <th id="analysisCpfPeriodHeading">Month</th>
-                        <th>CPF Inflow</th>
-                        <th>CPF Outflow</th>
-                        <th>CPF Interest Credited</th>
-                        <th>Net CPF Flow</th>
-                        <th>OA Balance</th>
-                        <th>Retirement Balance</th>
-                        <th>MA Balance</th>
-                        <th>Applicable BHS That Year</th>
-                      </tr>
-                    </thead>
+                  <details class="analysis-cpf-calculation-details">
+                    <summary>
+                      <i
+                        class="fa-regular fa-circle-question"
+                        aria-hidden="true"
+                      ></i>
 
-                    <tbody id="analysisCpfProjectionTableBody"></tbody>
-                  </table>
+                      How is the BHS calculated?
+                    </summary>
+
+                    <div class="analysis-cpf-calculation-content">
+                      <p>
+                        Confirmed Basic Healthcare Sum amounts are used for
+                        cohorts turning 65 up to 2026.
+                      </p>
+
+                      <p>
+                        From 2027, the Basic Healthcare Sum is projected to
+                        increase by <strong>4.72% each year</strong> and is
+                        rounded to the nearest <strong>$500</strong>.
+                      </p>
+
+                      <p>
+                        Before age 65, the applicable limit changes annually.
+                        The Basic Healthcare Sum in the year the client turns 65
+                        is fixed for life.
+                      </p>
+
+                      <p>
+                        When MA reaches the applicable limit, excess allocation
+                        is redirected to SA before age 55. From age 55, excess
+                        is redirected to RA until the client’s projected cohort
+                        FRS is reached, after which it is redirected to OA.
+                      </p>
+                    </div>
+                  </details>
+
+                  <div class="analysis-projection-table-wrap">
+                    <table
+                      class="analysis-projection-table analysis-projection-table--cpf"
+                    >
+                      <thead>
+                        <tr>
+                          <th id="analysisCpfPeriodHeading">Month</th>
+                          <th>CPF Inflow</th>
+                          <th>CPF Outflow</th>
+                          <th>CPF Interest Credited</th>
+                          <th>Net CPF Flow</th>
+                          <th>OA Balance</th>
+                          <th>Retirement Balance</th>
+                          <th>MA Balance</th>
+                          <th>Applicable BHS That Year</th>
+                        </tr>
+                      </thead>
+
+                      <tbody id="analysisCpfProjectionTableBody"></tbody>
+                    </table>
+                  </div>
                 </div>
               </section>
             </div>

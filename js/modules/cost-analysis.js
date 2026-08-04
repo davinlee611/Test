@@ -137,6 +137,10 @@ const cpfProjectionTableBody = document.getElementById(
   "analysisCpfProjectionTableBody",
 );
 
+const analysisSectionCollapseButtons = Array.from(
+  document.querySelectorAll("[data-analysis-collapse-target]"),
+);
+
 const projectedFrsElement = document.getElementById("analysisProjectedFrs");
 
 const projectedFrsBasisElement = document.getElementById(
@@ -422,6 +426,10 @@ export function initializeCostAnalysis() {
     },
   );
 
+  analysisSectionCollapseButtons.forEach(function (button) {
+    button.addEventListener("click", handleAnalysisSectionCollapse);
+  });
+
   goalFilterOptions?.addEventListener("change", handleGoalFilterChange);
 
   selectAllGoalsButton?.addEventListener("click", handleSelectAllGoals);
@@ -464,6 +472,24 @@ export function resetCostAnalysis() {
     retirementAnalysisElements.includeOaInput.checked = false;
     retirementAnalysisElements.includeOaInput.disabled = true;
   }
+
+  analysisSectionCollapseButtons.forEach(function (button) {
+    const targetId = button.dataset.analysisCollapseTarget;
+
+    const content = document.getElementById(targetId);
+
+    if (!content) {
+      return;
+    }
+
+    setAnalysisSectionExpanded({
+      button,
+
+      content,
+
+      expanded: true,
+    });
+  });
 
   renderCostAnalysis();
 }
@@ -785,6 +811,78 @@ function renderRetirementStrategyResult(rows) {
       ? `${formatCurrency(shortfall)} unfunded`
       : "Target fully funded",
   );
+}
+
+/* ========================================
+   COLLAPSIBLE ANALYSIS SECTIONS
+======================================== */
+
+function handleAnalysisSectionCollapse(
+  event,
+) {
+  const button = event.currentTarget;
+
+  const targetId =
+    button.dataset
+      .analysisCollapseTarget;
+
+  const content =
+    document.getElementById(targetId);
+
+  if (!content) {
+    return;
+  }
+
+  const isCurrentlyExpanded =
+    button.getAttribute(
+      "aria-expanded",
+    ) === "true";
+
+  setAnalysisSectionExpanded({
+    button,
+
+    content,
+
+    expanded:
+      !isCurrentlyExpanded,
+  });
+}
+
+function setAnalysisSectionExpanded({
+  button,
+  content,
+  expanded,
+}) {
+  button.setAttribute(
+    "aria-expanded",
+    String(expanded),
+  );
+
+  content.hidden = !expanded;
+
+  const label =
+    button.querySelector("span");
+
+  const icon =
+    button.querySelector("i");
+
+  if (label) {
+    label.textContent = expanded
+      ? "Hide Section"
+      : "Show Section";
+  }
+
+  if (icon) {
+    icon.classList.toggle(
+      "fa-chevron-up",
+      expanded,
+    );
+
+    icon.classList.toggle(
+      "fa-chevron-down",
+      !expanded,
+    );
+  }
 }
 
 /* ========================================
