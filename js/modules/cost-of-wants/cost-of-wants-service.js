@@ -129,6 +129,12 @@ export function getInflationRate() {
   return Number.isFinite(rate) ? rate : 0;
 }
 
+export function getPostFybcReturnRate() {
+  const { postFybcReturnRate } = getCostOfWants();
+
+  return getNonNegativeNumber(postFybcReturnRate);
+}
+
 export function getSelectedCpfRetirementOption() {
   const { selectedCpfRetirementOption } = getCostOfWants();
 

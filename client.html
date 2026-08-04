@@ -2169,51 +2169,238 @@
                 </article>
               </div>
 
-              <!-- Suggested plan -->
+              <!-- Projected position -->
               <article class="analysis-path-plan">
                 <div class="analysis-path-card-heading">
                   <span class="analysis-path-step">3</span>
 
                   <div>
-                    <h4>Your Suggested Plan</h4>
+                    <h4 id="analysisPathProjectedPositionTitle">
+                      Your Projected Position at FYBC
+                    </h4>
 
                     <p>
-                      The monthly action needed to work towards your retirement
-                      goal.
+                      What your current cashflow, assets, CPF and recorded
+                      insurance payouts may provide.
                     </p>
                   </div>
                 </div>
 
-                <div class="analysis-path-plan-content">
-                  <div class="analysis-path-primary-result">
-                    <span>Suggested Monthly Investment</span>
+                <div
+                  id="analysisPathProjectionIncomplete"
+                  class="analysis-path-projection-incomplete"
+                  hidden
+                >
+                  Complete the Cost of Wants and projection assumptions to
+                  calculate your projected position.
+                </div>
 
-                    <strong id="analysisPathSuggestedInvestment">—</strong>
+                <div
+                  id="analysisPathProjectionResults"
+                  class="analysis-path-projection-results"
+                >
+                  <div class="analysis-path-projected-grid">
+                    <article
+                      class="analysis-path-projected-item analysis-path-projected-item--target"
+                    >
+                      <span>Capital Needed at FYBC</span>
 
-                    <small>
-                      We will calculate this after selecting the
-                      investment-growth assumption.
-                    </small>
+                      <strong id="analysisPathCapitalNeededAtFybc">—</strong>
+
+                      <small id="analysisPathCapitalNeedBasis">
+                        After investment returns and recorded retirement income
+                      </small>
+                    </article>
+
+                    <article class="analysis-path-projected-item">
+                      <span>Projected Withdrawable Assets</span>
+
+                      <strong id="analysisPathProjectedAssetsAtFybc">—</strong>
+
+                      <small>
+                        Cash and investments projected at the selected FYBC age
+                      </small>
+                    </article>
+
+                    <article class="analysis-path-projected-item">
+                      <span>Future Maturity Benefits</span>
+
+                      <strong id="analysisPathFutureMaturityValue">—</strong>
+
+                      <small id="analysisPathFutureMaturityBasis">
+                        Endowment proceeds received after FYBC
+                      </small>
+                    </article>
+
+                    <article class="analysis-path-projected-item">
+                      <span>Projected CPF LIFE Income</span>
+
+                      <strong id="analysisPathProjectedCpfLifeIncome">—</strong>
+
+                      <small id="analysisPathProjectedCpfLifeBasis">
+                        Based on the projected affordable CPF LIFE premium
+                      </small>
+                    </article>
                   </div>
 
-                  <div class="analysis-path-plan-comparison">
-                    <div>
-                      <span>Currently Available</span>
-                      <strong id="analysisPathPlanAffordableAmount">$0</strong>
+                  <div class="analysis-path-oa-control">
+                    <div class="analysis-path-oa-copy">
+                      <strong>Use available OA towards retirement?</strong>
+
+                      <small id="analysisPathEligibleOaBasis">
+                        Available OA will be calculated after RA formation and
+                        planned housing payments.
+                      </small>
                     </div>
 
-                    <div>
-                      <span>Monthly Gap</span>
-                      <strong id="analysisPathMonthlyGap">—</strong>
-                    </div>
+                    <div class="analysis-path-oa-value">
+                      <strong id="analysisPathEligibleOaAmount">—</strong>
 
-                    <div>
-                      <span>Current Position</span>
-                      <strong id="analysisPathPlanStatus"
-                        >Pending calculation</strong
-                      >
+                      <label class="analysis-oa-switch">
+                        <input
+                          id="analysisPathIncludeOaInput"
+                          type="checkbox"
+                          aria-label="Use available OA towards retirement"
+                        />
+
+                        <span
+                          class="analysis-oa-switch-slider"
+                          aria-hidden="true"
+                        ></span>
+                      </label>
                     </div>
                   </div>
+
+                  <div class="analysis-path-gap-result">
+                    <div>
+                      <span>Remaining Funding Gap</span>
+
+                      <small id="analysisPathFundingGapBasis">
+                        Capital needed less projected resources
+                      </small>
+                    </div>
+
+                    <strong id="analysisPathRemainingFundingGap">—</strong>
+                  </div>
+
+                  <div class="analysis-path-funding-progress">
+                    <div class="analysis-path-funding-progress-heading">
+                      <span>Projected funding progress</span>
+
+                      <strong id="analysisPathFundingProgressLabel">—</strong>
+                    </div>
+
+                    <div
+                      class="analysis-path-funding-progress-track"
+                      role="progressbar"
+                      aria-label="Projected retirement funding progress"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow="0"
+                      id="analysisPathFundingProgress"
+                    >
+                      <span id="analysisPathFundingProgressBar"></span>
+                    </div>
+
+                    <p id="analysisPathFundingStatus">
+                      Complete the projection to check your position.
+                    </p>
+                  </div>
+
+                  <details class="analysis-path-capital-methodology">
+                    <summary>
+                      <span>
+                        <i
+                          class="fa-regular fa-circle-question"
+                          aria-hidden="true"
+                        ></i>
+
+                        How is the capital calculated?
+                      </span>
+
+                      <i
+                        class="fa-solid fa-chevron-down analysis-path-capital-methodology-chevron"
+                        aria-hidden="true"
+                      ></i>
+                    </summary>
+
+                    <div class="analysis-path-capital-methodology-content">
+                      <p>
+                        The calculation runs month by month from FYBC until the
+                        planned mortality age.
+                      </p>
+
+                      <div class="analysis-path-capital-methodology-grid">
+                        <div>
+                          <span>
+                            Lifestyle capital before recorded income
+                          </span>
+
+                          <strong id="analysisPathGrossCapitalAtFybc">—</strong>
+                        </div>
+
+                        <div>
+                          <span>Value of recorded retirement income</span>
+
+                          <strong id="analysisPathIncomeCapitalOffset"
+                            >—</strong
+                          >
+                        </div>
+
+                        <div>
+                          <span>Capital needed at FYBC</span>
+
+                          <strong id="analysisPathNetCapitalAtFybc">—</strong>
+                        </div>
+
+                        <div>
+                          <span>Post-FYBC return assumption</span>
+
+                          <strong id="analysisPathPostFybcReturn">—</strong>
+                        </div>
+                      </div>
+
+                      <div class="analysis-path-capital-formula">
+                        <div>
+                          <span>Lifestyle needed that month</span>
+                        </div>
+
+                        <strong>−</strong>
+
+                        <div>
+                          <span>Other continuing income</span>
+                        </div>
+
+                        <strong>−</strong>
+
+                        <div>
+                          <span>Active policy income</span>
+                        </div>
+
+                        <strong>−</strong>
+
+                        <div>
+                          <span>CPF LIFE after it starts</span>
+                        </div>
+
+                        <strong>=</strong>
+
+                        <div>
+                          <span>Amount funded from personal capital</span>
+                        </div>
+                      </div>
+
+                      <p class="analysis-path-capital-note">
+                        Employment and trade income stop at FYBC.
+                        Retirement-policy payouts reduce the lifestyle
+                        requirement only during their recorded payout term.
+                        Endowment maturities are treated as lump-sum assets
+                        instead of monthly income. Existing other monthly income
+                        is assumed to continue through the planned mortality age
+                        because it currently has no recorded end date.
+                      </p>
+                    </div>
+                  </details>
                 </div>
               </article>
 
@@ -2980,276 +3167,6 @@
                     </table>
                   </div>
                 </div>
-              </section>
-            </div>
-
-            <!-- Retirement Position Analysis -->
-            <div class="analysis-section-surround analysis-retirement-analysis">
-              <section class="analysis-section-card">
-                <div class="analysis-section-heading">
-                  <div>
-                    <span class="analysis-section-eyebrow">
-                      Retirement Readiness
-                    </span>
-
-                    <h3>Analysis</h3>
-
-                    <p>
-                      Compares the selected retirement goal with the assets, CPF
-                      position and recorded recurring income projected under the
-                      client's current plan.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="analysis-position-heading">
-                  <div>
-                    <h4 id="analysisProjectedPositionTitle">
-                      Projected Position at FYBC
-                    </h4>
-
-                    <p>
-                      These balances are taken from the projection in the month
-                      the client reaches the selected FYBC age.
-                    </p>
-                  </div>
-
-                  <span
-                    id="analysisReadinessBadge"
-                    class="analysis-readiness-badge"
-                  >
-                    Complete the retirement goal
-                  </span>
-                </div>
-
-                <div class="analysis-position-grid">
-                  <article class="analysis-position-item">
-                    <span>Withdrawable Retirement Assets</span>
-
-                    <strong id="analysisProjectedWithdrawableAssets">
-                      —
-                    </strong>
-
-                    <small>
-                      Cash, liquid assets and accumulated net cashflow
-                    </small>
-                  </article>
-
-                  <article class="analysis-position-item">
-                    <span>Projected OA Balance</span>
-
-                    <strong id="analysisProjectedOaBalance">—</strong>
-
-                    <small> Shown separately from withdrawable assets </small>
-                  </article>
-
-                  <article class="analysis-position-item">
-                    <span id="analysisProjectedRetirementBalanceLabel">
-                      Projected SA / RA Balance
-                    </span>
-
-                    <strong id="analysisProjectedRetirementBalance"> — </strong>
-
-                    <small>
-                      Retirement Account balance at the selected FYBC age
-                    </small>
-                  </article>
-                </div>
-
-                <div class="analysis-oa-inclusion-control">
-                  <div class="analysis-oa-inclusion-copy">
-                    <strong>
-                      Include eligible projected OA in retirement funding
-                    </strong>
-
-                    <small id="analysisIncludeProjectedOaHelper">
-                      Available only after the projected cohort FRS has been
-                      fully set aside.
-                    </small>
-                  </div>
-
-                  <label class="analysis-oa-switch">
-                    <input
-                      id="analysisIncludeProjectedOaInput"
-                      type="checkbox"
-                      aria-label="Include eligible projected OA in retirement funding"
-                    />
-
-                    <span
-                      class="analysis-oa-switch-slider"
-                      aria-hidden="true"
-                    ></span>
-                  </label>
-                </div>
-
-                <p class="analysis-position-exclusion-note">
-                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-
-                  MediSave is excluded from the retirement position because it
-                  is reserved for healthcare expenses.
-                </p>
-
-                <div
-                  class="analysis-subsection-divider"
-                  aria-hidden="true"
-                ></div>
-
-                <div
-                  class="analysis-position-heading analysis-cpf-life-heading"
-                >
-                  <div>
-                    <h4 id="analysisCpfLifeSectionTitle">
-                      Projected CPF LIFE at Age 65
-                    </h4>
-
-                    <p>
-                      Shows what the projected Retirement Account can support
-                      when CPF LIFE begins.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="analysis-cpf-life-grid">
-                  <article class="analysis-position-item">
-                    <span>RA Balance Before CPF LIFE</span>
-
-                    <strong id="analysisCpfLifeRaBeforePremium"> — </strong>
-
-                    <small>
-                      Projected RA balance before the CPF LIFE premium is
-                      deducted
-                    </small>
-                  </article>
-
-                  <article class="analysis-position-item">
-                    <span>Target CPF LIFE Premium</span>
-
-                    <strong id="analysisCpfLifeTargetPremium"> — </strong>
-
-                    <small>
-                      Based on the projected cohort FRS and selected start age
-                    </small>
-                  </article>
-
-                  <article class="analysis-position-item">
-                    <span>Affordable CPF LIFE Premium</span>
-
-                    <strong id="analysisProjectedCpfLifePremium"> — </strong>
-
-                    <small id="analysisProjectedCpfLifePremiumBasis">
-                      Limited by the available RA balance
-                    </small>
-                  </article>
-
-                  <article class="analysis-position-item">
-                    <span>Projected CPF LIFE Income</span>
-
-                    <strong id="analysisProjectedCpfLifeIncome"> — </strong>
-
-                    <small id="analysisProjectedCpfLifeIncomeBasis">
-                      Monthly payout from the selected start age
-                    </small>
-                  </article>
-                </div>
-
-                <div
-                  class="analysis-subsection-divider"
-                  aria-hidden="true"
-                ></div>
-
-                <div class="analysis-comparison-heading">
-                  <div>
-                    <h4>Desired versus Projected</h4>
-
-                    <p>
-                      Recorded recurring income reduces the amount that must be
-                      funded from retirement assets.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="analysis-comparison-table-wrap">
-                  <table class="analysis-comparison-table">
-                    <thead>
-                      <tr>
-                        <th>Retirement Measure</th>
-                        <th>Desired</th>
-                        <th>Projected From Current Plan</th>
-                        <th>Amount to Fund From Assets</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      <tr>
-                        <td>Monthly Passive Income at FYBC Age</td>
-
-                        <td id="analysisDesiredIncomeAtFybc">—</td>
-
-                        <td id="analysisRecordedIncomeAtFybc">—</td>
-
-                        <td id="analysisIncomeGapAtFybc">—</td>
-                      </tr>
-
-                      <tr>
-                        <td>Monthly Passive Income at Age 65</td>
-
-                        <td id="analysisDesiredIncomeAt65">—</td>
-
-                        <td id="analysisRecordedIncomeAt65">—</td>
-
-                        <td id="analysisIncomeGapAt65">—</td>
-                      </tr>
-
-                      <tr class="analysis-comparison-total-row">
-                        <td>Gross Retirement Capital Target</td>
-
-                        <td id="analysisDesiredRetirementCapital">—</td>
-
-                        <td id="analysisProjectedRetirementCapital">—</td>
-
-                        <td id="analysisRetirementCapitalGap">—</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div id="analysisFundingResult" class="analysis-funding-result">
-                  <div class="analysis-funding-result-icon">
-                    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
-                  </div>
-
-                  <div>
-                    <span id="analysisFundingResultLabel">
-                      Retirement Funding Position
-                    </span>
-
-                    <strong id="analysisFundingResultAmount"> — </strong>
-
-                    <p id="analysisFundingResultMessage">
-                      Complete the retirement goal and projection assumptions.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="analysis-key-findings">
-                  <div class="analysis-key-findings-heading">
-                    <div>
-                      <h4>Key Findings</h4>
-
-                      <p>What is driving the current retirement position.</p>
-                    </div>
-                  </div>
-
-                  <ul id="analysisKeyFindingsList"></ul>
-                </div>
-
-                <p class="analysis-method-note">
-                  This first analysis compares projected withdrawable assets
-                  directly with the Cost of Wants capital target. OA, RA and MA
-                  remain separately identified. Recorded policy income is shown
-                  as recurring income and is not yet converted into a capital
-                  equivalent.
-                </p>
               </section>
             </div>
 
