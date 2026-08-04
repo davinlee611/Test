@@ -1901,6 +1901,277 @@
               </div>
             </div>
 
+            <!-- ========================================
+     YOUR PATH — TEMPORARY PREVIEW
+========================================= -->
+            <section
+              class="analysis-path-preview"
+              aria-labelledby="analysisPathPreviewTitle"
+            >
+              <div class="analysis-path-preview-header">
+                <div>
+                  <div class="analysis-path-preview-title-row">
+                    <h3 id="analysisPathPreviewTitle">Your Path</h3>
+
+                    <span class="analysis-path-preview-badge">
+                      Simplified Preview
+                    </span>
+                  </div>
+
+                  <p>
+                    See the lifestyle you want, what you currently have, and the
+                    next step towards reaching it.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Goal and current position -->
+              <div class="analysis-path-overview-grid">
+                <!-- Your Goal -->
+                <article class="analysis-path-card">
+                  <div class="analysis-path-card-heading">
+                    <span class="analysis-path-step">1</span>
+
+                    <div>
+                      <h4>Your Goal</h4>
+
+                      <p>
+                        The retirement lifestyle selected on the Cost of Wants
+                        page.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="analysis-path-metric-list">
+                    <div class="analysis-path-metric">
+                      <div>
+                        <span>FYBC Age</span>
+                        <small
+                          >When you would like work to become optional</small
+                        >
+                      </div>
+
+                      <strong id="analysisPathFybcAge">—</strong>
+                    </div>
+
+                    <div class="analysis-path-metric">
+                      <div>
+                        <span>Time Available</span>
+                        <small>Time remaining to prepare</small>
+                      </div>
+
+                      <strong id="analysisPathYearsRemaining">—</strong>
+                    </div>
+
+                    <div class="analysis-path-metric">
+                      <div>
+                        <span>Desired Monthly Lifestyle</span>
+                        <small>In today’s value</small>
+                      </div>
+
+                      <strong id="analysisPathMonthlyLifestyle">$0</strong>
+                    </div>
+
+                    <div
+                      class="analysis-path-metric analysis-path-metric--highlight"
+                    >
+                      <div>
+                        <span>Retirement Capital Target</span>
+                        <small>
+                          Before applying CPF, existing assets or policy income
+                        </small>
+                      </div>
+
+                      <strong id="analysisPathCapitalTarget">$0</strong>
+                    </div>
+                  </div>
+                </article>
+
+                <!-- Starting position -->
+                <article class="analysis-path-card">
+                  <div class="analysis-path-card-heading">
+                    <span class="analysis-path-step">2</span>
+
+                    <div>
+                      <h4>Your Starting Position</h4>
+
+                      <p>
+                        A simple snapshot based on the information entered so
+                        far.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="analysis-path-metric-list">
+                    <div class="analysis-path-metric">
+                      <div>
+                        <span>Current Withdrawable Assets</span>
+                        <small>
+                          Cash, fixed deposits, investments and other liquid
+                          assets
+                        </small>
+                      </div>
+
+                      <strong id="analysisPathCurrentAssets">$0</strong>
+                    </div>
+
+                    <div class="analysis-path-metric">
+                      <div>
+                        <span>Current Monthly Amount Available</span>
+                        <small>
+                          Current income less expenses and commitments
+                        </small>
+                      </div>
+
+                      <strong id="analysisPathAffordableAmount">$0</strong>
+                    </div>
+
+                    <div class="analysis-path-metric">
+                      <div>
+                        <span>CPF and Policy Support</span>
+                        <small>
+                          Projected in the detailed sections below
+                        </small>
+                      </div>
+
+                      <strong class="analysis-path-pending-value">
+                        Calculated below
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div
+                    class="analysis-path-status"
+                    id="analysisPathCurrentStatus"
+                  >
+                    Complete the planning inputs to check your position.
+                  </div>
+                </article>
+              </div>
+
+              <!-- Suggested plan -->
+              <article class="analysis-path-plan">
+                <div class="analysis-path-card-heading">
+                  <span class="analysis-path-step">3</span>
+
+                  <div>
+                    <h4>Your Suggested Plan</h4>
+
+                    <p>
+                      The monthly action needed to work towards your retirement
+                      goal.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="analysis-path-plan-content">
+                  <div class="analysis-path-primary-result">
+                    <span>Suggested Monthly Investment</span>
+
+                    <strong id="analysisPathSuggestedInvestment">—</strong>
+
+                    <small>
+                      We will calculate this after selecting the
+                      investment-growth assumption.
+                    </small>
+                  </div>
+
+                  <div class="analysis-path-plan-comparison">
+                    <div>
+                      <span>Currently Available</span>
+                      <strong id="analysisPathPlanAffordableAmount">$0</strong>
+                    </div>
+
+                    <div>
+                      <span>Monthly Gap</span>
+                      <strong id="analysisPathMonthlyGap">—</strong>
+                    </div>
+
+                    <div>
+                      <span>Current Position</span>
+                      <strong id="analysisPathPlanStatus"
+                        >Pending calculation</strong
+                      >
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Ways to close the gap -->
+              <div class="analysis-path-actions">
+                <div class="analysis-path-actions-heading">
+                  <span class="analysis-path-step">4</span>
+
+                  <div>
+                    <h4>Ways to Close the Gap</h4>
+
+                    <p>Small changes can make the goal more achievable.</p>
+                  </div>
+                </div>
+
+                <div class="analysis-path-action-grid">
+                  <article class="analysis-path-action">
+                    <span class="analysis-path-action-icon" aria-hidden="true">
+                      $
+                    </span>
+
+                    <div>
+                      <strong>Put Aside More</strong>
+
+                      <p>
+                        Direct more of the current monthly surplus towards the
+                        goal.
+                      </p>
+                    </div>
+                  </article>
+
+                  <article class="analysis-path-action">
+                    <span class="analysis-path-action-icon" aria-hidden="true">
+                      +
+                    </span>
+
+                    <div>
+                      <strong>Increase Income</strong>
+
+                      <p>
+                        Future salary growth can improve the amount available to
+                        invest.
+                      </p>
+                    </div>
+                  </article>
+
+                  <article class="analysis-path-action">
+                    <span class="analysis-path-action-icon" aria-hidden="true">
+                      ↗
+                    </span>
+
+                    <div>
+                      <strong>Adjust the Goal</strong>
+
+                      <p>
+                        Compare a later FYBC age or a different monthly
+                        lifestyle.
+                      </p>
+                    </div>
+                  </article>
+                </div>
+              </div>
+
+              <!-- Optional details -->
+              <div class="analysis-path-details-notice">
+                <div>
+                  <strong>Want to see the detailed numbers?</strong>
+
+                  <p>
+                    The retirement summary, monthly cashflow and CPF projections
+                    remain available below.
+                  </p>
+                </div>
+
+                <span>Optional details ↓</span>
+              </div>
+            </section>
+
             <!-- Retirement Goal Summary -->
             <div class="analysis-section-surround">
               <section class="analysis-section-card">

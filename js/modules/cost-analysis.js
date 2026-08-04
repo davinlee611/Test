@@ -251,6 +251,56 @@ const remainingSurplusElement = document.getElementById(
   "analysisRemainingSurplus",
 );
 
+/* ========================================
+   YOUR PATH PREVIEW ELEMENTS
+======================================== */
+
+const pathPreviewElements = {
+  fybcAge: document.getElementById(
+    "analysisPathFybcAge",
+  ),
+
+  yearsRemaining: document.getElementById(
+    "analysisPathYearsRemaining",
+  ),
+
+  monthlyLifestyle: document.getElementById(
+    "analysisPathMonthlyLifestyle",
+  ),
+
+  capitalTarget: document.getElementById(
+    "analysisPathCapitalTarget",
+  ),
+
+  currentAssets: document.getElementById(
+    "analysisPathCurrentAssets",
+  ),
+
+  affordableAmount: document.getElementById(
+    "analysisPathAffordableAmount",
+  ),
+
+  currentStatus: document.getElementById(
+    "analysisPathCurrentStatus",
+  ),
+
+  planAffordableAmount: document.getElementById(
+    "analysisPathPlanAffordableAmount",
+  ),
+
+  suggestedInvestment: document.getElementById(
+    "analysisPathSuggestedInvestment",
+  ),
+
+  monthlyGap: document.getElementById(
+    "analysisPathMonthlyGap",
+  ),
+
+  planStatus: document.getElementById(
+    "analysisPathPlanStatus",
+  ),
+};
+
 const projectionBreakdownModal = document.getElementById(
   "projectionBreakdownModal",
 );
@@ -906,6 +956,8 @@ export function renderCostAnalysis() {
 
   renderCurrentMonthlyCashflow(currentCashflow);
 
+  renderYourPathPreview(currentCashflow);
+
   renderGoalFilter(getGoals());
 
   const selectedPeriod = getSelectedProjectionPeriod();
@@ -1059,6 +1111,161 @@ function renderRetirementGoalSummary() {
   setCurrency(monthlyIncomeAt65Element, summary.monthlyIncomeAt65);
 
   setCurrency(totalCapitalNeededElement, summary.grossCapitalRequired);
+}
+
+/* ========================================
+   YOUR PATH — SIMPLIFIED PREVIEW
+======================================== */
+
+function renderYourPathPreview(currentCashflow) {
+  const summary = getGrossRetirementGoalSummary();
+
+  const assets = getAssets();
+
+  const currentWithdrawableAssets =
+    calculateLiquidAssetTotal(
+      assets?.liquidAssets,
+    );
+
+  /*
+   * A negative current surplus is not treated as an
+   * affordable monthly investment amount.
+   */
+  const affordableMonthlyAmount = Math.max(
+    getFiniteNumber(
+      currentCashflow?.remainingSurplus,
+    ),
+    0,
+  );
+
+  setText(
+    pathPreviewElements.fybcAge,
+    summary.desiredFybcAge > 0
+      ? String(summary.desiredFybcAge)
+      : "—",
+  );
+
+  setText(
+    pathPreviewElements.yearsRemaining,
+    summary.isValid
+      ? `${summary.yearsRemaining} ${
+          summary.yearsRemaining === 1
+            ? "year"
+            : "years"
+        }`
+      : "—",
+  );
+
+  setCurrency(
+    pathPreviewElements.monthlyLifestyle,
+    summary.monthlyIncomeToday,
+  );
+
+  setCurrency(
+    pathPreviewElements.capitalTarget,
+    summary.grossCapitalRequired,
+  );
+
+  setCurrency(
+    pathPreviewElements.currentAssets,
+    currentWithdrawableAssets,
+  );
+
+  setCurrency(
+    pathPreviewElements.affordableAmount,
+    affordableMonthlyAmount,
+  );
+
+  setCurrency(
+    pathPreviewElements.planAffordableAmount,
+    affordableMonthlyAmount,
+  );
+
+  /*
+   * We deliberately do not calculate the suggested
+   * investment yet. It requires an agreed investment
+   * return assumption.
+   */
+  setText(
+    pathPreviewElements.suggestedInvestment,
+    "—",
+  );
+
+  setText(
+    pathPreviewElements.monthlyGap,
+    "—",
+  );
+
+  setText(
+    pathPreviewElements.planStatus,
+    "Pending calculation",
+  );
+
+  renderYourPathCurrentStatus({
+    summary,
+
+    remainingSurplus:
+      getFiniteNumber(
+        currentCashflow?.remainingSurplus,
+      ),
+  });
+}
+
+function renderYourPathCurrentStatus({
+  summary,
+  remainingSurplus,
+}) {
+  const statusElement =
+    pathPreviewElements.currentStatus;
+
+  if (!statusElement) {
+    return;
+  }
+
+  statusElement.classList.remove(
+    "is-positive",
+    "is-warning",
+    "is-incomplete",
+  );
+
+  if (!summary.isValid) {
+    statusElement.classList.add(
+      "is-incomplete",
+    );
+
+    setText(
+      statusElement,
+      "Complete the Cost of Wants inputs to create your retirement goal.",
+    );
+
+    return;
+  }
+
+  if (remainingSurplus > 0) {
+    statusElement.classList.add(
+      "is-positive",
+    );
+
+    setText(
+      statusElement,
+      `${formatCurrency(
+        remainingSurplus,
+      )} is currently available each month before future inflation or income growth.`,
+    );
+
+    return;
+  }
+
+  statusElement.classList.add(
+    "is-warning",
+  );
+
+  setText(
+    statusElement,
+    `Current outflows exceed income by ${formatCurrency(
+      Math.abs(remainingSurplus),
+    )} per month.`,
+  );
 }
 
 /* ========================================
