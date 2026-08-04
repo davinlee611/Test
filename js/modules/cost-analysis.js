@@ -274,6 +274,26 @@ const pathPreviewElements = {
     "analysisPathInflationAssumption",
   ),
 
+  methodologyLifestyleToday: document.getElementById(
+    "analysisPathMethodologyLifestyleToday",
+  ),
+
+  methodologyInflation: document.getElementById(
+    "analysisPathMethodologyInflation",
+  ),
+
+  methodologyFybcLabel: document.getElementById(
+    "analysisPathMethodologyFybcLabel",
+  ),
+
+  methodologyLifestyleAtFybc: document.getElementById(
+    "analysisPathMethodologyLifestyleAtFybc",
+  ),
+
+  methodologyPeriod: document.getElementById("analysisPathMethodologyPeriod"),
+
+  lifetimeSpending: document.getElementById("analysisPathLifetimeSpending"),
+
   currentAssets: document.getElementById("analysisPathCurrentAssets"),
 
   affordableAmount: document.getElementById("analysisPathAffordableAmount"),
@@ -529,7 +549,7 @@ export function resetCostAnalysis() {
 
       content,
 
-      expanded: true,
+      expanded: false,
     });
   });
 
@@ -1096,8 +1116,52 @@ function renderYourPathPreview(currentCashflow) {
   setText(
     pathPreviewElements.inflationAssumption,
     summary.isValid
-      ? `Assuming ${formatPercentage(summary.inflationRate)} annual inflation`
+      ? `Assuming ${getNonNegativeNumber(
+          summary.inflationRate,
+        )}% annual inflation`
       : "Adjusted for annual inflation",
+  );
+
+  setText(
+    pathPreviewElements.methodologyLifestyleToday,
+    summary.isValid
+      ? `${formatCurrency(summary.monthlyIncomeToday)}/mth`
+      : "$0/mth",
+  );
+
+  setText(
+    pathPreviewElements.methodologyInflation,
+    summary.isValid
+      ? `${getNonNegativeNumber(summary.inflationRate)}% p.a.`
+      : "—",
+  );
+
+  setText(
+    pathPreviewElements.methodologyFybcLabel,
+    summary.desiredFybcAge > 0
+      ? `Estimated Lifestyle at Age ${summary.desiredFybcAge}`
+      : "Estimated Lifestyle at FYBC",
+  );
+
+  setText(
+    pathPreviewElements.methodologyLifestyleAtFybc,
+    summary.isValid
+      ? `${formatCurrency(summary.monthlyIncomeAtFybc)}/mth`
+      : "$0/mth",
+  );
+
+  setText(
+    pathPreviewElements.methodologyPeriod,
+    summary.isValid
+      ? `From age ${summary.desiredFybcAge} through age ${
+          summary.plannedMortalityAge - 1
+        }`
+      : "From FYBC until the planned mortality age",
+  );
+
+  setCurrency(
+    pathPreviewElements.lifetimeSpending,
+    summary.grossCapitalRequired,
   );
 
   setCurrency(pathPreviewElements.currentAssets, currentWithdrawableAssets);

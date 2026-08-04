@@ -2002,6 +2002,96 @@
                       income.
                     </p>
                   </div>
+
+                  <details class="analysis-path-goal-methodology">
+                    <summary>
+                      <span>
+                        <i
+                          class="fa-regular fa-circle-question"
+                          aria-hidden="true"
+                        ></i>
+
+                        How is my retirement lifestyle estimated?
+                      </span>
+
+                      <i
+                        class="fa-solid fa-chevron-down analysis-path-methodology-chevron"
+                        aria-hidden="true"
+                      ></i>
+                    </summary>
+
+                    <div class="analysis-path-goal-methodology-content">
+                      <p>
+                        Your desired monthly lifestyle is adjusted for inflation
+                        from your current age until your selected FYBC age.
+                      </p>
+
+                      <div class="analysis-path-methodology-flow">
+                        <div class="analysis-path-methodology-step">
+                          <span>Desired Lifestyle Today</span>
+
+                          <strong id="analysisPathMethodologyLifestyleToday">
+                            $0/mth
+                          </strong>
+                        </div>
+
+                        <i
+                          class="fa-solid fa-arrow-right"
+                          aria-hidden="true"
+                        ></i>
+
+                        <div class="analysis-path-methodology-step">
+                          <span>Annual Inflation</span>
+
+                          <strong id="analysisPathMethodologyInflation">
+                            0% p.a.
+                          </strong>
+                        </div>
+
+                        <i
+                          class="fa-solid fa-arrow-right"
+                          aria-hidden="true"
+                        ></i>
+
+                        <div class="analysis-path-methodology-step">
+                          <span id="analysisPathMethodologyFybcLabel">
+                            Estimated Lifestyle at FYBC
+                          </span>
+
+                          <strong id="analysisPathMethodologyLifestyleAtFybc">
+                            $0/mth
+                          </strong>
+                        </div>
+                      </div>
+
+                      <div class="analysis-path-lifetime-spending">
+                        <div>
+                          <span>Estimated Total Retirement Spending</span>
+
+                          <small id="analysisPathMethodologyPeriod">
+                            From FYBC until the planned mortality age
+                          </small>
+                        </div>
+
+                        <strong id="analysisPathLifetimeSpending">$0</strong>
+                      </div>
+
+                      <div class="analysis-path-methodology-notice">
+                        <i
+                          class="fa-solid fa-circle-info"
+                          aria-hidden="true"
+                        ></i>
+
+                        <p>
+                          This is the total of all inflation-adjusted lifestyle
+                          spending throughout retirement. It is not the amount
+                          you need to hold in cash at FYBC because your
+                          remaining capital may continue earning investment
+                          returns.
+                        </p>
+                      </div>
+                    </div>
+                  </details>
                 </article>
 
                 <!-- Starting position -->
@@ -2394,6 +2484,23 @@
                     </p>
                   </div>
 
+                  <button
+                    class="analysis-section-collapse-button"
+                    type="button"
+                    data-analysis-collapse-target="analysisCashflowProjectionContent"
+                    aria-expanded="false"
+                    aria-controls="analysisCashflowProjectionContent"
+                  >
+                    <span>Show Section</span>
+
+                    <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <div
+                  id="analysisCashflowProjectionContent"
+                  class="analysis-collapsible-content"
+                  hidden
+                >
                   <fieldset class="analysis-projection-period">
                     <legend>Projection Period</legend>
 
@@ -2450,22 +2557,7 @@
                       </label>
                     </div>
                   </fieldset>
-                  <button
-                    class="analysis-section-collapse-button"
-                    type="button"
-                    data-analysis-collapse-target="analysisCashflowProjectionContent"
-                    aria-expanded="true"
-                    aria-controls="analysisCashflowProjectionContent"
-                  >
-                    <span>Hide Section</span>
 
-                    <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
-                  </button>
-                </div>
-                <div
-                  id="analysisCashflowProjectionContent"
-                  class="analysis-collapsible-content"
-                >
                   <div class="analysis-projection-note">
                     <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
 
@@ -2506,48 +2598,22 @@
                     ></div>
                   </div>
 
-                  <details class="analysis-projection-table-details">
-                    <summary>
-                      <span class="analysis-projection-table-summary-copy">
-                        <i class="fa-solid fa-table" aria-hidden="true"></i>
+                  <div class="analysis-projection-table-wrap">
+                    <table
+                      class="analysis-projection-table analysis-projection-table--cashflow"
+                    >
+                      <thead>
+                        <tr>
+                          <th id="analysisCashflowPeriodHeading">Month</th>
+                          <th>Start Balance</th>
+                          <th>Net Movement</th>
+                          <th>End Balance</th>
+                        </tr>
+                      </thead>
 
-                        <span>
-                          <strong>View Cashflow Projection Table</strong>
-
-                          <small>
-                            See the detailed balance movement for each
-                            projection period.
-                          </small>
-                        </span>
-                      </span>
-
-                      <i
-                        class="fa-solid fa-chevron-down analysis-projection-table-chevron"
-                        aria-hidden="true"
-                      ></i>
-                    </summary>
-
-                    <div class="analysis-projection-table-content">
-                      <div class="analysis-projection-table-wrap">
-                        <table
-                          class="analysis-projection-table analysis-projection-table--cashflow"
-                        >
-                          <thead>
-                            <tr>
-                              <th id="analysisCashflowPeriodHeading">Month</th>
-                              <th>Start Balance</th>
-                              <th>Net Movement</th>
-                              <th>End Balance</th>
-                            </tr>
-                          </thead>
-
-                          <tbody
-                            id="analysisCashflowProjectionTableBody"
-                          ></tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </details>
+                      <tbody id="analysisCashflowProjectionTableBody"></tbody>
+                    </table>
+                  </div>
                 </div>
               </section>
 
@@ -2575,17 +2641,18 @@
                     class="analysis-section-collapse-button"
                     type="button"
                     data-analysis-collapse-target="analysisCpfProjectionContent"
-                    aria-expanded="true"
+                    aria-expanded="false"
                     aria-controls="analysisCpfProjectionContent"
                   >
-                    <span>Hide Section</span>
+                    <span>Show Section</span>
 
-                    <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+                    <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
                   </button>
                 </div>
                 <div
                   id="analysisCpfProjectionContent"
                   class="analysis-collapsible-content"
+                  hidden
                 >
                   <div class="analysis-projection-note">
                     <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
@@ -2878,51 +2945,27 @@
                     </div>
                   </details>
 
-                  <details class="analysis-projection-table-details">
-                    <summary>
-                      <span class="analysis-projection-table-summary-copy">
-                        <i class="fa-solid fa-table" aria-hidden="true"></i>
+                  <div class="analysis-projection-table-wrap">
+                    <table
+                      class="analysis-projection-table analysis-projection-table--cpf"
+                    >
+                      <thead>
+                        <tr>
+                          <th id="analysisCpfPeriodHeading">Month</th>
+                          <th>CPF Inflow</th>
+                          <th>CPF Outflow</th>
+                          <th>CPF Interest Credited</th>
+                          <th>Net CPF Flow</th>
+                          <th>OA Balance</th>
+                          <th>Retirement Balance</th>
+                          <th>MA Balance</th>
+                          <th>Applicable BHS That Year</th>
+                        </tr>
+                      </thead>
 
-                        <span>
-                          <strong>View CPF Projection Table</strong>
-
-                          <small>
-                            See the projected movements and balances for each
-                            CPF account.
-                          </small>
-                        </span>
-                      </span>
-
-                      <i
-                        class="fa-solid fa-chevron-down analysis-projection-table-chevron"
-                        aria-hidden="true"
-                      ></i>
-                    </summary>
-
-                    <div class="analysis-projection-table-content">
-                      <div class="analysis-projection-table-wrap">
-                        <table
-                          class="analysis-projection-table analysis-projection-table--cpf"
-                        >
-                          <thead>
-                            <tr>
-                              <th id="analysisCpfPeriodHeading">Month</th>
-                              <th>CPF Inflow</th>
-                              <th>CPF Outflow</th>
-                              <th>CPF Interest Credited</th>
-                              <th>Net CPF Flow</th>
-                              <th>OA Balance</th>
-                              <th>Retirement Balance</th>
-                              <th>MA Balance</th>
-                              <th>Applicable BHS That Year</th>
-                            </tr>
-                          </thead>
-
-                          <tbody id="analysisCpfProjectionTableBody"></tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </details>
+                      <tbody id="analysisCpfProjectionTableBody"></tbody>
+                    </table>
+                  </div>
                 </div>
               </section>
             </div>
