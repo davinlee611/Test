@@ -1936,28 +1936,26 @@
                       <h4>Your Goal</h4>
 
                       <p>
-                        The retirement lifestyle selected on the Cost of Wants
+                        The lifestyle and timeline selected on the Cost of Wants
                         page.
                       </p>
                     </div>
                   </div>
 
+                  <div class="analysis-path-goal-statement">
+                    <span>Make work optional at age</span>
+
+                    <strong id="analysisPathFybcAge">—</strong>
+                  </div>
+
                   <div class="analysis-path-metric-list">
                     <div class="analysis-path-metric">
                       <div>
-                        <span>FYBC Age</span>
-                        <small
-                          >When you would like work to become optional</small
-                        >
-                      </div>
+                        <span>Time to FYBC</span>
 
-                      <strong id="analysisPathFybcAge">—</strong>
-                    </div>
-
-                    <div class="analysis-path-metric">
-                      <div>
-                        <span>Time Available</span>
-                        <small>Time remaining to prepare</small>
+                        <small>
+                          How long you have to prepare for the goal
+                        </small>
                       </div>
 
                       <strong id="analysisPathYearsRemaining">—</strong>
@@ -1965,8 +1963,11 @@
 
                     <div class="analysis-path-metric">
                       <div>
-                        <span>Desired Monthly Lifestyle</span>
-                        <small>In today’s value</small>
+                        <span>Desired Monthly Lifestyle Today</span>
+
+                        <small>
+                          The monthly lifestyle you selected in today’s value
+                        </small>
                       </div>
 
                       <strong id="analysisPathMonthlyLifestyle">$0</strong>
@@ -1976,14 +1977,30 @@
                       class="analysis-path-metric analysis-path-metric--highlight"
                     >
                       <div>
-                        <span>Retirement Capital Target</span>
-                        <small>
-                          Before applying CPF, existing assets or policy income
+                        <span id="analysisPathLifestyleAtFybcLabel">
+                          Estimated Monthly Lifestyle at FYBC
+                        </span>
+
+                        <small id="analysisPathInflationAssumption">
+                          Adjusted for annual inflation
                         </small>
                       </div>
 
-                      <strong id="analysisPathCapitalTarget">$0</strong>
+                      <strong id="analysisPathMonthlyLifestyleAtFybc"
+                        >$0</strong
+                      >
                     </div>
+                  </div>
+
+                  <div class="analysis-path-goal-explanation">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+
+                    <p>
+                      This is the estimated monthly income needed when you reach
+                      your FYBC age. Your funding plan will be calculated after
+                      considering projected assets, CPF and other retirement
+                      income.
+                    </p>
                   </div>
                 </article>
 
@@ -2489,22 +2506,48 @@
                     ></div>
                   </div>
 
-                  <div class="analysis-projection-table-wrap">
-                    <table
-                      class="analysis-projection-table analysis-projection-table--cashflow"
-                    >
-                      <thead>
-                        <tr>
-                          <th id="analysisCashflowPeriodHeading">Month</th>
-                          <th>Start Balance</th>
-                          <th>Net Movement</th>
-                          <th>End Balance</th>
-                        </tr>
-                      </thead>
+                  <details class="analysis-projection-table-details">
+                    <summary>
+                      <span class="analysis-projection-table-summary-copy">
+                        <i class="fa-solid fa-table" aria-hidden="true"></i>
 
-                      <tbody id="analysisCashflowProjectionTableBody"></tbody>
-                    </table>
-                  </div>
+                        <span>
+                          <strong>View Cashflow Projection Table</strong>
+
+                          <small>
+                            See the detailed balance movement for each
+                            projection period.
+                          </small>
+                        </span>
+                      </span>
+
+                      <i
+                        class="fa-solid fa-chevron-down analysis-projection-table-chevron"
+                        aria-hidden="true"
+                      ></i>
+                    </summary>
+
+                    <div class="analysis-projection-table-content">
+                      <div class="analysis-projection-table-wrap">
+                        <table
+                          class="analysis-projection-table analysis-projection-table--cashflow"
+                        >
+                          <thead>
+                            <tr>
+                              <th id="analysisCashflowPeriodHeading">Month</th>
+                              <th>Start Balance</th>
+                              <th>Net Movement</th>
+                              <th>End Balance</th>
+                            </tr>
+                          </thead>
+
+                          <tbody
+                            id="analysisCashflowProjectionTableBody"
+                          ></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </details>
                 </div>
               </section>
 
@@ -2835,27 +2878,51 @@
                     </div>
                   </details>
 
-                  <div class="analysis-projection-table-wrap">
-                    <table
-                      class="analysis-projection-table analysis-projection-table--cpf"
-                    >
-                      <thead>
-                        <tr>
-                          <th id="analysisCpfPeriodHeading">Month</th>
-                          <th>CPF Inflow</th>
-                          <th>CPF Outflow</th>
-                          <th>CPF Interest Credited</th>
-                          <th>Net CPF Flow</th>
-                          <th>OA Balance</th>
-                          <th>Retirement Balance</th>
-                          <th>MA Balance</th>
-                          <th>Applicable BHS That Year</th>
-                        </tr>
-                      </thead>
+                  <details class="analysis-projection-table-details">
+                    <summary>
+                      <span class="analysis-projection-table-summary-copy">
+                        <i class="fa-solid fa-table" aria-hidden="true"></i>
 
-                      <tbody id="analysisCpfProjectionTableBody"></tbody>
-                    </table>
-                  </div>
+                        <span>
+                          <strong>View CPF Projection Table</strong>
+
+                          <small>
+                            See the projected movements and balances for each
+                            CPF account.
+                          </small>
+                        </span>
+                      </span>
+
+                      <i
+                        class="fa-solid fa-chevron-down analysis-projection-table-chevron"
+                        aria-hidden="true"
+                      ></i>
+                    </summary>
+
+                    <div class="analysis-projection-table-content">
+                      <div class="analysis-projection-table-wrap">
+                        <table
+                          class="analysis-projection-table analysis-projection-table--cpf"
+                        >
+                          <thead>
+                            <tr>
+                              <th id="analysisCpfPeriodHeading">Month</th>
+                              <th>CPF Inflow</th>
+                              <th>CPF Outflow</th>
+                              <th>CPF Interest Credited</th>
+                              <th>Net CPF Flow</th>
+                              <th>OA Balance</th>
+                              <th>Retirement Balance</th>
+                              <th>MA Balance</th>
+                              <th>Applicable BHS That Year</th>
+                            </tr>
+                          </thead>
+
+                          <tbody id="analysisCpfProjectionTableBody"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </details>
                 </div>
               </section>
             </div>

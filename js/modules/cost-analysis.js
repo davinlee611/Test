@@ -256,33 +256,29 @@ const remainingSurplusElement = document.getElementById(
 ======================================== */
 
 const pathPreviewElements = {
-  fybcAge: document.getElementById(
-    "analysisPathFybcAge",
+  fybcAge: document.getElementById("analysisPathFybcAge"),
+
+  yearsRemaining: document.getElementById("analysisPathYearsRemaining"),
+
+  monthlyLifestyle: document.getElementById("analysisPathMonthlyLifestyle"),
+
+  monthlyLifestyleAtFybc: document.getElementById(
+    "analysisPathMonthlyLifestyleAtFybc",
   ),
 
-  yearsRemaining: document.getElementById(
-    "analysisPathYearsRemaining",
+  lifestyleAtFybcLabel: document.getElementById(
+    "analysisPathLifestyleAtFybcLabel",
   ),
 
-  monthlyLifestyle: document.getElementById(
-    "analysisPathMonthlyLifestyle",
+  inflationAssumption: document.getElementById(
+    "analysisPathInflationAssumption",
   ),
 
-  capitalTarget: document.getElementById(
-    "analysisPathCapitalTarget",
-  ),
+  currentAssets: document.getElementById("analysisPathCurrentAssets"),
 
-  currentAssets: document.getElementById(
-    "analysisPathCurrentAssets",
-  ),
+  affordableAmount: document.getElementById("analysisPathAffordableAmount"),
 
-  affordableAmount: document.getElementById(
-    "analysisPathAffordableAmount",
-  ),
-
-  currentStatus: document.getElementById(
-    "analysisPathCurrentStatus",
-  ),
+  currentStatus: document.getElementById("analysisPathCurrentStatus"),
 
   planAffordableAmount: document.getElementById(
     "analysisPathPlanAffordableAmount",
@@ -292,13 +288,9 @@ const pathPreviewElements = {
     "analysisPathSuggestedInvestment",
   ),
 
-  monthlyGap: document.getElementById(
-    "analysisPathMonthlyGap",
-  ),
+  monthlyGap: document.getElementById("analysisPathMonthlyGap"),
 
-  planStatus: document.getElementById(
-    "analysisPathPlanStatus",
-  ),
+  planStatus: document.getElementById("analysisPathPlanStatus"),
 };
 
 const projectionBreakdownModal = document.getElementById(
@@ -558,20 +550,14 @@ function syncExpenseInflationDefault() {
    RETIREMENT STRATEGY
 ======================================== */
 
-function getDefaultRetirementStrategy(
-  employmentStatus,
-) {
+function getDefaultRetirementStrategy(employmentStatus) {
   return employmentStatus === "self_employed"
     ? RETIREMENT_STRATEGIES.NO_TOP_UP
     : RETIREMENT_STRATEGIES.CURRENT_PATH;
 }
 
-function normaliseRetirementStrategy(
-  strategy,
-  employmentStatus,
-) {
-  const isSelfEmployed =
-    employmentStatus === "self_employed";
+function normaliseRetirementStrategy(strategy, employmentStatus) {
+  const isSelfEmployed = employmentStatus === "self_employed";
 
   const validStrategies = [
     RETIREMENT_STRATEGIES.CURRENT_PATH,
@@ -582,24 +568,14 @@ function normaliseRetirementStrategy(
   ];
 
   if (!validStrategies.includes(strategy)) {
-    return getDefaultRetirementStrategy(
-      employmentStatus,
-    );
+    return getDefaultRetirementStrategy(employmentStatus);
   }
 
-  if (
-    strategy ===
-      RETIREMENT_STRATEGIES.NO_TOP_UP &&
-    !isSelfEmployed
-  ) {
+  if (strategy === RETIREMENT_STRATEGIES.NO_TOP_UP && !isSelfEmployed) {
     return RETIREMENT_STRATEGIES.CURRENT_PATH;
   }
 
-  if (
-    strategy ===
-      RETIREMENT_STRATEGIES.CURRENT_PATH &&
-    isSelfEmployed
-  ) {
+  if (strategy === RETIREMENT_STRATEGIES.CURRENT_PATH && isSelfEmployed) {
     return RETIREMENT_STRATEGIES.NO_TOP_UP;
   }
 
@@ -800,35 +776,22 @@ function renderRetirementStrategySelection({
 function renderRetirementStrategyResult(rows) {
   const topUpRow = rows.find(function (row) {
     return (
-      getNonNegativeNumber(
-        row.retirementStrategyCashTopUp,
-      ) > 0 ||
+      getNonNegativeNumber(row.retirementStrategyCashTopUp) > 0 ||
       row.retirementStrategyAppliedThisMonth
     );
   });
 
-  const cashTopUp = getNonNegativeNumber(
-    topUpRow?.retirementStrategyCashTopUp,
-  );
+  const cashTopUp = getNonNegativeNumber(topUpRow?.retirementStrategyCashTopUp);
 
   setText(
     retirementStrategyCashTopUpElement,
-    strategyUsesCashTopUp(
-      selectedRetirementStrategy,
-    )
+    strategyUsesCashTopUp(selectedRetirementStrategy)
       ? formatCurrency(cashTopUp)
       : "$0",
   );
 
-  if (
-    !strategyUsesCashTopUp(
-      selectedRetirementStrategy,
-    )
-  ) {
-    setText(
-      retirementStrategyFundingResultElement,
-      "No forced cash top-up",
-    );
+  if (!strategyUsesCashTopUp(selectedRetirementStrategy)) {
+    setText(retirementStrategyFundingResultElement, "No forced cash top-up");
 
     return;
   }
@@ -842,18 +805,11 @@ function renderRetirementStrategyResult(rows) {
     return;
   }
 
-  const target = getNonNegativeNumber(
-    topUpRow.retirementStrategyTarget,
-  );
+  const target = getNonNegativeNumber(topUpRow.retirementStrategyTarget);
 
-  const funded = getNonNegativeNumber(
-    topUpRow.retirementSumSetAside,
-  );
+  const funded = getNonNegativeNumber(topUpRow.retirementSumSetAside);
 
-  const shortfall = Math.max(
-    target - funded,
-    0,
-  );
+  const shortfall = Math.max(target - funded, 0);
 
   setText(
     retirementStrategyFundingResultElement,
@@ -867,71 +823,45 @@ function renderRetirementStrategyResult(rows) {
    COLLAPSIBLE ANALYSIS SECTIONS
 ======================================== */
 
-function handleAnalysisSectionCollapse(
-  event,
-) {
+function handleAnalysisSectionCollapse(event) {
   const button = event.currentTarget;
 
-  const targetId =
-    button.dataset
-      .analysisCollapseTarget;
+  const targetId = button.dataset.analysisCollapseTarget;
 
-  const content =
-    document.getElementById(targetId);
+  const content = document.getElementById(targetId);
 
   if (!content) {
     return;
   }
 
-  const isCurrentlyExpanded =
-    button.getAttribute(
-      "aria-expanded",
-    ) === "true";
+  const isCurrentlyExpanded = button.getAttribute("aria-expanded") === "true";
 
   setAnalysisSectionExpanded({
     button,
 
     content,
 
-    expanded:
-      !isCurrentlyExpanded,
+    expanded: !isCurrentlyExpanded,
   });
 }
 
-function setAnalysisSectionExpanded({
-  button,
-  content,
-  expanded,
-}) {
-  button.setAttribute(
-    "aria-expanded",
-    String(expanded),
-  );
+function setAnalysisSectionExpanded({ button, content, expanded }) {
+  button.setAttribute("aria-expanded", String(expanded));
 
   content.hidden = !expanded;
 
-  const label =
-    button.querySelector("span");
+  const label = button.querySelector("span");
 
-  const icon =
-    button.querySelector("i");
+  const icon = button.querySelector("i");
 
   if (label) {
-    label.textContent = expanded
-      ? "Hide Section"
-      : "Show Section";
+    label.textContent = expanded ? "Hide Section" : "Show Section";
   }
 
   if (icon) {
-    icon.classList.toggle(
-      "fa-chevron-up",
-      expanded,
-    );
+    icon.classList.toggle("fa-chevron-up", expanded);
 
-    icon.classList.toggle(
-      "fa-chevron-down",
-      !expanded,
-    );
+    icon.classList.toggle("fa-chevron-down", !expanded);
   }
 }
 
@@ -1122,59 +1052,57 @@ function renderYourPathPreview(currentCashflow) {
 
   const assets = getAssets();
 
-  const currentWithdrawableAssets =
-    calculateLiquidAssetTotal(
-      assets?.liquidAssets,
-    );
+  const currentWithdrawableAssets = calculateLiquidAssetTotal(
+    assets?.liquidAssets,
+  );
 
   /*
    * A negative current surplus is not treated as an
    * affordable monthly investment amount.
    */
   const affordableMonthlyAmount = Math.max(
-    getFiniteNumber(
-      currentCashflow?.remainingSurplus,
-    ),
+    getFiniteNumber(currentCashflow?.remainingSurplus),
     0,
   );
 
   setText(
     pathPreviewElements.fybcAge,
-    summary.desiredFybcAge > 0
-      ? String(summary.desiredFybcAge)
-      : "—",
+    summary.desiredFybcAge > 0 ? String(summary.desiredFybcAge) : "—",
   );
 
   setText(
     pathPreviewElements.yearsRemaining,
     summary.isValid
       ? `${summary.yearsRemaining} ${
-          summary.yearsRemaining === 1
-            ? "year"
-            : "years"
+          summary.yearsRemaining === 1 ? "year" : "years"
         }`
       : "—",
   );
 
-  setCurrency(
-    pathPreviewElements.monthlyLifestyle,
-    summary.monthlyIncomeToday,
-  );
+  setCurrency(pathPreviewElements.monthlyLifestyle, summary.monthlyIncomeToday);
 
   setCurrency(
-    pathPreviewElements.capitalTarget,
-    summary.grossCapitalRequired,
+    pathPreviewElements.monthlyLifestyleAtFybc,
+    summary.monthlyIncomeAtFybc,
   );
 
-  setCurrency(
-    pathPreviewElements.currentAssets,
-    currentWithdrawableAssets,
+  setText(
+    pathPreviewElements.lifestyleAtFybcLabel,
+    summary.desiredFybcAge > 0
+      ? `Estimated Monthly Lifestyle at Age ${summary.desiredFybcAge}`
+      : "Estimated Monthly Lifestyle at FYBC",
   );
 
-  setCurrency(
-    pathPreviewElements.affordableAmount,
-    affordableMonthlyAmount,
+  setText(
+    pathPreviewElements.inflationAssumption,
+    summary.isValid
+      ? `Assuming ${formatPercentage(summary.inflationRate)} annual inflation`
+      : "Adjusted for annual inflation",
   );
+
+  setCurrency(pathPreviewElements.currentAssets, currentWithdrawableAssets);
+
+  setCurrency(pathPreviewElements.affordableAmount, affordableMonthlyAmount);
 
   setCurrency(
     pathPreviewElements.planAffordableAmount,
@@ -1186,52 +1114,30 @@ function renderYourPathPreview(currentCashflow) {
    * investment yet. It requires an agreed investment
    * return assumption.
    */
-  setText(
-    pathPreviewElements.suggestedInvestment,
-    "—",
-  );
+  setText(pathPreviewElements.suggestedInvestment, "—");
 
-  setText(
-    pathPreviewElements.monthlyGap,
-    "—",
-  );
+  setText(pathPreviewElements.monthlyGap, "—");
 
-  setText(
-    pathPreviewElements.planStatus,
-    "Pending calculation",
-  );
+  setText(pathPreviewElements.planStatus, "Pending calculation");
 
   renderYourPathCurrentStatus({
     summary,
 
-    remainingSurplus:
-      getFiniteNumber(
-        currentCashflow?.remainingSurplus,
-      ),
+    remainingSurplus: getFiniteNumber(currentCashflow?.remainingSurplus),
   });
 }
 
-function renderYourPathCurrentStatus({
-  summary,
-  remainingSurplus,
-}) {
-  const statusElement =
-    pathPreviewElements.currentStatus;
+function renderYourPathCurrentStatus({ summary, remainingSurplus }) {
+  const statusElement = pathPreviewElements.currentStatus;
 
   if (!statusElement) {
     return;
   }
 
-  statusElement.classList.remove(
-    "is-positive",
-    "is-warning",
-    "is-incomplete",
-  );
+  statusElement.classList.remove("is-positive", "is-warning", "is-incomplete");
 
   if (!summary.isValid) {
-    statusElement.classList.add(
-      "is-incomplete",
-    );
+    statusElement.classList.add("is-incomplete");
 
     setText(
       statusElement,
@@ -1242,9 +1148,7 @@ function renderYourPathCurrentStatus({
   }
 
   if (remainingSurplus > 0) {
-    statusElement.classList.add(
-      "is-positive",
-    );
+    statusElement.classList.add("is-positive");
 
     setText(
       statusElement,
@@ -1256,9 +1160,7 @@ function renderYourPathCurrentStatus({
     return;
   }
 
-  statusElement.classList.add(
-    "is-warning",
-  );
+  statusElement.classList.add("is-warning");
 
   setText(
     statusElement,
@@ -1627,123 +1529,65 @@ function renderIncompleteRetirementPositionAnalysis(
   retirementAnalysisElements.keyFindingsList?.replaceChildren();
 }
 
-function getRetirementPolicyIncomeForRow(
-  row,
-) {
-  return (
-    row?.policyCashInflowItems || []
-  ).reduce(function (total, item) {
-    if (
-      item.policyType !== "retirement"
-    ) {
+function getRetirementPolicyIncomeForRow(row) {
+  return (row?.policyCashInflowItems || []).reduce(function (total, item) {
+    if (item.policyType !== "retirement") {
       return total;
     }
 
-    return (
-      total +
-      getNonNegativeNumber(
-        item.amount,
-      )
-    );
+    return total + getNonNegativeNumber(item.amount);
   }, 0);
 }
 
-function setAnalysisComparisonValue(
-  element,
-  value,
-) {
-  setText(
-    element,
-    formatCurrency(value),
-  );
+function setAnalysisComparisonValue(element, value) {
+  setText(element, formatCurrency(value));
 
-  element?.classList.remove(
-    "is-positive",
-    "is-negative",
-  );
+  element?.classList.remove("is-positive", "is-negative");
 }
 
-function setAnalysisGapValue(
-  element,
-  value,
-) {
-  const safeValue =
-    getNonNegativeNumber(value);
+function setAnalysisGapValue(element, value) {
+  const safeValue = getNonNegativeNumber(value);
 
-  setText(
-    element,
-    formatCurrency(safeValue),
-  );
+  setText(element, formatCurrency(safeValue));
 
-  element?.classList.toggle(
-    "is-negative",
-    safeValue > 0,
-  );
+  element?.classList.toggle("is-negative", safeValue > 0);
 
-  element?.classList.toggle(
-    "is-positive",
-    safeValue <= 0,
-  );
+  element?.classList.toggle("is-positive", safeValue <= 0);
 }
 
-function renderFundingResult({
-  isOnTrack,
-  capitalDifference,
-  desiredFybcAge,
-}) {
-  const resultElement =
-    retirementAnalysisElements
-      .fundingResult;
+function renderFundingResult({ isOnTrack, capitalDifference, desiredFybcAge }) {
+  const resultElement = retirementAnalysisElements.fundingResult;
 
-  resultElement?.classList.toggle(
+  resultElement?.classList.toggle("is-on-track", isOnTrack);
+
+  resultElement?.classList.toggle("is-shortfall", !isOnTrack);
+
+  retirementAnalysisElements.readinessBadge?.classList.toggle(
     "is-on-track",
     isOnTrack,
   );
 
-  resultElement?.classList.toggle(
+  retirementAnalysisElements.readinessBadge?.classList.toggle(
     "is-shortfall",
     !isOnTrack,
   );
 
-  retirementAnalysisElements
-    .readinessBadge
-    ?.classList.toggle(
-      "is-on-track",
-      isOnTrack,
-    );
-
-  retirementAnalysisElements
-    .readinessBadge
-    ?.classList.toggle(
-      "is-shortfall",
-      !isOnTrack,
-    );
-
   setText(
-    retirementAnalysisElements
-      .readinessBadge,
+    retirementAnalysisElements.readinessBadge,
 
-    isOnTrack
-      ? "Capital target met"
-      : "Capital shortfall projected",
+    isOnTrack ? "Capital target met" : "Capital shortfall projected",
   );
 
   setText(
-    retirementAnalysisElements
-      .fundingResultLabel,
+    retirementAnalysisElements.fundingResultLabel,
 
-    isOnTrack
-      ? "Projected Retirement Surplus"
-      : "Retirement Funding Shortfall",
+    isOnTrack ? "Projected Retirement Surplus" : "Retirement Funding Shortfall",
   );
 
   setText(
-    retirementAnalysisElements
-      .fundingResultAmount,
+    retirementAnalysisElements.fundingResultAmount,
 
-    formatCurrency(
-      Math.abs(capitalDifference),
-    ),
+    formatCurrency(Math.abs(capitalDifference)),
   );
 
   setText(
@@ -2055,14 +1899,11 @@ function renderGoalFilter(goals) {
   removeMissingGoalExclusions(goals);
 
   if (!Array.isArray(goals) || goals.length === 0) {
-    const emptyMessage =
-      document.createElement("p");
+    const emptyMessage = document.createElement("p");
 
-    emptyMessage.className =
-      "analysis-goal-filter-empty";
+    emptyMessage.className = "analysis-goal-filter-empty";
 
-    emptyMessage.textContent =
-      "No current goals have been added.";
+    emptyMessage.textContent = "No current goals have been added.";
 
     goalFilterOptions.append(emptyMessage);
 
@@ -2077,37 +1918,28 @@ function renderGoalFilter(goals) {
     selectAllGoalsButton.hidden = false;
   }
 
-  const fragment =
-    document.createDocumentFragment();
+  const fragment = document.createDocumentFragment();
 
   goals.forEach(function (goal, index) {
-    const goalId = getProjectionGoalId(
-      goal,
-      index,
-    );
+    const goalId = getProjectionGoalId(goal, index);
 
     const label = document.createElement("label");
 
-    label.className =
-      "analysis-goal-filter-option";
+    label.className = "analysis-goal-filter-option";
 
-    const checkbox =
-      document.createElement("input");
+    const checkbox = document.createElement("input");
 
     checkbox.type = "checkbox";
     checkbox.value = goalId;
-    checkbox.checked =
-      !excludedProjectionGoalIds.has(goalId);
+    checkbox.checked = !excludedProjectionGoalIds.has(goalId);
 
     const marker = document.createElement("span");
 
-    marker.className =
-      "analysis-goal-filter-checkbox";
+    marker.className = "analysis-goal-filter-checkbox";
 
     const details = document.createElement("span");
 
-    details.className =
-      "analysis-goal-filter-details";
+    details.className = "analysis-goal-filter-details";
 
     const name = document.createElement("strong");
 
@@ -2116,9 +1948,7 @@ function renderGoalFilter(goals) {
     const amount = document.createElement("small");
 
     amount.textContent = formatCurrency(
-      getNonNegativeNumber(
-        goal?.targetAmount,
-      ),
+      getNonNegativeNumber(goal?.targetAmount),
     );
 
     details.append(name, amount);
@@ -2132,22 +1962,16 @@ function renderGoalFilter(goals) {
 }
 
 function handleGoalFilterChange(event) {
-  const checkbox = event.target.closest(
-    'input[type="checkbox"]',
-  );
+  const checkbox = event.target.closest('input[type="checkbox"]');
 
   if (!checkbox) {
     return;
   }
 
   if (checkbox.checked) {
-    excludedProjectionGoalIds.delete(
-      checkbox.value,
-    );
+    excludedProjectionGoalIds.delete(checkbox.value);
   } else {
-    excludedProjectionGoalIds.add(
-      checkbox.value,
-    );
+    excludedProjectionGoalIds.add(checkbox.value);
   }
 
   renderCostAnalysis();
@@ -2162,37 +1986,23 @@ function handleSelectAllGoals() {
 function removeMissingGoalExclusions(goals) {
   const currentGoalIds = new Set(
     goals.map(function (goal, index) {
-      return getProjectionGoalId(
-        goal,
-        index,
-      );
+      return getProjectionGoalId(goal, index);
     }),
   );
 
-  excludedProjectionGoalIds.forEach(
-    function (goalId) {
-      if (!currentGoalIds.has(goalId)) {
-        excludedProjectionGoalIds.delete(
-          goalId,
-        );
-      }
-    },
-  );
+  excludedProjectionGoalIds.forEach(function (goalId) {
+    if (!currentGoalIds.has(goalId)) {
+      excludedProjectionGoalIds.delete(goalId);
+    }
+  });
 }
 
 function getProjectionGoalId(goal, index) {
-  return String(
-    goal?.id || `projection-goal-${index}`,
-  );
+  return String(goal?.id || `projection-goal-${index}`);
 }
 
-function isGoalIncludedInProjection(
-  goal,
-  index,
-) {
-  return !excludedProjectionGoalIds.has(
-    getProjectionGoalId(goal, index),
-  );
+function isGoalIncludedInProjection(goal, index) {
+  return !excludedProjectionGoalIds.has(getProjectionGoalId(goal, index));
 }
 
 /* ========================================
@@ -3113,14 +2923,11 @@ function isCpfLifeStartMonth({ dateOfBirth, projectionDate, cpfLifeStartAge }) {
 ======================================== */
 
 function getSelectedProjectionPeriod() {
-  const selectedInput = projectionPeriodInputs.find(
-    function (input) {
-      return input.checked;
-    },
-  );
+  const selectedInput = projectionPeriodInputs.find(function (input) {
+    return input.checked;
+  });
 
-  return selectedInput?.value ||
-    DEFAULT_PROJECTION_PERIOD;
+  return selectedInput?.value || DEFAULT_PROJECTION_PERIOD;
 }
 
 function getProjectionMonthCount(selectedPeriod, startingDate) {
@@ -3314,8 +3121,7 @@ function aggregateProjectionIntoAnnualRows(monthlyRows) {
 
 function sumProjectionValues(rows, propertyName) {
   return rows.reduce(function (total, row) {
-    return total +
-      getFiniteNumber(row[propertyName]);
+    return total + getFiniteNumber(row[propertyName]);
   }, 0);
 }
 
@@ -3538,55 +3344,34 @@ function calculateProjectedIncome({
    PROJECTION TABLES
 ======================================== */
 
-function renderProjectionPeriodLabels({
-  selectedPeriod,
-  usesAnnualRows,
-}) {
+function renderProjectionPeriodLabels({ selectedPeriod, usesAnnualRows }) {
   const periodDescription =
     selectedPeriod === "mortality"
       ? `To Planned Mortality Age ${getPlannedMortalityAge()}`
       : `${selectedPeriod}-Year Outlook`;
 
-  const rowDescription = usesAnnualRows
-    ? "Annual Rows"
-    : "Monthly Rows";
+  const rowDescription = usesAnnualRows ? "Annual Rows" : "Monthly Rows";
 
-  setText(
-    projectionPeriodLabel,
-    `${periodDescription} · ${rowDescription}`,
-  );
+  setText(projectionPeriodLabel, `${periodDescription} · ${rowDescription}`);
 
-  setText(
-    cashflowPeriodHeading,
-    usesAnnualRows ? "Projection Year" : "Month",
-  );
+  setText(cashflowPeriodHeading, usesAnnualRows ? "Projection Year" : "Month");
 
-  setText(
-    cpfPeriodHeading,
-    usesAnnualRows ? "Projection Year" : "Month",
-  );
+  setText(cpfPeriodHeading, usesAnnualRows ? "Projection Year" : "Month");
 }
 
-function renderCashflowProjectionTable({
-  rows,
-  usesAnnualRows,
-}) {
+function renderCashflowProjectionTable({ rows, usesAnnualRows }) {
   if (!cashflowProjectionTableBody) {
     return;
   }
 
   cashflowProjectionTableBody.replaceChildren();
 
-  const fragment =
-    document.createDocumentFragment();
+  const fragment = document.createDocumentFragment();
 
   rows.forEach(function (row, index) {
     const tableRow = document.createElement("tr");
 
-    if (
-      !usesAnnualRows &&
-      index % MONTHS_PER_YEAR === 0
-    ) {
+    if (!usesAnnualRows && index % MONTHS_PER_YEAR === 0) {
       tableRow.classList.add("is-year-start");
     }
 
@@ -3606,26 +3391,19 @@ function renderCashflowProjectionTable({
   cashflowProjectionTableBody.append(fragment);
 }
 
-function renderCpfProjectionTable({
-  rows,
-  usesAnnualRows,
-}) {
+function renderCpfProjectionTable({ rows, usesAnnualRows }) {
   if (!cpfProjectionTableBody) {
     return;
   }
 
   cpfProjectionTableBody.replaceChildren();
 
-  const fragment =
-    document.createDocumentFragment();
+  const fragment = document.createDocumentFragment();
 
   rows.forEach(function (row, index) {
     const tableRow = document.createElement("tr");
 
-    if (
-      !usesAnnualRows &&
-      index % MONTHS_PER_YEAR === 0
-    ) {
+    if (!usesAnnualRows && index % MONTHS_PER_YEAR === 0) {
       tableRow.classList.add("is-year-start");
     }
 
