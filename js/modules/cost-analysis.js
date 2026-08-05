@@ -2809,6 +2809,81 @@ function getNextStepsGrowthRate() {
 }
 
 /* ========================================
+   FUNDING PROGRESS
+======================================== */
+
+function renderNextStepsFundingProgress({
+  remainingGap,
+  fundingSurplus,
+  fundingProgress,
+}) {
+  const displayedProgress = Math.max(0, Math.min(fundingProgress, 100));
+
+  setText(
+    nextStepsElements.fundingProgressLabel,
+    `${Math.round(displayedProgress)}%`,
+  );
+
+  if (nextStepsElements.fundingProgressBar) {
+    nextStepsElements.fundingProgressBar.style.width = `${displayedProgress}%`;
+  }
+
+  if (remainingGap > 0) {
+    setText(
+      nextStepsElements.fundingStatus,
+      [
+        `${formatCurrency(remainingGap)}`,
+        `of the estimated FYBC capital target`,
+        `is not yet covered by the selected plan.`,
+      ].join(" "),
+    );
+
+    return;
+  }
+
+  setText(
+    nextStepsElements.fundingStatus,
+    fundingSurplus > 0
+      ? [
+          `The selected plan currently exceeds`,
+          `the estimated target by`,
+          `${formatCurrency(fundingSurplus)}.`,
+        ].join(" ")
+      : "The selected plan currently reaches the estimated FYBC capital target.",
+  );
+}
+
+function renderIncompleteNextSteps() {
+  [
+    nextStepsElements.suggestedMonthly,
+    nextStepsElements.availableMonthly,
+    nextStepsElements.chosenMonthly,
+    nextStepsElements.availableAssets,
+    nextStepsElements.investmentPolicies,
+    nextStepsElements.endowmentValue,
+    nextStepsElements.eligibleOa,
+    nextStepsElements.capitalNeeded,
+    nextStepsElements.selectedResources,
+    nextStepsElements.monthlyCommitmentValue,
+    nextStepsElements.projectedFunding,
+    nextStepsElements.remainingGap,
+  ].forEach(function (element) {
+    setText(element, "—");
+  });
+
+  setText(nextStepsElements.fundingProgressLabel, "0%");
+
+  if (nextStepsElements.fundingProgressBar) {
+    nextStepsElements.fundingProgressBar.style.width = "0%";
+  }
+
+  setText(
+    nextStepsElements.fundingStatus,
+    "Complete the retirement target first to build a suggested plan.",
+  );
+}
+
+/* ========================================
    INVESTMENT POLICY VALUE AT FYBC
 ======================================== */
 
@@ -3079,77 +3154,6 @@ function getWholeMonthsBetween(
       MONTHS_PER_YEAR +
       toDate.getMonth() -
       fromDate.getMonth(),
-  );
-}
-
-function renderNextStepsFundingProgress({
-  remainingGap,
-  fundingSurplus,
-  fundingProgress,
-}) {
-  const displayedProgress = Math.max(0, Math.min(fundingProgress, 100));
-
-  setText(
-    nextStepsElements.fundingProgressLabel,
-    `${Math.round(displayedProgress)}%`,
-  );
-
-  if (nextStepsElements.fundingProgressBar) {
-    nextStepsElements.fundingProgressBar.style.width = `${displayedProgress}%`;
-  }
-
-  if (remainingGap > 0) {
-    setText(
-      nextStepsElements.fundingStatus,
-      [
-        `${formatCurrency(remainingGap)}`,
-        `of the estimated FYBC capital target`,
-        `is not yet covered by the selected plan.`,
-      ].join(" "),
-    );
-
-    return;
-  }
-
-  setText(
-    nextStepsElements.fundingStatus,
-    fundingSurplus > 0
-      ? [
-          `The selected plan currently exceeds`,
-          `the estimated target by`,
-          `${formatCurrency(fundingSurplus)}.`,
-        ].join(" ")
-      : "The selected plan currently reaches the estimated FYBC capital target.",
-  );
-}
-
-function renderIncompleteNextSteps() {
-  [
-    nextStepsElements.suggestedMonthly,
-    nextStepsElements.availableMonthly,
-    nextStepsElements.chosenMonthly,
-    nextStepsElements.availableAssets,
-    nextStepsElements.investmentPolicies,
-    nextStepsElements.endowmentValue,
-    nextStepsElements.eligibleOa,
-    nextStepsElements.capitalNeeded,
-    nextStepsElements.selectedResources,
-    nextStepsElements.monthlyCommitmentValue,
-    nextStepsElements.projectedFunding,
-    nextStepsElements.remainingGap,
-  ].forEach(function (element) {
-    setText(element, "—");
-  });
-
-  setText(nextStepsElements.fundingProgressLabel, "0%");
-
-  if (nextStepsElements.fundingProgressBar) {
-    nextStepsElements.fundingProgressBar.style.width = "0%";
-  }
-
-  setText(
-    nextStepsElements.fundingStatus,
-    "Complete the retirement target first to build a suggested plan.",
   );
 }
 
