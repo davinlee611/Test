@@ -3254,14 +3254,6 @@ button.insurance-validation-count:disabled {
   text-overflow: ellipsis;
 }
 
-.analysis-cashflow-event--inflow {
-  color: var(--success-color);
-}
-
-.analysis-cashflow-event--outflow {
-  color: var(--danger-color);
-}
-
 .analysis-breakdown-cell__action {
   display: block;
   margin-top: 6px;
@@ -3530,12 +3522,10 @@ button.insurance-validation-count:disabled {
   background: var(--border-color);
 }
 
-.cost-preview-detail-list,
 .cost-preview-result-list {
   display: grid;
 }
 
-.cost-preview-detail-row,
 .cost-preview-result-row {
   display: flex;
   min-height: 76px;
@@ -3546,74 +3536,39 @@ button.insurance-validation-count:disabled {
   border-bottom: 1px solid var(--border-color);
 }
 
-.cost-preview-detail-row:first-child,
 .cost-preview-result-row:first-child {
   padding-top: 0;
 }
 
-.cost-preview-detail-row:last-child,
 .cost-preview-result-row:last-child {
   padding-bottom: 0;
   border-bottom: 0;
 }
 
-.cost-preview-detail-row > div,
 .cost-preview-result-row > div {
   display: grid;
   min-width: 0;
   gap: 5px;
 }
 
-.cost-preview-detail-row strong,
 .cost-preview-result-row span {
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
 }
 
-.cost-preview-detail-row small,
 .cost-preview-result-row small {
   color: var(--text-secondary);
   font-size: 10px;
   line-height: 1.45;
 }
 
-.cost-preview-detail-row > span,
 .cost-preview-result-row > strong {
   flex: 0 0 auto;
   color: var(--text-primary);
   font-size: 17px;
   font-weight: 800;
   text-align: right;
-}
-
-.cost-preview-lifestyle-summary {
-  display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.cost-preview-lifestyle-summary > div {
-  display: grid;
-  min-height: 106px;
-  padding: 17px;
-  align-content: center;
-  gap: 8px;
-  background: var(--surface-muted);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-}
-
-.cost-preview-lifestyle-summary span {
-  color: var(--text-secondary);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.cost-preview-lifestyle-summary strong {
-  color: var(--text-primary);
-  font-size: 20px;
 }
 
 .cost-preview-target-card {
@@ -3624,8 +3579,8 @@ button.insurance-validation-count:disabled {
 .cost-preview-result-row--total:last-child {
   box-sizing: border-box;
   width: 100%;
-  min-height: 92px;
-  margin: 8px 0 0;
+  min-height: 96px;
+  margin: 10px 0 0;
   padding: 18px 16px;
   align-items: center;
   overflow: visible;
@@ -3635,12 +3590,13 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-preview-result-row--total > div {
-  padding-bottom: 2px;
+  padding: 2px 0 4px;
 }
 
 .cost-preview-result-row--total small {
   display: block;
   margin-top: 5px;
+  padding-bottom: 1px;
   line-height: 1.5;
 }
 
@@ -3714,19 +3670,12 @@ button.insurance-validation-count:disabled {
 }
 
 @media (max-width: 650px) {
-
-  .cost-preview-lifestyle-summary {
-    grid-template-columns: 1fr;
-  }
-
-  .cost-preview-detail-row,
   .cost-preview-result-row {
     align-items: flex-start;
     flex-direction: column;
     gap: 10px;
   }
 
-  .cost-preview-detail-row > span,
   .cost-preview-result-row > strong {
     text-align: left;
   }
@@ -3986,32 +3935,6 @@ button.insurance-validation-count:disabled {
   box-shadow:
     0 0 0 3px
     rgba(225, 29, 72, 0.08);
-}
-
-/* Fix total card bottom spacing */
-.cost-preview-result-row--total,
-.cost-preview-result-row--total:last-child {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 96px;
-  margin: 10px 0 0;
-  padding: 18px 16px;
-  align-items: center;
-  overflow: visible;
-  background: rgba(91, 78, 246, 0.06);
-  border: 1px solid rgba(91, 78, 246, 0.2);
-  border-radius: var(--radius-md);
-}
-
-.cost-preview-result-row--total > div {
-  padding: 2px 0 4px;
-}
-
-.cost-preview-result-row--total small {
-  display: block;
-  margin-top: 5px;
-  padding-bottom: 1px;
-  line-height: 1.5;
 }
 
 /* ========================================
@@ -4399,12 +4322,6 @@ button.insurance-validation-count:disabled {
   font-size: 20px;
 }
 
-.analysis-path-pending-value {
-  max-width: 110px;
-  color: var(--text-secondary) !important;
-  font-size: 12px !important;
-}
-
 .analysis-path-status {
   margin-top: 14px;
   padding: 12px 14px;
@@ -4436,122 +4353,9 @@ button.insurance-validation-count:disabled {
   padding: 20px;
 }
 
-.analysis-path-plan-content {
-  display: grid;
-  margin-top: 18px;
-  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.4fr);
-  gap: 18px;
-}
-
-.analysis-path-primary-result {
-  display: flex;
-  min-height: 154px;
-  padding: 20px;
-  flex-direction: column;
-  justify-content: center;
-  border: 1px solid rgb(87 77 255 / 24%);
-  border-radius: 12px;
-  background: rgb(87 77 255 / 7%);
-}
-
-.analysis-path-primary-result > span {
-  color: var(--text-primary);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.analysis-path-primary-result > strong {
-  margin-top: 10px;
-  color: var(--primary-color);
-  font-size: 30px;
-}
-
-.analysis-path-primary-result > small {
-  margin-top: 10px;
-  color: var(--text-secondary);
-  font-size: 10px;
-  line-height: 1.45;
-}
-
-.analysis-path-plan-comparison {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.analysis-path-plan-comparison > div {
-  display: flex;
-  min-height: 110px;
-  padding: 16px;
-  flex-direction: column;
-  justify-content: center;
-  gap: 9px;
-}
-
-.analysis-path-plan-comparison > div + div {
-  border-left: 1px solid var(--border-color);
-}
-
-.analysis-path-plan-comparison span {
-  color: var(--text-secondary);
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.analysis-path-plan-comparison strong {
-  color: var(--text-primary);
-  font-size: 15px;
-}
-
 .analysis-path-actions {
   margin-top: 18px;
   padding: 20px;
-}
-
-.analysis-path-action-grid {
-  display: grid;
-  margin-top: 18px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.analysis-path-action {
-  display: flex;
-  min-height: 106px;
-  padding: 15px;
-  align-items: flex-start;
-  gap: 11px;
-  border: 1px solid var(--border-color);
-  border-radius: 11px;
-  background: var(--background-secondary);
-}
-
-.analysis-path-action-icon {
-  display: inline-flex;
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  background: rgb(87 77 255 / 10%);
-  color: var(--primary-color);
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.analysis-path-action strong {
-  color: var(--text-primary);
-  font-size: 12px;
-}
-
-.analysis-path-action p {
-  margin: 6px 0 0;
-  color: var(--text-secondary);
-  font-size: 10px;
-  line-height: 1.5;
 }
 
 .analysis-path-details-notice {
@@ -4597,8 +4401,7 @@ button.insurance-validation-count:disabled {
 }
 
 .analysis-path-section-shell .analysis-path-card,
-.analysis-path-section-shell .analysis-path-plan,
-.analysis-path-section-shell .analysis-next-card {
+.analysis-path-section-shell .analysis-path-plan {
   background: #ffffff;
 }
 
@@ -5240,8 +5043,7 @@ button.insurance-validation-count:disabled {
 ======================================== */
 
 @media (max-width: 1000px) {
-  .analysis-path-overview-grid,
-  .analysis-path-plan-content {
+  .analysis-path-overview-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -5249,16 +5051,6 @@ button.insurance-validation-count:disabled {
 @media (max-width: 750px) {
   .analysis-path-preview {
     padding: 16px;
-  }
-
-  .analysis-path-plan-comparison,
-  .analysis-path-action-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .analysis-path-plan-comparison > div + div {
-    border-top: 1px solid var(--border-color);
-    border-left: 0;
   }
 }
 
@@ -5627,140 +5419,6 @@ button.insurance-validation-count:disabled {
   line-height: 1.45;
 }
 
-.analysis-path-oa-control {
-  display: flex;
-  min-height: 82px;
-  margin-top: 14px;
-  padding: 14px 16px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  border: 1px solid var(--border-color);
-  border-radius: 11px;
-  background: var(--background-secondary);
-}
-
-.analysis-path-oa-copy {
-  min-width: 0;
-}
-
-.analysis-path-oa-copy strong {
-  display: block;
-  color: var(--text-primary);
-  font-size: 11px;
-}
-
-.analysis-path-oa-copy small {
-  display: block;
-  max-width: 620px;
-  margin-top: 6px;
-  color: var(--text-secondary);
-  font-size: 9px;
-  line-height: 1.5;
-}
-
-.analysis-path-oa-value {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 14px;
-}
-
-.analysis-path-oa-value > strong {
-  color: var(--text-primary);
-  font-size: 15px;
-}
-
-.analysis-path-gap-result {
-  display: flex;
-  min-height: 88px;
-  margin-top: 14px;
-  padding: 16px 18px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  border: 1px solid #f3b9bb;
-  border-radius: 11px;
-  background: #fff3f3;
-}
-
-.analysis-path-gap-result span {
-  display: block;
-  color: var(--text-primary);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.analysis-path-gap-result small {
-  display: block;
-  margin-top: 5px;
-  color: var(--text-secondary);
-  font-size: 9px;
-}
-
-.analysis-path-gap-result > strong {
-  flex: 0 0 auto;
-  font-size: 24px;
-}
-
-.analysis-path-gap-result > strong.is-shortfall {
-  color: #cf2027;
-}
-
-.analysis-path-gap-result > strong.is-funded {
-  color: #08783e;
-}
-
-.analysis-path-funding-progress {
-  margin-top: 14px;
-  padding: 15px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 11px;
-  background: #ffffff;
-}
-
-.analysis-path-funding-progress-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.analysis-path-funding-progress-heading span,
-.analysis-path-funding-progress-heading strong {
-  color: var(--text-primary);
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.analysis-path-funding-progress-track {
-  height: 9px;
-  margin-top: 11px;
-  border-radius: 999px;
-  background: #e8ebf2;
-  overflow: hidden;
-}
-
-.analysis-path-funding-progress-track > span {
-  display: block;
-  width: 0;
-  height: 100%;
-  border-radius: inherit;
-  background: #e55e63;
-  transition: width 0.25s ease;
-}
-
-.analysis-path-funding-progress-track.is-funded > span {
-  background: #15945a;
-}
-
-.analysis-path-funding-progress > p {
-  margin: 10px 0 0;
-  color: var(--text-secondary);
-  font-size: 9px;
-  line-height: 1.45;
-}
-
 .analysis-path-capital-methodology {
   margin-top: 14px;
   border: 1px solid var(--border-color);
@@ -5947,11 +5605,5 @@ button.insurance-validation-count:disabled {
   .analysis-path-projected-grid,
   .analysis-path-capital-methodology-grid {
     grid-template-columns: 1fr;
-  }
-
-  .analysis-path-oa-control,
-  .analysis-path-gap-result {
-    align-items: flex-start;
-    flex-direction: column;
   }
 }
