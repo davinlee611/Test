@@ -272,11 +272,30 @@ export function createAssetsIncomeController({
 }
 
 function getAgeAtStartOfYear(dateOfBirth, year) {
-  if (!dateOfBirth) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateOfBirth || "");
+
+  if (!match || !Number.isInteger(year)) {
     return null;
   }
 
-  const birthYear = Number(String(dateOfBirth).split("-")[0]);
+  const birthDate = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+  );
 
-  return Number.isFinite(birthYear) ? year - birthYear : null;
+  const startOfYear = new Date(year, 0, 1);
+
+  let age = startOfYear.getFullYear() - birthDate.getFullYear();
+
+  const birthdayHasPassed =
+    startOfYear.getMonth() > birthDate.getMonth() ||
+    (startOfYear.getMonth() === birthDate.getMonth() &&
+      startOfYear.getDate() >= birthDate.getDate());
+
+  if (!birthdayHasPassed) {
+    age -= 1;
+  }
+
+  return age >= 0 ? age : null;
 }

@@ -180,6 +180,18 @@ export function validatePolicyDraft({
       );
     }
 
+    if (hasValueDate) {
+      const valueDate = new Date(`${accumulation.valueAsOf}-01T00:00:00`);
+
+      const today = new Date();
+
+      const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+      if (Number.isNaN(valueDate.getTime()) || valueDate > currentMonth) {
+        return "The investment policy value date " + "cannot be in the future.";
+      }
+    }
+
     if (
       hasProjectedValue &&
       (!Number.isInteger(accumulation.projectedAtAge) ||

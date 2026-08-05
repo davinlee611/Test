@@ -2220,8 +2220,6 @@ function renderYourNextSteps(currentCashflow) {
   const investmentPoliciesAtFybc = calculateInvestmentPolicyValueAtFybc({
     desiredFybcAge: position.desiredFybcAge,
 
-    monthsToFybc,
-
     annualGrowthRatePercent: investmentPolicyGrowthRate,
   });
 
@@ -2655,12 +2653,15 @@ function renderIncompleteNextSteps() {
 
 function calculateInvestmentPolicyValueAtFybc({
   desiredFybcAge,
-  monthsToFybc,
   annualGrowthRatePercent,
 }) {
   const policies = getPolicies();
 
-  if (!Array.isArray(policies)) {
+  const profile = getClientProfile();
+
+  const fybcDate = getAgeMonthDate(profile.dateOfBirth, desiredFybcAge);
+
+  if (!Array.isArray(policies) || !fybcDate) {
     return 0;
   }
 
@@ -2682,8 +2683,9 @@ function calculateInvestmentPolicyValueAtFybc({
 
     /*
      * Priority 1:
-     * Use the insurer's projection when it
-     * corresponds exactly to the client's FYBC age.
+     * If the insurer already provides a projection
+     * specifically for the client's FYBC age,
+     * use that value directly.
      */
     if (
       projectedValue > 0 &&
@@ -2694,8 +2696,9 @@ function calculateInvestmentPolicyValueAtFybc({
 
     /*
      * Priority 2:
-     * If no matching insurer projection exists,
-     * estimate from the recorded current policy value.
+     * Otherwise project the recorded current
+     * policy value from its actual valuation date
+     * until the client's FYBC date.
      */
     const currentPolicyValue = getNonNegativeNumber(
       accumulation.currentPolicyValue,
@@ -2705,10 +2708,21 @@ function calculateInvestmentPolicyValueAtFybc({
       return total;
     }
 
+    const valueAsOfDate = parsePlanningYearMonth(accumulation.valueAsOf);
+
+    if (!valueAsOfDate || valueAsOfDate > fybcDate) {
+      return total;
+    }
+
+    const monthsFromValuationToFybc = getWholeMonthsBetween(
+      valueAsOfDate,
+      fybcDate,
+    );
+
     const estimatedValue = calculateLumpSumFutureValue({
       amount: currentPolicyValue,
 
-      months: monthsToFybc,
+      months: monthsFromValuationToFybc,
 
       annualRatePercent: annualGrowthRatePercent,
     });
@@ -3634,10 +3648,7 @@ function calculateProjection({
 
       retirementSumSetAside = Math.max(
         retirementSumSetAside,
-        Math.min(
-          raBalance,
-          Math.max(cohortFrsAmount, retirementStrategyTarget),
-        ),
+        Math.min(raBalance, cohortFrsAmount),
       );
     }
 
@@ -3703,7 +3714,7 @@ function calculateProjection({
 
       retirementSumSetAside = Math.max(
         retirementSumSetAside,
-        Math.min(raBalance, retirementStrategyTarget),
+        Math.min(raBalance, cohortFrsAmount),
       );
 
       /*
@@ -3808,8 +3819,16 @@ function calculateProjection({
     } else {
       const amountAvailableForRa = retirementInflow + maOverflow;
 
+      /*
+       * Normal CPF contributions continue filling RA only
+       * until the client's cohort FRS has been set aside.
+       *
+       * The selected retirement strategy (BRS / FRS / ERS)
+       * is a planning choice and must not change the normal
+       * CPF contribution-routing rule.
+       */
       const remainingRaCapacity = Math.max(
-        retirementStrategyTarget - retirementSumSetAside,
+        cohortFrsAmount - retirementSumSetAside,
         0,
       );
 
@@ -3876,7 +3895,7 @@ function calculateProjection({
 
       retirementSumSetAside = Math.max(
         retirementSumSetAside,
-        Math.min(raBalance, retirementStrategyTarget),
+        Math.min(raBalance, cohortFrsAmount),
       );
 
       /*
@@ -3900,19 +3919,25 @@ function calculateProjection({
 
       if (maInterestOverflow > 0) {
         if (!hasReachedAge55) {
-          const remainingSaCapacity = Math.max(cohortFrsAmount - saBalance, 0);
-
-          const overflowToSa = Math.min(
-            maInterestOverflow,
-            remainingSaCapacity,
-          );
-
-          saBalance += overflowToSa;
-
-          oaBalance += maInterestOverflow - overflowToSa;
+          /*
+           * Before age 55, MA interest above the
+           * applicable BHS flows into SA.
+           *
+           * Do not cap this using the client's future
+           * cohort FRS. FRS only becomes relevant when
+           * RA is formed at age 55.
+           */
+          saBalance += maInterestOverflow;
         } else {
+          /*
+           * From age 55, excess MA interest flows into
+           * RA until the client's cohort FRS has been
+           * fully set aside.
+           *
+           * Any remaining excess flows into OA.
+           */
           const remainingRaCapacity = Math.max(
-            retirementStrategyTarget - retirementSumSetAside,
+            cohortFrsAmount - retirementSumSetAside,
             0,
           );
 
@@ -3921,9 +3946,11 @@ function calculateProjection({
             remainingRaCapacity,
           );
 
+          const overflowToOa = maInterestOverflow - overflowToRa;
+
           raBalance += overflowToRa;
           retirementSumSetAside += overflowToRa;
-          oaBalance += maInterestOverflow - overflowToRa;
+          oaBalance += overflowToOa;
         }
       }
 
