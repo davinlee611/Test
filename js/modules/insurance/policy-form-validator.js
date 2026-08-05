@@ -158,6 +158,48 @@ export function validatePolicyDraft({
     }
   }
 
+  if (formData.policyType === "ilp_accumulation") {
+    const accumulation = formData.accumulation || {};
+
+    const hasCurrentValue = accumulation.currentPolicyValue > 0;
+
+    const hasValueDate = Boolean(accumulation.valueAsOf);
+
+    const hasProjectedValue = accumulation.projectedPolicyValue > 0;
+
+    const hasProjectedAge = accumulation.projectedAtAge > 0;
+
+    if (hasCurrentValue && !hasValueDate) {
+      return "Select the month for the current " + "investment policy value.";
+    }
+
+    if (hasValueDate && !hasCurrentValue) {
+      return (
+        "Enter the current investment policy " +
+        "value or clear the value date."
+      );
+    }
+
+    if (
+      hasProjectedValue &&
+      (!Number.isInteger(accumulation.projectedAtAge) ||
+        accumulation.projectedAtAge < 1 ||
+        accumulation.projectedAtAge > 120)
+    ) {
+      return (
+        "Enter the age corresponding to the " +
+        "projected investment policy value."
+      );
+    }
+
+    if (hasProjectedAge && !hasProjectedValue) {
+      return (
+        "Enter the projected investment policy " +
+        "value or clear the projected age."
+      );
+    }
+  }
+
   if (formData.policyType === "retirement") {
     const retirement = formData.retirement;
 

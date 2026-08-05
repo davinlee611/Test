@@ -159,6 +159,14 @@ export function createPolicyModal({
 
     elements.endowmentNonGuaranteedAmountInput.value = "";
 
+    elements.accumulationCurrentValueInput.value = "";
+
+    elements.accumulationValueAsOfInput.value = "";
+
+    elements.accumulationProjectedValueInput.value = "";
+
+    elements.accumulationProjectedAtAgeInput.value = "";
+
     elements.retirementPayoutStartAgeInput.value = "";
 
     elements.retirementMonthlyIncomeInput.value = "";

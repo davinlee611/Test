@@ -6,7 +6,7 @@ export const POLICY_TYPE_LABELS = {
   endowment: "Endowment",
   retirement: "Retirement",
   ilp_protection: "Investment-Linked (Protection)",
-  ilp_accumulation: "Investment-Linked (Accumulation)",
+  ilp_accumulation: "Investment (Accumulation)",
   hospitalisation: "Hospitalisation",
   hospital_cash: "Hospital Cash",
   personal_accident: "Personal Accident",

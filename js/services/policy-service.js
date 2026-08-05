@@ -70,6 +70,10 @@ export function updatePolicy(policyId, updates) {
         updatedPolicy.endowment = cloneEndowment(updates.endowment);
       }
 
+      if (Object.prototype.hasOwnProperty.call(updates, "accumulation")) {
+        updatedPolicy.accumulation = cloneAccumulation(updates.accumulation);
+      }
+
       if (Object.prototype.hasOwnProperty.call(updates, "retirement")) {
         updatedPolicy.retirement = cloneRetirement(updates.retirement);
       }
@@ -126,6 +130,7 @@ function createPolicyRecord({
   premiumPaymentEndDate = null,
   premium,
   endowment = null,
+  accumulation = null,
   retirement = null,
   benefits = [],
 }) {
@@ -159,6 +164,8 @@ function createPolicyRecord({
     premium: clonePolicyPremium(premium),
 
     endowment: cloneEndowment(endowment),
+
+    accumulation: cloneAccumulation(accumulation),
 
     retirement: cloneRetirement(retirement),
 
@@ -241,6 +248,22 @@ function cloneEndowment(endowment) {
 
     projectedNonGuaranteedAmount:
       Number(endowment.projectedNonGuaranteedAmount) || 0,
+  };
+}
+
+function cloneAccumulation(accumulation) {
+  if (!accumulation || typeof accumulation !== "object") {
+    return null;
+  }
+
+  return {
+    currentPolicyValue: Number(accumulation.currentPolicyValue) || 0,
+
+    valueAsOf: accumulation.valueAsOf || "",
+
+    projectedPolicyValue: Number(accumulation.projectedPolicyValue) || 0,
+
+    projectedAtAge: Number(accumulation.projectedAtAge) || 0,
   };
 }
 

@@ -3814,7 +3814,7 @@
                   </option>
 
                   <option value="ilp_accumulation">
-                    Investment-Linked (Accumulation)
+                    Investment (Accumulation)
                   </option>
 
                   <option value="hospitalisation">Hospitalisation</option>
@@ -4377,6 +4377,130 @@
               </div>
             </div>
           </section>
+
+          <!-- ========================================
+     INVESTMENT ACCUMULATION DETAILS
+======================================== -->
+
+<section
+  id="accumulationDetailsSection"
+  class="policy-modal-section"
+  hidden
+>
+  <div class="policy-modal-section-header">
+    <div>
+      <h3>Accumulation Value</h3>
+
+      <p>
+        Record the current policy value and, where available, the projected
+        value from the latest insurer illustration.
+      </p>
+    </div>
+  </div>
+
+  <div class="form-grid">
+    <!-- Current value -->
+    <div class="form-group">
+      <label for="accumulationCurrentValueInput">
+        Current Policy Value
+        <span class="optional-label">(Optional)</span>
+      </label>
+
+      <div class="currency-input">
+        <span>$</span>
+
+        <input
+          id="accumulationCurrentValueInput"
+          class="form-control"
+          type="number"
+          min="0"
+          step="1"
+          inputmode="numeric"
+          placeholder="0"
+        />
+      </div>
+
+      <p class="form-helper-text">
+        Use the latest available policy or surrender value.
+      </p>
+    </div>
+
+    <!-- Value date -->
+    <div class="form-group">
+      <label for="accumulationValueAsOfInput">
+        Value As Of
+        <span class="optional-label">(Optional)</span>
+      </label>
+
+      <input
+        id="accumulationValueAsOfInput"
+        class="form-control"
+        type="month"
+      />
+
+      <p class="form-helper-text">
+        Month of the statement or policy value shown above.
+      </p>
+    </div>
+
+    <!-- Projected value -->
+    <div class="form-group">
+      <label for="accumulationProjectedValueInput">
+        Projected Policy Value
+        <span class="optional-label">(Optional)</span>
+      </label>
+
+      <div class="currency-input">
+        <span>$</span>
+
+        <input
+          id="accumulationProjectedValueInput"
+          class="form-control"
+          type="number"
+          min="0"
+          step="1"
+          inputmode="numeric"
+          placeholder="0"
+        />
+      </div>
+
+      <p class="form-helper-text">
+        Use the projected value from the latest insurer illustration.
+      </p>
+    </div>
+
+    <!-- Projected age -->
+    <div class="form-group">
+      <label for="accumulationProjectedAtAgeInput">
+        Projected At Age
+        <span class="optional-label">(Optional)</span>
+      </label>
+
+      <input
+        id="accumulationProjectedAtAgeInput"
+        class="form-control"
+        type="number"
+        min="1"
+        max="120"
+        step="1"
+        inputmode="numeric"
+        placeholder="55"
+      />
+
+      <p class="form-helper-text">
+        The client age corresponding to the projected value.
+      </p>
+    </div>
+
+    <div class="form-group form-group--full">
+      <p class="form-helper-text">
+        Projected investment values are not guaranteed. The retirement
+        analysis will only use this value when the client chooses to allocate
+        the policy towards the FYBC goal.
+      </p>
+    </div>
+  </div>
+</section>
 
           <!-- ========================================
     RETIREMENT POLICY DETAILS

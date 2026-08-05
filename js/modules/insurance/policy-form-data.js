@@ -138,6 +138,25 @@ export function readPolicyFormData(elements) {
           }
         : null,
 
+    accumulation:
+      policyType === "ilp_accumulation"
+        ? {
+            currentPolicyValue: getWholeNumber(
+              elements.accumulationCurrentValueInput.value,
+            ),
+
+            valueAsOf: elements.accumulationValueAsOfInput.value,
+
+            projectedPolicyValue: getWholeNumber(
+              elements.accumulationProjectedValueInput.value,
+            ),
+
+            projectedAtAge: getWholeNumber(
+              elements.accumulationProjectedAtAgeInput.value,
+            ),
+          }
+        : null,
+
     retirement:
       policyType === "retirement"
         ? {

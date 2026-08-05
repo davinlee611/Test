@@ -46,6 +46,8 @@ export function writePolicyFormData(
 
   writeEndowmentFields(elements, policy);
 
+  writeAccumulationFields(elements, policy);
+
   writeRetirementFields(elements, policy);
 }
 
@@ -78,6 +80,48 @@ function writeEndowmentFields(
     ) > 0
       ? String(
           endowment.projectedNonGuaranteedAmount,
+        )
+      : "";
+}
+
+/* ========================================
+   ACCUMULATION WRITER
+======================================== */
+
+function writeAccumulationFields(
+  elements,
+  policy,
+) {
+  const accumulation =
+    policy.accumulation || {};
+
+  elements.accumulationCurrentValueInput.value =
+    Number(
+      accumulation.currentPolicyValue,
+    ) > 0
+      ? String(
+          accumulation.currentPolicyValue,
+        )
+      : "";
+
+  elements.accumulationValueAsOfInput.value =
+    accumulation.valueAsOf || "";
+
+  elements.accumulationProjectedValueInput.value =
+    Number(
+      accumulation.projectedPolicyValue,
+    ) > 0
+      ? String(
+          accumulation.projectedPolicyValue,
+        )
+      : "";
+
+  elements.accumulationProjectedAtAgeInput.value =
+    Number(
+      accumulation.projectedAtAge,
+    ) > 0
+      ? String(
+          accumulation.projectedAtAge,
         )
       : "";
 }

@@ -158,6 +158,8 @@ export function createPolicyFormController({
 
     const isEndowment = policyType === "endowment";
 
+    const isAccumulation = policyType === "ilp_accumulation";
+
     const isRetirement = policyType === "retirement";
 
     elements.endowmentDetailsSection.hidden = !isEndowment;
@@ -165,6 +167,8 @@ export function createPolicyFormController({
     elements.endowmentMaturityDateInput.required = isEndowment;
 
     elements.endowmentGuaranteedAmountInput.required = isEndowment;
+
+    elements.accumulationDetailsSection.hidden = !isAccumulation;
 
     elements.retirementDetailsSection.hidden = !isRetirement;
 

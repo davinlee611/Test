@@ -95,6 +95,37 @@ function createPolicyPayoutSummary(policy) {
     detail.textContent = formatYearMonth(endowment.maturityDate);
 
     amount.textContent = formatCurrency(total);
+  } else if (policy.policyType === "ilp_accumulation") {
+    const accumulation = policy.accumulation || {};
+
+    const currentValue = Number(accumulation.currentPolicyValue) || 0;
+
+    const projectedValue = Number(accumulation.projectedPolicyValue) || 0;
+
+    const projectedAge = Number(accumulation.projectedAtAge) || 0;
+
+    if (currentValue <= 0 && projectedValue <= 0) {
+      section.hidden = true;
+
+      return section;
+    }
+
+    heading.textContent = "Accumulation Value";
+
+    if (projectedValue > 0) {
+      detail.textContent =
+        projectedAge > 0
+          ? `Projected at age ${projectedAge}`
+          : "Projected value";
+
+      amount.textContent = formatCurrency(projectedValue);
+    } else {
+      detail.textContent = accumulation.valueAsOf
+        ? `Current value · ${formatYearMonth(accumulation.valueAsOf)}`
+        : "Current policy value";
+
+      amount.textContent = formatCurrency(currentValue);
+    }
   } else if (policy.policyType === "retirement") {
     const retirement = policy.retirement || {};
 
@@ -556,6 +587,8 @@ function getPolicyTypeClass(policyType) {
     personal_accident: "policy-card-content--accident",
 
     ilp_protection: "policy-card-content--investment",
+
+    ilp_accumulation: "policy-card-content--investment",
 
     endowment: "policy-card-content--endowment",
 

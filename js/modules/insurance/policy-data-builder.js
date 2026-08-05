@@ -46,6 +46,8 @@ export function buildPolicyData({ formData, benefits }) {
 
     endowment: formData.endowment,
 
+    accumulation: formData.accumulation,
+
     retirement: formData.retirement,
 
     benefits,

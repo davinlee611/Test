@@ -258,6 +258,26 @@ export function getInsuranceElements() {
       "endowmentNonGuaranteedAmountInput",
     ),
 
+    accumulationDetailsSection: document.getElementById(
+      "accumulationDetailsSection",
+    ),
+
+    accumulationCurrentValueInput: document.getElementById(
+      "accumulationCurrentValueInput",
+    ),
+
+    accumulationValueAsOfInput: document.getElementById(
+      "accumulationValueAsOfInput",
+    ),
+
+    accumulationProjectedValueInput: document.getElementById(
+      "accumulationProjectedValueInput",
+    ),
+
+    accumulationProjectedAtAgeInput: document.getElementById(
+      "accumulationProjectedAtAgeInput",
+    ),
+
     retirementDetailsSection: document.getElementById(
       "retirementDetailsSection",
     ),
