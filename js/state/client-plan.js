@@ -115,8 +115,6 @@ export function createEmptyClientPlan() {
 
 let clientPlan = createEmptyClientPlan();
 
-export { clientPlan };
-
 /* ========================================
    STATE ACCESS
 ======================================== */

@@ -1,6 +1,10 @@
 "use strict";
 
-import { clientPlan } from "../state/client-plan.js";
+import {
+  getAssets,
+  getClientProfile,
+  updateClientProfile,
+} from "../state/client-plan.js";
 
 import { getTodayDate, isValidEmail } from "../utils/client-utils.js";
 
@@ -119,7 +123,7 @@ function handleProfileInput(event) {
     return;
   }
 
-  const previousEmploymentStatus = clientPlan.profile.employmentStatus;
+  const previousEmploymentStatus = getClientProfile().employmentStatus;
 
   const nextEmploymentStatus = employmentStatusInput?.value || "";
 
@@ -148,7 +152,7 @@ function handleProfileInput(event) {
   updateClientHeading();
 
   emit(EVENTS.PROFILE_CHANGED, {
-    profile: clientPlan.profile,
+    profile: getClientProfile(),
 
     previousEmploymentStatus: employmentStatusChanged
       ? previousEmploymentStatus
@@ -157,7 +161,7 @@ function handleProfileInput(event) {
 }
 
 function hasEmploymentSpecificIncome() {
-  const income = clientPlan.priorities?.assets?.income || {};
+  const income = getAssets()?.income || {};
 
   return [
     income.monthlyEmployment,
@@ -175,27 +179,25 @@ function hasEmploymentSpecificIncome() {
 }
 
 function syncProfileState() {
-  const profile = clientPlan.profile;
+  return updateClientProfile({
+    fullName: clientNameInput?.value.trim() || "",
 
-  profile.fullName = clientNameInput?.value.trim() || "";
+    dateOfBirth: dateOfBirthInput?.value || "",
 
-  profile.dateOfBirth = dateOfBirthInput?.value || "";
+    gender: genderInput?.value || "",
 
-  profile.gender = genderInput?.value || "";
+    maritalStatus: maritalStatusInput?.value || "",
 
-  profile.maritalStatus = maritalStatusInput?.value || "";
+    occupation: occupationInput?.value.trim() || "",
 
-  profile.occupation = occupationInput?.value.trim() || "";
+    employmentStatus: employmentStatusInput?.value || "",
 
-  profile.employmentStatus = employmentStatusInput?.value || "";
+    dependants: dependantsInput?.value ? Number(dependantsInput.value) : 0,
 
-  profile.dependants = dependantsInput?.value
-    ? Number(dependantsInput.value)
-    : 0;
+    phone: phoneInput?.value.trim() || "",
 
-  profile.phone = phoneInput?.value.trim() || "";
-
-  profile.email = emailInput?.value.trim() || "";
+    email: emailInput?.value.trim() || "",
+  });
 }
 
 /* ========================================
@@ -218,7 +220,7 @@ function handleProfileSubmit(event) {
   }
 
   emit(EVENTS.PROFILE_COMPLETED, {
-    profile: clientPlan.profile,
+    profile: getClientProfile(),
   });
 }
 
@@ -227,7 +229,7 @@ function handleProfileSubmit(event) {
 ======================================== */
 
 function validateProfile() {
-  const profile = clientPlan.profile;
+  const profile = getClientProfile();
 
   if (profile.email && !isValidEmail(profile.email)) {
     return {
@@ -311,7 +313,7 @@ function validateProfile() {
 ======================================== */
 
 export function isProfileComplete() {
-  const profile = clientPlan.profile;
+  const profile = getClientProfile();
 
   return Boolean(
     profile.fullName &&
@@ -324,7 +326,7 @@ export function isProfileComplete() {
 }
 
 export function getClientAge() {
-  const dateOfBirth = clientPlan.profile.dateOfBirth;
+  const dateOfBirth = getClientProfile().dateOfBirth;
 
   if (!dateOfBirth) {
     return null;
@@ -352,8 +354,7 @@ export function getClientAge() {
 ======================================== */
 
 export function renderProfile() {
-
-  const profile = clientPlan.profile;
+  const profile = getClientProfile();
 
   setInputValue(clientNameInput, profile.fullName);
 
@@ -377,7 +378,7 @@ export function renderProfile() {
 }
 
 export function updateClientHeading() {
-  const fullName = clientPlan.profile.fullName;
+  const fullName = getClientProfile().fullName;
 
   if (clientHeading) {
     clientHeading.textContent = fullName

@@ -1,7 +1,9 @@
 "use strict";
 
-import { clientPlan } from "../state/client-plan.js";
+import { getPriorities, updatePriorities } from "../state/client-plan.js";
+
 import { emit } from "../events/event-bus.js";
+
 import { EVENTS } from "../events/events.js";
 
 /* ========================================
@@ -38,7 +40,9 @@ export function initializeWealthType() {
 ======================================== */
 
 export function resetWealthType() {
-  clientPlan.priorities.selectedWealthTypes = [];
+  updatePriorities({
+    selectedWealthTypes: [],
+  });
 
   renderWealthTypeSelections();
   emitWealthTypeChanged();
@@ -63,19 +67,19 @@ function handleWealthTypeClick(card) {
     return;
   }
 
-  const selectedWealthTypes = clientPlan.priorities.selectedWealthTypes;
+  const selectedWealthTypes = [...(getPriorities().selectedWealthTypes || [])];
 
   const isAlreadySelected = selectedWealthTypes.includes(wealthType);
 
-  if (isAlreadySelected) {
-    clientPlan.priorities.selectedWealthTypes = selectedWealthTypes.filter(
-      function (selectedType) {
+  const nextSelectedWealthTypes = isAlreadySelected
+    ? selectedWealthTypes.filter(function (selectedType) {
         return selectedType !== wealthType;
-      },
-    );
-  } else {
-    selectedWealthTypes.push(wealthType);
-  }
+      })
+    : [...selectedWealthTypes, wealthType];
+
+  updatePriorities({
+    selectedWealthTypes: nextSelectedWealthTypes,
+  });
 
   renderWealthTypeSelections();
   emitWealthTypeChanged();
@@ -86,7 +90,7 @@ function handleWealthTypeClick(card) {
 ======================================== */
 
 function renderWealthTypeSelections() {
-  const selectedWealthTypes = clientPlan.priorities.selectedWealthTypes;
+  const selectedWealthTypes = getPriorities().selectedWealthTypes || [];
 
   wealthTypeCards.forEach(function (card) {
     const wealthType = card.dataset.wealthType;
@@ -137,6 +141,6 @@ function createWealthTypeAriaLabel(card, ranking) {
 
 function emitWealthTypeChanged() {
   emit(EVENTS.WEALTH_TYPE_CHANGED, {
-    selectedWealthTypes: [...clientPlan.priorities.selectedWealthTypes],
+    selectedWealthTypes: [...(getPriorities().selectedWealthTypes || [])],
   });
 }
