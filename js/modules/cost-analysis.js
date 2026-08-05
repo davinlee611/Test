@@ -1170,7 +1170,11 @@ function renderYourPathPreview(currentCashflow) {
     assets?.liquidAssets,
   );
 
-  const currentCpfSavings = calculateCpfBalanceTotal(assets?.cpf);
+  const profile = getClientProfile();
+
+  const currentAge = calculateAgeOnDate(profile.dateOfBirth, new Date());
+
+  const currentCpfSavings = calculateCpfBalanceTotal(assets?.cpf, currentAge);
 
   /*
    * The starting-position card shows the actual signed

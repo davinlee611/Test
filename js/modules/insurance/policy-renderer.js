@@ -385,6 +385,7 @@ function getBenefitAmount(benefit) {
 
     case "disability_income":
     case "long_term_care_income":
+      return `${formattedAmount} / month`;
 
     case "medical_reimbursement":
       return `${formattedAmount} / event`;

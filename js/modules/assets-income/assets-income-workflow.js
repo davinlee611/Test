@@ -93,29 +93,19 @@ export function createAssetsIncomeWorkflow() {
      CPF AGE ADJUSTMENT
   ======================================== */
 
-  function applyCpfAccountRules(age) {
-    const currentAssets = getAssets();
-
-    const currentCpf = {
-      ...createEmptyCpf(),
-      ...currentAssets.cpf,
-    };
-
-    if (age === null || age < 55) {
-      currentCpf.ra = 0;
-    } else {
-      currentCpf.sa = 0;
-    }
-
-    return updateAssets({
-      ...currentAssets,
-
-      cpf: currentCpf,
-
-      properties: Array.isArray(currentAssets.properties)
-        ? [...currentAssets.properties]
-        : [],
-    });
+  function applyCpfAccountRules() {
+    /*
+     * Do not erase SA or RA when the client's DOB changes.
+     *
+     * The controller decides which account is visible based
+     * on age, while calculations decide which account is
+     * applicable.
+     *
+     * Keeping both recorded balances in state prevents a
+     * temporary DOB correction from permanently deleting
+     * previously entered CPF information.
+     */
+    return getAssets();
   }
 
   /* ========================================

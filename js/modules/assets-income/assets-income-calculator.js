@@ -20,12 +20,26 @@ export function calculateLiquidAssetTotal(liquidAssets) {
    CPF BALANCE TOTAL
 ======================================== */
 
-export function calculateCpfBalanceTotal(cpf) {
+export function calculateCpfBalanceTotal(cpf, age = null) {
+  /*
+   * SA is the applicable retirement account before 55.
+   * RA is the applicable retirement account from 55.
+   *
+   * If age is unavailable, retain the old behaviour and
+   * include both so callers without age data do not
+   * unexpectedly lose part of the recorded CPF balance.
+   */
+  const retirementBalance =
+    Number.isFinite(age) && age >= 55
+      ? toNonNegativeNumber(cpf?.ra)
+      : Number.isFinite(age)
+        ? toNonNegativeNumber(cpf?.sa)
+        : toNonNegativeNumber(cpf?.sa) + toNonNegativeNumber(cpf?.ra);
+
   return (
     toNonNegativeNumber(cpf?.oa) +
-    toNonNegativeNumber(cpf?.sa) +
-    toNonNegativeNumber(cpf?.ma) +
-    toNonNegativeNumber(cpf?.ra)
+    retirementBalance +
+    toNonNegativeNumber(cpf?.ma)
   );
 }
 
@@ -46,7 +60,7 @@ export function calculateAssetsIncomeSummary({
   return {
     totalLiquidAssets: calculateLiquidAssetTotal(safeAssets.liquidAssets),
 
-    totalCpf: calculateCpfBalanceTotal(safeAssets.cpf),
+    totalCpf: calculateCpfBalanceTotal(safeAssets.cpf, age),
 
     incomeSummary: calculateIncomeSummary({
       monthlyEmploymentIncome: income.monthlyEmployment,
