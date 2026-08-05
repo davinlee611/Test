@@ -121,10 +121,6 @@ export { clientPlan };
    STATE ACCESS
 ======================================== */
 
-export function getClientPlan() {
-  return clientPlan;
-}
-
 export function getClientProfile() {
   return clientPlan.profile;
 }
@@ -282,14 +278,6 @@ export function updateCostOfWants(updates) {
     ...clientPlan.costOfWants,
     ...updates,
   };
-
-  touchClientPlan();
-
-  return clientPlan.costOfWants;
-}
-
-export function resetCostOfWantsState() {
-  clientPlan.costOfWants = createEmptyCostOfWants();
 
   touchClientPlan();
 

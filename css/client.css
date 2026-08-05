@@ -1667,10 +1667,6 @@ body.liability-modal-open {
   margin-top: 20px;
 }
 
-.form-group--full {
-  grid-column: 1 / -1;
-}
-
 .policy-modal .form-group textarea {
   width: 100%;
   min-height: 90px;
@@ -3428,44 +3424,6 @@ button.insurance-validation-count:disabled {
   }
 }
 
-/* ========================================
-   RETIREMENT POSITION ANALYSIS
-======================================== */
-
-.analysis-readiness-badge {
-  display: inline-flex;
-  max-width: 240px;
-  padding: 7px 11px;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  background: var(--surface-muted);
-  border: 1px solid var(--border-color);
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1.3;
-  text-align: center;
-}
-
-.analysis-readiness-badge.is-on-track {
-  color: var(--success-color);
-  background: #ecfdf3;
-  border-color: #86efac;
-}
-
-.analysis-readiness-badge.is-shortfall {
-  color: var(--danger-color);
-  background: #fff1f2;
-  border-color: #fda4af;
-}
-
-.analysis-subsection-divider {
-  height: 1px;
-  margin: 24px 0;
-  background: var(--border-color);
-}
-
 @media (max-width: 1050px) {
   .analysis-goal-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3505,78 +3463,6 @@ button.insurance-validation-count:disabled {
 }
 
 /* ========================================
-   ANALYSIS OA INCLUSION
-======================================== */
-
-.analysis-oa-switch {
-  position: relative;
-  display: inline-flex;
-  flex: 0 0 42px;
-  width: 42px;
-  height: 24px;
-  cursor: pointer;
-}
-
-.analysis-oa-switch input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  border: 0;
-  white-space: nowrap;
-}
-
-.analysis-oa-switch-slider {
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  background: #cbd5e1;
-  transition:
-    background-color 0.2s ease,
-    opacity 0.2s ease;
-}
-
-.analysis-oa-switch-slider::before {
-  content: "";
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgb(15 23 42 / 25%);
-  transition: transform 0.2s ease;
-}
-
-.analysis-oa-switch input:checked + .analysis-oa-switch-slider {
-  background: var(--primary-color);
-}
-
-.analysis-oa-switch
-  input:checked
-  + .analysis-oa-switch-slider::before {
-  transform: translateX(18px);
-}
-
-.analysis-oa-switch input:focus-visible + .analysis-oa-switch-slider {
-  outline: 3px solid rgb(79 70 229 / 20%);
-  outline-offset: 2px;
-}
-
-.analysis-oa-switch input:disabled + .analysis-oa-switch-slider {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-
-.analysis-oa-switch:has(input:disabled) {
-  cursor: not-allowed;
-}
-
-/* ========================================
    COST OF WANTS PREVIEW
 ======================================== */
 
@@ -3588,21 +3474,6 @@ button.insurance-validation-count:disabled {
 
 .cost-preview-title-row h2 {
   margin: 0;
-}
-
-.cost-preview-badge {
-  display: inline-flex;
-  padding: 5px 9px;
-  align-items: center;
-  justify-content: center;
-  color: var(--primary-color);
-  background: rgba(91, 78, 246, 0.08);
-  border: 1px solid rgba(91, 78, 246, 0.2);
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .cost-preview-layout {

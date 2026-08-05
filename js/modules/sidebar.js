@@ -23,18 +23,6 @@ const insuranceBackButton = document.getElementById("insuranceBackButton");
 
 const insuranceNextButton = document.getElementById("insuranceNextButton");
 
-const costOfWantsBackButton = document.getElementById("costOfWantsBackButton");
-
-const costOfWantsNextButton = document.getElementById("costOfWantsNextButton");
-
-const costOfWantsAnalyseButton = document.getElementById(
-  "costOfWantsAnalyseButton",
-);
-
-const costOfWantsReportButton = document.getElementById(
-  "costOfWantsReportButton",
-);
-
 const costAnalysisBackButton = document.getElementById(
   "costAnalysisBackButton",
 );
@@ -116,24 +104,6 @@ function attachSectionNavigationListeners() {
     });
   }
 
-  if (costOfWantsBackButton) {
-    costOfWantsBackButton.addEventListener("click", function () {
-      navigateToSection("insurance");
-    });
-  }
-
-  if (costOfWantsNextButton) {
-    costOfWantsNextButton.addEventListener("click", function () {
-      navigateToSection("cost-analysis");
-    });
-  }
-
-  if (costOfWantsAnalyseButton) {
-    costOfWantsAnalyseButton.addEventListener("click", function () {
-      navigateToSection("cost-analysis");
-    });
-  }
-
   if (costAnalysisBackButton) {
     costAnalysisBackButton.addEventListener("click", function () {
       navigateToSection("cost");
@@ -146,11 +116,6 @@ function attachSectionNavigationListeners() {
     });
   }
 
-  if (costOfWantsReportButton) {
-    costOfWantsReportButton.addEventListener("click", function () {
-      navigateToSection("summary");
-    });
-  }
 }
 
 function navigateToSection(sectionName) {

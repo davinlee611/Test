@@ -259,7 +259,7 @@ const remainingSurplusElement = document.getElementById(
 );
 
 /* ========================================
-   YOUR PATH PREVIEW ELEMENTS
+   YOUR PATH ELEMENTS
 ======================================== */
 
 const pathPreviewElements = {
@@ -1158,7 +1158,7 @@ function renderRetirementGoalSummary() {
 }
 
 /* ========================================
-   YOUR PATH — SIMPLIFIED PREVIEW
+   YOUR PATH OVERVIEW
 ======================================== */
 
 function renderYourPathPreview(currentCashflow) {

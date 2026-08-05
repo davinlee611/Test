@@ -152,10 +152,6 @@ export function getAssetsIncomeElements() {
       "bonusNotSubjectToCpf",
     ),
 
-    cpfOnAdditionalWagesElement: document.getElementById(
-      "cpfOnAdditionalWages",
-    ),
-
     /* CPF account balances */
 
     cpfOaInput: document.getElementById("cpfOa"),
