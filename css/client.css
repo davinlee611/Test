@@ -5283,6 +5283,87 @@ button.insurance-validation-count:disabled {
   cursor: not-allowed;
 }
 
+.analysis-next-money-input {
+  display: flex;
+  width: 100%;
+  height: 38px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.analysis-next-money-input > span {
+  position: static;
+  flex: 0 0 auto;
+  color: var(--text-secondary);
+  font-size: 11px;
+  transform: none;
+}
+
+.analysis-next-money-input > input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 11px;
+}
+
+.analysis-next-money-input > input:disabled {
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.analysis-next-money-input:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgb(87 77 255 / 8%);
+}
+
+.analysis-next-rate-input {
+  display: flex;
+  width: 100%;
+  height: 38px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.analysis-next-rate-input > input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 11px;
+}
+
+.analysis-next-rate-input > span {
+  position: static;
+  flex: 0 0 auto;
+  color: var(--text-secondary);
+  font-size: 10px;
+  transform: none;
+}
+
+.analysis-next-rate-input:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgb(87 77 255 / 8%);
+}
+
 /* ========================================
    YOUR PATH RESPONSIVE LAYOUT
 ======================================== */
