@@ -1,25 +1,12 @@
 "use strict";
 
 import {
-  getAssets,
   getClientProfile,
-  getCommitments,
   getCostOfWants,
-  getExpenses,
-  getLiabilities,
-  getPolicies,
   updateCostOfWants,
 } from "../../state/client-plan.js";
 
 import { getClientAge } from "../client-profile.js";
-
-import { calculateIncomeSummary } from "../../services/income-calculator.js";
-
-import { getAllGoals } from "../../services/goal-service.js";
-
-import { calculateGoalSavings } from "../../services/goal-savings-calculator.js";
-
-import { getLiabilityMonthlyCashRepayment } from "../liabilities/liability-calculator.js";
 
 import {
   DEFAULT_CPF_RETIREMENT_SUM_GROWTH_RATE,
@@ -28,8 +15,6 @@ import {
   calculateFybcProjection as calculateFybcProjectionValues,
   roundCpfProjectionAmount,
 } from "./cost-of-wants-calculator.js";
-
-import { getEffectiveMonthlyInsurancePremium } from "../../services/commitment-service.js";
 
 /* ========================================
    CONSTANTS
@@ -138,40 +123,10 @@ export function getPostFybcReturnRate() {
   return getNonNegativeNumber(postFybcReturnRate);
 }
 
-export function getSelectedCpfRetirementOption() {
-  const { selectedCpfRetirementOption } = getCostOfWants();
-
-  const validOptions = ["brs", "frs", "ers", "self_employed"];
-
-  return validOptions.includes(selectedCpfRetirementOption)
-    ? selectedCpfRetirementOption
-    : "frs";
-}
-
 export function getSavedCpfRetirementSumGrowthRate() {
   const { cpfRetirementSumGrowthRate } = getCostOfWants();
 
   return getCpfRetirementSumGrowthRate(cpfRetirementSumGrowthRate);
-}
-
-export function setSelectedCpfRetirementOption(option) {
-  const validOptions = ["brs", "frs", "ers", "self_employed"];
-
-  if (!validOptions.includes(option)) {
-    return false;
-  }
-
-  updateCostOfWants({
-    selectedCpfRetirementOption: option,
-  });
-
-  return true;
-}
-
-export function setCpfRetirementSumGrowthRate(value) {
-  updateCostOfWants({
-    cpfRetirementSumGrowthRate: getCpfRetirementSumGrowthRate(value),
-  });
 }
 
 export function getCpfLifePayoutStartAge() {
@@ -300,54 +255,6 @@ export function getApplicableErsForYear(targetYear) {
 }
 
 /* ========================================
-   FYBC PROJECTION
-======================================== */
-
-export function calculateFybcProjection({
-  selectedCpfRetirementOption,
-  cpfGrowthRate,
-}) {
-  return calculateFybcProjectionValues({
-    currentAge: getClientAge(),
-
-    desiredFybcAge: getDesiredFybcAge(),
-
-    mortalityAge: getPlannedMortalityAge(),
-
-    inflationRatePercent: getInflationRate(),
-
-    monthlyPassiveIncome: getSelectedMonthlyPassiveIncome(),
-
-    cpfLifePayout: getSelectedCpfLifeMonthlyPayout({
-      selectedCpfRetirementOption,
-      cpfGrowthRate,
-    }),
-  });
-}
-
-export function getSelectedCpfLifeMonthlyPayout({
-  selectedCpfRetirementOption,
-  cpfGrowthRate,
-}) {
-  if (selectedCpfRetirementOption === "self_employed") {
-    return 0;
-  }
-
-  const cpfProjection = calculateClientCpfRetirementProjection({
-    cpfGrowthRate,
-  });
-
-  if (!cpfProjection.isValid) {
-    return 0;
-  }
-
-  const selectedPayout =
-    cpfProjection.monthlyPayouts?.[selectedCpfRetirementOption];
-
-  return Number.isFinite(selectedPayout) ? selectedPayout : 0;
-}
-
-/* ========================================
    GROSS RETIREMENT TARGET
 ======================================== */
 
@@ -368,8 +275,7 @@ export function getGrossRetirementGoalSummary() {
 
     inflationRatePercent: getInflationRate(),
 
-    monthlyPassiveIncome:
-      getSelectedMonthlyPassiveIncome(),
+    monthlyPassiveIncome: getSelectedMonthlyPassiveIncome(),
 
     /*
      * Cost of Wants measures the gross lifestyle target.
@@ -386,16 +292,13 @@ export function getGrossRetirementGoalSummary() {
 
       desiredFybcAge: getDesiredFybcAge(),
 
-      plannedMortalityAge:
-        getPlannedMortalityAge(),
+      plannedMortalityAge: getPlannedMortalityAge(),
 
-      inflationRate:
-        getInflationRate(),
+      inflationRate: getInflationRate(),
 
       yearsRemaining: 0,
 
-      monthlyIncomeToday:
-        getSelectedMonthlyPassiveIncome(),
+      monthlyIncomeToday: getSelectedMonthlyPassiveIncome(),
 
       monthlyIncomeAtFybc: 0,
 
@@ -408,246 +311,24 @@ export function getGrossRetirementGoalSummary() {
   return {
     isValid: true,
 
-    currentAge:
-      projection.currentAge,
-
-    desiredFybcAge:
-      projection.desiredFybcAge,
-
-    plannedMortalityAge:
-      projection.mortalityAge,
-
-    inflationRate:
-      getInflationRate(),
-
-    yearsRemaining:
-      projection.yearsRemaining,
-
-    monthlyIncomeToday:
-      projection.monthlyPassiveIncome,
-
-    monthlyIncomeAtFybc:
-      projection.monthlyIncomeAtFybc,
-
-    monthlyIncomeAt65:
-      projection.monthlyIncomeAt65,
-
-    grossCapitalRequired:
-      projection.totalCapitalRequired,
-  };
-}
-
-/* ========================================
-   RETIREMENT GOAL SUMMARY
-======================================== */
-
-export function getRetirementGoalSummary() {
-  const selectedCpfRetirementOption = getSelectedCpfRetirementOption();
-
-  const cpfGrowthRate = getSavedCpfRetirementSumGrowthRate();
-
-  const cpfLifePayout = getSelectedCpfLifeMonthlyPayout({
-    selectedCpfRetirementOption,
-    cpfGrowthRate,
-  });
-
-  const projection = calculateFybcProjectionValues({
-    currentAge: getClientAge(),
-
-    desiredFybcAge: getDesiredFybcAge(),
-
-    mortalityAge: getPlannedMortalityAge(),
-
-    inflationRatePercent: getInflationRate(),
-
-    monthlyPassiveIncome: getSelectedMonthlyPassiveIncome(),
-
-    cpfLifePayout,
-  });
-
-  if (!projection.isValid) {
-    return {
-      isValid: false,
-
-      desiredFybcAge: getDesiredFybcAge(),
-
-      monthlyPassiveIncomeNeeded: 0,
-
-      monthlyIncomeAt65: 0,
-
-      cpfLifeIncome: 0,
-
-      incomeGap: 0,
-
-      totalCapitalNeeded: 0,
-    };
-  }
-
-  return {
-    isValid: true,
+    currentAge: projection.currentAge,
 
     desiredFybcAge: projection.desiredFybcAge,
 
-    monthlyPassiveIncomeNeeded: projection.monthlyIncomeAtFybc,
+    plannedMortalityAge: projection.mortalityAge,
+
+    inflationRate: getInflationRate(),
+
+    yearsRemaining: projection.yearsRemaining,
+
+    monthlyIncomeToday: projection.monthlyPassiveIncome,
+
+    monthlyIncomeAtFybc: projection.monthlyIncomeAtFybc,
 
     monthlyIncomeAt65: projection.monthlyIncomeAt65,
 
-    cpfLifeIncome: projection.cpfLifePayout,
-
-    incomeGap: projection.monthlyIncomeAfterCpf,
-
-    totalCapitalNeeded: projection.totalCapitalRequired,
+    grossCapitalRequired: projection.totalCapitalRequired,
   };
-}
-
-/* ========================================
-   MONTHLY SPENDING BREAKDOWN
-======================================== */
-
-export function calculateMonthlySpendingBreakdown() {
-  const expenses = getExpenses();
-
-  const monthlyExpenses = {
-    household: getValidAmount(expenses.household),
-
-    transport: getValidAmount(expenses.transport),
-
-    subscriptionsLifestyle: getValidAmount(expenses.subscriptionsLifestyle),
-
-    parentsDependantsSupport: getValidAmount(expenses.parentsDependantsSupport),
-
-    otherRecurringExpenses: getValidAmount(expenses.otherRecurringExpenses),
-  };
-
-  const monthlyCommitments = {
-    liabilityRepayments: calculateTotalMonthlyLiabilityRepayments(),
-
-    insurancePremiums: getEffectiveMonthlyInsurancePremium(),
-  };
-
-  const totalMonthlyExpenses =
-    monthlyExpenses.household +
-    monthlyExpenses.transport +
-    monthlyExpenses.subscriptionsLifestyle +
-    monthlyExpenses.parentsDependantsSupport +
-    monthlyExpenses.otherRecurringExpenses;
-
-  const totalMonthlyCommitments =
-    monthlyCommitments.liabilityRepayments +
-    monthlyCommitments.insurancePremiums;
-
-  return {
-    expenses: monthlyExpenses,
-
-    commitments: monthlyCommitments,
-
-    totalMonthlyExpenses,
-
-    totalMonthlyCommitments,
-
-    totalMonthlyOutflow: totalMonthlyExpenses + totalMonthlyCommitments,
-  };
-}
-
-/* ========================================
-   MONTHLY FINANCIAL POSITION
-======================================== */
-
-export function calculateMonthlyFinancialPosition() {
-  const incomeSummary = calculateCurrentIncomeSummary();
-
-  const spendingBreakdown = calculateMonthlySpendingBreakdown();
-
-  const monthlyTakeHomeIncome = getValidAmount(
-    incomeSummary.monthlyTakeHomeIncome,
-  );
-
-  const monthlyExpenses = spendingBreakdown.totalMonthlyExpenses;
-
-  const monthlyCommitments = spendingBreakdown.totalMonthlyCommitments;
-
-  const monthlySurplus =
-    monthlyTakeHomeIncome - monthlyExpenses - monthlyCommitments;
-
-  const goalSavingsSummary = calculateGoalSavings(getAllGoals());
-
-  const minimumGoalSavings = getValidAmount(
-    goalSavingsSummary.totalMonthlySavings,
-  );
-
-  const netSurplus = monthlySurplus - minimumGoalSavings;
-
-  return {
-    monthlyTakeHomeIncome,
-
-    monthlyExpenses,
-
-    monthlyCommitments,
-
-    monthlySurplus,
-
-    minimumGoalSavings,
-
-    netSurplus,
-
-    goalSavingsSummary,
-  };
-}
-
-/* ========================================
-   INCOME CALCULATION
-======================================== */
-
-function calculateCurrentIncomeSummary() {
-  const assets = getAssets();
-
-  const profile = getClientProfile();
-
-  const income = assets?.income || {};
-
-  return calculateIncomeSummary({
-    monthlyEmploymentIncome: income.monthlyEmployment,
-
-    annualBonus: income.annualBonus,
-
-    annualNetTradeIncome: income.annualNetTradeIncome,
-
-    netPlatformEarnings: income.netPlatformEarnings,
-
-    sepMedisaveOverrideEnabled: income.sepMedisaveOverrideEnabled,
-
-    sepMedisaveOverrideAmount: income.sepMedisaveOverrideAmount,
-
-    monthlyOtherIncome: income.otherMonthly,
-
-    employmentStatus: profile?.employmentStatus,
-
-    age: getClientAge(),
-
-    ageAtStartOfWorkYear: getAgeAtStartOfCurrentYear(profile?.dateOfBirth),
-  });
-}
-
-function getAgeAtStartOfCurrentYear(dateOfBirth) {
-  if (!dateOfBirth) {
-    return null;
-  }
-
-  const birthYear = Number(String(dateOfBirth).split("-")[0]);
-
-  return Number.isFinite(birthYear)
-    ? new Date().getFullYear() - birthYear
-    : null;
-}
-
-/* ========================================
-   LIABILITY REPAYMENTS
-======================================== */
-
-function calculateTotalMonthlyLiabilityRepayments() {
-  return getLiabilities().reduce(function (runningTotal, liability) {
-    return runningTotal + getLiabilityMonthlyCashRepayment(liability);
-  }, 0);
 }
 
 /* ========================================
