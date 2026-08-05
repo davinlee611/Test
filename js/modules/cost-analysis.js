@@ -6,6 +6,7 @@ import {
   getExpenses,
   getGoals,
   getLiabilities,
+  getPolicies,
 } from "../state/client-plan.js";
 
 import { getCpfAllocationRates } from "../services/cpf-service.js";
@@ -72,6 +73,8 @@ const DEFAULT_PROJECTION_PERIOD = "10";
 const DEFAULT_PROJECTION_YEARS = 10;
 const DEFAULT_EMPLOYMENT_INCREMENT = 2;
 const MINIMUM_AUTOMATIC_CPF_LIFE_PREMIUM = 60000;
+const DEFAULT_PRE_FYBC_GROWTH_RATE = 5;
+const DEFAULT_INVESTMENT_POLICY_GROWTH_RATE = 4;
 
 const RETIREMENT_STRATEGIES = Object.freeze({
   CURRENT_PATH: "current_path",
@@ -380,6 +383,110 @@ const closeProjectionBreakdownButton = document.getElementById(
 );
 
 /* ========================================
+   YOUR NEXT STEPS
+======================================== */
+
+const nextStepsElements = {
+  suggestedMonthly: document.getElementById(
+    "analysisNextSuggestedMonthly",
+  ),
+
+  availableMonthly: document.getElementById(
+    "analysisNextAvailableMonthly",
+  ),
+
+  chosenMonthly: document.getElementById(
+    "analysisNextChosenMonthly",
+  ),
+
+  monthlyAmountInput: document.getElementById(
+    "analysisNextMonthlyAmountInput",
+  ),
+
+  growthRateInput: document.getElementById(
+    "analysisNextGrowthRateInput",
+  ),
+
+  flexibilityRemaining: document.getElementById(
+    "analysisNextFlexibilityRemaining",
+  ),
+
+  commitmentMessage: document.getElementById(
+    "analysisNextCommitmentMessage",
+  ),
+
+  availableAssets: document.getElementById(
+    "analysisNextAvailableAssets",
+  ),
+
+  investmentPolicies: document.getElementById(
+    "analysisNextInvestmentPolicies",
+  ),
+
+  endowmentValue: document.getElementById(
+    "analysisNextEndowmentValue",
+  ),
+
+  eligibleOa: document.getElementById(
+    "analysisNextEligibleOa",
+  ),
+
+  includeAssetsInput: document.getElementById(
+    "analysisNextIncludeAssetsInput",
+  ),
+
+  includeInvestmentPoliciesInput: document.getElementById(
+    "analysisNextIncludeInvestmentPoliciesInput",
+  ),
+
+  includeEndowmentInput: document.getElementById(
+    "analysisNextIncludeEndowmentInput",
+  ),
+
+  includeOaInput: document.getElementById(
+    "analysisNextIncludeOaInput",
+  ),
+
+  capitalNeeded: document.getElementById(
+    "analysisNextCapitalNeeded",
+  ),
+
+  selectedResources: document.getElementById(
+    "analysisNextSelectedResources",
+  ),
+
+  monthlyCommitmentValue: document.getElementById(
+    "analysisNextMonthlyCommitmentValue",
+  ),
+
+  projectedFunding: document.getElementById(
+    "analysisNextProjectedFunding",
+  ),
+
+  remainingGap: document.getElementById(
+    "analysisNextRemainingGap",
+  ),
+
+  fundingProgressLabel: document.getElementById(
+    "analysisNextFundingProgressLabel",
+  ),
+
+  fundingProgressBar: document.getElementById(
+    "analysisNextFundingProgressBar",
+  ),
+
+  fundingStatus: document.getElementById(
+    "analysisNextFundingStatus",
+  ),
+};
+
+const monthlyCommitmentInputs = Array.from(
+  document.querySelectorAll(
+    'input[name="analysisMonthlyCommitment"]',
+  ),
+);
+
+/* ========================================
    INITIALIZATION
 ======================================== */
 
@@ -458,6 +565,39 @@ export function initializeCostAnalysis() {
   goalFilterOptions?.addEventListener("change", handleGoalFilterChange);
 
   selectAllGoalsButton?.addEventListener("click", handleSelectAllGoals);
+
+  monthlyCommitmentInputs.forEach(function (input) {
+    input.addEventListener("change", function () {
+      renderCostAnalysis();
+    });
+  });
+
+  nextStepsElements.monthlyAmountInput?.addEventListener("input", function () {
+    const selectedInput = monthlyCommitmentInputs.find(function (input) {
+      return input.checked;
+    });
+
+    if (selectedInput?.value === "custom") {
+      renderCostAnalysis();
+    }
+  });
+
+  nextStepsElements.growthRateInput?.addEventListener(
+    "input",
+    renderCostAnalysis,
+  );
+
+  [
+    nextStepsElements.includeAssetsInput,
+
+    nextStepsElements.includeInvestmentPoliciesInput,
+
+    nextStepsElements.includeEndowmentInput,
+
+    nextStepsElements.includeOaInput,
+  ].forEach(function (input) {
+    input?.addEventListener("change", renderCostAnalysis);
+  });
 
   capitalMethodologyButtons.forEach(function (button) {
     button.addEventListener("click", handleCapitalMethodologyClick);
@@ -985,6 +1125,8 @@ export function renderCostAnalysis() {
 
     cpfLifeStartAge,
   });
+
+  renderYourNextSteps(currentCashflow);
 }
 
 /* ========================================
@@ -1618,6 +1760,8 @@ function calculateYourPathProjectedPosition({
 
     desiredFybcAge: summary.desiredFybcAge,
 
+    monthsToFybc: fybcRowIndex,
+
     plannedMortalityAge: summary.plannedMortalityAge,
 
     monthlyIncomeAtFybc: summary.monthlyIncomeAtFybc,
@@ -2145,6 +2289,868 @@ function appendCapitalBreakdownSection({
   total.append(totalLabelElement, totalValueElement);
 
   projectionBreakdownContent.append(total);
+}
+
+/* ========================================
+   YOUR NEXT STEPS
+======================================== */
+
+function renderYourNextSteps(currentCashflow) {
+  const position = latestYourPathProjectedPosition;
+
+  if (!position?.isValid) {
+    renderIncompleteNextSteps();
+    return;
+  }
+
+  const availableMonthly = Math.max(
+    getFiniteNumber(currentCashflow?.remainingSurplus),
+    0,
+  );
+
+  const monthsToFybc = Math.max(
+    getNonNegativeNumber(position.monthsToFybc),
+    0,
+  );
+
+  const growthRate = getNextStepsGrowthRate();
+
+  const currentAssets = calculateLiquidAssetTotal(
+    getAssets()?.liquidAssets,
+  );
+
+  const projectedCurrentAssets =
+    calculateLumpSumFutureValue({
+      amount: currentAssets,
+
+      months: monthsToFybc,
+
+      annualRatePercent: growthRate,
+    });
+
+  const investmentPoliciesAtFybc =
+    calculateInvestmentPolicyValueAtFybc({
+      desiredFybcAge: position.desiredFybcAge,
+
+      monthsToFybc,
+    });
+
+  const endowmentValueAtFybc =
+    calculateEndowmentValueAtFybc({
+      desiredFybcAge: position.desiredFybcAge,
+
+      plannedMortalityAge:
+        position.plannedMortalityAge,
+
+      preFybcGrowthRate: growthRate,
+
+      postFybcReturnRate:
+        position.postFybcReturnRate,
+    });
+
+  const eligibleOaAtFybc =
+    position.canIncludeEligibleOa
+      ? getNonNegativeNumber(
+          position.eligibleOaPresentValue,
+        )
+      : 0;
+
+  /*
+   * These four numbers show what is AVAILABLE.
+   * They are not automatically counted.
+   */
+  setCurrency(
+    nextStepsElements.availableAssets,
+    currentAssets,
+  );
+
+  setCurrency(
+    nextStepsElements.investmentPolicies,
+    investmentPoliciesAtFybc,
+  );
+
+  setCurrency(
+    nextStepsElements.endowmentValue,
+    endowmentValueAtFybc,
+  );
+
+  setCurrency(
+    nextStepsElements.eligibleOa,
+    eligibleOaAtFybc,
+  );
+
+  if (nextStepsElements.includeOaInput) {
+    nextStepsElements.includeOaInput.disabled =
+      !position.canIncludeEligibleOa;
+
+    if (!position.canIncludeEligibleOa) {
+      nextStepsElements.includeOaInput.checked = false;
+    }
+  }
+
+  const selectedResources =
+    getSelectedNextStepResources({
+      projectedCurrentAssets,
+
+      investmentPoliciesAtFybc,
+
+      endowmentValueAtFybc,
+
+      eligibleOaAtFybc,
+    });
+
+  const capitalNeeded =
+    getNonNegativeNumber(
+      position.capitalNeededAtFybc,
+    );
+
+  /*
+   * This is the amount the monthly savings plan
+   * still needs to build after resources explicitly
+   * selected by the client.
+   */
+  const capitalStillToBuild = Math.max(
+    capitalNeeded - selectedResources,
+    0,
+  );
+
+  const suggestedMonthly =
+    calculateRequiredMonthlyContribution({
+      targetFutureValue: capitalStillToBuild,
+
+      months: monthsToFybc,
+
+      annualRatePercent: growthRate,
+    });
+
+  const chosenMonthly =
+    getChosenMonthlyCommitment(
+      availableMonthly,
+    );
+
+  const projectedMonthlyCommitment =
+    calculateMonthlyContributionFutureValue({
+      monthlyAmount: chosenMonthly,
+
+      months: monthsToFybc,
+
+      annualRatePercent: growthRate,
+    });
+
+  const projectedFunding =
+    selectedResources +
+    projectedMonthlyCommitment;
+
+  const remainingGap = Math.max(
+    capitalNeeded - projectedFunding,
+    0,
+  );
+
+  const fundingSurplus = Math.max(
+    projectedFunding - capitalNeeded,
+    0,
+  );
+
+  const fundingProgress =
+    capitalNeeded > 0
+      ? projectedFunding / capitalNeeded * 100
+      : 0;
+
+  const remainingFlexibility =
+    availableMonthly - chosenMonthly;
+
+  setCurrency(
+    nextStepsElements.suggestedMonthly,
+    suggestedMonthly,
+  );
+
+  setCurrency(
+    nextStepsElements.availableMonthly,
+    availableMonthly,
+  );
+
+  setCurrency(
+    nextStepsElements.chosenMonthly,
+    chosenMonthly,
+  );
+
+  setSignedCurrency(
+    nextStepsElements.flexibilityRemaining,
+    remainingFlexibility,
+  );
+
+  setCurrency(
+    nextStepsElements.capitalNeeded,
+    capitalNeeded,
+  );
+
+  setCurrency(
+    nextStepsElements.selectedResources,
+    selectedResources,
+  );
+
+  setCurrency(
+    nextStepsElements.monthlyCommitmentValue,
+    projectedMonthlyCommitment,
+  );
+
+  setCurrency(
+    nextStepsElements.projectedFunding,
+    projectedFunding,
+  );
+
+  setCurrency(
+    nextStepsElements.remainingGap,
+    remainingGap,
+  );
+
+  renderNextStepsMonthlyInput({
+    chosenMonthly,
+
+    availableMonthly,
+  });
+
+  renderNextStepsFundingProgress({
+    remainingGap,
+
+    fundingSurplus,
+
+    fundingProgress,
+  });
+
+  renderNextStepsCommitmentMessage({
+    chosenMonthly,
+
+    availableMonthly,
+
+    suggestedMonthly,
+
+    remainingGap,
+  });
+}
+
+function getSelectedNextStepResources({
+  projectedCurrentAssets,
+  investmentPoliciesAtFybc,
+  endowmentValueAtFybc,
+  eligibleOaAtFybc,
+}) {
+  let total = 0;
+
+  if (nextStepsElements.includeAssetsInput?.checked) {
+    total += projectedCurrentAssets;
+  }
+
+  if (
+    nextStepsElements
+      .includeInvestmentPoliciesInput
+      ?.checked
+  ) {
+    total += investmentPoliciesAtFybc;
+  }
+
+  if (nextStepsElements.includeEndowmentInput?.checked) {
+    total += endowmentValueAtFybc;
+  }
+
+  if (
+    nextStepsElements.includeOaInput?.checked &&
+    !nextStepsElements.includeOaInput?.disabled
+  ) {
+    total += eligibleOaAtFybc;
+  }
+
+  return total;
+}
+
+/* ========================================
+   MONTHLY COMMITMENT
+======================================== */
+
+function getChosenMonthlyCommitment(
+  availableMonthly,
+) {
+  const selectedInput =
+    monthlyCommitmentInputs.find(function (input) {
+      return input.checked;
+    });
+
+  if (!selectedInput) {
+    return 0;
+  }
+
+  if (selectedInput.value === "custom") {
+    return getNonNegativeNumber(
+      nextStepsElements.monthlyAmountInput?.value,
+    );
+  }
+
+  const percentage =
+    getNonNegativeNumber(
+      selectedInput.value,
+    ) / 100;
+
+  return availableMonthly * percentage;
+}
+
+function renderNextStepsMonthlyInput({
+  chosenMonthly,
+  availableMonthly,
+}) {
+  const selectedInput =
+    monthlyCommitmentInputs.find(function (input) {
+      return input.checked;
+    });
+
+  const isCustom =
+    selectedInput?.value === "custom";
+
+  if (!nextStepsElements.monthlyAmountInput) {
+    return;
+  }
+
+  nextStepsElements.monthlyAmountInput.readOnly =
+    !isCustom;
+
+  if (!isCustom) {
+    nextStepsElements.monthlyAmountInput.value =
+      String(Math.round(chosenMonthly));
+  }
+
+  nextStepsElements.monthlyAmountInput.max =
+    String(
+      Math.max(
+        Math.round(availableMonthly),
+        0,
+      ),
+    );
+}
+
+function renderNextStepsCommitmentMessage({
+  chosenMonthly,
+  availableMonthly,
+  suggestedMonthly,
+  remainingGap,
+}) {
+  if (!nextStepsElements.commitmentMessage) {
+    return;
+  }
+
+  if (availableMonthly <= 0) {
+    setText(
+      nextStepsElements.commitmentMessage,
+      "There is currently no positive monthly surplus to allocate. Review the current cashflow before setting a long-term monthly amount.",
+    );
+
+    return;
+  }
+
+  if (chosenMonthly > availableMonthly) {
+    setText(
+      nextStepsElements.commitmentMessage,
+      [
+        `This plan uses ${formatCurrency(chosenMonthly)} per month,`,
+        `which is ${formatCurrency(
+          chosenMonthly - availableMonthly,
+        )} above the current monthly surplus.`,
+      ].join(" "),
+    );
+
+    return;
+  }
+
+  if (remainingGap <= 0) {
+    setText(
+      nextStepsElements.commitmentMessage,
+      "Based on the selected resources and monthly amount, the current plan reaches the estimated capital target.",
+    );
+
+    return;
+  }
+
+  if (chosenMonthly < suggestedMonthly) {
+    setText(
+      nextStepsElements.commitmentMessage,
+      [
+        `You have chosen ${formatCurrency(chosenMonthly)} per month.`,
+        `The current estimate suggests about`,
+        `${formatCurrency(suggestedMonthly)} per month`,
+        `would be needed to fully close the remaining target by FYBC.`,
+      ].join(" "),
+    );
+
+    return;
+  }
+
+  setText(
+    nextStepsElements.commitmentMessage,
+    "This monthly amount is within the client's current surplus and is being included in the FYBC projection.",
+  );
+}
+
+/* ========================================
+   ACCUMULATION MATH
+======================================== */
+
+function calculateRequiredMonthlyContribution({
+  targetFutureValue,
+  months,
+  annualRatePercent,
+}) {
+  const target =
+    getNonNegativeNumber(targetFutureValue);
+
+  const safeMonths = Math.floor(
+    getNonNegativeNumber(months),
+  );
+
+  if (target <= 0 || safeMonths <= 0) {
+    return 0;
+  }
+
+  const monthlyRate =
+    convertAnnualRateToMonthly(
+      annualRatePercent,
+    );
+
+  if (monthlyRate <= 0) {
+    return target / safeMonths;
+  }
+
+  const accumulationFactor =
+    (
+      Math.pow(
+        1 + monthlyRate,
+        safeMonths,
+      ) - 1
+    ) / monthlyRate;
+
+  if (accumulationFactor <= 0) {
+    return 0;
+  }
+
+  return target / accumulationFactor;
+}
+
+function calculateMonthlyContributionFutureValue({
+  monthlyAmount,
+  months,
+  annualRatePercent,
+}) {
+  const amount =
+    getNonNegativeNumber(monthlyAmount);
+
+  const safeMonths = Math.floor(
+    getNonNegativeNumber(months),
+  );
+
+  if (amount <= 0 || safeMonths <= 0) {
+    return 0;
+  }
+
+  const monthlyRate =
+    convertAnnualRateToMonthly(
+      annualRatePercent,
+    );
+
+  if (monthlyRate <= 0) {
+    return amount * safeMonths;
+  }
+
+  return (
+    amount *
+    (
+      Math.pow(
+        1 + monthlyRate,
+        safeMonths,
+      ) - 1
+    ) /
+    monthlyRate
+  );
+}
+
+function calculateLumpSumFutureValue({
+  amount,
+  months,
+  annualRatePercent,
+}) {
+  const safeAmount =
+    getNonNegativeNumber(amount);
+
+  const safeMonths =
+    getNonNegativeNumber(months);
+
+  if (safeAmount <= 0) {
+    return 0;
+  }
+
+  const monthlyRate =
+    convertAnnualRateToMonthly(
+      annualRatePercent,
+    );
+
+  return (
+    safeAmount *
+    Math.pow(
+      1 + monthlyRate,
+      safeMonths,
+    )
+  );
+}
+
+function getNextStepsGrowthRate() {
+  if (!nextStepsElements.growthRateInput) {
+    return DEFAULT_PRE_FYBC_GROWTH_RATE;
+  }
+
+  return getNonNegativeNumber(
+    nextStepsElements.growthRateInput.value,
+  );
+}
+
+/* ========================================
+   INVESTMENT POLICY VALUE AT FYBC
+======================================== */
+
+function calculateInvestmentPolicyValueAtFybc({
+  desiredFybcAge,
+  monthsToFybc,
+}) {
+  const policies = getPolicies();
+
+  if (!Array.isArray(policies)) {
+    return 0;
+  }
+
+  return policies.reduce(function (
+    total,
+    policy,
+  ) {
+    if (
+      policy?.policyType !== "ilp_accumulation" &&
+      policy?.policyType !== "investment_accumulation"
+    ) {
+      return total;
+    }
+
+    const accumulation =
+      policy.accumulation || {};
+
+    const projectedValue =
+      getNonNegativeNumber(
+        accumulation.projectedPolicyValue,
+      );
+
+    const projectedAtAge =
+      getNonNegativeNumber(
+        accumulation.projectedAtAge,
+      );
+
+    /*
+     * If the insurer already supplied an illustration
+     * for the exact FYBC age, use it.
+     */
+    if (
+      projectedValue > 0 &&
+      projectedAtAge ===
+        getNonNegativeNumber(
+          desiredFybcAge,
+        )
+    ) {
+      return total + projectedValue;
+    }
+
+    /*
+     * Otherwise estimate from the latest recorded
+     * policy value. We intentionally do NOT add
+     * future premiums because allocation rates,
+     * charges and investment performance vary.
+     */
+    const currentPolicyValue =
+      getNonNegativeNumber(
+        accumulation.currentPolicyValue,
+      );
+
+    if (currentPolicyValue <= 0) {
+      return total;
+    }
+
+    const estimatedValue =
+      calculateLumpSumFutureValue({
+        amount: currentPolicyValue,
+
+        months: monthsToFybc,
+
+        annualRatePercent:
+          DEFAULT_INVESTMENT_POLICY_GROWTH_RATE,
+      });
+
+    return total + estimatedValue;
+  }, 0);
+}
+
+/* ========================================
+   ENDOWMENT VALUE AT FYBC
+======================================== */
+
+function calculateEndowmentValueAtFybc({
+  desiredFybcAge,
+  plannedMortalityAge,
+  preFybcGrowthRate,
+  postFybcReturnRate,
+}) {
+  const policies = getPolicies();
+
+  const profile = getClientProfile();
+
+  const fybcDate =
+    getAgeMonthDate(
+      profile.dateOfBirth,
+      desiredFybcAge,
+    );
+
+  const mortalityDate =
+    getAgeMonthDate(
+      profile.dateOfBirth,
+      plannedMortalityAge,
+    );
+
+  if (
+    !fybcDate ||
+    !mortalityDate ||
+    !Array.isArray(policies)
+  ) {
+    return 0;
+  }
+
+  const currentDate =
+    getProjectionStartDate();
+
+  return policies.reduce(function (
+    total,
+    policy,
+  ) {
+    if (policy?.policyType !== "endowment") {
+      return total;
+    }
+
+    const maturityDate =
+      parsePlanningYearMonth(
+        policy.endowment?.maturityDate,
+      );
+
+    if (
+      !maturityDate ||
+      maturityDate < currentDate ||
+      maturityDate >= mortalityDate
+    ) {
+      return total;
+    }
+
+    const maturityAmount =
+      getNonNegativeNumber(
+        policy.endowment
+          ?.guaranteedMaturityAmount,
+      ) +
+      getNonNegativeNumber(
+        policy.endowment
+          ?.projectedNonGuaranteedAmount,
+      );
+
+    if (maturityAmount <= 0) {
+      return total;
+    }
+
+    /*
+     * Matures before FYBC:
+     * assume the selected proceeds remain invested
+     * until FYBC.
+     */
+    if (maturityDate <= fybcDate) {
+      const monthsToFybc =
+        getWholeMonthsBetween(
+          maturityDate,
+          fybcDate,
+        );
+
+      return (
+        total +
+        calculateLumpSumFutureValue({
+          amount: maturityAmount,
+
+          months: monthsToFybc,
+
+          annualRatePercent:
+            preFybcGrowthRate,
+        })
+      );
+    }
+
+    /*
+     * Matures after FYBC:
+     * convert the future maturity into its
+     * FYBC-equivalent present value.
+     */
+    const monthsAfterFybc =
+      getWholeMonthsBetween(
+        fybcDate,
+        maturityDate,
+      );
+
+    const monthlyReturnRate =
+      convertAnnualRateToMonthly(
+        postFybcReturnRate,
+      );
+
+    return (
+      total +
+      maturityAmount /
+        Math.pow(
+          1 + monthlyReturnRate,
+          monthsAfterFybc,
+        )
+    );
+  }, 0);
+}
+
+function getAgeMonthDate(
+  dateOfBirth,
+  targetAge,
+) {
+  const match =
+    /^(\d{4})-(\d{2})-(\d{2})$/.exec(
+      dateOfBirth || "",
+    );
+
+  const age =
+    getNonNegativeNumber(targetAge);
+
+  if (!match || age <= 0) {
+    return null;
+  }
+
+  return new Date(
+    Number(match[1]) + age,
+    Number(match[2]) - 1,
+    1,
+  );
+}
+
+function parsePlanningYearMonth(value) {
+  const match =
+    /^(\d{4})-(\d{2})/.exec(
+      value || "",
+    );
+
+  if (!match) {
+    return null;
+  }
+
+  const year = Number(match[1]);
+
+  const month =
+    Number(match[2]) - 1;
+
+  if (
+    !Number.isFinite(year) ||
+    month < 0 ||
+    month > 11
+  ) {
+    return null;
+  }
+
+  return new Date(
+    year,
+    month,
+    1,
+  );
+}
+
+function getWholeMonthsBetween(
+  fromDate,
+  toDate,
+) {
+  return Math.max(
+    0,
+    (
+      toDate.getFullYear() -
+      fromDate.getFullYear()
+    ) *
+      MONTHS_PER_YEAR +
+      toDate.getMonth() -
+      fromDate.getMonth(),
+  );
+}
+
+function renderNextStepsFundingProgress({
+  remainingGap,
+  fundingSurplus,
+  fundingProgress,
+}) {
+  const displayedProgress = Math.max(0, Math.min(fundingProgress, 100));
+
+  setText(
+    nextStepsElements.fundingProgressLabel,
+    `${Math.round(displayedProgress)}%`,
+  );
+
+  if (nextStepsElements.fundingProgressBar) {
+    nextStepsElements.fundingProgressBar.style.width = `${displayedProgress}%`;
+  }
+
+  if (remainingGap > 0) {
+    setText(
+      nextStepsElements.fundingStatus,
+      [
+        `${formatCurrency(remainingGap)}`,
+        `of the estimated FYBC capital target`,
+        `is not yet covered by the selected plan.`,
+      ].join(" "),
+    );
+
+    return;
+  }
+
+  setText(
+    nextStepsElements.fundingStatus,
+    fundingSurplus > 0
+      ? [
+          `The selected plan currently exceeds`,
+          `the estimated target by`,
+          `${formatCurrency(fundingSurplus)}.`,
+        ].join(" ")
+      : "The selected plan currently reaches the estimated FYBC capital target.",
+  );
+}
+
+function renderIncompleteNextSteps() {
+  [
+    nextStepsElements.suggestedMonthly,
+    nextStepsElements.availableMonthly,
+    nextStepsElements.chosenMonthly,
+    nextStepsElements.availableAssets,
+    nextStepsElements.investmentPolicies,
+    nextStepsElements.endowmentValue,
+    nextStepsElements.eligibleOa,
+    nextStepsElements.capitalNeeded,
+    nextStepsElements.selectedResources,
+    nextStepsElements.monthlyCommitmentValue,
+    nextStepsElements.projectedFunding,
+    nextStepsElements.remainingGap,
+  ].forEach(function (element) {
+    setText(element, "—");
+  });
+
+  setText(nextStepsElements.fundingProgressLabel, "0%");
+
+  if (nextStepsElements.fundingProgressBar) {
+    nextStepsElements.fundingProgressBar.style.width = "0%";
+  }
+
+  setText(
+    nextStepsElements.fundingStatus,
+    "Complete the retirement target first to build a suggested plan.",
+  );
 }
 
 function createInvalidProjectedPosition() {

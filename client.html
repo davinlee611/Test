@@ -2819,19 +2819,21 @@
                       <div class="analysis-next-plan-row">
                         <span>Capital Needed at FYBC</span>
 
-                        <strong>—</strong>
+                        <strong id="analysisNextCapitalNeeded">—</strong>
                       </div>
 
                       <div class="analysis-next-plan-row">
                         <span>Selected Existing Resources</span>
 
-                        <strong>—</strong>
+                        <strong id="analysisNextSelectedResources">—</strong>
                       </div>
 
                       <div class="analysis-next-plan-row">
                         <span>Projected Value of Monthly Commitment</span>
 
-                        <strong>—</strong>
+                        <strong id="analysisNextMonthlyCommitmentValue"
+                          >—</strong
+                        >
                       </div>
 
                       <div class="analysis-next-plan-total">
@@ -2839,23 +2841,21 @@
                           <span>Projected Funding at FYBC</span>
 
                           <small>
-                            Based only on the resources you choose to use
+                            Selected resources plus your monthly plan
                           </small>
                         </div>
 
-                        <strong>—</strong>
+                        <strong id="analysisNextProjectedFunding">—</strong>
                       </div>
 
                       <div class="analysis-next-plan-gap">
                         <div>
                           <span>Remaining Gap</span>
 
-                          <small>
-                            Capital needed less your selected funding plan
-                          </small>
+                          <small> Amount still not covered by this plan </small>
                         </div>
 
-                        <strong>—</strong>
+                        <strong id="analysisNextRemainingGap">—</strong>
                       </div>
                     </div>
 
@@ -2863,16 +2863,21 @@
                       <div class="analysis-next-progress-heading">
                         <span>Funding Progress</span>
 
-                        <strong>—</strong>
+                        <strong id="analysisNextFundingProgressLabel"
+                          >0%</strong
+                        >
                       </div>
 
                       <div class="analysis-next-progress-track">
-                        <span style="width: 0%"></span>
+                        <span
+                          id="analysisNextFundingProgressBar"
+                          style="width: 0%"
+                        ></span>
                       </div>
 
-                      <p>
-                        Your selected funding plan will appear here once the
-                        calculations are connected.
+                      <p id="analysisNextFundingStatus">
+                        Choose how much you want to commit each month and which
+                        resources you want to use.
                       </p>
                     </div>
                   </div>
