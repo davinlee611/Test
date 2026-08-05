@@ -2647,7 +2647,9 @@
 
                     <div class="analysis-next-resource-list">
                       <!-- Current assets -->
-                      <article class="analysis-next-resource-card">
+                      <article
+                        class="analysis-next-resource-card analysis-next-resource-card--allocatable"
+                      >
                         <div class="analysis-next-resource-main">
                           <div class="analysis-next-resource-icon">
                             <i
@@ -2677,38 +2679,39 @@
                             type="checkbox"
                           />
 
-                          <div class="analysis-next-resource-allocation">
-                            <label for="analysisNextAssetsAmountInput">
-                              Amount I Want to Use
-                            </label>
-
-                            <div class="currency-input">
-                              <span>$</span>
-
-                              <input
-                                id="analysisNextAssetsAmountInput"
-                                type="number"
-                                min="0"
-                                step="1"
-                                value="0"
-                                disabled
-                                inputmode="numeric"
-                              />
-                            </div>
-
-                            <small id="analysisNextAssetsAmountHelp">
-                              Switch this resource on, then choose how much of
-                              your current assets you want to reserve for this
-                              goal.
-                            </small>
-                          </div>
-
                           <span aria-hidden="true"></span>
                         </label>
+
+                        <div class="analysis-next-resource-allocation">
+                          <label for="analysisNextAssetsAmountInput">
+                            Amount I Want to Use
+                          </label>
+
+                          <div class="currency-input">
+                            <span>$</span>
+
+                            <input
+                              id="analysisNextAssetsAmountInput"
+                              type="number"
+                              min="0"
+                              step="1"
+                              value="0"
+                              disabled
+                              inputmode="numeric"
+                            />
+                          </div>
+
+                          <small id="analysisNextAssetsAmountHelp">
+                            Choose how much of your current assets you want to
+                            reserve for this goal.
+                          </small>
+                        </div>
                       </article>
 
                       <!-- Investment policies -->
-                      <article class="analysis-next-resource-card">
+                      <article
+                        class="analysis-next-resource-card analysis-next-resource-card--allocatable"
+                      >
                         <div class="analysis-next-resource-main">
                           <div class="analysis-next-resource-icon">
                             <i
@@ -2722,13 +2725,13 @@
 
                             <small>
                               Investment (Accumulation) policies recorded in the
-                              portfolio
+                              Insurance Portfolio
                             </small>
                           </div>
                         </div>
 
                         <div class="analysis-next-resource-value">
-                          <span>Projected at FYBC</span>
+                          <span>Estimated at FYBC</span>
 
                           <strong id="analysisNextInvestmentPolicies">
                             —
@@ -2743,6 +2746,31 @@
 
                           <span aria-hidden="true"></span>
                         </label>
+
+                        <div class="analysis-next-resource-allocation">
+                          <label for="analysisNextInvestmentGrowthRateInput">
+                            Investment Value Growth Assumption
+                          </label>
+
+                          <div class="percentage-input">
+                            <input
+                              id="analysisNextInvestmentGrowthRateInput"
+                              type="number"
+                              min="0"
+                              step="0.1"
+                              value="4"
+                              inputmode="decimal"
+                            />
+
+                            <span>% p.a.</span>
+                          </div>
+
+                          <small>
+                            Used only when an Investment (Accumulation) policy
+                            does not have an insurer-projected value at your
+                            FYBC age.
+                          </small>
+                        </div>
                       </article>
 
                       <!-- Endowments -->
@@ -2911,18 +2939,14 @@
                 </section>
 
                 <div class="analysis-next-disclaimer">
-  <i
-    class="fa-solid fa-circle-info"
-    aria-hidden="true"
-  ></i>
+                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
 
-  <p>
-    This is a planning estimate, not a guaranteed return.
-    Income, expenses, investment returns and CPF rules may
-    change over time.
-  </p>
-</div>
-
+                  <p>
+                    This is a planning estimate, not a guaranteed return.
+                    Income, expenses, investment returns and CPF rules may
+                    change over time.
+                  </p>
+                </div>
               </div>
 
               <!-- Optional details -->

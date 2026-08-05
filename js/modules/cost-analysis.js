@@ -411,6 +411,10 @@ const nextStepsElements = {
 
   investmentPolicies: document.getElementById("analysisNextInvestmentPolicies"),
 
+  investmentGrowthRateInput: document.getElementById(
+    "analysisNextInvestmentGrowthRateInput",
+  ),
+
   endowmentValue: document.getElementById("analysisNextEndowmentValue"),
 
   eligibleOa: document.getElementById("analysisNextEligibleOa"),
@@ -558,17 +562,10 @@ export function initializeCostAnalysis() {
     renderCostAnalysis,
   );
 
-  nextStepsElements.includeAssetsInput?.addEventListener("change", function () {
-    /*
-     * We deliberately do not automatically put the
-     * full available balance into the plan.
-     */
-    renderCostAnalysis();
-
-    if (nextStepsElements.includeAssetsInput.checked) {
-      nextStepsElements.assetsAmountInput?.focus();
-    }
-  });
+  nextStepsElements.investmentGrowthRateInput?.addEventListener(
+    "input",
+    renderCostAnalysis,
+  );
 
   nextStepsElements.includeAssetsInput?.addEventListener("change", function () {
     /*
@@ -2218,10 +2215,14 @@ function renderYourNextSteps(currentCashflow) {
     annualRatePercent: growthRate,
   });
 
+  const investmentPolicyGrowthRate = getInvestmentPolicyGrowthRate();
+
   const investmentPoliciesAtFybc = calculateInvestmentPolicyValueAtFybc({
     desiredFybcAge: position.desiredFybcAge,
 
     monthsToFybc,
+
+    annualGrowthRatePercent: investmentPolicyGrowthRate,
   });
 
   const endowmentValueAtFybc = calculateEndowmentValueAtFybc({
@@ -2655,6 +2656,7 @@ function renderIncompleteNextSteps() {
 function calculateInvestmentPolicyValueAtFybc({
   desiredFybcAge,
   monthsToFybc,
+  annualGrowthRatePercent,
 }) {
   const policies = getPolicies();
 
@@ -2679,8 +2681,9 @@ function calculateInvestmentPolicyValueAtFybc({
     const projectedAtAge = getNonNegativeNumber(accumulation.projectedAtAge);
 
     /*
-     * If the insurer already supplied an illustration
-     * for the exact FYBC age, use it.
+     * Priority 1:
+     * Use the insurer's projection when it
+     * corresponds exactly to the client's FYBC age.
      */
     if (
       projectedValue > 0 &&
@@ -2690,10 +2693,9 @@ function calculateInvestmentPolicyValueAtFybc({
     }
 
     /*
-     * Otherwise estimate from the latest recorded
-     * policy value. We intentionally do NOT add
-     * future premiums because allocation rates,
-     * charges and investment performance vary.
+     * Priority 2:
+     * If no matching insurer projection exists,
+     * estimate from the recorded current policy value.
      */
     const currentPolicyValue = getNonNegativeNumber(
       accumulation.currentPolicyValue,
@@ -2708,11 +2710,23 @@ function calculateInvestmentPolicyValueAtFybc({
 
       months: monthsToFybc,
 
-      annualRatePercent: DEFAULT_INVESTMENT_POLICY_GROWTH_RATE,
+      annualRatePercent: annualGrowthRatePercent,
     });
 
     return total + estimatedValue;
   }, 0);
+}
+
+function getInvestmentPolicyGrowthRate() {
+  const enteredRate = Number(
+    nextStepsElements.investmentGrowthRateInput?.value,
+  );
+
+  if (Number.isFinite(enteredRate) && enteredRate >= 0) {
+    return enteredRate;
+  }
+
+  return DEFAULT_INVESTMENT_POLICY_GROWTH_RATE;
 }
 
 /* ========================================
