@@ -5194,6 +5194,55 @@ button.insurance-validation-count:disabled {
   }
 }
 
+.analysis-next-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #f7f9fc;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.analysis-next-disclaimer i {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--primary-color);
+}
+
+.analysis-next-disclaimer p {
+  margin: 0;
+}
+
+.analysis-next-resource-allocation {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+.analysis-next-resource-allocation > label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.analysis-next-resource-allocation .currency-input {
+  width: 100%;
+}
+
+.analysis-next-resource-allocation small {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
 /* ========================================
    YOUR PATH RESPONSIVE LAYOUT
 ======================================== */

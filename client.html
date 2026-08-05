@@ -2677,6 +2677,32 @@
                             type="checkbox"
                           />
 
+                          <div class="analysis-next-resource-allocation">
+                            <label for="analysisNextAssetsAmountInput">
+                              Amount I Want to Use
+                            </label>
+
+                            <div class="currency-input">
+                              <span>$</span>
+
+                              <input
+                                id="analysisNextAssetsAmountInput"
+                                type="number"
+                                min="0"
+                                step="1"
+                                value="0"
+                                disabled
+                                inputmode="numeric"
+                              />
+                            </div>
+
+                            <small id="analysisNextAssetsAmountHelp">
+                              Switch this resource on, then choose how much of
+                              your current assets you want to reserve for this
+                              goal.
+                            </small>
+                          </div>
+
                           <span aria-hidden="true"></span>
                         </label>
                       </article>
@@ -2838,10 +2864,11 @@
 
                       <div class="analysis-next-plan-total">
                         <div>
-                          <span>Projected Funding at FYBC</span>
+                          <span>Estimated Capital at FYBC</span>
 
                           <small>
-                            Selected resources plus your monthly plan
+                            Selected resources plus the estimated value of your
+                            monthly plan
                           </small>
                         </div>
 
@@ -2861,7 +2888,7 @@
 
                     <div class="analysis-next-progress">
                       <div class="analysis-next-progress-heading">
-                        <span>Funding Progress</span>
+                        <span>Estimated Goal Coverage</span>
 
                         <strong id="analysisNextFundingProgressLabel"
                           >0%</strong
@@ -2882,6 +2909,20 @@
                     </div>
                   </div>
                 </section>
+
+                <div class="analysis-next-disclaimer">
+  <i
+    class="fa-solid fa-circle-info"
+    aria-hidden="true"
+  ></i>
+
+  <p>
+    This is a planning estimate, not a guaranteed return.
+    Income, expenses, investment returns and CPF rules may
+    change over time.
+  </p>
+</div>
+
               </div>
 
               <!-- Optional details -->

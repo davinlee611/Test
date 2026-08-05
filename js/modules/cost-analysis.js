@@ -324,7 +324,7 @@ const pathPreviewElements = {
   projectionResults: document.getElementById("analysisPathProjectionResults"),
 
   capitalNeededLabel: document.getElementById("analysisPathCapitalNeededLabel"),
-  
+
   capitalNeededAtFybc: document.getElementById(
     "analysisPathCapitalNeededAtFybc",
   ),
@@ -387,53 +387,35 @@ const closeProjectionBreakdownButton = document.getElementById(
 ======================================== */
 
 const nextStepsElements = {
-  suggestedMonthly: document.getElementById(
-    "analysisNextSuggestedMonthly",
-  ),
+  suggestedMonthly: document.getElementById("analysisNextSuggestedMonthly"),
 
-  availableMonthly: document.getElementById(
-    "analysisNextAvailableMonthly",
-  ),
+  availableMonthly: document.getElementById("analysisNextAvailableMonthly"),
 
-  chosenMonthly: document.getElementById(
-    "analysisNextChosenMonthly",
-  ),
+  chosenMonthly: document.getElementById("analysisNextChosenMonthly"),
 
-  monthlyAmountInput: document.getElementById(
-    "analysisNextMonthlyAmountInput",
-  ),
+  monthlyAmountInput: document.getElementById("analysisNextMonthlyAmountInput"),
 
-  growthRateInput: document.getElementById(
-    "analysisNextGrowthRateInput",
-  ),
+  growthRateInput: document.getElementById("analysisNextGrowthRateInput"),
 
   flexibilityRemaining: document.getElementById(
     "analysisNextFlexibilityRemaining",
   ),
 
-  commitmentMessage: document.getElementById(
-    "analysisNextCommitmentMessage",
-  ),
+  commitmentMessage: document.getElementById("analysisNextCommitmentMessage"),
 
-  availableAssets: document.getElementById(
-    "analysisNextAvailableAssets",
-  ),
+  availableAssets: document.getElementById("analysisNextAvailableAssets"),
 
-  investmentPolicies: document.getElementById(
-    "analysisNextInvestmentPolicies",
-  ),
+  assetsAmountInput: document.getElementById("analysisNextAssetsAmountInput"),
 
-  endowmentValue: document.getElementById(
-    "analysisNextEndowmentValue",
-  ),
+  assetsAmountHelp: document.getElementById("analysisNextAssetsAmountHelp"),
 
-  eligibleOa: document.getElementById(
-    "analysisNextEligibleOa",
-  ),
+  investmentPolicies: document.getElementById("analysisNextInvestmentPolicies"),
 
-  includeAssetsInput: document.getElementById(
-    "analysisNextIncludeAssetsInput",
-  ),
+  endowmentValue: document.getElementById("analysisNextEndowmentValue"),
+
+  eligibleOa: document.getElementById("analysisNextEligibleOa"),
+
+  includeAssetsInput: document.getElementById("analysisNextIncludeAssetsInput"),
 
   includeInvestmentPoliciesInput: document.getElementById(
     "analysisNextIncludeInvestmentPoliciesInput",
@@ -443,47 +425,31 @@ const nextStepsElements = {
     "analysisNextIncludeEndowmentInput",
   ),
 
-  includeOaInput: document.getElementById(
-    "analysisNextIncludeOaInput",
-  ),
+  includeOaInput: document.getElementById("analysisNextIncludeOaInput"),
 
-  capitalNeeded: document.getElementById(
-    "analysisNextCapitalNeeded",
-  ),
+  capitalNeeded: document.getElementById("analysisNextCapitalNeeded"),
 
-  selectedResources: document.getElementById(
-    "analysisNextSelectedResources",
-  ),
+  selectedResources: document.getElementById("analysisNextSelectedResources"),
 
   monthlyCommitmentValue: document.getElementById(
     "analysisNextMonthlyCommitmentValue",
   ),
 
-  projectedFunding: document.getElementById(
-    "analysisNextProjectedFunding",
-  ),
+  projectedFunding: document.getElementById("analysisNextProjectedFunding"),
 
-  remainingGap: document.getElementById(
-    "analysisNextRemainingGap",
-  ),
+  remainingGap: document.getElementById("analysisNextRemainingGap"),
 
   fundingProgressLabel: document.getElementById(
     "analysisNextFundingProgressLabel",
   ),
 
-  fundingProgressBar: document.getElementById(
-    "analysisNextFundingProgressBar",
-  ),
+  fundingProgressBar: document.getElementById("analysisNextFundingProgressBar"),
 
-  fundingStatus: document.getElementById(
-    "analysisNextFundingStatus",
-  ),
+  fundingStatus: document.getElementById("analysisNextFundingStatus"),
 };
 
 const monthlyCommitmentInputs = Array.from(
-  document.querySelectorAll(
-    'input[name="analysisMonthlyCommitment"]',
-  ),
+  document.querySelectorAll('input[name="analysisMonthlyCommitment"]'),
 );
 
 /* ========================================
@@ -572,6 +538,11 @@ export function initializeCostAnalysis() {
     });
   });
 
+  nextStepsElements.assetsAmountInput?.addEventListener(
+    "input",
+    renderCostAnalysis,
+  );
+
   nextStepsElements.monthlyAmountInput?.addEventListener("input", function () {
     const selectedInput = monthlyCommitmentInputs.find(function (input) {
       return input.checked;
@@ -587,9 +558,31 @@ export function initializeCostAnalysis() {
     renderCostAnalysis,
   );
 
-  [
-    nextStepsElements.includeAssetsInput,
+  nextStepsElements.includeAssetsInput?.addEventListener("change", function () {
+    /*
+     * We deliberately do not automatically put the
+     * full available balance into the plan.
+     */
+    renderCostAnalysis();
 
+    if (nextStepsElements.includeAssetsInput.checked) {
+      nextStepsElements.assetsAmountInput?.focus();
+    }
+  });
+
+  nextStepsElements.includeAssetsInput?.addEventListener("change", function () {
+    /*
+     * We deliberately do not automatically put the
+     * full available balance into the plan.
+     */
+    renderCostAnalysis();
+
+    if (nextStepsElements.includeAssetsInput.checked) {
+      nextStepsElements.assetsAmountInput?.focus();
+    }
+  });
+
+  [
     nextStepsElements.includeInvestmentPoliciesInput,
 
     nextStepsElements.includeEndowmentInput,
@@ -1400,18 +1393,14 @@ function renderYourPathCurrentStatus({ summary, remainingSurplus }) {
    YOUR PATH — PROJECTED POSITION
 ======================================== */
 
-function renderYourPathProjectedPosition({
-  rows,
-  cpfLifeStartAge,
-}) {
-  const result =
-    calculateYourPathProjectedPosition({
-      rows,
+function renderYourPathProjectedPosition({ rows, cpfLifeStartAge }) {
+  const result = calculateYourPathProjectedPosition({
+    rows,
 
-      cpfLifeStartAge,
-    });
+    cpfLifeStartAge,
+  });
 
-    latestYourPathProjectedPosition = result.isValid ? result : null;
+  latestYourPathProjectedPosition = result.isValid ? result : null;
 
   if (!result.isValid) {
     renderIncompleteYourPathProjectedPosition();
@@ -1419,15 +1408,9 @@ function renderYourPathProjectedPosition({
     return;
   }
 
-  setHidden(
-    pathPreviewElements.projectionIncomplete,
-    true,
-  );
+  setHidden(pathPreviewElements.projectionIncomplete, true);
 
-  setHidden(
-    pathPreviewElements.projectionResults,
-    false,
-  );
+  setHidden(pathPreviewElements.projectionResults, false);
 
   setText(
     pathPreviewElements.projectedPositionTitle,
@@ -1457,9 +1440,7 @@ function renderYourPathProjectedPosition({
   setText(
     pathPreviewElements.projectedCpfLifeIncome,
     result.projectedCpfLifeIncome > 0
-      ? `${formatCurrency(
-          result.projectedCpfLifeIncome,
-        )}/mth`
+      ? `${formatCurrency(result.projectedCpfLifeIncome)}/mth`
       : "$0/mth",
   );
 
@@ -1480,16 +1461,11 @@ function renderYourPathProjectedPosition({
     result.recordedIncomeCapitalOffset,
   );
 
-  setCurrency(
-    pathPreviewElements.netCapitalAtFybc,
-    result.capitalNeededAtFybc,
-  );
+  setCurrency(pathPreviewElements.netCapitalAtFybc, result.capitalNeededAtFybc);
 
   setText(
     pathPreviewElements.postFybcReturn,
-    formatRate(
-      result.postFybcReturnRate,
-    ),
+    formatRate(result.postFybcReturnRate),
   );
 }
 
@@ -1531,12 +1507,8 @@ function renderRecordedIncomeAtFybc(recordedIncome = {}) {
   );
 }
 
-function calculateYourPathProjectedPosition({
-  rows,
-  cpfLifeStartAge,
-}) {
-  const summary =
-    getGrossRetirementGoalSummary();
+function calculateYourPathProjectedPosition({ rows, cpfLifeStartAge }) {
+  const summary = getGrossRetirementGoalSummary();
 
   if (!summary.isValid || !Array.isArray(rows)) {
     return createInvalidProjectedPosition();
@@ -1565,33 +1537,21 @@ function calculateYourPathProjectedPosition({
     recordedIncomeAtFybc.retirementPolicyIncome +
     recordedIncomeAtFybc.cpfLifeIncome;
 
-  const retirementRows = rows
-    .slice(fybcRowIndex)
-    .filter(function (row) {
-      return (
-        getFiniteNumber(row.age) <
-        summary.plannedMortalityAge
-      );
-    });
+  const retirementRows = rows.slice(fybcRowIndex).filter(function (row) {
+    return getFiniteNumber(row.age) < summary.plannedMortalityAge;
+  });
 
   if (retirementRows.length === 0) {
     return createInvalidProjectedPosition();
   }
 
-  const postFybcReturnRate =
-    getNonNegativeNumber(
-      getPostFybcReturnRate(),
-    );
+  const postFybcReturnRate = getNonNegativeNumber(getPostFybcReturnRate());
 
-  const monthlyReturnRate =
-    convertAnnualRateToMonthly(
-      postFybcReturnRate,
-    );
+  const monthlyReturnRate = convertAnnualRateToMonthly(postFybcReturnRate);
 
-  const monthlyInflationRate =
-    convertAnnualRateToMonthly(
-      summary.inflationRate,
-    );
+  const monthlyInflationRate = convertAnnualRateToMonthly(
+    summary.inflationRate,
+  );
 
   let grossLifestyleCapitalAtFybc = 0;
 
@@ -1603,34 +1563,20 @@ function calculateYourPathProjectedPosition({
 
   let cpfLifeCapitalOffset = 0;
 
-  retirementRows.forEach(function (
-    row,
-    monthIndex,
-  ) {
-    const discountFactor = Math.pow(
-      1 + monthlyReturnRate,
-      monthIndex,
-    );
+  retirementRows.forEach(function (row, monthIndex) {
+    const discountFactor = Math.pow(1 + monthlyReturnRate, monthIndex);
 
     const lifestyleNeeded =
       summary.monthlyIncomeAtFybc *
-      Math.pow(
-        1 + monthlyInflationRate,
-        monthIndex,
-      );
+      Math.pow(1 + monthlyInflationRate, monthIndex);
 
-    const continuingOtherIncome =
-      getNonNegativeNumber(
-        row.cashflowBreakdown?.otherIncome,
-      );
+    const continuingOtherIncome = getNonNegativeNumber(
+      row.cashflowBreakdown?.otherIncome,
+    );
 
-    const retirementPolicyIncome =
-      getRetirementPolicyIncomeForRow(row);
+    const retirementPolicyIncome = getRetirementPolicyIncomeForRow(row);
 
-    const cpfLifeIncome =
-      getNonNegativeNumber(
-        row.cpfLifeCashInflow,
-      );
+    const cpfLifeIncome = getNonNegativeNumber(row.cpfLifeCashInflow);
 
     const recordedRecurringIncome =
       continuingOtherIncome + retirementPolicyIncome + cpfLifeIncome;
@@ -1680,39 +1626,34 @@ function calculateYourPathProjectedPosition({
     retirementPolicyCapitalOffset +
     cpfLifeCapitalOffset;
 
-  const projectedWithdrawableAssets =
-    getFiniteNumber(
-      fybcRow.endWithdrawableBalance,
-    );
+  const projectedWithdrawableAssets = getFiniteNumber(
+    fybcRow.endWithdrawableBalance,
+  );
 
-  const maturityResult =
-    calculateFutureMaturityPresentValue({
-      rows,
+  const maturityResult = calculateFutureMaturityPresentValue({
+    rows,
 
-      fybcRowIndex,
+    fybcRowIndex,
 
-      monthlyReturnRate,
+    monthlyReturnRate,
 
-      plannedMortalityAge:
-        summary.plannedMortalityAge,
-    });
+    plannedMortalityAge: summary.plannedMortalityAge,
+  });
 
-  const eligibleOaResult =
-    calculateEligibleOaForRetirement({
-      rows,
+  const eligibleOaResult = calculateEligibleOaForRetirement({
+    rows,
 
-      fybcRowIndex,
+    fybcRowIndex,
 
-      monthlyReturnRate,
-    });
+    monthlyReturnRate,
+  });
 
   if (!eligibleOaResult.canInclude) {
     includeProjectedOa = false;
   }
 
   const includedOaPresentValue =
-    eligibleOaResult.canInclude &&
-    includeProjectedOa
+    eligibleOaResult.canInclude && includeProjectedOa
       ? eligibleOaResult.presentValueAtFybc
       : 0;
 
@@ -1722,38 +1663,26 @@ function calculateYourPathProjectedPosition({
     includedOaPresentValue;
 
   const remainingFundingGap = Math.max(
-    capitalNeededAtFybc -
-      projectedResourcesAtFybc,
+    capitalNeededAtFybc - projectedResourcesAtFybc,
     0,
   );
 
   const projectedFundingSurplus = Math.max(
-    projectedResourcesAtFybc -
-      capitalNeededAtFybc,
+    projectedResourcesAtFybc - capitalNeededAtFybc,
     0,
   );
 
   const fundingProgressPercent =
     capitalNeededAtFybc > 0
-      ? Math.max(
-          projectedResourcesAtFybc,
-          0,
-        ) /
-        capitalNeededAtFybc *
-        100
+      ? (Math.max(projectedResourcesAtFybc, 0) / capitalNeededAtFybc) * 100
       : 0;
 
-  const cpfLifeStartRow = rows.find(
-    function (row) {
-      return (
-        row.cpfLifeProjectionStatus ===
-          "started" &&
-        getNonNegativeNumber(
-          row.cpfLifeMonthlyPayout,
-        ) > 0
-      );
-    },
-  );
+  const cpfLifeStartRow = rows.find(function (row) {
+    return (
+      row.cpfLifeProjectionStatus === "started" &&
+      getNonNegativeNumber(row.cpfLifeMonthlyPayout) > 0
+    );
+  });
 
   return {
     isValid: true,
@@ -1828,34 +1757,24 @@ function calculateFutureMaturityPresentValue({
 
   let count = 0;
 
-  rows
-    .slice(fybcRowIndex + 1)
-    .forEach(function (row, index) {
-      if (
-        getFiniteNumber(row.age) >=
-        plannedMortalityAge
-      ) {
-        return;
-      }
+  rows.slice(fybcRowIndex + 1).forEach(function (row, index) {
+    if (getFiniteNumber(row.age) >= plannedMortalityAge) {
+      return;
+    }
 
-      const maturityAmount =
-        getEndowmentMaturityForRow(row);
+    const maturityAmount = getEndowmentMaturityForRow(row);
 
-      if (maturityAmount <= 0) {
-        return;
-      }
+    if (maturityAmount <= 0) {
+      return;
+    }
 
-      const monthsAfterFybc = index + 1;
+    const monthsAfterFybc = index + 1;
 
-      presentValueAtFybc +=
-        maturityAmount /
-        Math.pow(
-          1 + monthlyReturnRate,
-          monthsAfterFybc,
-        );
+    presentValueAtFybc +=
+      maturityAmount / Math.pow(1 + monthlyReturnRate, monthsAfterFybc);
 
-      count += 1;
-    });
+    count += 1;
+  });
 
   return {
     presentValueAtFybc,
@@ -1871,37 +1790,25 @@ function calculateEligibleOaForRetirement({
 }) {
   const fybcRow = rows[fybcRowIndex];
 
-  const fybcIsAtLeast55 =
-    getFiniteNumber(fybcRow?.age) >= 55;
+  const fybcIsAtLeast55 = getFiniteNumber(fybcRow?.age) >= 55;
 
-  const availabilityRowIndex =
-    fybcIsAtLeast55
-      ? fybcRowIndex
-      : rows.findIndex(function (
-          row,
-          index,
-        ) {
-          return (
-            index >= fybcRowIndex &&
-            row.retirementAccount === "ra"
-          );
-        });
+  const availabilityRowIndex = fybcIsAtLeast55
+    ? fybcRowIndex
+    : rows.findIndex(function (row, index) {
+        return index >= fybcRowIndex && row.retirementAccount === "ra";
+      });
 
   if (availabilityRowIndex < 0) {
     return createUnavailableOaResult();
   }
 
-  const availabilityRow =
-    rows[availabilityRowIndex];
+  const availabilityRow = rows[availabilityRowIndex];
 
   if (!availabilityRow.hasMetCohortFrs) {
     return {
       ...createUnavailableOaResult(),
 
-      availabilityAge:
-        getFiniteNumber(
-          availabilityRow.age,
-        ),
+      availabilityAge: getFiniteNumber(availabilityRow.age),
     };
   }
 
@@ -1913,96 +1820,59 @@ function calculateEligibleOaForRetirement({
    * after that month so the same OA is not used for
    * both housing and retirement.
    */
-  const housingReserve = rows
-    .slice(availabilityRowIndex + 1)
-    .reduce(function (total, row) {
-      return (
-        total +
-        getNonNegativeNumber(
-          row.oaOutflow,
-        )
-      );
-    }, 0);
+  const housingReserve = rows.slice(availabilityRowIndex + 1).reduce(function (
+    total,
+    row,
+  ) {
+    return total + getNonNegativeNumber(row.oaOutflow);
+  }, 0);
 
   const amountAtAvailability = Math.max(
-    getNonNegativeNumber(
-      availabilityRow.oaBalance,
-    ) -
-      housingReserve,
+    getNonNegativeNumber(availabilityRow.oaBalance) - housingReserve,
     0,
   );
 
-  const monthsAfterFybc = Math.max(
-    availabilityRowIndex -
-      fybcRowIndex,
-    0,
-  );
+  const monthsAfterFybc = Math.max(availabilityRowIndex - fybcRowIndex, 0);
 
   const presentValueAtFybc =
-    amountAtAvailability /
-    Math.pow(
-      1 + monthlyReturnRate,
-      monthsAfterFybc,
-    );
+    amountAtAvailability / Math.pow(1 + monthlyReturnRate, monthsAfterFybc);
 
   return {
-    canInclude:
-      amountAtAvailability > 0,
+    canInclude: amountAtAvailability > 0,
 
     amountAtAvailability,
 
     presentValueAtFybc,
 
-    availabilityAge:
-      getFiniteNumber(
-        availabilityRow.age,
-      ),
+    availabilityAge: getFiniteNumber(availabilityRow.age),
 
     housingReserve,
   };
 }
 
 function getEndowmentMaturityForRow(row) {
-  return (
-    row?.policyCashInflowItems || []
-  ).reduce(function (total, item) {
-    if (
-      item.policyType !== "endowment" ||
-      !item.maturedThisMonth
-    ) {
+  return (row?.policyCashInflowItems || []).reduce(function (total, item) {
+    if (item.policyType !== "endowment" || !item.maturedThisMonth) {
       return total;
     }
 
-    return (
-      total +
-      getNonNegativeNumber(
-        item.amount,
-      )
-    );
+    return total + getNonNegativeNumber(item.amount);
   }, 0);
 }
 
 function renderIncompleteYourPathProjectedPosition() {
   latestYourPathProjectedPosition = null;
 
-  setHidden(
-    pathPreviewElements.projectionIncomplete,
-    false,
-  );
+  setHidden(pathPreviewElements.projectionIncomplete, false);
 
-  setHidden(
-    pathPreviewElements.projectionResults,
-    true,
-  );
+  setHidden(pathPreviewElements.projectionResults, true);
 
   includeProjectedOa = false;
 
   if (pathPreviewElements.includeOaInput) {
-    pathPreviewElements.includeOaInput.checked =
-      false;
+    pathPreviewElements.includeOaInput.checked = false;
 
-    pathPreviewElements.includeOaInput.disabled =
-      true;
+    pathPreviewElements.includeOaInput.disabled = true;
   }
 }
 
@@ -2308,201 +2178,157 @@ function renderYourNextSteps(currentCashflow) {
     0,
   );
 
-  const monthsToFybc = Math.max(
-    getNonNegativeNumber(position.monthsToFybc),
-    0,
-  );
+  const monthsToFybc = Math.max(getNonNegativeNumber(position.monthsToFybc), 0);
 
   const growthRate = getNextStepsGrowthRate();
 
-  const currentAssets = calculateLiquidAssetTotal(
-    getAssets()?.liquidAssets,
+  const currentAssets = calculateLiquidAssetTotal(getAssets()?.liquidAssets);
+
+  const includeCurrentAssets = Boolean(
+    nextStepsElements.includeAssetsInput?.checked,
   );
 
-  const projectedCurrentAssets =
-    calculateLumpSumFutureValue({
-      amount: currentAssets,
+  if (nextStepsElements.assetsAmountInput) {
+    nextStepsElements.assetsAmountInput.disabled = !includeCurrentAssets;
 
-      months: monthsToFybc,
+    nextStepsElements.assetsAmountInput.max = String(Math.round(currentAssets));
+  }
 
-      annualRatePercent: growthRate,
-    });
+  let selectedCurrentAssets = includeCurrentAssets
+    ? getNonNegativeNumber(nextStepsElements.assetsAmountInput?.value)
+    : 0;
 
-  const investmentPoliciesAtFybc =
-    calculateInvestmentPolicyValueAtFybc({
-      desiredFybcAge: position.desiredFybcAge,
+  /*
+   * Never allow the client to allocate more
+   * than their recorded withdrawable assets.
+   */
+  selectedCurrentAssets = Math.min(selectedCurrentAssets, currentAssets);
 
-      monthsToFybc,
-    });
+  if (includeCurrentAssets && nextStepsElements.assetsAmountInput) {
+    nextStepsElements.assetsAmountInput.value = String(
+      Math.round(selectedCurrentAssets),
+    );
+  }
 
-  const endowmentValueAtFybc =
-    calculateEndowmentValueAtFybc({
-      desiredFybcAge: position.desiredFybcAge,
+  const projectedCurrentAssets = calculateLumpSumFutureValue({
+    amount: selectedCurrentAssets,
 
-      plannedMortalityAge:
-        position.plannedMortalityAge,
+    months: monthsToFybc,
 
-      preFybcGrowthRate: growthRate,
+    annualRatePercent: growthRate,
+  });
 
-      postFybcReturnRate:
-        position.postFybcReturnRate,
-    });
+  const investmentPoliciesAtFybc = calculateInvestmentPolicyValueAtFybc({
+    desiredFybcAge: position.desiredFybcAge,
 
-  const eligibleOaAtFybc =
-    position.canIncludeEligibleOa
-      ? getNonNegativeNumber(
-          position.eligibleOaPresentValue,
-        )
-      : 0;
+    monthsToFybc,
+  });
+
+  const endowmentValueAtFybc = calculateEndowmentValueAtFybc({
+    desiredFybcAge: position.desiredFybcAge,
+
+    plannedMortalityAge: position.plannedMortalityAge,
+
+    preFybcGrowthRate: growthRate,
+
+    postFybcReturnRate: position.postFybcReturnRate,
+  });
+
+  const eligibleOaAtFybc = position.canIncludeEligibleOa
+    ? getNonNegativeNumber(position.eligibleOaPresentValue)
+    : 0;
 
   /*
    * These four numbers show what is AVAILABLE.
    * They are not automatically counted.
    */
-  setCurrency(
-    nextStepsElements.availableAssets,
-    currentAssets,
-  );
+  setCurrency(nextStepsElements.availableAssets, currentAssets);
 
-  setCurrency(
-    nextStepsElements.investmentPolicies,
-    investmentPoliciesAtFybc,
-  );
+  setCurrency(nextStepsElements.investmentPolicies, investmentPoliciesAtFybc);
 
-  setCurrency(
-    nextStepsElements.endowmentValue,
-    endowmentValueAtFybc,
-  );
+  setCurrency(nextStepsElements.endowmentValue, endowmentValueAtFybc);
 
-  setCurrency(
-    nextStepsElements.eligibleOa,
-    eligibleOaAtFybc,
-  );
+  setCurrency(nextStepsElements.eligibleOa, eligibleOaAtFybc);
 
   if (nextStepsElements.includeOaInput) {
-    nextStepsElements.includeOaInput.disabled =
-      !position.canIncludeEligibleOa;
+    nextStepsElements.includeOaInput.disabled = !position.canIncludeEligibleOa;
 
     if (!position.canIncludeEligibleOa) {
       nextStepsElements.includeOaInput.checked = false;
     }
   }
 
-  const selectedResources =
-    getSelectedNextStepResources({
-      projectedCurrentAssets,
+  const selectedResources = getSelectedNextStepResources({
+    projectedCurrentAssets,
 
-      investmentPoliciesAtFybc,
+    investmentPoliciesAtFybc,
 
-      endowmentValueAtFybc,
+    endowmentValueAtFybc,
 
-      eligibleOaAtFybc,
-    });
+    eligibleOaAtFybc,
+  });
 
-  const capitalNeeded =
-    getNonNegativeNumber(
-      position.capitalNeededAtFybc,
-    );
+  const capitalNeeded = getNonNegativeNumber(position.capitalNeededAtFybc);
 
   /*
    * This is the amount the monthly savings plan
    * still needs to build after resources explicitly
    * selected by the client.
    */
-  const capitalStillToBuild = Math.max(
-    capitalNeeded - selectedResources,
-    0,
-  );
+  const capitalStillToBuild = Math.max(capitalNeeded - selectedResources, 0);
 
-  const suggestedMonthly =
-    calculateRequiredMonthlyContribution({
-      targetFutureValue: capitalStillToBuild,
+  const suggestedMonthly = calculateRequiredMonthlyContribution({
+    targetFutureValue: capitalStillToBuild,
 
-      months: monthsToFybc,
+    months: monthsToFybc,
 
-      annualRatePercent: growthRate,
-    });
+    annualRatePercent: growthRate,
+  });
 
-  const chosenMonthly =
-    getChosenMonthlyCommitment(
-      availableMonthly,
-    );
+  const chosenMonthly = getChosenMonthlyCommitment(availableMonthly);
 
-  const projectedMonthlyCommitment =
-    calculateMonthlyContributionFutureValue({
-      monthlyAmount: chosenMonthly,
+  const projectedMonthlyCommitment = calculateMonthlyContributionFutureValue({
+    monthlyAmount: chosenMonthly,
 
-      months: monthsToFybc,
+    months: monthsToFybc,
 
-      annualRatePercent: growthRate,
-    });
+    annualRatePercent: growthRate,
+  });
 
-  const projectedFunding =
-    selectedResources +
-    projectedMonthlyCommitment;
+  const projectedFunding = selectedResources + projectedMonthlyCommitment;
 
-  const remainingGap = Math.max(
-    capitalNeeded - projectedFunding,
-    0,
-  );
+  const remainingGap = Math.max(capitalNeeded - projectedFunding, 0);
 
-  const fundingSurplus = Math.max(
-    projectedFunding - capitalNeeded,
-    0,
-  );
+  const fundingSurplus = Math.max(projectedFunding - capitalNeeded, 0);
 
   const fundingProgress =
-    capitalNeeded > 0
-      ? projectedFunding / capitalNeeded * 100
-      : 0;
+    capitalNeeded > 0 ? (projectedFunding / capitalNeeded) * 100 : 0;
 
-  const remainingFlexibility =
-    availableMonthly - chosenMonthly;
+  const remainingFlexibility = availableMonthly - chosenMonthly;
 
-  setCurrency(
-    nextStepsElements.suggestedMonthly,
-    suggestedMonthly,
-  );
+  setCurrency(nextStepsElements.suggestedMonthly, suggestedMonthly);
 
-  setCurrency(
-    nextStepsElements.availableMonthly,
-    availableMonthly,
-  );
+  setCurrency(nextStepsElements.availableMonthly, availableMonthly);
 
-  setCurrency(
-    nextStepsElements.chosenMonthly,
-    chosenMonthly,
-  );
+  setCurrency(nextStepsElements.chosenMonthly, chosenMonthly);
 
   setSignedCurrency(
     nextStepsElements.flexibilityRemaining,
     remainingFlexibility,
   );
 
-  setCurrency(
-    nextStepsElements.capitalNeeded,
-    capitalNeeded,
-  );
+  setCurrency(nextStepsElements.capitalNeeded, capitalNeeded);
 
-  setCurrency(
-    nextStepsElements.selectedResources,
-    selectedResources,
-  );
+  setCurrency(nextStepsElements.selectedResources, selectedResources);
 
   setCurrency(
     nextStepsElements.monthlyCommitmentValue,
     projectedMonthlyCommitment,
   );
 
-  setCurrency(
-    nextStepsElements.projectedFunding,
-    projectedFunding,
-  );
+  setCurrency(nextStepsElements.projectedFunding, projectedFunding);
 
-  setCurrency(
-    nextStepsElements.remainingGap,
-    remainingGap,
-  );
+  setCurrency(nextStepsElements.remainingGap, remainingGap);
 
   renderNextStepsMonthlyInput({
     chosenMonthly,
@@ -2541,11 +2367,7 @@ function getSelectedNextStepResources({
     total += projectedCurrentAssets;
   }
 
-  if (
-    nextStepsElements
-      .includeInvestmentPoliciesInput
-      ?.checked
-  ) {
+  if (nextStepsElements.includeInvestmentPoliciesInput?.checked) {
     total += investmentPoliciesAtFybc;
   }
 
@@ -2567,63 +2389,46 @@ function getSelectedNextStepResources({
    MONTHLY COMMITMENT
 ======================================== */
 
-function getChosenMonthlyCommitment(
-  availableMonthly,
-) {
-  const selectedInput =
-    monthlyCommitmentInputs.find(function (input) {
-      return input.checked;
-    });
+function getChosenMonthlyCommitment(availableMonthly) {
+  const selectedInput = monthlyCommitmentInputs.find(function (input) {
+    return input.checked;
+  });
 
   if (!selectedInput) {
     return 0;
   }
 
   if (selectedInput.value === "custom") {
-    return getNonNegativeNumber(
-      nextStepsElements.monthlyAmountInput?.value,
-    );
+    return getNonNegativeNumber(nextStepsElements.monthlyAmountInput?.value);
   }
 
-  const percentage =
-    getNonNegativeNumber(
-      selectedInput.value,
-    ) / 100;
+  const percentage = getNonNegativeNumber(selectedInput.value) / 100;
 
   return availableMonthly * percentage;
 }
 
-function renderNextStepsMonthlyInput({
-  chosenMonthly,
-  availableMonthly,
-}) {
-  const selectedInput =
-    monthlyCommitmentInputs.find(function (input) {
-      return input.checked;
-    });
+function renderNextStepsMonthlyInput({ chosenMonthly, availableMonthly }) {
+  const selectedInput = monthlyCommitmentInputs.find(function (input) {
+    return input.checked;
+  });
 
-  const isCustom =
-    selectedInput?.value === "custom";
+  const isCustom = selectedInput?.value === "custom";
 
   if (!nextStepsElements.monthlyAmountInput) {
     return;
   }
 
-  nextStepsElements.monthlyAmountInput.readOnly =
-    !isCustom;
+  nextStepsElements.monthlyAmountInput.readOnly = !isCustom;
 
   if (!isCustom) {
-    nextStepsElements.monthlyAmountInput.value =
-      String(Math.round(chosenMonthly));
+    nextStepsElements.monthlyAmountInput.value = String(
+      Math.round(chosenMonthly),
+    );
   }
 
-  nextStepsElements.monthlyAmountInput.max =
-    String(
-      Math.max(
-        Math.round(availableMonthly),
-        0,
-      ),
-    );
+  nextStepsElements.monthlyAmountInput.max = String(
+    Math.max(Math.round(availableMonthly), 0),
+  );
 }
 
 function renderNextStepsCommitmentMessage({
@@ -2697,33 +2502,22 @@ function calculateRequiredMonthlyContribution({
   months,
   annualRatePercent,
 }) {
-  const target =
-    getNonNegativeNumber(targetFutureValue);
+  const target = getNonNegativeNumber(targetFutureValue);
 
-  const safeMonths = Math.floor(
-    getNonNegativeNumber(months),
-  );
+  const safeMonths = Math.floor(getNonNegativeNumber(months));
 
   if (target <= 0 || safeMonths <= 0) {
     return 0;
   }
 
-  const monthlyRate =
-    convertAnnualRateToMonthly(
-      annualRatePercent,
-    );
+  const monthlyRate = convertAnnualRateToMonthly(annualRatePercent);
 
   if (monthlyRate <= 0) {
     return target / safeMonths;
   }
 
   const accumulationFactor =
-    (
-      Math.pow(
-        1 + monthlyRate,
-        safeMonths,
-      ) - 1
-    ) / monthlyRate;
+    (Math.pow(1 + monthlyRate, safeMonths) - 1) / monthlyRate;
 
   if (accumulationFactor <= 0) {
     return 0;
@@ -2737,65 +2531,35 @@ function calculateMonthlyContributionFutureValue({
   months,
   annualRatePercent,
 }) {
-  const amount =
-    getNonNegativeNumber(monthlyAmount);
+  const amount = getNonNegativeNumber(monthlyAmount);
 
-  const safeMonths = Math.floor(
-    getNonNegativeNumber(months),
-  );
+  const safeMonths = Math.floor(getNonNegativeNumber(months));
 
   if (amount <= 0 || safeMonths <= 0) {
     return 0;
   }
 
-  const monthlyRate =
-    convertAnnualRateToMonthly(
-      annualRatePercent,
-    );
+  const monthlyRate = convertAnnualRateToMonthly(annualRatePercent);
 
   if (monthlyRate <= 0) {
     return amount * safeMonths;
   }
 
-  return (
-    amount *
-    (
-      Math.pow(
-        1 + monthlyRate,
-        safeMonths,
-      ) - 1
-    ) /
-    monthlyRate
-  );
+  return (amount * (Math.pow(1 + monthlyRate, safeMonths) - 1)) / monthlyRate;
 }
 
-function calculateLumpSumFutureValue({
-  amount,
-  months,
-  annualRatePercent,
-}) {
-  const safeAmount =
-    getNonNegativeNumber(amount);
+function calculateLumpSumFutureValue({ amount, months, annualRatePercent }) {
+  const safeAmount = getNonNegativeNumber(amount);
 
-  const safeMonths =
-    getNonNegativeNumber(months);
+  const safeMonths = getNonNegativeNumber(months);
 
   if (safeAmount <= 0) {
     return 0;
   }
 
-  const monthlyRate =
-    convertAnnualRateToMonthly(
-      annualRatePercent,
-    );
+  const monthlyRate = convertAnnualRateToMonthly(annualRatePercent);
 
-  return (
-    safeAmount *
-    Math.pow(
-      1 + monthlyRate,
-      safeMonths,
-    )
-  );
+  return safeAmount * Math.pow(1 + monthlyRate, safeMonths);
 }
 
 function getNextStepsGrowthRate() {
@@ -2803,9 +2567,7 @@ function getNextStepsGrowthRate() {
     return DEFAULT_PRE_FYBC_GROWTH_RATE;
   }
 
-  return getNonNegativeNumber(
-    nextStepsElements.growthRateInput.value,
-  );
+  return getNonNegativeNumber(nextStepsElements.growthRateInput.value);
 }
 
 /* ========================================
@@ -2832,9 +2594,12 @@ function renderNextStepsFundingProgress({
     setText(
       nextStepsElements.fundingStatus,
       [
+        `This plan is estimated to cover`,
+        `${Math.round(
+          Math.max(0, Math.min(fundingProgress, 100)),
+        )}% of your goal.`,
         `${formatCurrency(remainingGap)}`,
-        `of the estimated FYBC capital target`,
-        `is not yet covered by the selected plan.`,
+        `remains to be planned for.`,
       ].join(" "),
     );
 
@@ -2897,10 +2662,7 @@ function calculateInvestmentPolicyValueAtFybc({
     return 0;
   }
 
-  return policies.reduce(function (
-    total,
-    policy,
-  ) {
+  return policies.reduce(function (total, policy) {
     if (
       policy?.policyType !== "ilp_accumulation" &&
       policy?.policyType !== "investment_accumulation"
@@ -2908,18 +2670,13 @@ function calculateInvestmentPolicyValueAtFybc({
       return total;
     }
 
-    const accumulation =
-      policy.accumulation || {};
+    const accumulation = policy.accumulation || {};
 
-    const projectedValue =
-      getNonNegativeNumber(
-        accumulation.projectedPolicyValue,
-      );
+    const projectedValue = getNonNegativeNumber(
+      accumulation.projectedPolicyValue,
+    );
 
-    const projectedAtAge =
-      getNonNegativeNumber(
-        accumulation.projectedAtAge,
-      );
+    const projectedAtAge = getNonNegativeNumber(accumulation.projectedAtAge);
 
     /*
      * If the insurer already supplied an illustration
@@ -2927,10 +2684,7 @@ function calculateInvestmentPolicyValueAtFybc({
      */
     if (
       projectedValue > 0 &&
-      projectedAtAge ===
-        getNonNegativeNumber(
-          desiredFybcAge,
-        )
+      projectedAtAge === getNonNegativeNumber(desiredFybcAge)
     ) {
       return total + projectedValue;
     }
@@ -2941,24 +2695,21 @@ function calculateInvestmentPolicyValueAtFybc({
      * future premiums because allocation rates,
      * charges and investment performance vary.
      */
-    const currentPolicyValue =
-      getNonNegativeNumber(
-        accumulation.currentPolicyValue,
-      );
+    const currentPolicyValue = getNonNegativeNumber(
+      accumulation.currentPolicyValue,
+    );
 
     if (currentPolicyValue <= 0) {
       return total;
     }
 
-    const estimatedValue =
-      calculateLumpSumFutureValue({
-        amount: currentPolicyValue,
+    const estimatedValue = calculateLumpSumFutureValue({
+      amount: currentPolicyValue,
 
-        months: monthsToFybc,
+      months: monthsToFybc,
 
-        annualRatePercent:
-          DEFAULT_INVESTMENT_POLICY_GROWTH_RATE,
-      });
+      annualRatePercent: DEFAULT_INVESTMENT_POLICY_GROWTH_RATE,
+    });
 
     return total + estimatedValue;
   }, 0);
@@ -2978,41 +2729,25 @@ function calculateEndowmentValueAtFybc({
 
   const profile = getClientProfile();
 
-  const fybcDate =
-    getAgeMonthDate(
-      profile.dateOfBirth,
-      desiredFybcAge,
-    );
+  const fybcDate = getAgeMonthDate(profile.dateOfBirth, desiredFybcAge);
 
-  const mortalityDate =
-    getAgeMonthDate(
-      profile.dateOfBirth,
-      plannedMortalityAge,
-    );
+  const mortalityDate = getAgeMonthDate(
+    profile.dateOfBirth,
+    plannedMortalityAge,
+  );
 
-  if (
-    !fybcDate ||
-    !mortalityDate ||
-    !Array.isArray(policies)
-  ) {
+  if (!fybcDate || !mortalityDate || !Array.isArray(policies)) {
     return 0;
   }
 
-  const currentDate =
-    getProjectionStartDate();
+  const currentDate = getProjectionStartDate();
 
-  return policies.reduce(function (
-    total,
-    policy,
-  ) {
+  return policies.reduce(function (total, policy) {
     if (policy?.policyType !== "endowment") {
       return total;
     }
 
-    const maturityDate =
-      parsePlanningYearMonth(
-        policy.endowment?.maturityDate,
-      );
+    const maturityDate = parsePlanningYearMonth(policy.endowment?.maturityDate);
 
     if (
       !maturityDate ||
@@ -3023,14 +2758,8 @@ function calculateEndowmentValueAtFybc({
     }
 
     const maturityAmount =
-      getNonNegativeNumber(
-        policy.endowment
-          ?.guaranteedMaturityAmount,
-      ) +
-      getNonNegativeNumber(
-        policy.endowment
-          ?.projectedNonGuaranteedAmount,
-      );
+      getNonNegativeNumber(policy.endowment?.guaranteedMaturityAmount) +
+      getNonNegativeNumber(policy.endowment?.projectedNonGuaranteedAmount);
 
     if (maturityAmount <= 0) {
       return total;
@@ -3042,11 +2771,7 @@ function calculateEndowmentValueAtFybc({
      * until FYBC.
      */
     if (maturityDate <= fybcDate) {
-      const monthsToFybc =
-        getWholeMonthsBetween(
-          maturityDate,
-          fybcDate,
-        );
+      const monthsToFybc = getWholeMonthsBetween(maturityDate, fybcDate);
 
       return (
         total +
@@ -3055,8 +2780,7 @@ function calculateEndowmentValueAtFybc({
 
           months: monthsToFybc,
 
-          annualRatePercent:
-            preFybcGrowthRate,
+          annualRatePercent: preFybcGrowthRate,
         })
       );
     }
@@ -3066,56 +2790,30 @@ function calculateEndowmentValueAtFybc({
      * convert the future maturity into its
      * FYBC-equivalent present value.
      */
-    const monthsAfterFybc =
-      getWholeMonthsBetween(
-        fybcDate,
-        maturityDate,
-      );
+    const monthsAfterFybc = getWholeMonthsBetween(fybcDate, maturityDate);
 
-    const monthlyReturnRate =
-      convertAnnualRateToMonthly(
-        postFybcReturnRate,
-      );
+    const monthlyReturnRate = convertAnnualRateToMonthly(postFybcReturnRate);
 
     return (
-      total +
-      maturityAmount /
-        Math.pow(
-          1 + monthlyReturnRate,
-          monthsAfterFybc,
-        )
+      total + maturityAmount / Math.pow(1 + monthlyReturnRate, monthsAfterFybc)
     );
   }, 0);
 }
 
-function getAgeMonthDate(
-  dateOfBirth,
-  targetAge,
-) {
-  const match =
-    /^(\d{4})-(\d{2})-(\d{2})$/.exec(
-      dateOfBirth || "",
-    );
+function getAgeMonthDate(dateOfBirth, targetAge) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateOfBirth || "");
 
-  const age =
-    getNonNegativeNumber(targetAge);
+  const age = getNonNegativeNumber(targetAge);
 
   if (!match || age <= 0) {
     return null;
   }
 
-  return new Date(
-    Number(match[1]) + age,
-    Number(match[2]) - 1,
-    1,
-  );
+  return new Date(Number(match[1]) + age, Number(match[2]) - 1, 1);
 }
 
 function parsePlanningYearMonth(value) {
-  const match =
-    /^(\d{4})-(\d{2})/.exec(
-      value || "",
-    );
+  const match = /^(\d{4})-(\d{2})/.exec(value || "");
 
   if (!match) {
     return null;
@@ -3123,35 +2821,19 @@ function parsePlanningYearMonth(value) {
 
   const year = Number(match[1]);
 
-  const month =
-    Number(match[2]) - 1;
+  const month = Number(match[2]) - 1;
 
-  if (
-    !Number.isFinite(year) ||
-    month < 0 ||
-    month > 11
-  ) {
+  if (!Number.isFinite(year) || month < 0 || month > 11) {
     return null;
   }
 
-  return new Date(
-    year,
-    month,
-    1,
-  );
+  return new Date(year, month, 1);
 }
 
-function getWholeMonthsBetween(
-  fromDate,
-  toDate,
-) {
+function getWholeMonthsBetween(fromDate, toDate) {
   return Math.max(
     0,
-    (
-      toDate.getFullYear() -
-      fromDate.getFullYear()
-    ) *
-      MONTHS_PER_YEAR +
+    (toDate.getFullYear() - fromDate.getFullYear()) * MONTHS_PER_YEAR +
       toDate.getMonth() -
       fromDate.getMonth(),
   );
@@ -3177,25 +2859,14 @@ function createUnavailableOaResult() {
   };
 }
 
-function convertAnnualRateToMonthly(
-  annualRatePercent,
-) {
-  const annualRate =
-    getNonNegativeNumber(
-      annualRatePercent,
-    ) / 100;
+function convertAnnualRateToMonthly(annualRatePercent) {
+  const annualRate = getNonNegativeNumber(annualRatePercent) / 100;
 
-  return (
-    Math.pow(
-      1 + annualRate,
-      1 / MONTHS_PER_YEAR,
-    ) - 1
-  );
+  return Math.pow(1 + annualRate, 1 / MONTHS_PER_YEAR) - 1;
 }
 
 function formatRate(value) {
-  const safeRate =
-    getNonNegativeNumber(value);
+  const safeRate = getNonNegativeNumber(value);
 
   return `${safeRate.toFixed(1)}% p.a.`;
 }
@@ -3207,19 +2878,12 @@ function setHidden(element, hidden) {
 }
 
 function getRetirementPolicyIncomeForRow(row) {
-  return (
-    row?.policyCashInflowItems || []
-  ).reduce(function (total, item) {
+  return (row?.policyCashInflowItems || []).reduce(function (total, item) {
     if (item.policyType !== "retirement") {
       return total;
     }
 
-    return (
-      total +
-      getNonNegativeNumber(
-        item.amount,
-      )
-    );
+    return total + getNonNegativeNumber(item.amount);
   }, 0);
 }
 
