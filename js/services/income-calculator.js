@@ -212,25 +212,41 @@ function calculateEmployeeIncome({
     ? Math.max(0, annualBonus - cpfAdditionalWage)
     : annualBonus;
 
-  const monthlyEmployeeCpf = cpfApplies
-    ? Math.round(monthlyCpfOrdinaryWage * employeeCpfRate)
-    : 0;
+    const monthlyOrdinaryWageCpf = cpfApplies
+      ? calculateCpfContributionSplit({
+          wages: monthlyCpfOrdinaryWage,
+          employeeRate: employeeCpfRate,
+          employerRate: employerCpfRate,
+        })
+      : {
+          employeeContribution: 0,
+          employerContribution: 0,
+        };
 
-  const monthlyEmployerCpf = cpfApplies
-    ? Math.round(monthlyCpfOrdinaryWage * employerCpfRate)
-    : 0;
+    const monthlyEmployeeCpf = monthlyOrdinaryWageCpf.employeeContribution;
 
-  const annualOrdinaryWageEmployeeCpf = monthlyEmployeeCpf * 12;
+    const monthlyEmployerCpf = monthlyOrdinaryWageCpf.employerContribution;
 
-  const annualOrdinaryWageEmployerCpf = monthlyEmployerCpf * 12;
+    const annualOrdinaryWageEmployeeCpf = monthlyEmployeeCpf * 12;
 
-  const annualAdditionalWageEmployeeCpf = cpfApplies
-    ? Math.round(cpfAdditionalWage * employeeCpfRate)
-    : 0;
+    const annualOrdinaryWageEmployerCpf = monthlyEmployerCpf * 12;
 
-  const annualAdditionalWageEmployerCpf = cpfApplies
-    ? Math.round(cpfAdditionalWage * employerCpfRate)
-    : 0;
+    const additionalWageCpf = cpfApplies
+      ? calculateCpfContributionSplit({
+          wages: cpfAdditionalWage,
+          employeeRate: employeeCpfRate,
+          employerRate: employerCpfRate,
+        })
+      : {
+          employeeContribution: 0,
+          employerContribution: 0,
+        };
+
+    const annualAdditionalWageEmployeeCpf =
+      additionalWageCpf.employeeContribution;
+
+    const annualAdditionalWageEmployerCpf =
+      additionalWageCpf.employerContribution;
 
   const annualEmployeeCpf =
     annualOrdinaryWageEmployeeCpf + annualAdditionalWageEmployeeCpf;
@@ -305,6 +321,57 @@ function calculateEmployeeIncome({
 /* ========================================
    INTERNAL HELPERS
 ======================================== */
+
+function calculateCpfContributionSplit({
+  wages,
+  employeeRate,
+  employerRate,
+}) {
+  const safeWages = toNonNegativeNumber(wages);
+
+  const safeEmployeeRate =
+    toNonNegativeNumber(employeeRate);
+
+  const safeEmployerRate =
+    toNonNegativeNumber(employerRate);
+
+  if (safeWages <= 0) {
+    return {
+      employeeContribution: 0,
+      employerContribution: 0,
+    };
+  }
+
+  /*
+   * CPF Board rounding:
+   *
+   * 1. Total CPF contribution is rounded
+   *    to the nearest dollar.
+   *
+   * 2. Employee CPF cents are dropped.
+   *
+   * 3. Employer CPF is the difference
+   *    between total CPF and employee CPF.
+   */
+  const totalContribution = Math.round(
+    safeWages *
+      (safeEmployeeRate + safeEmployerRate),
+  );
+
+  const employeeContribution = Math.floor(
+    safeWages * safeEmployeeRate,
+  );
+
+  const employerContribution = Math.max(
+    totalContribution - employeeContribution,
+    0,
+  );
+
+  return {
+    employeeContribution,
+    employerContribution,
+  };
+}
 
 function toNonNegativeNumber(value) {
   const number = Number(value);

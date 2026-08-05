@@ -33,18 +33,6 @@
   font-size: var(--font-size-sm);
 }
 
-.category-action-button {
-  flex-shrink: 0;
-
-  width: auto;
-  min-width: 130px;
-  padding: 0 18px;
-}
-
-.category-action-button i {
-  margin-right: 7px;
-}
-
 /* ========================================
    PLANNING CARD
 ======================================== */
@@ -199,11 +187,6 @@
   border-color: var(--danger-border);
 }
 
-.planning-card-editing {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px var(--primary-soft);
-}
-
 /* ========================================
    ADD ITEM BUTTON
 ======================================== */
@@ -315,10 +298,6 @@
   .planning-category-heading,
   .planning-card-header {
     flex-direction: column;
-  }
-
-  .category-action-button {
-    width: 100%;
   }
 
   .planning-card-item {

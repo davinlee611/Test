@@ -116,24 +116,6 @@
 }
 
 /* ========================================
-   EMPTY ENTRY LISTS
-======================================== */
-
-.entry-list {
-  min-height: 60px;
-}
-
-.empty-list-message {
-  padding: 18px;
-  color: var(--text-secondary);
-  text-align: center;
-  background: var(--card-background);
-  border: 1px dashed #cbd5e1;
-  border-radius: 12px;
-  font-size: 13px;
-}
-
-/* ========================================
    PLANNING SWITCH
 ======================================== */
 
@@ -573,10 +555,6 @@
 .cpf-details-rows {
   display: flex;
   flex-direction: column;
-}
-
-.cpf-details-rows[hidden] {
-  display: none;
 }
 
 .cpf-detail-row {
@@ -1271,25 +1249,6 @@ body.liability-modal-open {
   margin-top: 24px;
 }
 
-.icon-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 40px;
-  width: 40px;
-  height: 40px;
-  color: var(--text-secondary);
-  background: #f8fafc;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.icon-button:hover {
-  color: var(--text-primary);
-  background: #f1f5f9;
-}
-
 @media (max-width: 640px) {
   .modal-overlay {
     padding: 12px;
@@ -1306,56 +1265,6 @@ body.liability-modal-open {
   .modal-footer button {
     width: 100%;
   }
-}
-
-/* ========================================
-   BENEFIT BADGES
-======================================== */
-
-.benefit-title-row {
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: center;
-
-  gap: 12px;
-}
-
-.benefit-badge {
-  padding: 4px 10px;
-
-  border-radius: 999px;
-
-  font-size: 0.75rem;
-
-  font-weight: 600;
-
-  white-space: nowrap;
-}
-
-.badge-accelerated {
-  background: #dff6e7;
-
-  color: #1f7a3d;
-}
-
-.badge-additional {
-  background: #e8f2ff;
-
-  color: #0d62c9;
-}
-
-.badge-standalone {
-  background: #ece8ff;
-
-  color: #6546d2;
-}
-
-.badge-eci {
-  background: #fff2dc;
-
-  color: #9d6500;
 }
 
 /* ========================================
@@ -1512,30 +1421,6 @@ body.liability-modal-open {
 
 .policy-modal .currency-input input.form-control {
   padding-left: 40px;
-}
-
-.policy-benefit-info {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-
-  padding: 12px 14px;
-
-  margin-top: 12px;
-
-  border-radius: 10px;
-
-  background: #eef4ff;
-
-  border: 1px solid #c9dcff;
-
-  color: #2d4ea2;
-
-  font-size: 14px;
-}
-
-.policy-benefit-info i {
-  margin-top: 2px;
 }
 
 /* ========================================
@@ -1778,16 +1663,6 @@ body.liability-modal-open {
   .policy-modal-footer {
     grid-template-columns: 1fr;
   }
-}
-
-/* ========================================
-   INSURANCE PORTFOLIO
-======================================== */
-
-.insurance-portfolio-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
 }
 
 /* ========================================

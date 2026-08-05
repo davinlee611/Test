@@ -27,28 +27,28 @@ export function getCpfContributionRates(age) {
     };
   }
 
-  if (safeAge <= 55) {
+  if (safeAge < 55) {
     return {
       employeeRate: 0.2,
       employerRate: 0.17,
     };
   }
 
-  if (safeAge <= 60) {
+  if (safeAge < 60) {
     return {
       employeeRate: 0.19,
       employerRate: 0.165,
     };
   }
 
-  if (safeAge <= 65) {
+  if (safeAge < 65) {
     return {
       employeeRate: 0.13,
       employerRate: 0.13,
     };
   }
 
-  if (safeAge <= 70) {
+  if (safeAge < 70) {
     return {
       employeeRate: 0.075,
       employerRate: 0.09,
@@ -83,7 +83,7 @@ export function getCpfAllocationRates(age) {
     };
   }
 
-  if (safeAge <= 35) {
+  if (safeAge < 35) {
     return {
       oaRate: 0.6217,
       retirementRate: 0.1621,
@@ -92,7 +92,7 @@ export function getCpfAllocationRates(age) {
     };
   }
 
-  if (safeAge <= 45) {
+  if (safeAge < 45) {
     return {
       oaRate: 0.5677,
       retirementRate: 0.1891,
@@ -101,7 +101,7 @@ export function getCpfAllocationRates(age) {
     };
   }
 
-  if (safeAge <= 50) {
+  if (safeAge < 50) {
     return {
       oaRate: 0.5136,
       retirementRate: 0.2162,
@@ -110,7 +110,7 @@ export function getCpfAllocationRates(age) {
     };
   }
 
-  if (safeAge <= 55) {
+  if (safeAge < 55) {
     return {
       oaRate: 0.4055,
       retirementRate: 0.3108,
@@ -119,7 +119,7 @@ export function getCpfAllocationRates(age) {
     };
   }
 
-  if (safeAge <= 60) {
+  if (safeAge < 60) {
     return {
       oaRate: 0.3382,
       retirementRate: 0.3661,
@@ -128,7 +128,7 @@ export function getCpfAllocationRates(age) {
     };
   }
 
-  if (safeAge <= 65) {
+  if (safeAge < 65) {
     return {
       oaRate: 0.1347,
       retirementRate: 0.4615,
@@ -137,7 +137,7 @@ export function getCpfAllocationRates(age) {
     };
   }
 
-  if (safeAge <= 70) {
+  if (safeAge < 70) {
     return {
       oaRate: 0.0607,
       retirementRate: 0.303,

@@ -129,7 +129,20 @@ function getRetirementMonthlyInflow(policy, projectionDate, dateOfBirth) {
     return createEmptyPolicyInflow();
   }
 
-  const startMonthIndex = (birthDate.year + startAge) * 12 + birthDate.month;
+  /*
+   * Projection rows represent the first day
+   * of each month.
+   *
+   * If the birthday is later than the first
+   * day, the client only reaches the payout
+   * age during that month, so the first full
+   * projected payout month is the following
+   * month.
+   */
+  const birthdayMonthIndex = (birthDate.year + startAge) * 12 + birthDate.month;
+
+  const startMonthIndex =
+    birthDate.day === 1 ? birthdayMonthIndex : birthdayMonthIndex + 1;
 
   const projectionMonthIndex =
     projectionDate.getFullYear() * 12 + projectionDate.getMonth();
@@ -180,6 +193,8 @@ function parseDateOfBirth(value) {
     year: Number(match[1]),
 
     month: Number(match[2]) - 1,
+
+    day: Number(match[3]),
   };
 }
 

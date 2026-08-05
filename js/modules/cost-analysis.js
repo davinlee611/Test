@@ -2672,12 +2672,9 @@ function calculateInvestmentPolicyValueAtFybc({
   }
 
   return policies.reduce(function (total, policy) {
-    if (
-      policy?.policyType !== "ilp_accumulation" &&
-      policy?.policyType !== "investment_accumulation"
-    ) {
-      return total;
-    }
+        if (policy?.policyType !== "ilp_accumulation") {
+          return total;
+        }
 
     const accumulation = policy.accumulation || {};
 
@@ -4213,29 +4210,20 @@ function getProjectionMonthCount(selectedPeriod, startingDate) {
     return DEFAULT_PROJECTION_YEARS * MONTHS_PER_YEAR;
   }
 
-  const profile = getClientProfile();
+    const profile = getClientProfile();
 
-  const currentAge = calculateAgeOnDate(profile.dateOfBirth, new Date());
+    const plannedMortalityAge = getPlannedMortalityAge();
 
-  const plannedMortalityAge = getPlannedMortalityAge();
+    const mortalityMonth = getAgeMonthDate(
+      profile.dateOfBirth,
+      plannedMortalityAge,
+    );
 
-  if (
-    currentAge === null ||
-    !Number.isFinite(plannedMortalityAge) ||
-    plannedMortalityAge <= currentAge
-  ) {
-    return DEFAULT_PROJECTION_YEARS * MONTHS_PER_YEAR;
-  }
+    if (!mortalityMonth || mortalityMonth < startingDate) {
+      return DEFAULT_PROJECTION_YEARS * MONTHS_PER_YEAR;
+    }
 
-  const yearsUntilMortality = plannedMortalityAge - currentAge;
-
-  const projectionEndDate = new Date(
-    startingDate.getFullYear() + yearsUntilMortality,
-    11,
-    1,
-  );
-
-  return getInclusiveMonthDifference(startingDate, projectionEndDate);
+    return getInclusiveMonthDifference(startingDate, mortalityMonth);
 }
 
 function getInclusiveMonthDifference(startDate, endDate) {

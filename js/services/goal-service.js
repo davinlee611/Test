@@ -40,10 +40,6 @@ export function updateGoal(goalId, goalData) {
     const updatedGoal = {
       ...goal,
 
-      /*
-       * Keep your existing field
-       * assignments here.
-       */
       type: goalData.goalType,
       name: goalData.goalName,
       targetAmount: goalData.targetAmount,
