@@ -15,14 +15,6 @@ export function calculateTotalMonthlyExpenses(expenses) {
 }
 
 /* ========================================
-   ANNUAL EXPENSE TOTAL
-======================================== */
-
-export function calculateTotalAnnualExpenses(expenses) {
-  return calculateTotalMonthlyExpenses(expenses) * 12;
-}
-
-/* ========================================
    AMOUNT NORMALISATION
 ======================================== */
 

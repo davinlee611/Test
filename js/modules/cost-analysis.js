@@ -9,6 +9,8 @@ import {
   getPolicies,
 } from "../state/client-plan.js";
 
+import { formatCurrency } from "../utils/client-utils.js";
+
 import { getCpfAllocationRates } from "../services/cpf-service.js";
 
 import { calculateIncomeSummary } from "../services/income-calculator.js";
@@ -5429,14 +5431,6 @@ function setText(element, value) {
   if (element) {
     element.textContent = value;
   }
-}
-
-function formatCurrency(value) {
-  return new Intl.NumberFormat("en-SG", {
-    style: "currency",
-    currency: "SGD",
-    maximumFractionDigits: 0,
-  }).format(getFiniteNumber(value));
 }
 
 function getFiniteNumber(value) {

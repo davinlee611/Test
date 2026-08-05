@@ -195,16 +195,6 @@ export function calculateTotalLiabilities(liabilities) {
   }, 0);
 }
 
-export function calculateTotalMonthlyRepayments(liabilities) {
-  if (!Array.isArray(liabilities)) {
-    return 0;
-  }
-
-  return liabilities.reduce(function (total, liability) {
-    return total + getLiabilityMonthlyRepayment(liability);
-  }, 0);
-}
-
 export function calculateTotalMonthlyCpfRepayments(liabilities) {
   if (!Array.isArray(liabilities)) {
     return 0;

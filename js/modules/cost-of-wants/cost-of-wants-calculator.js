@@ -631,25 +631,6 @@ export function calculateYearTurningAge(dateOfBirth, targetAge) {
   return birthYear + targetAge;
 }
 
-export function getCpfCohortAgeText(
-  yearTurning55,
-  currentYear = new Date().getFullYear(),
-) {
-  if (!Number.isInteger(yearTurning55)) {
-    return "";
-  }
-
-  if (yearTurning55 < currentYear) {
-    return `Client turned 55 in ${yearTurning55}.`;
-  }
-
-  if (yearTurning55 === currentYear) {
-    return `Client turns 55 in ${yearTurning55}.`;
-  }
-
-  return `Client will turn 55 in ${yearTurning55}.`;
-}
-
 /* ========================================
    INTERNAL HELPERS
 ======================================== */

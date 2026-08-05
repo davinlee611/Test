@@ -33,27 +33,6 @@ export function calculateTotalMonthlyCpfCommitments({ liabilities }) {
 }
 
 /* ========================================
-   TOTAL ANNUAL COMMITMENTS
-======================================== */
-
-export function calculateTotalAnnualCommitments({ commitments, liabilities }) {
-  return (
-    calculateTotalMonthlyCommitments({
-      commitments,
-      liabilities,
-    }) * 12
-  );
-}
-
-export function calculateTotalAnnualCpfCommitments({ liabilities }) {
-  return (
-    calculateTotalMonthlyCpfCommitments({
-      liabilities,
-    }) * 12
-  );
-}
-
-/* ========================================
    AMOUNT NORMALISATION
 ======================================== */
 

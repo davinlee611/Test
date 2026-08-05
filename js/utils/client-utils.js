@@ -7,7 +7,13 @@
 export function getTodayDate() {
   const today = new Date();
 
-  return today.toISOString().split("T")[0];
+  const year = today.getFullYear();
+
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 /* ========================================
@@ -37,12 +43,15 @@ export function getInputWholeNumber(inputElement) {
 ======================================== */
 
 export function formatCurrency(value) {
-  return (
-    "$" +
-    getWholeNumber(value).toLocaleString("en-SG", {
-      maximumFractionDigits: 0,
-    })
-  );
+  const number = Number(value);
+
+  const safeValue = Number.isFinite(number) ? number : 0;
+
+  return new Intl.NumberFormat("en-SG", {
+    style: "currency",
+    currency: "SGD",
+    maximumFractionDigits: 0,
+  }).format(safeValue);
 }
 
 export function formatDeduction(value) {

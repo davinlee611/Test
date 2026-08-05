@@ -11,6 +11,8 @@ import {
 
 import { getClientAge } from "./client-profile.js";
 
+import { formatCurrency } from "../utils/client-utils.js";
+
 import { emit, on } from "../events/event-bus.js";
 
 import { EVENTS } from "../events/events.js";
@@ -540,18 +542,6 @@ function formatNumber(value) {
   return new Intl.NumberFormat("en-SG", {
     maximumFractionDigits: 1,
   }).format(number);
-}
-
-function formatCurrency(value) {
-  const number = Number(value);
-
-  const safeValue = Number.isFinite(number) ? number : 0;
-
-  return new Intl.NumberFormat("en-SG", {
-    style: "currency",
-    currency: "SGD",
-    maximumFractionDigits: 0,
-  }).format(safeValue);
 }
 
 function setText(element, value) {

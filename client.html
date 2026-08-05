@@ -76,7 +76,7 @@
             <p>Financial Plan</p>
           </div>
 
-          <nav class="journey-navigation">
+          <nav class="journey-navigation" aria-label="Financial plan sections">
             <button
               class="sidebar-item active"
               type="button"
@@ -3091,7 +3091,7 @@
                   <table class="analysis-cashflow-table">
                     <tbody>
                       <tr>
-                        <th colspan="2">Inflow</th>
+                        <th colspan="2" scope="colgroup">Inflow</th>
                       </tr>
 
                       <tr>
@@ -3126,7 +3126,7 @@
                       </tr>
 
                       <tr>
-                        <th colspan="2">Outflow</th>
+                        <th colspan="2" scope="colgroup">Outflow</th>
                       </tr>
 
                       <tr>
@@ -3295,10 +3295,15 @@
                     >
                       <thead>
                         <tr>
-                          <th id="analysisCashflowPeriodHeading">Month</th>
-                          <th>Start Balance</th>
-                          <th>Net Movement</th>
-                          <th>End Balance</th>
+                          <th id="analysisCashflowPeriodHeading" scope="col">
+                            Month
+                          </th>
+
+                          <th scope="col">Start Balance</th>
+
+                          <th scope="col">Net Movement</th>
+
+                          <th scope="col">End Balance</th>
                         </tr>
                       </thead>
 
@@ -3642,15 +3647,25 @@
                     >
                       <thead>
                         <tr>
-                          <th id="analysisCpfPeriodHeading">Month</th>
-                          <th>CPF Inflow</th>
-                          <th>CPF Outflow</th>
-                          <th>CPF Interest Credited</th>
-                          <th>Net CPF Flow</th>
-                          <th>OA Balance</th>
-                          <th>Retirement Balance</th>
-                          <th>MA Balance</th>
-                          <th>Applicable BHS That Year</th>
+                          <th id="analysisCpfPeriodHeading" scope="col">
+                            Month
+                          </th>
+
+                          <th scope="col">CPF Inflow</th>
+
+                          <th scope="col">CPF Outflow</th>
+
+                          <th scope="col">CPF Interest Credited</th>
+
+                          <th scope="col">Net CPF Flow</th>
+
+                          <th scope="col">OA Balance</th>
+
+                          <th scope="col">SA / RA Balance</th>
+
+                          <th scope="col">MA Balance</th>
+
+                          <th scope="col">Applicable BHS That Year</th>
                         </tr>
                       </thead>
 
