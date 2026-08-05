@@ -320,15 +320,13 @@ const pathPreviewElements = {
 
   projectionResults: document.getElementById("analysisPathProjectionResults"),
 
+  capitalNeededLabel: document.getElementById("analysisPathCapitalNeededLabel"),
+  
   capitalNeededAtFybc: document.getElementById(
     "analysisPathCapitalNeededAtFybc",
   ),
 
   capitalNeedBasis: document.getElementById("analysisPathCapitalNeedBasis"),
-
-  projectedAssetsAtFybc: document.getElementById(
-    "analysisPathProjectedAssetsAtFybc",
-  ),
 
   recordedIncomeAtFybc: document.getElementById(
     "analysisPathRecordedIncomeAtFybc",
@@ -345,28 +343,6 @@ const pathPreviewElements = {
   projectedCpfLifeBasis: document.getElementById(
     "analysisPathProjectedCpfLifeBasis",
   ),
-
-  eligibleOaAmount: document.getElementById("analysisPathEligibleOaAmount"),
-
-  eligibleOaBasis: document.getElementById("analysisPathEligibleOaBasis"),
-
-  includeOaInput: document.getElementById("analysisPathIncludeOaInput"),
-
-  remainingFundingGap: document.getElementById(
-    "analysisPathRemainingFundingGap",
-  ),
-
-  fundingGapBasis: document.getElementById("analysisPathFundingGapBasis"),
-
-  fundingProgress: document.getElementById("analysisPathFundingProgress"),
-
-  fundingProgressBar: document.getElementById("analysisPathFundingProgressBar"),
-
-  fundingProgressLabel: document.getElementById(
-    "analysisPathFundingProgressLabel",
-  ),
-
-  fundingStatus: document.getElementById("analysisPathFundingStatus"),
 
   grossCapitalAtFybc: document.getElementById("analysisPathGrossCapitalAtFybc"),
 
@@ -453,15 +429,6 @@ export function initializeCostAnalysis() {
     renderCostAnalysis();
   });
 
-  pathPreviewElements.includeOaInput?.addEventListener(
-    "change",
-    function (event) {
-      includeProjectedOa = Boolean(event.currentTarget.checked);
-
-      renderCostAnalysis();
-    },
-  );
-
   retirementStrategyOptionsElement?.addEventListener(
     "change",
     function (event) {
@@ -529,11 +496,6 @@ export function resetCostAnalysis() {
   selectedRetirementStrategy = getDefaultRetirementStrategy(
     getClientProfile().employmentStatus,
   );
-
-  if (pathPreviewElements.includeOaInput) {
-    pathPreviewElements.includeOaInput.checked = false;
-    pathPreviewElements.includeOaInput.disabled = true;
-  }
 
   analysisSectionCollapseButtons.forEach(function (button) {
     const targetId = button.dataset.analysisCollapseTarget;
@@ -1327,7 +1289,12 @@ function renderYourPathProjectedPosition({
 
   setText(
     pathPreviewElements.projectedPositionTitle,
-    `Your Projected Position at FYBC Age ${result.desiredFybcAge}`,
+    `What You’ll Need at FYBC Age ${result.desiredFybcAge}`,
+  );
+
+  setText(
+    pathPreviewElements.capitalNeededLabel,
+    `Capital Needed at FYBC Age ${result.desiredFybcAge}`,
   );
 
   setCurrency(
@@ -1341,11 +1308,6 @@ function renderYourPathProjectedPosition({
       `Using ${formatRate(result.postFybcReturnRate)}`,
       `post-FYBC return and recorded retirement income`,
     ].join(" "),
-  );
-
-  setSignedCurrency(
-    pathPreviewElements.projectedAssetsAtFybc,
-    result.projectedWithdrawableAssets,
   );
 
   renderRecordedIncomeAtFybc(result.recordedIncomeAtFybc);
@@ -1365,34 +1327,6 @@ function renderYourPathProjectedPosition({
       ? `Projected from age ${result.cpfLifeStartAge}`
       : `No CPF LIFE payout currently projected at age ${result.cpfLifeStartAge}`,
   );
-
-  renderYourPathEligibleOa(result);
-
-  setCurrency(
-    pathPreviewElements.remainingFundingGap,
-    result.remainingFundingGap,
-  );
-
-  pathPreviewElements.remainingFundingGap?.classList.toggle(
-    "is-funded",
-    result.remainingFundingGap <= 0,
-  );
-
-  pathPreviewElements.remainingFundingGap?.classList.toggle(
-    "is-shortfall",
-    result.remainingFundingGap > 0,
-  );
-
-  setText(
-    pathPreviewElements.fundingGapBasis,
-    result.remainingFundingGap > 0
-      ? "Additional FYBC-equivalent capital still required"
-      : `${formatCurrency(
-          result.projectedFundingSurplus,
-        )} projected above the required capital`,
-  );
-
-  renderYourPathFundingProgress(result);
 
   setCurrency(
     pathPreviewElements.grossCapitalAtFybc,
@@ -1902,105 +1836,6 @@ function getEndowmentMaturityForRow(row) {
       )
     );
   }, 0);
-}
-
-function renderYourPathEligibleOa(result) {
-  const input =
-    pathPreviewElements.includeOaInput;
-
-  if (input) {
-    input.disabled =
-      !result.canIncludeEligibleOa;
-
-    input.checked =
-      result.canIncludeEligibleOa &&
-      includeProjectedOa;
-  }
-
-  setCurrency(
-    pathPreviewElements.eligibleOaAmount,
-    result.eligibleOaAmount,
-  );
-
-  if (!result.canIncludeEligibleOa) {
-    setText(
-      pathPreviewElements.eligibleOaBasis,
-      result.eligibleOaAvailabilityAge > 0
-        ? `No OA is currently available after RA formation and projected housing payments at age ${result.eligibleOaAvailabilityAge}.`
-        : "No available OA is projected before the planned mortality age.",
-    );
-
-    return;
-  }
-
-  const timingDescription =
-    result.eligibleOaAvailabilityAge <=
-    result.desiredFybcAge
-      ? "at FYBC"
-      : `from age ${result.eligibleOaAvailabilityAge}`;
-
-  setText(
-    pathPreviewElements.eligibleOaBasis,
-    [
-      `${formatCurrency(
-        result.eligibleOaAmount,
-      )} may be available ${timingDescription}`,
-      `after reserving ${formatCurrency(
-        result.eligibleOaHousingReserve,
-      )} for projected OA housing repayments.`,
-      includeProjectedOa
-        ? `${formatCurrency(
-            result.eligibleOaPresentValue,
-          )} is included on an FYBC-equivalent basis.`
-        : "It is currently excluded from the funding comparison.",
-    ].join(" "),
-  );
-}
-
-function renderYourPathFundingProgress(result) {
-  const cappedProgress = Math.min(
-    Math.max(
-      result.fundingProgressPercent,
-      0,
-    ),
-    100,
-  );
-
-  if (
-    pathPreviewElements.fundingProgressBar
-  ) {
-    pathPreviewElements.fundingProgressBar.style.width =
-      `${cappedProgress}%`;
-  }
-
-  pathPreviewElements.fundingProgress?.setAttribute(
-    "aria-valuenow",
-    String(Math.round(cappedProgress)),
-  );
-
-  setText(
-    pathPreviewElements.fundingProgressLabel,
-    `${Math.round(
-      result.fundingProgressPercent,
-    )}%`,
-  );
-
-  const isFunded =
-    result.remainingFundingGap <= 0;
-
-  pathPreviewElements.fundingProgress?.classList.toggle(
-    "is-funded",
-    isFunded,
-  );
-
-  setText(
-    pathPreviewElements.fundingStatus,
-    isFunded
-      ? `The projected resources meet the estimated capital needed at FYBC age ${result.desiredFybcAge}.`
-      : `The current projection leaves a remaining funding gap of ${formatCurrency(
-          result.remainingFundingGap,
-        )} at FYBC age ${result.desiredFybcAge}.`,
-  );
 }
 
 function renderIncompleteYourPathProjectedPosition() {

@@ -4715,6 +4715,48 @@ button.insurance-validation-count:disabled {
 }
 
 /* ========================================
+   YOUR NEXT STEPS
+======================================== */
+
+.analysis-next-steps-placeholder {
+  display: flex;
+  min-height: 118px;
+  margin-top: 18px;
+  padding: 18px;
+  align-items: flex-start;
+  gap: 14px;
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  background: var(--background-secondary);
+}
+
+.analysis-next-steps-placeholder-icon {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgb(87 77 255 / 10%);
+  color: var(--primary-color);
+  font-size: 16px;
+}
+
+.analysis-next-steps-placeholder strong {
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.analysis-next-steps-placeholder p {
+  max-width: 760px;
+  margin: 7px 0 0;
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* ========================================
    YOUR PATH RESPONSIVE LAYOUT
 ======================================== */
 
@@ -5060,7 +5102,7 @@ button.insurance-validation-count:disabled {
 .analysis-path-projected-grid {
   display: grid;
   margin-top: 18px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -5415,6 +5457,10 @@ button.insurance-validation-count:disabled {
 
   .analysis-path-capital-formula > strong {
     transform: rotate(90deg);
+  }
+
+  .analysis-path-projected-grid {
+    grid-template-columns: 1fr;
   }
 }
 
