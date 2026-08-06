@@ -5427,6 +5427,11 @@ button.insurance-validation-count:disabled {
   line-height: 1.45;
 }
 
+.analysis-path-capital-reduction-note {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
 .analysis-path-capital-methodology {
   margin-top: 14px;
   border: 1px solid var(--border-color);

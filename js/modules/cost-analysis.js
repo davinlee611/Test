@@ -341,6 +341,10 @@ const pathPreviewElements = {
 
   capitalNeedBasis: document.getElementById("analysisPathCapitalNeedBasis"),
 
+  capitalNeedReductionNote: document.getElementById(
+    "analysisPathCapitalReductionNote",
+  ),
+
   recordedIncomeAtFybc: document.getElementById(
     "analysisPathRecordedIncomeAtFybc",
   ),
@@ -1521,6 +1525,8 @@ function renderYourPathProjectedPosition({ rows, cpfLifeStartAge }) {
     ].join(" "),
   );
 
+  renderCapitalReductionNote(result);
+
   renderRecordedIncomeAtFybc(result.recordedIncomeAtFybc);
 
   setText(
@@ -1552,6 +1558,87 @@ function renderYourPathProjectedPosition({ rows, cpfLifeStartAge }) {
   setText(
     pathPreviewElements.postFybcReturn,
     formatRate(result.postFybcReturnRate),
+  );
+}
+
+/*
+ * States, in plain terms, why Capital Needed at FYBC is smaller than
+ * the undiscounted "Estimated lifetime retirement spending" total from
+ * Step 1 — split between post-FYBC investment returns and recorded
+ * recurring income already offsetting the target. Uses only figures
+ * already computed by calculateYourPathProjectedPosition.
+ */
+function renderCapitalReductionNote(result) {
+  const element = pathPreviewElements.capitalNeedReductionNote;
+
+  if (!element) {
+    return;
+  }
+
+  const lifetimeSpending = getNonNegativeNumber(
+    result.undiscountedLifetimeSpending,
+  );
+
+  const capitalNeededAtFybc = getNonNegativeNumber(result.capitalNeededAtFybc);
+
+  const totalReduction = Math.max(lifetimeSpending - capitalNeededAtFybc, 0);
+
+  if (lifetimeSpending <= 0 || totalReduction <= 0) {
+    setText(
+      element,
+      "Reflects post-FYBC investment returns and recorded retirement income.",
+    );
+
+    return;
+  }
+
+  const grossLifestyleCapitalAtFybc = getNonNegativeNumber(
+    result.grossLifestyleCapitalAtFybc,
+  );
+
+  const recordedIncomeCapitalOffset = getNonNegativeNumber(
+    result.recordedIncomeCapitalOffset,
+  );
+
+  const returnsReduction = Math.max(
+    lifetimeSpending - grossLifestyleCapitalAtFybc,
+    0,
+  );
+
+  const recordedMonthlyIncome = getNonNegativeNumber(
+    result.recordedIncomeAtFybc?.total,
+  );
+
+  const attributionParts = [];
+
+  if (returnsReduction > 0) {
+    attributionParts.push(
+      `${formatCurrency(returnsReduction)} from post-FYBC investment returns`,
+    );
+  }
+
+  if (recordedIncomeCapitalOffset > 0) {
+    attributionParts.push(
+      `${formatCurrency(
+        recordedIncomeCapitalOffset,
+      )} from ${formatCurrency(
+        recordedMonthlyIncome,
+      )}/month of recorded income already offsetting the target`,
+    );
+  }
+
+  const attribution =
+    attributionParts.length > 0
+      ? attributionParts.join(" and ")
+      : "planning assumptions";
+
+  setText(
+    element,
+    `${formatCurrency(
+      totalReduction,
+    )} lower than the ${formatCurrency(
+      lifetimeSpending,
+    )} lifetime spending estimate — ${attribution}.`,
   );
 }
 
@@ -1814,6 +1901,15 @@ function calculateYourPathProjectedPosition({ rows, cpfLifeStartAge }) {
     postFybcReturnRate,
 
     recordedIncomeAtFybc,
+
+    /*
+     * The undiscounted "Estimated lifetime retirement spending"
+     * total from Cost of Wants (Step 1). Already computed above
+     * via getGrossRetirementGoalSummary() — reused here, not
+     * recalculated, so the capital-reduction note stays consistent
+     * with the Step 1 figure.
+     */
+    undiscountedLifetimeSpending: summary.grossCapitalRequired,
 
     grossLifestyleCapitalAtFybc,
 
