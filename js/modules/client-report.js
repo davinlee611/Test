@@ -6,6 +6,7 @@ import {
   getExpenses,
   getGoals,
   getLiabilities,
+  getPriorities,
   getProperties,
 } from "../state/client-plan.js";
 
@@ -21,6 +22,8 @@ import {
 } from "./assets-income/assets-income-calculator.js";
 
 import { calculateTotalMonthlyExpenses } from "./expenses/expense-calculator.js";
+
+import { EXPENSE_FIELDS } from "./expenses/expense-config.js";
 
 import { getGoalTypeLabel } from "./goals/goal-config.js";
 
@@ -94,13 +97,14 @@ const MARITAL_STATUS_LABELS = {
   widowed: "Widowed",
 };
 
-const EXPENSE_LABELS = {
-  household: "Household",
-  transport: "Transport",
-  subscriptionsLifestyle: "Subscriptions & Lifestyle",
-  parentsDependantsSupport: "Parents & Dependants Support",
-  otherRecurringExpenses: "Other Recurring Expenses",
+const WEALTH_TYPE_LABELS = {
+  accumulation: "Accumulation",
+  distribution: "Distribution",
+  protection: "Protection",
+  preservation: "Preservation",
 };
+
+const RANK_LABELS = ["1st Priority", "2nd Priority", "3rd Priority", "4th Priority"];
 
 /* ========================================
    INITIALIZATION
@@ -252,8 +256,19 @@ function buildClientReportData() {
 
   const policies = getAllPolicies();
 
+  const priorities = getPriorities();
+
+  const wealthTypes = priorities.selectedWealthTypes || [];
+
+  const contributionToFutureSelf =
+    Number(priorities.commitments?.contributionToFutureSelf) || 0;
+
   return {
     generatedAt: new Date(),
+
+    wealthTypes,
+
+    contributionToFutureSelf,
 
     profile: {
       fullName: profile.fullName || "Client Report",
@@ -313,17 +328,15 @@ function buildClientReportData() {
 }
 
 function buildExpenseBreakdown(expenses) {
-  return Object.keys(EXPENSE_LABELS)
-    .map(function (key) {
-      return {
-        label: EXPENSE_LABELS[key],
+  return EXPENSE_FIELDS.map(function (field) {
+    return {
+      label: field.label,
 
-        amount: Number(expenses?.[key]) || 0,
-      };
-    })
-    .filter(function (item) {
-      return item.amount > 0;
-    });
+      amount: Number(expenses?.[field.key]) || 0,
+    };
+  }).filter(function (item) {
+    return item.amount > 0;
+  });
 }
 
 /* ========================================
@@ -418,6 +431,21 @@ function buildPrioritiesSection(data) {
     "fa-solid fa-bullseye",
   );
 
+  if (data.wealthTypes.length > 0) {
+    const wealthGroup = createReportGroup("Wealth Priorities");
+
+    data.wealthTypes.forEach(function (wealthType, index) {
+      wealthGroup.appendChild(
+        createReportRow(
+          RANK_LABELS[index] || `${index + 1}th Priority`,
+          WEALTH_TYPE_LABELS[wealthType] || wealthType,
+        ),
+      );
+    });
+
+    section.appendChild(wealthGroup);
+  }
+
   const cashflow = data.currentCashflow;
 
   const incomeGroup = createReportGroup("Current Monthly Cashflow");
@@ -447,6 +475,19 @@ function buildPrioritiesSection(data) {
   }
 
   section.appendChild(incomeGroup);
+
+  if (data.contributionToFutureSelf > 0) {
+    const futureSelfGroup = createReportGroup("Contribution to Future Self");
+
+    futureSelfGroup.appendChild(
+      createReportRow(
+        "Monthly Contribution to Future Self",
+        formatCurrency(data.contributionToFutureSelf),
+      ),
+    );
+
+    section.appendChild(futureSelfGroup);
+  }
 
   if (data.expenses.breakdown.length > 0) {
     const expenseGroup = createReportGroup("Monthly Expense Breakdown");

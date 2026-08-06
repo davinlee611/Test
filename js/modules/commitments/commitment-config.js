@@ -9,6 +9,11 @@ export const COMMITMENT_FIELDS = Object.freeze([
     key: "insurancePremiums",
     elementId: "generalInsurancePremium",
   }),
+
+  Object.freeze({
+    key: "contributionToFutureSelf",
+    elementId: "contributionToFutureSelfInput",
+  }),
 ]);
 
 /* ========================================

@@ -5818,3 +5818,151 @@ button.insurance-validation-count:disabled {
     text-align: left;
   }
 }
+
+/* ========================================
+   PROTECTION ANALYSIS
+======================================== */
+
+.protection-form-field {
+  margin-top: 20px;
+}
+
+.protection-form-field:first-of-type {
+  margin-top: 18px;
+}
+
+.protection-form-field > label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.protection-scale-options,
+.protection-yesno-options {
+  display: grid;
+  gap: 8px;
+}
+
+.protection-scale-options {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.protection-yesno-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.protection-scale-options label,
+.protection-yesno-options label {
+  cursor: pointer;
+}
+
+.protection-scale-options input,
+.protection-yesno-options input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.protection-scale-options span,
+.protection-yesno-options span {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+  background: #ffffff;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.protection-scale-options input:checked + span,
+.protection-yesno-options input:checked + span {
+  border-color: var(--primary-color);
+  background: rgb(87 77 255 / 8%);
+  color: var(--primary-color);
+}
+
+.protection-scale-endpoints {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.protection-checklist-group {
+  margin-top: 20px;
+}
+
+.protection-checklist-group:first-of-type {
+  margin-top: 18px;
+}
+
+.protection-checklist-group h5 {
+  margin: 0 0 8px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.protection-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.protection-checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.protection-checklist-item input {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary-color);
+}
+
+.protection-checklist-item-label {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.protection-checklist-item-amount {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 480px) {
+  .protection-scale-options {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .protection-scale-options span {
+    min-height: 36px;
+    font-size: 11px;
+  }
+}

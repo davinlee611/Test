@@ -1377,6 +1377,42 @@
                   </div>
                 </div>
 
+                <!-- Contribution to Future Self -->
+                <div class="commitments-subsection">
+                  <div class="commitments-subsection-header">
+                    <div>
+                      <h4>Contribution to Future Self</h4>
+
+                      <p>
+                        Money set aside each month for long-term savings or
+                        investment, outside of everyday expenses.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="financial-input-list">
+                    <div class="financial-input-row">
+                      <label for="contributionToFutureSelfInput">
+                        Monthly Contribution to Future Self
+                      </label>
+
+                      <div class="currency-input">
+                        <span>$</span>
+
+                        <input
+                          id="contributionToFutureSelfInput"
+                          class="form-control financial-amount-input"
+                          type="number"
+                          min="0"
+                          step="1"
+                          inputmode="numeric"
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Liabilities -->
                 <div
                   class="commitments-subsection commitments-subsection--liabilities"
@@ -3843,18 +3879,210 @@
               </div>
             </div>
 
-            <div class="empty-section-card">
-              <div class="empty-section-icon">
-                <i class="fa-solid fa-shield-halved"></i>
+            <section
+              class="analysis-path-preview"
+              aria-labelledby="protectionPreviewTitle"
+            >
+              <div class="analysis-path-preview-header">
+                <div>
+                  <div class="analysis-path-preview-title-row">
+                    <h3 id="protectionPreviewTitle">SBMI</h3>
+
+                    <span class="analysis-path-preview-badge">
+                      Stop Buying More Insurance
+                    </span>
+                  </div>
+
+                  <p>
+                    Work out what's already covered and what still needs
+                    protecting — so the next policy is the last one, not just
+                    the next one.
+                  </p>
+                </div>
               </div>
 
-              <h3>Protection Analysis</h3>
+              <div class="analysis-path-overview-grid">
+                <!-- Step 1: Medical Protection -->
+                <div class="analysis-path-section-shell">
+                  <article class="analysis-path-card">
+                    <div class="analysis-path-card-heading">
+                      <span class="analysis-path-step">1</span>
 
-              <p>
-                Existing coverage, required coverage and protection gaps will
-                appear here.
-              </p>
-            </div>
+                      <div>
+                        <h4>Medical Protection</h4>
+
+                        <p>
+                          A few quick questions about how the client thinks
+                          about medical risk.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="protection-form-field">
+                      <label id="protectionWaitTimeLabel">
+                        How important is "not having to wait" for treatment
+                        to you?
+                      </label>
+
+                      <div
+                        class="protection-scale-options"
+                        role="radiogroup"
+                        aria-labelledby="protectionWaitTimeLabel"
+                      >
+                        <label>
+                          <input
+                            type="radio"
+                            name="protectionWaitTimeImportance"
+                            value="1"
+                          />
+                          <span>1</span>
+                        </label>
+
+                        <label>
+                          <input
+                            type="radio"
+                            name="protectionWaitTimeImportance"
+                            value="2"
+                          />
+                          <span>2</span>
+                        </label>
+
+                        <label>
+                          <input
+                            type="radio"
+                            name="protectionWaitTimeImportance"
+                            value="3"
+                          />
+                          <span>3</span>
+                        </label>
+
+                        <label>
+                          <input
+                            type="radio"
+                            name="protectionWaitTimeImportance"
+                            value="4"
+                          />
+                          <span>4</span>
+                        </label>
+
+                        <label>
+                          <input
+                            type="radio"
+                            name="protectionWaitTimeImportance"
+                            value="5"
+                          />
+                          <span>5</span>
+                        </label>
+                      </div>
+
+                      <div class="protection-scale-endpoints">
+                        <span>Not important</span>
+                        <span>Extremely important</span>
+                      </div>
+                    </div>
+
+                    <div class="protection-form-field">
+                      <label id="protectionInjuryProneLabel">
+                        Do you engage in active exercise and are you prone to
+                        injuries?
+                      </label>
+
+                      <div
+                        class="protection-yesno-options"
+                        role="radiogroup"
+                        aria-labelledby="protectionInjuryProneLabel"
+                      >
+                        <label>
+                          <input
+                            type="radio"
+                            name="protectionActiveExerciseInjuryProne"
+                            value="yes"
+                          />
+                          <span>Yes</span>
+                        </label>
+
+                        <label>
+                          <input
+                            type="radio"
+                            name="protectionActiveExerciseInjuryProne"
+                            value="no"
+                          />
+                          <span>No</span>
+                        </label>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+
+                <!-- Step 2: Financial Obligations to Protect -->
+                <div class="analysis-path-section-shell">
+                  <article class="analysis-path-card">
+                    <div class="analysis-path-card-heading">
+                      <span class="analysis-path-step">2</span>
+
+                      <div>
+                        <h4>Financial Obligations to Protect</h4>
+
+                        <p>
+                          Select which of the client's recorded expenses,
+                          liabilities and savings commitments should be
+                          covered if income stops.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="protection-checklist-group">
+                      <h5>Monthly Expenses</h5>
+
+                      <div
+                        id="protectionExpenseChecklist"
+                        class="protection-checklist"
+                      >
+                        <p
+                          id="protectionEmptyExpenseMessage"
+                          class="empty-state-message"
+                        >
+                          No expenses recorded on Priorities & Situation.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="protection-checklist-group">
+                      <h5>Liabilities</h5>
+
+                      <div
+                        id="protectionLiabilityChecklist"
+                        class="protection-checklist"
+                      >
+                        <p
+                          id="protectionEmptyLiabilityMessage"
+                          class="empty-state-message"
+                        >
+                          No liabilities recorded on Priorities & Situation.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="protection-checklist-group">
+                      <h5>Future Self</h5>
+
+                      <div
+                        id="protectionFutureSelfChecklist"
+                        class="protection-checklist"
+                      >
+                        <p
+                          id="protectionEmptyFutureSelfMessage"
+                          class="empty-state-message"
+                        >
+                          No monthly Contribution to Future Self recorded on
+                          Priorities & Situation.
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </section>
           </section>
 
           <!-- Client Report -->

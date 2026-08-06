@@ -19,6 +19,28 @@ export function createEmptyCostOfWants() {
   };
 }
 
+export function createEmptyProtection() {
+  return {
+    /*
+     * 1-5, 0 = unanswered.
+     */
+    waitTimeImportance: 0,
+
+    /*
+     * true / false, null = unanswered.
+     */
+    activeExerciseInjuryProne: null,
+
+    /*
+     * Step 2 obligation checklist selections. Keys/ids reference
+     * entries already recorded in Priorities & Situation.
+     */
+    selectedExpenseKeys: [],
+    selectedLiabilityIds: [],
+    includeFutureSelfContribution: false,
+  };
+}
+
 /* ========================================
    PLAN FACTORY
 ======================================== */
@@ -90,6 +112,7 @@ export function createEmptyClientPlan() {
 
       commitments: {
         insurancePremiums: 0,
+        contributionToFutureSelf: 0,
       },
 
       goals: [],
@@ -98,6 +121,8 @@ export function createEmptyClientPlan() {
     },
 
     costOfWants: createEmptyCostOfWants(),
+
+    protection: createEmptyProtection(),
 
     summary: {},
 
@@ -156,6 +181,10 @@ export function getPolicies() {
 
 export function getCostOfWants() {
   return clientPlan.costOfWants;
+}
+
+export function getProtection() {
+  return clientPlan.protection;
 }
 
 /* ========================================
@@ -281,6 +310,17 @@ export function updateCostOfWants(updates) {
   return clientPlan.costOfWants;
 }
 
+export function updateProtection(updates) {
+  clientPlan.protection = {
+    ...clientPlan.protection,
+    ...updates,
+  };
+
+  touchClientPlan();
+
+  return clientPlan.protection;
+}
+
 /* ========================================
    INTERNAL HELPERS
 ======================================== */
@@ -361,6 +401,21 @@ function normalizeClientPlan(plan) {
     },
 
     costOfWants: normalizeCostOfWants(plan.costOfWants),
+
+    protection: {
+      ...emptyPlan.protection,
+      ...plan.protection,
+
+      selectedExpenseKeys: Array.isArray(plan.protection?.selectedExpenseKeys)
+        ? plan.protection.selectedExpenseKeys
+        : [],
+
+      selectedLiabilityIds: Array.isArray(
+        plan.protection?.selectedLiabilityIds,
+      )
+        ? plan.protection.selectedLiabilityIds
+        : [],
+    },
 
     summary: {
       ...emptyPlan.summary,

@@ -51,6 +51,12 @@ import {
   resetClientReport,
 } from "./modules/client-report.js";
 
+import {
+  initializeProtectionAnalysis,
+  renderProtectionAnalysis,
+  resetProtectionAnalysis,
+} from "./modules/protection-analysis.js";
+
 import { on } from "./events/event-bus.js";
 
 import { EVENTS } from "./events/events.js";
@@ -107,6 +113,7 @@ initializeInsurancePortfolio();
 initializeCostOfWantsPreview();
 initializeCostAnalysis();
 initializeClientReport();
+initializeProtectionAnalysis();
 initializePage();
 
 on(EVENTS.SECTION_CHANGED, function ({ section }) {
@@ -120,6 +127,10 @@ on(EVENTS.SECTION_CHANGED, function ({ section }) {
 
   if (section === "cost-analysis" || section === "cost-analysis-detail") {
     initializeCostAnalysis();
+  }
+
+  if (section === "protection") {
+    renderProtectionAnalysis();
   }
 });
 
@@ -222,6 +233,11 @@ function clearFinancialPlan() {
    * Reset Cost Analysis.
    */
   resetCostAnalysis();
+
+  /*
+   * Reset Protection Analysis.
+   */
+  resetProtectionAnalysis();
 
   /*
    * Clear any previously generated client report.
