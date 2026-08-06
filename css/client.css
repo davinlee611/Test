@@ -4735,6 +4735,13 @@ button.insurance-validation-count:disabled {
   height: 100%;
   border-radius: inherit;
   background: var(--primary-color);
+  transition: width 0.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .analysis-next-progress-track > span {
+    transition: none;
+  }
 }
 
 .analysis-next-progress p {
