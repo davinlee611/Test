@@ -2692,37 +2692,41 @@
                       <article
                         class="analysis-next-resource-card analysis-next-resource-card--allocatable"
                       >
-                        <div class="analysis-next-resource-main">
-                          <div class="analysis-next-resource-icon">
-                            <i
-                              class="fa-solid fa-wallet"
-                              aria-hidden="true"
-                            ></i>
+                        <div class="analysis-next-resource-header">
+                          <div class="analysis-next-resource-main">
+                            <div class="analysis-next-resource-icon">
+                              <i
+                                class="fa-solid fa-wallet"
+                                aria-hidden="true"
+                              ></i>
+                            </div>
+
+                            <div>
+                              <strong>Current Withdrawable Assets</strong>
+
+                              <small>
+                                Cash, deposits and investments available today
+                              </small>
+                            </div>
                           </div>
 
-                          <div>
-                            <strong>Current Withdrawable Assets</strong>
+                          <div class="analysis-next-resource-value">
+                            <span>Available</span>
 
-                            <small>
-                              Cash, deposits and investments available today
-                            </small>
+                            <strong id="analysisNextAvailableAssets">
+                              —
+                            </strong>
                           </div>
+
+                          <label class="analysis-next-resource-switch">
+                            <input
+                              id="analysisNextIncludeAssetsInput"
+                              type="checkbox"
+                            />
+
+                            <span aria-hidden="true"></span>
+                          </label>
                         </div>
-
-                        <div class="analysis-next-resource-value">
-                          <span>Available</span>
-
-                          <strong id="analysisNextAvailableAssets"> — </strong>
-                        </div>
-
-                        <label class="analysis-next-resource-switch">
-                          <input
-                            id="analysisNextIncludeAssetsInput"
-                            type="checkbox"
-                          />
-
-                          <span aria-hidden="true"></span>
-                        </label>
 
                         <small
                           id="analysisNextAssetsReservedNote"
@@ -2772,46 +2776,48 @@
                       <article
                         class="analysis-next-resource-card analysis-next-resource-card--allocatable"
                       >
-                        <div class="analysis-next-resource-main">
-                          <div class="analysis-next-resource-icon">
-                            <i
-                              class="fa-solid fa-chart-line"
-                              aria-hidden="true"
-                            ></i>
+                        <div class="analysis-next-resource-header">
+                          <div class="analysis-next-resource-main">
+                            <div class="analysis-next-resource-icon">
+                              <i
+                                class="fa-solid fa-chart-line"
+                                aria-hidden="true"
+                              ></i>
+                            </div>
+
+                            <div>
+                              <strong>Investment Policies</strong>
+
+                              <small>
+                                Investment (Accumulation) policies recorded in
+                                the Insurance Portfolio
+                              </small>
+                            </div>
                           </div>
 
-                          <div>
-                            <strong>Investment Policies</strong>
+                          <div class="analysis-next-resource-value">
+                            <span>Estimated at FYBC</span>
 
-                            <small>
-                              Investment (Accumulation) policies recorded in the
-                              Insurance Portfolio
-                            </small>
-                          </div>
-                        </div>
-
-                        <div class="analysis-next-resource-value">
-                          <span>Estimated at FYBC</span>
-
-                          <strong id="analysisNextInvestmentPolicies">
-                            <small
-                              id="analysisNextInvestmentPoliciesBasis"
-                              class="analysis-next-resource-basis"
-                            >
+                            <strong id="analysisNextInvestmentPolicies">
+                              <small
+                                id="analysisNextInvestmentPoliciesBasis"
+                                class="analysis-next-resource-basis"
+                              >
+                                —
+                              </small>
                               —
-                            </small>
-                            —
-                          </strong>
+                            </strong>
+                          </div>
+
+                          <label class="analysis-next-resource-switch">
+                            <input
+                              id="analysisNextIncludeInvestmentPoliciesInput"
+                              type="checkbox"
+                            />
+
+                            <span aria-hidden="true"></span>
+                          </label>
                         </div>
-
-                        <label class="analysis-next-resource-switch">
-                          <input
-                            id="analysisNextIncludeInvestmentPoliciesInput"
-                            type="checkbox"
-                          />
-
-                          <span aria-hidden="true"></span>
-                        </label>
 
                         <div class="analysis-next-resource-allocation">
                           <label for="analysisNextInvestmentGrowthRateInput">
@@ -2841,74 +2847,80 @@
 
                       <!-- Endowments -->
                       <article class="analysis-next-resource-card">
-                        <div class="analysis-next-resource-main">
-                          <div class="analysis-next-resource-icon">
-                            <i
-                              class="fa-solid fa-piggy-bank"
-                              aria-hidden="true"
-                            ></i>
+                        <div class="analysis-next-resource-header">
+                          <div class="analysis-next-resource-main">
+                            <div class="analysis-next-resource-icon">
+                              <i
+                                class="fa-solid fa-piggy-bank"
+                                aria-hidden="true"
+                              ></i>
+                            </div>
+
+                            <div>
+                              <strong>Future Endowment Proceeds</strong>
+
+                              <small>
+                                Recorded maturity proceeds that may support the
+                                goal
+                              </small>
+                            </div>
                           </div>
 
-                          <div>
-                            <strong>Future Endowment Proceeds</strong>
+                          <div class="analysis-next-resource-value">
+                            <span>FYBC-equivalent value</span>
 
-                            <small>
-                              Recorded maturity proceeds that may support the
-                              goal
-                            </small>
+                            <strong id="analysisNextEndowmentValue">
+                              —
+                            </strong>
                           </div>
+
+                          <label class="analysis-next-resource-switch">
+                            <input
+                              id="analysisNextIncludeEndowmentInput"
+                              type="checkbox"
+                            />
+
+                            <span aria-hidden="true"></span>
+                          </label>
                         </div>
-
-                        <div class="analysis-next-resource-value">
-                          <span>FYBC-equivalent value</span>
-
-                          <strong id="analysisNextEndowmentValue"> — </strong>
-                        </div>
-
-                        <label class="analysis-next-resource-switch">
-                          <input
-                            id="analysisNextIncludeEndowmentInput"
-                            type="checkbox"
-                          />
-
-                          <span aria-hidden="true"></span>
-                        </label>
                       </article>
 
                       <!-- CPF OA -->
                       <article class="analysis-next-resource-card">
-                        <div class="analysis-next-resource-main">
-                          <div class="analysis-next-resource-icon">
-                            <i
-                              class="fa-solid fa-building-columns"
-                              aria-hidden="true"
-                            ></i>
+                        <div class="analysis-next-resource-header">
+                          <div class="analysis-next-resource-main">
+                            <div class="analysis-next-resource-icon">
+                              <i
+                                class="fa-solid fa-building-columns"
+                                aria-hidden="true"
+                              ></i>
+                            </div>
+
+                            <div>
+                              <strong>Eligible CPF OA</strong>
+
+                              <small>
+                                Available after RA formation and planned
+                                housing requirements
+                              </small>
+                            </div>
                           </div>
 
-                          <div>
-                            <strong>Eligible CPF OA</strong>
+                          <div class="analysis-next-resource-value">
+                            <span>Eligible amount</span>
 
-                            <small>
-                              Available after RA formation and planned housing
-                              requirements
-                            </small>
+                            <strong id="analysisNextEligibleOa"> — </strong>
                           </div>
+
+                          <label class="analysis-next-resource-switch">
+                            <input
+                              id="analysisNextIncludeOaInput"
+                              type="checkbox"
+                            />
+
+                            <span aria-hidden="true"></span>
+                          </label>
                         </div>
-
-                        <div class="analysis-next-resource-value">
-                          <span>Eligible amount</span>
-
-                          <strong id="analysisNextEligibleOa"> — </strong>
-                        </div>
-
-                        <label class="analysis-next-resource-switch">
-                          <input
-                            id="analysisNextIncludeOaInput"
-                            type="checkbox"
-                          />
-
-                          <span aria-hidden="true"></span>
-                        </label>
                       </article>
                     </div>
                   </div>

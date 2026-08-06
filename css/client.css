@@ -4487,16 +4487,58 @@ button.insurance-validation-count:disabled {
   gap: 10px;
 }
 
+/*
+ * The sidebar and page gutters take a fixed chunk of the viewport
+ * regardless of window width, so this list's actual available width
+ * does not track viewport width in any fixed way. Query the section's
+ * rendered width instead of relying on a viewport breakpoint.
+ */
+.analysis-next-steps-section {
+  container-type: inline-size;
+  container-name: next-steps-section;
+}
+
+@container next-steps-section (max-width: 560px) {
+  .analysis-next-resource-list {
+    grid-template-columns: 1fr;
+  }
+}
+
 .analysis-next-resource-card {
-  display: grid;
-  min-height: 94px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 14px;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-  align-items: center;
-  gap: 14px;
   border: 1px solid var(--border-color);
   border-radius: 11px;
   background: #ffffff;
+
+  /*
+   * A size container cannot be queried by the same element that
+   * establishes it, so the header's own column collapse below queries
+   * this card (its parent) rather than itself. This reacts to each
+   * card's actual rendered width, which can be narrow even at a wide
+   * viewport (e.g. two cards per row inside a sidebar-shrunk column).
+   */
+  container-type: inline-size;
+  container-name: next-steps-resource-card;
+}
+
+.analysis-next-resource-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+}
+
+@container next-steps-resource-card (max-width: 360px) {
+  .analysis-next-resource-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .analysis-next-resource-switch {
+    grid-column: 1 / -1;
+  }
 }
 
 .analysis-next-resource-main {
@@ -4706,10 +4748,6 @@ button.insurance-validation-count:disabled {
   .analysis-next-steps-summary-grid {
     grid-template-columns: 1fr;
   }
-
-  .analysis-next-resource-list {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 650px) {
@@ -4723,14 +4761,6 @@ button.insurance-validation-count:disabled {
 
   .analysis-next-steps-input-grid {
     grid-template-columns: 1fr;
-  }
-
-  .analysis-next-resource-card {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .analysis-next-resource-switch {
-    grid-column: 1 / -1;
   }
 
   .analysis-next-steps-flexibility {
@@ -4766,12 +4796,7 @@ button.insurance-validation-count:disabled {
   margin: 0;
 }
 
-.analysis-next-resource-card--allocatable {
-  align-content: start;
-}
-
 .analysis-next-resource-reserved-note {
-  grid-column: 1 / -1;
   padding: 8px 10px;
 
   color: #916810;
@@ -4810,9 +4835,7 @@ button.insurance-validation-count:disabled {
 }
 
 .analysis-next-resource-allocation {
-  grid-column: 1 / -1;
   width: 100%;
-  margin-top: 2px;
   padding-top: 12px;
   border-top: 1px solid var(--border-color);
 }
