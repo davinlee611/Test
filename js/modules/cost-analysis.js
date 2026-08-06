@@ -325,6 +325,14 @@ const pathPreviewElements = {
 
   projectionResults: document.getElementById("analysisPathProjectionResults"),
 
+  strategySelect: document.getElementById("analysisPathStrategySelect"),
+
+  strategyNote: document.getElementById("analysisPathStrategyNote"),
+
+  strategyDetailLink: document.getElementById(
+    "analysisPathStrategyDetailLink",
+  ),
+
   capitalNeededLabel: document.getElementById("analysisPathCapitalNeededLabel"),
 
   capitalNeededAtFybc: document.getElementById(
@@ -519,15 +527,20 @@ export function initializeCostAnalysis() {
         return;
       }
 
-      selectedRetirementStrategy = normaliseRetirementStrategy(
-        input.value,
-        getClientProfile().employmentStatus,
-      );
-
-      includeProjectedOa = false;
-
-      renderCostAnalysis();
+      applySelectedRetirementStrategy(input.value);
     },
+  );
+
+  pathPreviewElements.strategySelect?.addEventListener(
+    "change",
+    function (event) {
+      applySelectedRetirementStrategy(event.currentTarget.value);
+    },
+  );
+
+  pathPreviewElements.strategyDetailLink?.addEventListener(
+    "click",
+    handleStrategyDetailLinkClick,
   );
 
   analysisSectionCollapseButtons.forEach(function (button) {
@@ -663,6 +676,44 @@ function syncExpenseInflationDefault() {
 /* ========================================
    RETIREMENT STRATEGY
 ======================================== */
+
+/*
+ * Single entry point for both the detailed CPF Flow radio cards and
+ * the compact selector on the Projected Position card, so the two
+ * controls can never fall out of sync.
+ */
+function applySelectedRetirementStrategy(strategy) {
+  selectedRetirementStrategy = normaliseRetirementStrategy(
+    strategy,
+    getClientProfile().employmentStatus,
+  );
+
+  includeProjectedOa = false;
+
+  renderCostAnalysis();
+}
+
+function handleStrategyDetailLinkClick() {
+  const collapseButton = document.querySelector(
+    '[data-analysis-collapse-target="analysisCpfProjectionContent"]',
+  );
+
+  const content = document.getElementById("analysisCpfProjectionContent");
+
+  if (collapseButton && content) {
+    setAnalysisSectionExpanded({
+      button: collapseButton,
+
+      content,
+
+      expanded: true,
+    });
+  }
+
+  document
+    .getElementById("analysisRetirementStrategySection")
+    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 function getDefaultRetirementStrategy(employmentStatus) {
   return employmentStatus === "self_employed"
@@ -817,6 +868,28 @@ function renderRetirementStrategySelection({
     noTopUpCard.hidden = !isSelfEmployed;
   }
 
+  const compactCurrentPathOption =
+    pathPreviewElements.strategySelect?.querySelector(
+      'option[value="current_path"]',
+    );
+
+  const compactNoTopUpOption =
+    pathPreviewElements.strategySelect?.querySelector(
+      'option[value="no_top_up"]',
+    );
+
+  if (compactCurrentPathOption) {
+    compactCurrentPathOption.hidden = isSelfEmployed;
+  }
+
+  if (compactNoTopUpOption) {
+    compactNoTopUpOption.hidden = !isSelfEmployed;
+  }
+
+  if (pathPreviewElements.strategySelect) {
+    pathPreviewElements.strategySelect.value = selectedRetirementStrategy;
+  }
+
   const inputs = Array.from(
     retirementStrategyOptionsElement?.querySelectorAll(
       'input[name="analysisRetirementStrategy"]',
@@ -885,6 +958,8 @@ function renderRetirementStrategySelection({
   }
 
   setText(retirementStrategyNoteElement, note);
+
+  setText(pathPreviewElements.strategyNote, note);
 }
 
 function renderRetirementStrategyResult(rows) {
