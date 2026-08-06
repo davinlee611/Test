@@ -1,6 +1,6 @@
 "use strict";
 
-import { getAverageGrossMonthlyIncome } from "../../services/income-calculator.js";
+import { getDisabilityIncomeCoverageLimit } from "../../services/income-calculator.js";
 
 import { formatCurrency } from "../../utils/client-utils.js";
 
@@ -19,6 +19,8 @@ export function getPolicyValidationItems(
     editingPolicyId = "",
     monthlyEmploymentIncome = 0,
     annualBonus = 0,
+    annualNetTradeIncome = 0,
+    employmentStatus = "",
   } = context;
 
   const items = [];
@@ -131,12 +133,18 @@ export function getPolicyValidationItems(
 
   const earlyCiBenefits = benefitsByType["early_critical_illness"] ?? [];
 
-  const averageGrossMonthlyEmploymentIncome = getAverageGrossMonthlyIncome({
+  const {
+    isSelfEmployed: disabilityIncomeIsSelfEmployed,
+    incomeBasisLabel: disabilityIncomeBasisLabel,
+    monthlyIncomeBasis: disabilityIncomeMonthlyBasis,
+    coverageRatio: disabilityIncomeCoverageRatio,
+    disabilityIncomeLimit,
+  } = getDisabilityIncomeCoverageLimit({
+    employmentStatus,
     monthlyEmploymentIncome,
     annualBonus,
+    annualNetTradeIncome,
   });
-
-  const disabilityIncomeLimit = averageGrossMonthlyEmploymentIncome * 0.75;
 
   const disabilityIncomeBenefits = benefitsByType["disability_income"] ?? [];
 
@@ -323,14 +331,15 @@ export function getPolicyValidationItems(
   }
 
   if (disabilityIncomeBenefits.length > 0) {
-    if (averageGrossMonthlyEmploymentIncome <= 0) {
+    if (disabilityIncomeMonthlyBasis <= 0) {
       items.push({
         severity: "review",
 
         valid: true,
 
-        message:
-          "Enter the client's monthly gross income before assessing Disability Income coverage.",
+        message: disabilityIncomeIsSelfEmployed
+          ? "Enter the client's Net Trade Income before assessing Disability Income coverage."
+          : "Enter the client's monthly gross income before assessing Disability Income coverage.",
       });
     } else {
       const withinLimit = totalDisabilityIncome <= disabilityIncomeLimit;
@@ -339,6 +348,10 @@ export function getPolicyValidationItems(
         0,
         totalDisabilityIncome - disabilityIncomeLimit,
       );
+
+      const coverageRatioLabel = `${Math.round(
+        disabilityIncomeCoverageRatio * 100,
+      )}%`;
 
       items.push({
         severity: withinLimit ? "pass" : "error",
@@ -350,12 +363,12 @@ export function getPolicyValidationItems(
               totalDisabilityIncome,
             )}/month) is within the recommended limit of ${formatCurrency(
               disabilityIncomeLimit,
-            )}/month.`
+            )}/month (${coverageRatioLabel} of ${disabilityIncomeBasisLabel}).`
           : `Portfolio Disability Income (${formatCurrency(
               totalDisabilityIncome,
             )}/month) exceeds the recommended limit of ${formatCurrency(
               disabilityIncomeLimit,
-            )}/month. Recommended reduction: ${formatCurrency(
+            )}/month (${coverageRatioLabel} of ${disabilityIncomeBasisLabel}). Recommended reduction: ${formatCurrency(
               recommendedReduction,
             )}/month.`,
       });
@@ -586,7 +599,13 @@ export function getCompletePolicyValidationItems({
 
 export function getPolicyValidationSummary(
   policy,
-  { allPolicies = [], monthlyEmploymentIncome = 0, annualBonus = 0 } = {},
+  {
+    allPolicies = [],
+    monthlyEmploymentIncome = 0,
+    annualBonus = 0,
+    annualNetTradeIncome = 0,
+    employmentStatus = "",
+  } = {},
 ) {
   const validationItems = getCompletePolicyValidationItems({
     policyId: policy.id || "",
@@ -603,6 +622,10 @@ export function getPolicyValidationSummary(
       monthlyEmploymentIncome,
 
       annualBonus,
+
+      annualNetTradeIncome,
+
+      employmentStatus,
     },
   });
 
@@ -637,7 +660,12 @@ export function getPolicyValidationSummary(
 
 export function getPortfolioValidationSummary(
   policies,
-  { monthlyEmploymentIncome = 0, annualBonus = 0 } = {},
+  {
+    monthlyEmploymentIncome = 0,
+    annualBonus = 0,
+    annualNetTradeIncome = 0,
+    employmentStatus = "",
+  } = {},
 ) {
   const allPolicies = Array.isArray(policies) ? policies : [];
 
@@ -649,6 +677,10 @@ export function getPortfolioValidationSummary(
         monthlyEmploymentIncome,
 
         annualBonus,
+
+        annualNetTradeIncome,
+
+        employmentStatus,
       });
 
       summary.errorCount += policySummary.errors.length;

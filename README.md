@@ -317,7 +317,7 @@ If a directly recorded projected value at FYBC is unavailable, Analysis can proj
 
 For employed clients, disability-income benefits are validated against a maximum of 75% of average gross monthly employment income (`monthly salary + annual bonus / 12`). Coverage-end age defaults to 65 and is editable from 60–70.
 
-Self-employed disability-income validation against NTI has **not** been implemented yet and is a documented roadmap item.
+For self-employed clients, disability-income benefits are validated against a maximum of 65% of monthly Net Trade Income (`annual Net Trade Income / 12`), reflecting the greater income volatility of self-employment relative to a verified employment salary. Net Trade Income is used as entered; it is not reduced by net platform earnings the way the mandatory MediSave NTI base is.
 
 ### Cost of Wants
 
@@ -728,7 +728,6 @@ These are product decisions or known gaps, not silent TODOs:
 
 - financial plans are not yet persisted to Supabase/database storage;
 - `DEV_MODE` is still enabled for development convenience;
-- self-employed disability-income 75% validation is not yet based on NTI;
 - CPF contribution handling does not yet support low-wage graduated bands ≤$750;
 - PR first/second-year CPF rates are not modelled;
 - CPF LIFE models Standard Plan only;
@@ -812,7 +811,6 @@ Planned report output should consolidate:
 
 #### Model hardening
 
-- self-employed disability-income validation;
 - low-wage / special CPF contribution cases;
 - PR contribution-year handling;
 - already-started CPF LIFE cases;
