@@ -2211,6 +2211,10 @@ button.insurance-validation-count:disabled {
    COMMITMENTS & SAVINGS ANALYSIS
 ======================================== */
 
+.analysis-detail-back-row {
+  margin-bottom: 24px;
+}
+
 .analysis-section-surround {
   padding: 22px;
   margin-bottom: 24px;
@@ -2273,47 +2277,6 @@ button.insurance-validation-count:disabled {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-/* Goal summary */
-
-.analysis-goal-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.analysis-summary-item {
-  display: flex;
-  min-height: 112px;
-  padding: 18px;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 14px;
-
-  background: var(--surface-muted);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-}
-
-.analysis-summary-item span {
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.analysis-summary-item strong {
-  color: var(--text-primary);
-  font-size: 22px;
-}
-
-.analysis-summary-item--primary {
-  background: var(--primary-soft);
-  border-color: rgba(93, 63, 211, 0.2);
-}
-
-.analysis-summary-item--primary strong {
-  color: var(--primary-color);
 }
 
 /* Assumption */
@@ -3292,10 +3255,6 @@ button.insurance-validation-count:disabled {
 }
 
 @media (max-width: 1050px) {
-  .analysis-goal-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .analysis-section-heading--split {
     flex-direction: column;
   }
@@ -3312,10 +3271,6 @@ button.insurance-validation-count:disabled {
 }
 
 @media (max-width: 700px) {
-  .analysis-goal-summary-grid {
-    grid-template-columns: 1fr;
-  }
-
   .analysis-projection-period-options {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -4235,14 +4190,32 @@ button.insurance-validation-count:disabled {
 
 .analysis-path-details-notice {
   display: flex;
+  width: 100%;
   margin-top: 18px;
   padding: 15px 17px;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
+  appearance: none;
   border: 1px dashed var(--border-color);
   border-radius: 11px;
   background: #ffffff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.analysis-path-details-notice:hover {
+  border-color: var(--primary-color);
+  background: var(--primary-surface);
+}
+
+.analysis-path-details-notice:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 .analysis-path-details-notice strong {
@@ -4258,10 +4231,17 @@ button.insurance-validation-count:disabled {
 }
 
 .analysis-path-details-notice > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   flex: 0 0 auto;
   color: var(--primary-color);
   font-size: 11px;
   font-weight: 700;
+}
+
+.analysis-path-details-notice > span i {
+  font-size: 10px;
 }
 
 /* ========================================

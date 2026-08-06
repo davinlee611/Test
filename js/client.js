@@ -112,7 +112,7 @@ on(EVENTS.SECTION_CHANGED, function ({ section }) {
     initializeCostOfWantsPreview();
   }
 
-  if (section === "cost-analysis") {
+  if (section === "cost-analysis" || section === "cost-analysis-detail") {
     initializeCostAnalysis();
   }
 });

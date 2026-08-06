@@ -131,6 +131,16 @@
             </button>
 
             <button
+              class="sidebar-item sidebar-item--subsection"
+              type="button"
+              data-section="cost-analysis-detail"
+            >
+              <i class="fa-solid fa-table-list"></i>
+
+              <span>Detailed Cashflow &amp; CPF Flow</span>
+            </button>
+
+            <button
               class="sidebar-item"
               type="button"
               data-section="protection"
@@ -2435,6 +2445,26 @@
 
                             <small>Editable on Cost of Wants</small>
                           </div>
+
+                          <div>
+                            <span>Annual employment &amp; bonus increment</span>
+
+                            <strong id="analysisPathIncomeIncrementAssumption"
+                              >—</strong
+                            >
+
+                            <small>Editable on Detailed Cashflow &amp; CPF Flow</small>
+                          </div>
+
+                          <div>
+                            <span>Annual expense inflation</span>
+
+                            <strong id="analysisPathExpenseInflationAssumption"
+                              >—</strong
+                            >
+
+                            <small>Editable on Detailed Cashflow &amp; CPF Flow</small>
+                          </div>
                         </div>
 
                         <div class="analysis-path-capital-formula">
@@ -3049,70 +3079,71 @@
               </div>
 
               <!-- Optional details -->
-              <div class="analysis-path-details-notice">
+              <button
+                type="button"
+                class="analysis-path-details-notice"
+                id="analysisViewDetailedButton"
+              >
                 <div>
                   <strong>Want to see the detailed numbers?</strong>
 
                   <p>
-                    The retirement summary, monthly cashflow and CPF projections
-                    remain available below.
+                    Month-by-month and year-by-year cashflow and CPF
+                    projections now live on their own page.
                   </p>
                 </div>
 
-                <span>Optional details ↓</span>
-              </div>
+                <span>
+                  View Detailed Cashflow &amp; CPF Flow
+                  <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </span>
+              </button>
             </section>
 
-            <!-- Retirement Goal Summary -->
-            <div class="analysis-section-surround">
-              <section class="analysis-section-card">
-                <div class="analysis-section-heading">
-                  <div>
-                    <span class="analysis-section-eyebrow">Cost of Wants</span>
+            <div class="form-actions form-actions--between">
+              <button
+                id="costAnalysisBackButton"
+                class="header-button header-button-secondary"
+                type="button"
+              >
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Back
+              </button>
 
-                    <h3>Retirement Goal Summary</h3>
+              <button
+                id="costAnalysisNextButton"
+                class="next-button"
+                type="button"
+              >
+                Next
+                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </button>
+            </div>
+          </section>
 
-                    <p>
-                      A fixed summary of the retirement projection selected on
-                      the Cost of Wants page.
-                    </p>
-                  </div>
-                </div>
+          <!-- Detailed Cashflow & CPF Flow -->
+          <section class="workspace-section" data-content="cost-analysis-detail">
+            <div class="section-header">
+              <div>
+                <h2>Detailed Cashflow &amp; CPF Flow</h2>
 
-                <div class="analysis-goal-summary-grid">
-                  <div class="analysis-summary-item">
-                    <span>Desired FYBC Age</span>
-                    <strong id="analysisDesiredFybcAge">—</strong>
-                  </div>
+                <p>
+                  Month-by-month and year-by-year detail behind the Analysis
+                  summary — current cashflow assumptions, the full projection
+                  tables, and the CPF retirement strategy explanation.
+                </p>
+              </div>
+            </div>
 
-                  <div class="analysis-summary-item">
-                    <span>Planned Mortality Age</span>
-                    <strong id="analysisPlannedMortalityAge">—</strong>
-                  </div>
-
-                  <div class="analysis-summary-item">
-                    <span>Monthly Passive Income in Today's Value</span>
-                    <strong id="analysisMonthlyIncomeToday">$0</strong>
-                  </div>
-
-                  <div class="analysis-summary-item">
-                    <span>Monthly Passive Income Needed at FYBC Age</span>
-                    <strong id="analysisMonthlyIncomeNeeded">$0</strong>
-                  </div>
-
-                  <div class="analysis-summary-item">
-                    <span>Monthly Passive Income Needed at Age 65</span>
-                    <strong id="analysisMonthlyIncomeAt65">$0</strong>
-                  </div>
-
-                  <div
-                    class="analysis-summary-item analysis-summary-item--primary"
-                  >
-                    <span>Estimated Lifetime Retirement Spending</span>
-                    <strong id="analysisTotalCapitalNeeded">$0</strong>
-                  </div>
-                </div>
-              </section>
+            <div class="analysis-detail-back-row">
+              <button
+                id="analysisDetailBackButton"
+                class="header-button header-button-secondary"
+                type="button"
+              >
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Back to Analysis
+              </button>
             </div>
 
             <!-- Monthly Cashflow and Projections -->
@@ -3770,26 +3801,6 @@
                   </div>
                 </div>
               </section>
-            </div>
-
-            <div class="form-actions form-actions--between">
-              <button
-                id="costAnalysisBackButton"
-                class="header-button header-button-secondary"
-                type="button"
-              >
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                Back
-              </button>
-
-              <button
-                id="costAnalysisNextButton"
-                class="next-button"
-                type="button"
-              >
-                Next
-                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-              </button>
             </div>
           </section>
 

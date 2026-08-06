@@ -37,6 +37,14 @@ const costAnalysisNextButton = document.getElementById(
   "costAnalysisNextButton",
 );
 
+const analysisViewDetailedButton = document.getElementById(
+  "analysisViewDetailedButton",
+);
+
+const analysisDetailBackButton = document.getElementById(
+  "analysisDetailBackButton",
+);
+
 /* ========================================
    MODULE CONFIGURATION
 ======================================== */
@@ -189,6 +197,17 @@ function attachSectionNavigationListeners() {
     });
   }
 
+  if (analysisViewDetailedButton) {
+    analysisViewDetailedButton.addEventListener("click", function () {
+      openSection("cost-analysis-detail");
+    });
+  }
+
+  if (analysisDetailBackButton) {
+    analysisDetailBackButton.addEventListener("click", function () {
+      openSection("cost-analysis");
+    });
+  }
 }
 
 function navigateToSection(sectionName) {

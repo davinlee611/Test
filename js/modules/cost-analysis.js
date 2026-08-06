@@ -206,28 +206,6 @@ const selectAllGoalsButton = document.getElementById(
   "analysisSelectAllGoalsButton",
 );
 
-const desiredFybcAgeElement = document.getElementById("analysisDesiredFybcAge");
-
-const plannedMortalityAgeElement = document.getElementById(
-  "analysisPlannedMortalityAge",
-);
-
-const monthlyIncomeTodayElement = document.getElementById(
-  "analysisMonthlyIncomeToday",
-);
-
-const monthlyIncomeNeededElement = document.getElementById(
-  "analysisMonthlyIncomeNeeded",
-);
-
-const monthlyIncomeAt65Element = document.getElementById(
-  "analysisMonthlyIncomeAt65",
-);
-
-const totalCapitalNeededElement = document.getElementById(
-  "analysisTotalCapitalNeeded",
-);
-
 const employmentIncomeElement = document.getElementById(
   "analysisEmploymentIncomeAfterCpf",
 );
@@ -370,6 +348,14 @@ const pathPreviewElements = {
   netCapitalAtFybc: document.getElementById("analysisPathNetCapitalAtFybc"),
 
   postFybcReturn: document.getElementById("analysisPathPostFybcReturn"),
+
+  incomeIncrementAssumption: document.getElementById(
+    "analysisPathIncomeIncrementAssumption",
+  ),
+
+  expenseInflationAssumption: document.getElementById(
+    "analysisPathExpenseInflationAssumption",
+  ),
 };
 
 const capitalMethodologyButtons = Array.from(
@@ -1071,8 +1057,6 @@ function setAnalysisSectionExpanded({ button, content, expanded }) {
 ======================================== */
 
 export function renderCostAnalysis() {
-  renderRetirementGoalSummary();
-
   const cpfLifeStartAge = getCpfLifePayoutStartAge();
 
   if (cpfLifeStartAgeInput) {
@@ -1148,6 +1132,23 @@ export function renderCostAnalysis() {
     cpfLifeStartAge,
   };
 
+  /*
+   * The increment/inflation inputs live on the Detailed Cashflow &
+   * CPF Flow page, but their current values still affect the
+   * projection behind Part 3 (CPF growth, ending withdrawable
+   * balance). Surface them read-only here so the numbers stay
+   * explainable without needing to leave Analysis.
+   */
+  setText(
+    pathPreviewElements.incomeIncrementAssumption,
+    formatRate(getNonNegativeNumber(employmentIncrementInput?.value)),
+  );
+
+  setText(
+    pathPreviewElements.expenseInflationAssumption,
+    formatRate(getNonNegativeNumber(expenseInflationInput?.value)),
+  );
+
   const monthlyProjection = calculateProjection({
     ...projectionSettings,
 
@@ -1206,44 +1207,6 @@ export function renderCostAnalysis() {
   });
 
   renderYourNextSteps(currentCashflow);
-}
-
-/* ========================================
-   RETIREMENT SUMMARY
-======================================== */
-
-function renderRetirementGoalSummary() {
-  const summary = getGrossRetirementGoalSummary();
-
-  setText(
-    desiredFybcAgeElement,
-    summary.desiredFybcAge > 0 ? String(summary.desiredFybcAge) : "—",
-  );
-
-  setText(
-    plannedMortalityAgeElement,
-    summary.plannedMortalityAge > 0 ? String(summary.plannedMortalityAge) : "—",
-  );
-
-  if (!summary.isValid) {
-    setCurrency(monthlyIncomeTodayElement, 0);
-
-    setCurrency(monthlyIncomeNeededElement, 0);
-
-    setCurrency(monthlyIncomeAt65Element, 0);
-
-    setCurrency(totalCapitalNeededElement, 0);
-
-    return;
-  }
-
-  setCurrency(monthlyIncomeTodayElement, summary.monthlyIncomeToday);
-
-  setCurrency(monthlyIncomeNeededElement, summary.monthlyIncomeAtFybc);
-
-  setCurrency(monthlyIncomeAt65Element, summary.monthlyIncomeAt65);
-
-  setCurrency(totalCapitalNeededElement, summary.grossCapitalRequired);
 }
 
 /* ========================================
