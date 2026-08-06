@@ -341,9 +341,11 @@ function renderClientReport(data) {
 
   clientReportBody.appendChild(buildPrioritiesSection(data));
 
-  clientReportBody.appendChild(buildInsuranceSection(data));
+  if (Array.isArray(data.policies) && data.policies.length > 0) {
+    clientReportBody.appendChild(buildInsuranceSection(data));
+  }
 
-  clientReportBody.appendChild(buildRetirementSection(data));
+  clientReportBody.appendChild(buildCostOfWantsAnalysisSection(data));
 
   clientReportBody.appendChild(buildProtectionSection(data));
 
@@ -542,16 +544,6 @@ function buildInsuranceSection(data) {
     "fa-solid fa-shield-heart",
   );
 
-  if (!Array.isArray(data.policies) || data.policies.length === 0) {
-    section.appendChild(
-      createReportNote(
-        "No policies recorded in the Insurance Portfolio. Any quick-entry insurance premium from Priorities & Situation is used as a fallback in the cashflow instead.",
-      ),
-    );
-
-    return section;
-  }
-
   data.policies.forEach(function (policy) {
     const policyGroup = createReportGroup(
       policy.policyName || POLICY_TYPE_LABELS[policy.policyType] || "Policy",
@@ -582,7 +574,12 @@ function buildInsuranceSection(data) {
 
     if (benefitLabels.length > 0) {
       policyGroup.appendChild(
-        createReportRow("Benefits", benefitLabels.join(", ")),
+        createReportRow(
+          "Benefits",
+          benefitLabels.join(", "),
+          null,
+          true,
+        ),
       );
     }
 
@@ -604,12 +601,12 @@ function buildInsuranceSection(data) {
 }
 
 /* ========================================
-   RETIREMENT PLAN
+   COST OF WANTS ANALYSIS
 ======================================== */
 
-function buildRetirementSection(data) {
+function buildCostOfWantsAnalysisSection(data) {
   const section = createReportSection(
-    "Retirement Plan",
+    "Cost of Wants Analysis",
     "fa-solid fa-chart-line",
   );
 
@@ -866,8 +863,8 @@ function createReportGroup(title) {
   return group;
 }
 
-function createReportRow(label, value, valueClassName) {
-  const row = el("div", "report-row");
+function createReportRow(label, value, valueClassName, wrap) {
+  const row = el("div", wrap ? "report-row report-row--wrap" : "report-row");
 
   row.appendChild(el("span", null, label));
 

@@ -29,20 +29,43 @@
 
   .client-workspace {
     display: block !important;
+    max-width: none;
     height: auto;
+    margin: 0;
+  }
+
+  /*
+   * .workspace-layout is a two-column grid (sidebar + content). With
+   * the sidebar hidden above, force it back to a single block so the
+   * content column stops reserving the sidebar's width.
+   */
+  .workspace-layout {
+    display: block !important;
   }
 
   .workspace-content {
     padding: 0;
     border-radius: 0;
+    background: transparent;
     box-shadow: none;
   }
 
   .client-report {
     max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
   }
 
   .report-section {
     break-inside: avoid;
+    border-color: #d0d5dd;
+    background: transparent;
+  }
+
+  .report-section:not(:first-of-type) {
+    break-before: page;
   }
 }

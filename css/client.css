@@ -5708,7 +5708,11 @@ button.insurance-validation-count:disabled {
 }
 
 .report-section {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
+  padding: 24px 28px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--surface-muted);
 }
 
 .report-section:last-child {
@@ -5771,6 +5775,17 @@ button.insurance-validation-count:disabled {
   font-weight: 600;
   text-align: right;
   white-space: nowrap;
+}
+
+.report-row--wrap {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.report-row--wrap > strong {
+  text-align: left;
+  white-space: normal;
 }
 
 .report-value--primary {
