@@ -106,3 +106,41 @@
 
   font-size: 12px;
 }
+
+/* ========================================
+   RESPONSIVE SIDEBAR (OFF-CANVAS DRAWER)
+======================================== */
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.sidebar-backdrop[hidden] {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .client-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 41;
+
+    width: min(var(--sidebar-width), 82vw);
+    overflow-y: auto;
+
+    border-radius: 0;
+    box-shadow: var(--shadow-lg);
+
+    transform: translateX(-100%);
+    transition: transform var(--transition-base);
+  }
+
+  .client-sidebar.is-open {
+    transform: translateX(0);
+  }
+}

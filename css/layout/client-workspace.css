@@ -51,6 +51,26 @@ body {
     0;
 }
 
+/* ========================================
+   RESPONSIVE SIDEBAR
+
+   Below this width the fixed sidebar leaves too little room for
+   content (see the container-query fixes on the Analysis page, which
+   only have real width to work with once the sidebar is out of the
+   way here). The sidebar becomes an off-canvas drawer instead of a
+   persistent column.
+======================================== */
+
+@media (max-width: 900px) {
+  .workspace-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workspace-content {
+    border-radius: var(--radius-2xl);
+  }
+}
+
 .workspace-section {
   display: none;
 }

@@ -15,6 +15,12 @@ const sidebarItems = document.querySelectorAll(".sidebar-item");
 
 const workspaceSections = document.querySelectorAll(".workspace-section");
 
+const sidebarToggleButton = document.getElementById("sidebarToggleButton");
+
+const sidebarElement = document.getElementById("clientSidebar");
+
+const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+
 const prioritiesBackButton = document.getElementById("prioritiesBackButton");
 
 const prioritiesNextButton = document.getElementById("prioritiesNextButton");
@@ -49,6 +55,7 @@ export function initializeSidebar() {
   attachSidebarListeners();
   attachSectionNavigationListeners();
   attachProfileEventListeners();
+  attachResponsiveSidebarListeners();
 
   moduleInitialized = true;
 }
@@ -73,6 +80,72 @@ function handleSidebarItemClick(event) {
   }
 
   navigateToSection(sectionName);
+}
+
+/* ========================================
+   RESPONSIVE SIDEBAR (OFF-CANVAS DRAWER)
+
+   Below 900px the sidebar becomes a fixed off-canvas drawer (see
+   client-sidebar.css) rather than a persistent column. These
+   listeners only affect that collapsed state; on wider screens
+   setSidebarOpen() still runs but has no visible effect since the
+   drawer styles are scoped to the same breakpoint.
+======================================== */
+
+const mobileSidebarQuery = window.matchMedia("(max-width: 900px)");
+
+function attachResponsiveSidebarListeners() {
+  sidebarToggleButton?.addEventListener("click", function () {
+    setSidebarOpen(!sidebarElement?.classList.contains("is-open"));
+  });
+
+  sidebarBackdrop?.addEventListener("click", function () {
+    setSidebarOpen(false, { returnFocus: true });
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      setSidebarOpen(false, { returnFocus: true });
+    }
+  });
+
+  /*
+   * Re-sync whenever the viewport crosses the drawer breakpoint
+   * (e.g. resizing the window), so the sidebar is never left
+   * inert on a wide screen or interactive-but-hidden on a narrow
+   * one. Not a user-initiated close, so focus stays where it is.
+   */
+  mobileSidebarQuery.addEventListener("change", function () {
+    setSidebarOpen(false);
+  });
+
+  setSidebarOpen(false);
+}
+
+function setSidebarOpen(isOpen, { returnFocus = false } = {}) {
+  if (!sidebarElement) {
+    return;
+  }
+
+  sidebarElement.classList.toggle("is-open", isOpen);
+
+  /*
+   * inert must only apply while the sidebar is an off-canvas drawer
+   * (below the breakpoint). On a wide screen the sidebar is always a
+   * persistent, interactive column regardless of this open/closed
+   * state.
+   */
+  sidebarElement.inert = mobileSidebarQuery.matches && !isOpen;
+
+  if (sidebarBackdrop) {
+    sidebarBackdrop.hidden = !isOpen;
+  }
+
+  sidebarToggleButton?.setAttribute("aria-expanded", String(isOpen));
+
+  if (!isOpen && returnFocus) {
+    sidebarToggleButton?.focus();
+  }
 }
 
 /* ========================================
@@ -186,6 +259,13 @@ export function openSection(sectionName) {
 
     section.classList.toggle("active", isActive);
   });
+
+  /*
+   * Navigating away closes the off-canvas drawer on a narrow screen;
+   * a no-op on a wide screen where the sidebar is already a
+   * persistent column.
+   */
+  setSidebarOpen(false);
 
   emit(EVENTS.SECTION_CHANGED, {
     section: sectionName,
