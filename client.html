@@ -2260,6 +2260,50 @@
                     id="analysisPathProjectionResults"
                     class="analysis-path-projection-results"
                   >
+                    <div
+                      class="analysis-path-strategy-inline"
+                      id="analysisPathStrategyInline"
+                    >
+                      <div class="analysis-path-strategy-inline-heading">
+                        <label for="analysisPathStrategySelect">
+                          CPF Retirement Strategy
+                        </label>
+
+                        <button
+                          type="button"
+                          id="analysisPathStrategyDetailLink"
+                          class="analysis-path-strategy-detail-link"
+                        >
+                          View full CPF Flow detail
+
+                          <i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
+                        </button>
+                      </div>
+
+                      <select id="analysisPathStrategySelect">
+                        <option value="current_path">Current Path</option>
+
+                        <option value="no_top_up" hidden>
+                          No Cash Top-up
+                        </option>
+
+                        <option value="brs">BRS — 50% of Projected FRS</option>
+
+                        <option value="frs">
+                          FRS — 100% of Projected FRS
+                        </option>
+
+                        <option value="ers">
+                          ERS — 200% of Projected FRS
+                        </option>
+                      </select>
+
+                      <small id="analysisPathStrategyNote">
+                        Current Path does not force an additional cash
+                        top-up.
+                      </small>
+                    </div>
+
                     <div class="analysis-path-projected-grid">
                       <article
                         class="analysis-path-projected-item analysis-path-projected-item--target"
@@ -3418,7 +3462,10 @@
                     </div>
                   </div>
 
-                  <div class="analysis-retirement-strategy">
+                  <div
+                    class="analysis-retirement-strategy"
+                    id="analysisRetirementStrategySection"
+                  >
                     <div class="analysis-retirement-strategy-heading">
                       <div>
                         <span class="analysis-section-eyebrow">
