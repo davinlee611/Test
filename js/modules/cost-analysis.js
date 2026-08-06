@@ -1719,17 +1719,30 @@ function calculateYourPathProjectedPosition({ rows, cpfLifeStartAge }) {
   /*
    * A BRS, FRS or ERS strategy draws its cash top-up from the same
    * withdrawable balance Next Steps lets the client opt into as a
-   * resource. Sum it separately so that reservation can be disclosed
-   * and netted out there, without switching Next Steps over to the
-   * full simulated endWithdrawableBalance (which already bakes in
-   * ordinary income/expense cashflow that Next Steps offers as a
-   * separate "Chosen Monthly Commitment" resource).
+   * resource. There is at most one such event in the whole projection
+   * (either immediately, for a client already 55+, or at the month
+   * age 55 is reached). Record its amount AND month index rather than
+   * just a dollar total, because a top-up years away should be
+   * discounted back to today before being netted out of today's
+   * withdrawable assets — subtracting a future nominal amount from a
+   * today balance would mix time frames.
    */
-  const retirementStrategyCashTopUpBeforeFybc = rows
+  const retirementStrategyTopUpRowIndex = rows
     .slice(0, fybcRowIndex + 1)
-    .reduce(function (total, row) {
-      return total + getNonNegativeNumber(row.retirementStrategyCashTopUp);
-    }, 0);
+    .findIndex(function (row) {
+      return getNonNegativeNumber(row.retirementStrategyCashTopUp) > 0;
+    });
+
+  const retirementStrategyTopUp =
+    retirementStrategyTopUpRowIndex >= 0
+      ? {
+          amount: getNonNegativeNumber(
+            rows[retirementStrategyTopUpRowIndex].retirementStrategyCashTopUp,
+          ),
+
+          monthIndex: retirementStrategyTopUpRowIndex,
+        }
+      : null;
 
   const maturityResult = calculateFutureMaturityPresentValue({
     rows,
@@ -1846,7 +1859,7 @@ function calculateYourPathProjectedPosition({ rows, cpfLifeStartAge }) {
       cpfLifeStartRow?.cpfLifeMonthlyPayout,
     ),
 
-    retirementStrategyCashTopUpBeforeFybc,
+    retirementStrategyTopUp,
   };
 }
 
@@ -2289,12 +2302,24 @@ function renderYourNextSteps(currentCashflow) {
 
   /*
    * A BRS, FRS or ERS strategy draws its cash top-up from this same
-   * withdrawable balance before FYBC. Reserve it here so the client
-   * cannot also pledge those dollars to Next Steps.
+   * withdrawable balance before FYBC, but not necessarily today — for
+   * a client below 55 it happens at the future month RA forms. Until
+   * then the balance keeps growing under the same Pre-FYBC Growth
+   * Assumption used elsewhere on this card, so the top-up must be
+   * discounted back to today's dollars (at that same rate) before
+   * being netted out of today's balance. Subtracting the future
+   * nominal top-up directly would understate what is genuinely still
+   * available today.
    */
   const topUpReservedFromAssets = Math.min(
     currentAssets,
-    getNonNegativeNumber(position.retirementStrategyCashTopUpBeforeFybc),
+    calculateLumpSumPresentValue({
+      amount: position.retirementStrategyTopUp?.amount,
+
+      months: position.retirementStrategyTopUp?.monthIndex,
+
+      annualRatePercent: growthRate,
+    }),
   );
 
   const availableCurrentAssets = Math.max(
@@ -2700,6 +2725,20 @@ function calculateLumpSumFutureValue({ amount, months, annualRatePercent }) {
   const monthlyRate = convertAnnualRateToMonthly(annualRatePercent);
 
   return safeAmount * Math.pow(1 + monthlyRate, safeMonths);
+}
+
+function calculateLumpSumPresentValue({ amount, months, annualRatePercent }) {
+  const safeAmount = getNonNegativeNumber(amount);
+
+  const safeMonths = getNonNegativeNumber(months);
+
+  if (safeAmount <= 0) {
+    return 0;
+  }
+
+  const monthlyRate = convertAnnualRateToMonthly(annualRatePercent);
+
+  return safeAmount / Math.pow(1 + monthlyRate, safeMonths);
 }
 
 function getNextStepsGrowthRate() {
