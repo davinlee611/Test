@@ -4770,6 +4770,45 @@ button.insurance-validation-count:disabled {
   align-content: start;
 }
 
+.analysis-next-resource-reserved-note {
+  grid-column: 1 / -1;
+  padding: 8px 10px;
+
+  color: #916810;
+  background: #fff8e7;
+  border: 1px solid #f0d899;
+  border-radius: 8px;
+
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.analysis-next-resource-reserved-note[hidden] {
+  display: none;
+}
+
+.analysis-next-resource-projected {
+  display: flex;
+  margin-top: 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.analysis-next-resource-projected[hidden] {
+  display: none;
+}
+
+.analysis-next-resource-projected span {
+  color: var(--text-secondary);
+  font-size: 9px;
+}
+
+.analysis-next-resource-projected strong {
+  color: var(--text-primary);
+  font-size: 12px;
+}
+
 .analysis-next-resource-allocation {
   grid-column: 1 / -1;
   width: 100%;

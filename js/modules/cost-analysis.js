@@ -415,9 +415,17 @@ const nextStepsElements = {
 
   availableAssets: document.getElementById("analysisNextAvailableAssets"),
 
+  assetsReservedNote: document.getElementById("analysisNextAssetsReservedNote"),
+
   assetsAmountInput: document.getElementById("analysisNextAssetsAmountInput"),
 
   assetsAmountHelp: document.getElementById("analysisNextAssetsAmountHelp"),
+
+  assetsProjectedRow: document.getElementById("analysisNextAssetsProjectedRow"),
+
+  assetsProjectedAtFybc: document.getElementById(
+    "analysisNextAssetsProjectedAtFybc",
+  ),
 
   investmentPolicies: document.getElementById("analysisNextInvestmentPolicies"),
 
@@ -1708,6 +1716,21 @@ function calculateYourPathProjectedPosition({ rows, cpfLifeStartAge }) {
     fybcRow.endWithdrawableBalance,
   );
 
+  /*
+   * A BRS, FRS or ERS strategy draws its cash top-up from the same
+   * withdrawable balance Next Steps lets the client opt into as a
+   * resource. Sum it separately so that reservation can be disclosed
+   * and netted out there, without switching Next Steps over to the
+   * full simulated endWithdrawableBalance (which already bakes in
+   * ordinary income/expense cashflow that Next Steps offers as a
+   * separate "Chosen Monthly Commitment" resource).
+   */
+  const retirementStrategyCashTopUpBeforeFybc = rows
+    .slice(0, fybcRowIndex + 1)
+    .reduce(function (total, row) {
+      return total + getNonNegativeNumber(row.retirementStrategyCashTopUp);
+    }, 0);
+
   const maturityResult = calculateFutureMaturityPresentValue({
     rows,
 
@@ -1822,6 +1845,8 @@ function calculateYourPathProjectedPosition({ rows, cpfLifeStartAge }) {
     projectedCpfLifeIncome: getNonNegativeNumber(
       cpfLifeStartRow?.cpfLifeMonthlyPayout,
     ),
+
+    retirementStrategyCashTopUpBeforeFybc,
   };
 }
 
@@ -2262,6 +2287,21 @@ function renderYourNextSteps(currentCashflow) {
 
   const currentAssets = calculateLiquidAssetTotal(getAssets()?.liquidAssets);
 
+  /*
+   * A BRS, FRS or ERS strategy draws its cash top-up from this same
+   * withdrawable balance before FYBC. Reserve it here so the client
+   * cannot also pledge those dollars to Next Steps.
+   */
+  const topUpReservedFromAssets = Math.min(
+    currentAssets,
+    getNonNegativeNumber(position.retirementStrategyCashTopUpBeforeFybc),
+  );
+
+  const availableCurrentAssets = Math.max(
+    currentAssets - topUpReservedFromAssets,
+    0,
+  );
+
   const includeCurrentAssets = Boolean(
     nextStepsElements.includeAssetsInput?.checked,
   );
@@ -2269,7 +2309,9 @@ function renderYourNextSteps(currentCashflow) {
   if (nextStepsElements.assetsAmountInput) {
     nextStepsElements.assetsAmountInput.disabled = !includeCurrentAssets;
 
-    nextStepsElements.assetsAmountInput.max = String(Math.round(currentAssets));
+    nextStepsElements.assetsAmountInput.max = String(
+      Math.round(availableCurrentAssets),
+    );
   }
 
   let selectedCurrentAssets = includeCurrentAssets
@@ -2277,10 +2319,10 @@ function renderYourNextSteps(currentCashflow) {
     : 0;
 
   /*
-   * Never allow the client to allocate more
-   * than their recorded withdrawable assets.
+   * Never allow the client to allocate more than their withdrawable
+   * assets actually still available after the CPF top-up reservation.
    */
-  selectedCurrentAssets = Math.min(selectedCurrentAssets, currentAssets);
+  selectedCurrentAssets = Math.min(selectedCurrentAssets, availableCurrentAssets);
 
   if (includeCurrentAssets && nextStepsElements.assetsAmountInput) {
     nextStepsElements.assetsAmountInput.value = String(
@@ -2295,6 +2337,24 @@ function renderYourNextSteps(currentCashflow) {
 
     annualRatePercent: growthRate,
   });
+
+  setText(
+    nextStepsElements.assetsReservedNote,
+    topUpReservedFromAssets > 0
+      ? `${formatCurrency(
+          topUpReservedFromAssets,
+        )} reserved for the selected CPF retirement strategy's cash top-up`
+      : "",
+  );
+
+  setHidden(nextStepsElements.assetsReservedNote, topUpReservedFromAssets <= 0);
+
+  setHidden(
+    nextStepsElements.assetsProjectedRow,
+    !(includeCurrentAssets && selectedCurrentAssets > 0),
+  );
+
+  setCurrency(nextStepsElements.assetsProjectedAtFybc, projectedCurrentAssets);
 
   const investmentPolicyGrowthRate = getInvestmentPolicyGrowthRate();
 
@@ -2322,7 +2382,7 @@ function renderYourNextSteps(currentCashflow) {
    * These four numbers show what is AVAILABLE.
    * They are not automatically counted.
    */
-  setCurrency(nextStepsElements.availableAssets, currentAssets);
+  setCurrency(nextStepsElements.availableAssets, availableCurrentAssets);
 
   setCurrency(nextStepsElements.investmentPolicies, investmentPoliciesAtFybc);
 
@@ -2726,6 +2786,10 @@ function renderIncompleteNextSteps() {
     nextStepsElements.fundingStatus,
     "Complete the retirement target first to build a suggested plan.",
   );
+
+  setHidden(nextStepsElements.assetsReservedNote, true);
+
+  setHidden(nextStepsElements.assetsProjectedRow, true);
 }
 
 /* ========================================
