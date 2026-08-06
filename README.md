@@ -6,16 +6,16 @@ The product is deliberately being designed for younger clients — early-career 
 
 > **Show me the lifestyle I want, show me what I have today, and show me the choices that can help me close the gap.**
 
-The application currently covers client data collection, priorities and cashflow inputs, an insurance portfolio, a simplified **Cost of Wants** retirement target, detailed cashflow and CPF projections, and an **Analyse Commitments & Savings Plan** workflow. Protection Analysis and the final Summary Report are the next major product areas.
+The application currently covers client data collection, priorities and cashflow inputs, an insurance portfolio, a simplified **Cost of Wants** retirement target, an **Analyse Commitments & Savings Plan** workflow (with detailed cashflow and CPF projections on their own sidebar page), a first-pass **Protection Analysis** intake, and a printable **Client Report**. Protection Analysis's coverage-gap calculation engine is the next major product area.
 
 > [!IMPORTANT]
 > This project is a planning and educational tool, not financial, tax, legal, insurance, investment, or CPF advice. CPF rules, insurer product terms, premiums, payout illustrations, contribution rates and public-policy thresholds change. Published values should be revalidated against the relevant official source before production use. Values explicitly labelled **Estimated / Projected** in this README are application assumptions, not values published or guaranteed by CPF Board, MOH, an insurer, or another authority.
 
 ## Status at this checkpoint
 
-Documentation checkpoint: **6 August 2026**.
+Documentation checkpoint: **6 August 2026** (updated same day after the Client Report and Protection Analysis first pass shipped).
 
-The codebase has completed a full manual/static cleanup pass. The last audited project contained roughly 36.7k lines across 105 JavaScript files, 8 CSS files and 3 HTML files. The audit confirmed that JavaScript modules parse, relative import/export links resolve, HTML IDs are unique, literal `getElementById()` targets and label targets exist, CSS braces are balanced, and shared `clientPlan` state remains private to the state module. Redundant/dead CSS and obsolete code identified during the audit were subsequently removed.
+The codebase has completed a full manual/static cleanup pass. The project currently contains roughly 26.2k lines across 107 JavaScript files, 9 CSS files and 3 HTML files. Verification at each change in this checkpoint means `node --check` per JS file, a Python HTMLParser tag-balance check, and CSS brace-balance counts — the sandbox this documentation was written in cannot run a headless browser, so nothing here has been confirmed in an actual rendered page; live-browser testing after any further UI change is still required before shipping.
 
 Two intentional development conveniences remain:
 
@@ -32,8 +32,9 @@ flowchart TD
     B --> C["Insurance Portfolio"]
     C --> D["Cost of Wants"]
     D --> E["Analyse Commitments & Savings Plan"]
+    E --> E2["Detailed Cashflow & CPF Flow"]
     E --> F["Protection Analysis"]
-    F --> G["Summary Report"]
+    F --> G["Client Report"]
 ```
 
 The responsibilities are intentionally separated:
@@ -45,8 +46,9 @@ The responsibilities are intentionally separated:
 | Insurance Portfolio | What insurance do they already have and what does it cost? | Implemented and integrated |
 | Cost of Wants | What retirement lifestyle do they want? | Implemented; simplified for younger users |
 | Analyse Commitments & Savings Plan | What do they have now and what could their choices achieve? | Core engine implemented; UX/refinement ongoing |
-| Protection Analysis | How much protection is enough? | Planned / placeholder |
-| Summary Report | What should the client take away from the session? | Planned / placeholder |
+| Detailed Cashflow & CPF Flow | What does the month-by-month/year-by-year detail behind Analysis look like? | Implemented; own sidebar sub-page |
+| Protection Analysis | How much protection is enough? | Data-collection first pass implemented (SBMI); coverage-gap engine not yet built |
+| Client Report | What should the client take away from the session? | Implemented for the retirement plan; Protection section is a placeholder pending the engine above |
 
 ## Design philosophy
 
@@ -59,7 +61,7 @@ The app originally exposed a lot of CPF and cashflow detail directly. That works
 3. **Your Projected Position** — what current behaviour may produce.
 4. **Your Next Steps** — what resources the client actually wants to allocate.
 
-The cashflow and CPF-flow tables remain available for advisers and curious users, but they are collapsed by default.
+The cashflow and CPF-flow tables remain available for advisers and curious users, but they live on their own **Detailed Cashflow & CPF Flow** sidebar sub-page rather than being scrolled past on the main Analysis page.
 
 ### 2. Cost of Wants is the target, Analysis is the reality check
 
@@ -141,13 +143,17 @@ Test-main/
     ├── factories/
     ├── modules/
     │   ├── assets-income/
+    │   ├── commitments/
+    │   ├── expenses/
     │   ├── goals/
     │   ├── insurance/
     │   ├── liabilities/
     │   ├── properties/
     │   ├── cost-of-wants/
     │   ├── cost-of-wants-preview.js
-    │   └── cost-analysis.js
+    │   ├── cost-analysis.js       # Analysis: cashflow, CPF, Your Path
+    │   ├── client-report.js       # Client Report generation/print
+    │   └── protection-analysis.js # SBMI Protection Analysis intake
     ├── services/
     ├── state/
     │   └── client-plan.js
@@ -167,7 +173,7 @@ The top-level shape is conceptually:
 {
   profile: { ... },
   priorities: {
-    selectedWealthTypes: [],
+    selectedWealthTypes: [],       // 4 wealth types, array order = client's ranking
     assets: {
       liquidAssets: { ... },
       income: { ... },
@@ -175,12 +181,19 @@ The top-level shape is conceptually:
       properties: []
     },
     expenses: { ... },
-    commitments: { insurancePremiums },
+    commitments: { insurancePremiums, contributionToFutureSelf },
     goals: [],
     liabilities: [],
     policies: []
   },
   costOfWants: { ... },
+  protection: {
+    waitTimeImportance,            // 1-5, 0 = unanswered
+    activeExerciseInjuryProne,     // true/false, null = unanswered
+    selectedExpenseKeys: [],
+    selectedLiabilityIds: [],
+    includeFutureSelfContribution
+  },
   summary: {},
   metadata: { createdAt, updatedAt }
 }
@@ -209,7 +222,7 @@ Date of birth drives age-sensitive CPF contribution, allocation, BHS, RA formati
 
 This is the primary current-position input area. It contains:
 
-- wealth-type selections
+- wealth-type selections, ranked by clicking cards in priority order (1st–4th)
 - liquid/withdrawable assets
 - employment or self-employed income
 - CPF OA / SA / MA / RA balances
@@ -218,6 +231,7 @@ This is the primary current-position input area. It contains:
 - goals
 - liabilities
 - quick-entry insurance premium fallback
+- monthly **Contribution to Future Self** — money set aside for long-term savings/investment, recorded alongside the insurance premium in Commitments. This is deliberately **not** summed into Total Monthly Commitments or any cashflow/surplus figure; it exists so Protection Analysis (below) can ask whether that ongoing commitment should also be protected, without silently changing Analysis's cashflow math.
 
 #### Full-time employment
 
@@ -443,10 +457,50 @@ Today's withdrawable assets, current CPF position and current positive/negative 
 **3. Your Projected Position / Capital Needed**  
 Shows what current behaviour is projected to produce around FYBC, including projected OA after RA formation, projected RA, affordable CPF LIFE premium/income and recurring retirement income. MA is deliberately omitted from the simple summary.
 
-**4. Your Next Steps**  
-Lets the client decide what resources they actually want to use rather than automatically consuming all assets/surplus. Candidate resources include current withdrawable assets, investment policies, future endowment proceeds and eligible CPF OA. Current assets include an editable **Amount I Want to Use** field.
+The Capital Needed at FYBC card carries an always-visible disclosure line stating how much lower it is than the undiscounted lifetime-spending estimate from Your Goal, split between the post-FYBC return assumption and recorded recurring income already offsetting the target. The split is computed from `grossLifestyleCapitalAtFybc` and `recordedIncomeCapitalOffset`, both already returned by the underlying projection — nothing new is calculated for the disclosure itself.
 
-The detailed cashflow and CPF-flow sections remain available but are collapsed by default. A future UX improvement is to expose them as sidebar subsections below Analyse Commitments & Savings Plan rather than making users scroll through them.
+The increment/inflation inputs that feed this projection now live on the Detailed Cashflow & CPF Flow sub-page (see below), but their current values are still surfaced read-only in this card's "How is the capital calculated?" panel so the numbers stay explainable without leaving Analysis.
+
+**4. Your Next Steps**  
+Lets the client decide what resources they actually want to use rather than automatically consuming all assets/surplus. Candidate resources include current withdrawable assets, investment policies, future endowment proceeds and eligible CPF OA. Current assets include an editable **Amount I Want to Use** field. The "Estimated Goal Coverage" progress bar animates on change rather than jumping.
+
+A **Generate Report** call-to-action sits below Your Next Steps. Because Protection Analysis has no coverage-gap logic yet, clicking it always opens a confirmation dialog first ("Protection Analysis not completed — continue?") before building the Client Report — that confirmation is expected to keep firing until the Protection Analysis engine exists.
+
+#### Detailed Cashflow & CPF Flow
+
+The month-by-month/year-by-year cashflow and CPF-flow projection tables, the increment/inflation assumption inputs, and the full BRS/FRS/ERS retirement-strategy explanation live on their own sidebar sub-page nested under Analyse Commitments & Savings Plan, reached via the sidebar or a "View Detailed Cashflow & CPF Flow" link at the bottom of Your Path. This keeps the main Analysis page to the four-section story for the primary young-user audience while keeping the full detail available for advisers and curious users. The old "Retirement Goal Summary" card that used to sit between the two was removed — it duplicated Your Goal exactly.
+
+### Protection Analysis
+
+Branded **SBMI — Stop Buying More Insurance**, mirroring the FYBC treatment on Cost of Wants. This is a **first pass**: data-collection fields only, with no coverage-gap calculation or recommendation logic yet. The page reuses the same step-card/grid classes as Your Path so it reads as a natural continuation of Analysis, laid out as two steps side by side.
+
+**Step 1 — Medical Protection**
+- a 1–5 scale for how important "not having to wait for treatment" is to the client
+- a Yes/No toggle for whether the client is active/exercises and is prone to injury
+
+**Step 2 — Financial Obligations to Protect**
+Checkboxes generated live from whatever is already entered in Priorities & Situation:
+- every expense category with a non-zero monthly amount
+- every recorded liability
+- the Contribution to Future Self amount, if entered
+
+Selections are stored per item (`selectedExpenseKeys`, `selectedLiabilityIds`, `includeFutureSelfContribution`) and the checklists re-render automatically if the underlying Priorities & Situation data changes, so they never go stale. No total, gap, or recommendation is calculated from these selections yet — that is the next Protection Analysis milestone.
+
+### Client Report
+
+Reached via the **Generate Report** button on Analysis, or directly from the sidebar once generated. Renamed from the earlier placeholder "Summary Report." Report generation is a one-time snapshot built from whatever the rest of the app last computed — it is not live-bound, and reflects nothing entered after the button was clicked.
+
+Sections, each its own bordered card and each starting on a fresh printed page:
+
+- **Priorities & Situation** — always shown: wealth priorities in ranked order, current monthly cashflow, Contribution to Future Self, CPF balances, withdrawable assets, properties, goals, liabilities.
+- **Insurance Portfolio** — only shown if at least one policy is recorded: per-policy insurer/type/life-assured/benefits, plus the portfolio's total effective monthly premium.
+- **Cost of Wants Analysis** — the retirement goal, the Capital Needed at FYBC breakdown, Your Next Steps resource/commitment selections, and the CPF assumptions (projected cohort FRS/BHS) behind them.
+- **Protection Analysis** — an explicit "not yet completed" note, since the coverage-gap engine doesn't exist. This section will start reflecting real content the moment that engine ships.
+- **Disclosure** — the same not-advice language used elsewhere in the app.
+
+All figures are pulled from the same calculators/services the rest of the app already uses (reused via small cache+getter pairs in `cost-analysis.js` — `getLatestCurrentCashflow()`, `getLatestYourPathProjectedPosition()`, `getLatestYourNextStepsResult()`) rather than recalculated independently, and all DOM content is built with `createElement`/`textContent`, never `innerHTML`, since report content includes free-text client and policy data.
+
+Printing uses the browser's native `window.print()` plus a dedicated `css/layout/print.css` stylesheet — no PDF library dependency. The print stylesheet also fixes a real layout bug: the app's sidebar-content grid reserves a fixed sidebar column width even once the sidebar element itself is hidden, so the print output collapses that grid to a single column rather than only using the middle content column.
 
 ## Calculation and assumptions register
 
@@ -741,7 +795,9 @@ These are product decisions or known gaps, not silent TODOs:
 - future insurer premium repricing is not modelled;
 - protection claim events are not treated as ordinary projected inflows;
 - taxes, investment taxes/fees, healthcare claim probability and product-specific surrender charges are outside the current model;
-- the large `cost-analysis.js` should eventually be split after projection behaviour is covered by automated tests.
+- the large `cost-analysis.js` should eventually be split after projection behaviour is covered by automated tests;
+- Protection Analysis collects Step 1/Step 2 inputs but does not yet calculate a coverage gap, total, or recommendation from them;
+- the Client Report's Protection Analysis section is a placeholder note for the same reason.
 
 ## Roadmap
 
@@ -770,36 +826,29 @@ These are product decisions or known gaps, not silent TODOs:
 - Analysis resource selection / Your Next Steps foundation
 - collapsible technical projection sections
 - full dead-code/CSS/import cleanup pass
+- self-employed disability-income validation based on Net Trade Income (65% vs. 75% of gross income for employed)
+- Capital Needed at FYBC reduction-attribution disclosure (returns vs. recorded-income split)
+- Detailed Cashflow & CPF Flow moved to its own Analysis sidebar sub-page
+- Client Report (renamed from Summary Report): Priorities & Situation, Insurance Portfolio, Cost of Wants Analysis, print-to-PDF
+- wealth-type ranking and Contribution to Future Self surfaced in the Client Report
+- Protection Analysis data-collection first pass (SBMI branding, Step 1/Step 2 fields)
 
 ### In progress / next refinement
 
-- finish the young-user-facing **Your Next Steps** recommendations so the output answers “what can I realistically do next?” without assuming all surplus/assets are committed;
+- finish the young-user-facing **Your Next Steps** recommendations so the output answers “what can I realistically do next?” without assuming all surplus/assets are committed — a shortfall-guidance branch for when the gap can't be closed even at full commitment was designed but deferred;
 - continue polishing the four-section Analysis story and helper modals;
-- move detailed Cashflow and CPF Flow to Analysis sidebar subsections to reduce long-page scrolling;
 - add automated regression fixtures before further extracting `cost-analysis.js`;
 - replace projected public-policy constants whenever official 2027+ values are published.
 
 ### Planned major features
 
-#### Protection Analysis
+#### Protection Analysis coverage-gap engine
 
-The next major advice layer should answer:
+Step 1/Step 2 data collection is implemented (see above); the calculation layer is not. The next major advice layer should answer:
 
 > **How much protection should I buy so I do not need to keep guessing or repeatedly buying more insurance?**
 
-Planned protection work includes coverage-gap analysis for Death/TPD/CI/ECI, disability-income suitability and an explainable recommendation layer based on liabilities, dependants/expenses, goals and existing portfolio benefits.
-
-#### Summary Report
-
-Planned report output should consolidate:
-
-- the client's desired lifestyle target;
-- current position;
-- retirement funding gap and chosen resource allocation;
-- CPF assumptions and projected support;
-- protection gaps/recommendations;
-- clear disclosures for estimated values;
-- print/PDF-friendly presentation.
+Planned protection work includes coverage-gap analysis for Death/TPD/CI/ECI, disability-income suitability, and an explainable recommendation layer based on the Step 2 selections, dependants/expenses, goals and existing portfolio benefits. Once this exists, the Client Report's Protection Analysis section should switch from its placeholder note to real content.
 
 #### Production persistence and access control
 
@@ -883,6 +932,16 @@ This project evolved iteratively rather than being designed fully upfront. The s
 - Locked the present calculation/assumption register for handover documentation.
 - Prepared this README and the companion Developer Handover document.
 
+### Phase 8 — Protection Analysis intake, Client Report, page split (6 August 2026)
+
+- Implemented NTI-based self-employed disability-income validation (65% of monthly Net Trade Income vs. 75% of gross income for employed).
+- Added the Capital Needed at FYBC reduction-attribution disclosure line (returns vs. recorded-income split).
+- Split Analyse Commitments & Savings Plan: the four-section Your Path story stayed on the main page; detailed Cashflow/CPF Flow tables, the increment/inflation inputs and the full retirement-strategy explanation moved to a new "Detailed Cashflow & CPF Flow" sidebar sub-page. Removed the redundant "Retirement Goal Summary" card.
+- Animated the "Estimated Goal Coverage" progress bar.
+- Built the Client Report feature (renamed from the empty "Summary Report" placeholder): Generate Report button and Protection-not-completed confirmation dialog on Analysis, Priorities & Situation / Insurance Portfolio / Cost of Wants Analysis report sections reusing existing calculators, and browser-native print-to-PDF.
+- Added wealth-type ranking display and a Contribution to Future Self field/report row.
+- Started Protection Analysis: SBMI ("Stop Buying More Insurance") branding, and a two-step data-collection intake (medical-risk questions; a live checklist of expenses/liabilities/future-self contributions to protect). No coverage-gap calculation yet — fields only, by design, pending a follow-up session.
+
 ## Testing approach at this checkpoint
 
 The project has mainly been verified through seeded end-to-end scenarios and static code review. The development seed intentionally touches many policy and projection paths.
@@ -903,7 +962,9 @@ Before production, add automated tests around at least:
 - expense inflation and employment increment;
 - insurance portfolio vs quick-entry premium precedence;
 - self-employed MediSave bands and NTI/platform-earnings exclusion;
-- retirement-capital present-value calculation.
+- retirement-capital present-value calculation;
+- self-employed disability-income limit (65% of monthly NTI) vs. employed (75% of gross income);
+- Client Report figures matching the Analysis page they were generated from (no independent recalculation).
 
 ## Local development
 

@@ -43,6 +43,22 @@ and Published/Calculated/Estimated conventions.
   `davinlee611/test`, per explicit user instruction (not the usual PR-branch
   flow). Don't assume that's the default for future sessions — check what the
   user actually asks for.
+- **Config-driven field lists**: `COMMITMENT_FIELDS` (in
+  `modules/commitments/commitment-config.js`) and `EXPENSE_FIELDS` (in
+  `modules/expenses/expense-config.js`) each hold `{ key, elementId, label }`
+  per field. Adding a new commitment/expense field is: add one entry to the
+  array, add the matching HTML input, done — the render/save/reset wiring in
+  `commitments.js`/`expenses.js` is already generic over the array. Reuse
+  `EXPENSE_FIELDS` (with its `label`) for display labels elsewhere instead of
+  hand-rolling another `{ key: "household", label: "Household" }`-style map;
+  client-report.js and protection-analysis.js both do this correctly now —
+  don't regress that.
+- **New top-level state buckets** (e.g. `protection`, alongside `costOfWants`)
+  need four things in `client-plan.js`, mirroring the `costOfWants` pattern
+  exactly: a `createEmptyX()` factory, `X: createEmptyX()` in
+  `createEmptyClientPlan()`, a `getX()` selector, an `updateX(updates)`
+  updater, and a normalization branch in `normalizeClientPlan()` so plans
+  saved before the field existed still load with sane defaults.
 
 ## Session log
 
@@ -91,15 +107,51 @@ and Published/Calculated/Estimated conventions.
      in print, not just hiding the sidebar element.
    - Data is a one-time snapshot built from whatever Analysis last computed,
      not live-bound.
+7. Fixed Client Report layout issues the user found live: split the report
+   into per-section bordered cards with page breaks between them (was one
+   continuous flow), made Insurance Portfolio conditional on having policies,
+   fixed the Benefits row overflowing instead of wrapping, and fixed print
+   only using the sidebar-content grid's middle column (`.workspace-layout`
+   needed `display: block` in print, not just hiding the sidebar element).
+   Renamed "Retirement Plan" → "Cost of Wants Analysis" in the report.
+8. Added a "Wealth Priorities" group to the Client Report — the 4 wealth
+   types (Accumulation/Distribution/Protection/Preservation) in the order the
+   client ranked them (`priorities.selectedWealthTypes`, array order = rank).
+9. Added a new **Contribution to Future Self** field — a monthly
+   savings/investment amount, alongside the insurance-premium quick-entry in
+   Priorities & Situation → Commitments. This concept didn't exist anywhere
+   in the app before this session; treated as a brand-new field rather than
+   a rename of something existing. Deliberately **not** summed into Total
+   Monthly Commitments or any cashflow/surplus figure — new input, not a
+   change to existing calculations.
+10. Started **Protection Analysis** (first pass, fields only, no calculation
+    logic — by explicit instruction): branded **SBMI** ("Stop Buying More
+    Insurance"), mirroring the FYBC treatment on Cost of Wants. Two step-cards
+    side by side reusing Analysis's `.analysis-path-card`/step-grid classes —
+    Step 1 (Medical Protection: a 1–5 "importance of not waiting for
+    treatment" scale, a Yes/No "active exercise / injury-prone" toggle) and
+    Step 2 (live checkboxes over non-zero expense categories, liabilities,
+    and the future-self contribution, all pulled from Priorities & Situation
+    and re-rendering on `EXPENSES_CHANGED`/`LIABILITIES_CHANGED`/
+    `COMMITMENTS_CHANGED`). New `protection` state bucket in `client-plan.js`.
+    New module: `js/modules/protection-analysis.js`.
 
 ## Open items / natural next steps
 
-- Protection Analysis is still a bare placeholder — the next big roadmap item
-  per the handover doc, and the thing the Client Report is explicitly waiting
-  on.
+- **Protection Analysis coverage-gap engine** is the big remaining piece —
+  Step 1/Step 2 collect data but nothing calculates a gap, total, or
+  recommendation from it yet. The Client Report's Protection section stays a
+  placeholder note until this exists (single gate:
+  `hasProtectionAnalysisContent()` in `client-report.js`, hardcoded `false`).
 - The shortfall-guidance branch for Your Next Steps (what to suggest when the
   gap can't be closed even at full commitment) was designed but the user
   decided not to build it for now.
+- Confirm the "Contribution to Future Self" interpretation (new field) is
+  actually what the user meant — flagged to them, not yet explicitly
+  confirmed as of this checkpoint.
 - Everything in this log has only been verified statically in this sandbox;
   live-browser testing after any further UI change is still the user's job
-  unless a working browser harness becomes available.
+  unless a working browser harness becomes available. The user did test the
+  Client Report live this session and reported back real layout bugs
+  (screenshots) — expect the same pattern for Protection Analysis once they
+  click through it.
