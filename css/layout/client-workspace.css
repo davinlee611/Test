@@ -87,3 +87,14 @@ body {
   color: var(--text-primary);
   font-size: 26px;
 }
+
+.section-header--split {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.section-header--split > button {
+  flex-shrink: 0;
+}

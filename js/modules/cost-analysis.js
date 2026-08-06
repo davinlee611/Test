@@ -474,7 +474,11 @@ let expenseInflationWasOverridden = false;
 
 let includeProjectedOa = false;
 
+let latestCurrentCashflow = null;
+
 let latestYourPathProjectedPosition = null;
+
+let latestYourNextStepsResult = null;
 
 let selectedRetirementStrategy = RETIREMENT_STRATEGIES.CURRENT_PATH;
 
@@ -1053,6 +1057,25 @@ function setAnalysisSectionExpanded({ button, content, expanded }) {
 }
 
 /* ========================================
+   REPORT ACCESSORS
+
+   Read-only access to the latest computed Analysis results, for the
+   Client Report to reuse rather than recalculating independently.
+======================================== */
+
+export function getLatestCurrentCashflow() {
+  return latestCurrentCashflow;
+}
+
+export function getLatestYourPathProjectedPosition() {
+  return latestYourPathProjectedPosition;
+}
+
+export function getLatestYourNextStepsResult() {
+  return latestYourNextStepsResult;
+}
+
+/* ========================================
    MAIN RENDER
 ======================================== */
 
@@ -1068,6 +1091,8 @@ export function renderCostAnalysis() {
   }
 
   const currentCashflow = calculateCurrentMonthlyCashflow();
+
+  latestCurrentCashflow = currentCashflow;
 
   renderCurrentMonthlyCashflow(currentCashflow);
 
@@ -2530,6 +2555,44 @@ function renderYourNextSteps(currentCashflow) {
 
   const remainingFlexibility = availableMonthly - chosenMonthly;
 
+  latestYourNextStepsResult = {
+    isValid: true,
+
+    availableMonthly,
+    chosenMonthly,
+    suggestedMonthly,
+    remainingFlexibility,
+
+    capitalNeeded,
+    selectedResources,
+    projectedMonthlyCommitment,
+    projectedFunding,
+    remainingGap,
+    fundingSurplus,
+    fundingProgress,
+
+    includeCurrentAssets,
+    selectedCurrentAssets,
+    availableCurrentAssets,
+
+    investmentPoliciesAtFybc,
+    endowmentValueAtFybc,
+    eligibleOaAtFybc,
+
+    includeInvestmentPolicies: Boolean(
+      nextStepsElements.includeInvestmentPoliciesInput?.checked,
+    ),
+
+    includeEndowment: Boolean(
+      nextStepsElements.includeEndowmentInput?.checked,
+    ),
+
+    includeOa: Boolean(
+      nextStepsElements.includeOaInput?.checked &&
+        !nextStepsElements.includeOaInput?.disabled,
+    ),
+  };
+
   setCurrency(nextStepsElements.suggestedMonthly, suggestedMonthly);
 
   setCurrency(nextStepsElements.availableMonthly, availableMonthly);
@@ -2857,6 +2920,8 @@ function renderNextStepsFundingProgress({
 }
 
 function renderIncompleteNextSteps() {
+  latestYourNextStepsResult = null;
+
   [
     nextStepsElements.suggestedMonthly,
     nextStepsElements.availableMonthly,

@@ -1,0 +1,48 @@
+/* ========================================
+   PRINT — CLIENT REPORT
+
+   Only the active workspace section prints (inactive sections are
+   already display:none on screen). This hides everything else that
+   is only useful on screen: sidebar, header, in-page navigation and
+   any modal overlay left in the DOM.
+======================================== */
+
+@media print {
+  body {
+    background: #ffffff;
+  }
+
+  .client-header,
+  .client-sidebar,
+  .sidebar-backdrop,
+  .goal-modal,
+  .liability-modal,
+  .modal-overlay,
+  .validation-modal,
+  .property-modal,
+  #printClientReportButton,
+  .analysis-generate-report-cta,
+  .analysis-path-details-notice,
+  .form-actions {
+    display: none !important;
+  }
+
+  .client-workspace {
+    display: block !important;
+    height: auto;
+  }
+
+  .workspace-content {
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .client-report {
+    max-width: none;
+  }
+
+  .report-section {
+    break-inside: avoid;
+  }
+}

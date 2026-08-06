@@ -46,6 +46,11 @@ import {
   resetCostAnalysis,
 } from "./modules/cost-analysis.js";
 
+import {
+  initializeClientReport,
+  resetClientReport,
+} from "./modules/client-report.js";
+
 import { on } from "./events/event-bus.js";
 
 import { EVENTS } from "./events/events.js";
@@ -101,6 +106,7 @@ initializeCommitments();
 initializeInsurancePortfolio();
 initializeCostOfWantsPreview();
 initializeCostAnalysis();
+initializeClientReport();
 initializePage();
 
 on(EVENTS.SECTION_CHANGED, function ({ section }) {
@@ -216,6 +222,11 @@ function clearFinancialPlan() {
    * Reset Cost Analysis.
    */
   resetCostAnalysis();
+
+  /*
+   * Clear any previously generated client report.
+   */
+  resetClientReport();
 
   /*
    * Return to the Client Profile section.

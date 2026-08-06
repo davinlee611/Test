@@ -1,6 +1,7 @@
 @import url("./layout/client-workspace.css");
 @import url("./layout/client-header.css");
 @import url("./layout/client-sidebar.css");
+@import url("./layout/print.css");
 
 @import url("./components/planning-components.css");
 
@@ -728,6 +729,11 @@
   font-size: 24px;
 }
 
+.validation-modal-icon--info {
+  background: var(--primary-surface);
+  color: var(--primary-color);
+}
+
 .validation-modal-dialog h2 {
   margin: 0 0 10px;
   color: #0f172a;
@@ -759,6 +765,21 @@
 .validation-modal-button:focus-visible {
   outline: 3px solid rgba(15, 23, 42, 0.25);
   outline-offset: 3px;
+}
+
+.validation-modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.validation-modal-button--secondary {
+  background: #ffffff;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.validation-modal-button--secondary:hover {
+  background: var(--surface-hover);
 }
 
 @keyframes validationModalEnter {
@@ -4248,6 +4269,42 @@ button.insurance-validation-count:disabled {
   font-size: 10px;
 }
 
+.analysis-generate-report-cta {
+  display: flex;
+  width: 100%;
+  height: auto;
+  margin-top: 14px;
+  padding: 18px 20px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-radius: 11px;
+  text-align: left;
+}
+
+.analysis-generate-report-cta strong {
+  display: block;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.analysis-generate-report-cta p {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.analysis-generate-report-cta > span {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 /* ========================================
    ANALYSIS SECTION SHELLS
 ======================================== */
@@ -4998,7 +5055,8 @@ button.insurance-validation-count:disabled {
     text-align: left;
   }
 
-  .analysis-path-details-notice {
+  .analysis-path-details-notice,
+  .analysis-generate-report-cta {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -5609,5 +5667,139 @@ button.insurance-validation-count:disabled {
   .analysis-path-projected-grid,
   .analysis-path-capital-methodology-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
+   CLIENT REPORT
+======================================== */
+
+.client-report {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 40px 48px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+}
+
+.report-header {
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.report-header h2 {
+  margin: 0 0 6px;
+  color: var(--text-primary);
+  font-size: 24px;
+}
+
+.report-header-meta {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.report-header-timestamp {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.report-section {
+  margin-bottom: 32px;
+}
+
+.report-section:last-child {
+  margin-bottom: 0;
+}
+
+.report-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--primary-color);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.report-section-title i {
+  font-size: 14px;
+}
+
+.report-group {
+  margin-bottom: 18px;
+}
+
+.report-group:last-child {
+  margin-bottom: 0;
+}
+
+.report-group-title {
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.report-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--border-color);
+  font-size: 13px;
+}
+
+.report-row:last-child {
+  border-bottom: none;
+}
+
+.report-row > span {
+  color: var(--text-secondary);
+}
+
+.report-row > strong {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.report-value--primary {
+  color: var(--primary-color) !important;
+}
+
+.report-value--negative {
+  color: #dc2626 !important;
+}
+
+.report-note {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+@media (max-width: 650px) {
+  .client-report {
+    padding: 24px 20px;
+  }
+
+  .report-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .report-row > strong {
+    text-align: left;
   }
 }

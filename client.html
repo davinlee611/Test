@@ -149,9 +149,13 @@
               <span>Protection Analysis</span>
             </button>
 
-            <button class="sidebar-item" type="button" data-section="summary">
+            <button
+              class="sidebar-item"
+              type="button"
+              data-section="client-report"
+            >
               <i class="fa-solid fa-file-lines"></i>
-              <span>Summary Report</span>
+              <span>Client Report</span>
             </button>
           </nav>
         </aside>
@@ -3099,6 +3103,28 @@
                   <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                 </span>
               </button>
+
+              <!-- Generate client report -->
+              <button
+                type="button"
+                class="analysis-generate-report-cta"
+                id="analysisGenerateReportButton"
+              >
+                <div>
+                  <strong>Ready to generate the client report?</strong>
+
+                  <p>
+                    A printable summary of everything entered so far,
+                    including Priorities &amp; Situation and the Insurance
+                    Portfolio.
+                  </p>
+                </div>
+
+                <span>
+                  Generate Report
+                  <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i>
+                </span>
+              </button>
             </section>
 
             <div class="form-actions form-actions--between">
@@ -3831,28 +3857,43 @@
             </div>
           </section>
 
-          <!-- Summary -->
-          <section class="workspace-section" data-content="summary">
-            <div class="section-header">
+          <!-- Client Report -->
+          <section class="workspace-section" data-content="client-report">
+            <div class="section-header section-header--split">
               <div>
-                <h2>Summary Report</h2>
+                <h2>Client Report</h2>
 
                 <p>
-                  Review all information and calculations before producing the
-                  final report.
+                  A printable summary of everything entered so far, generated
+                  from the Analysis page.
                 </p>
               </div>
+
+              <button
+                id="printClientReportButton"
+                class="header-button header-button-secondary"
+                type="button"
+                hidden
+              >
+                <i class="fa-solid fa-print" aria-hidden="true"></i>
+                Print / Save as PDF
+              </button>
             </div>
 
-            <div class="empty-section-card">
+            <div id="clientReportEmptyState" class="empty-section-card">
               <div class="empty-section-icon">
                 <i class="fa-solid fa-file-lines"></i>
               </div>
 
-              <h3>Summary Report</h3>
+              <h3>No report generated yet</h3>
 
-              <p>The completed planning summary will appear here.</p>
+              <p>
+                Use the Generate Report button on the Analysis page to build
+                the client report.
+              </p>
             </div>
+
+            <div id="clientReportBody" class="client-report" hidden></div>
           </section>
         </section>
       </div>
@@ -3894,6 +3935,55 @@
         >
           Return to Profile
         </button>
+      </div>
+    </div>
+
+    <!-- ========================================
+     REPORT CONFIRMATION MODAL
+    ======================================== -->
+
+    <div id="reportConfirmModal" class="validation-modal" hidden>
+      <div
+        class="validation-modal-backdrop"
+        data-close-report-confirm-modal
+      ></div>
+
+      <div
+        class="validation-modal-dialog"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="reportConfirmTitle"
+        aria-describedby="reportConfirmMessage"
+      >
+        <div class="validation-modal-icon validation-modal-icon--info">
+          <i class="fa-solid fa-circle-info"></i>
+        </div>
+
+        <h2 id="reportConfirmTitle">Protection Analysis not completed</h2>
+
+        <p id="reportConfirmMessage">
+          This client report will only cover the retirement plan. Continue
+          without Protection Analysis?
+        </p>
+
+        <div class="validation-modal-actions">
+          <button
+            id="cancelReportConfirmButton"
+            class="validation-modal-button validation-modal-button--secondary"
+            type="button"
+            data-close-report-confirm-modal
+          >
+            Cancel
+          </button>
+
+          <button
+            id="continueReportConfirmButton"
+            class="validation-modal-button"
+            type="button"
+          >
+            Continue
+          </button>
+        </div>
       </div>
     </div>
 
