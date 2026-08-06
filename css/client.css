@@ -5257,15 +5257,7 @@ button.insurance-validation-count:disabled {
   border-radius: var(--radius-lg);
 }
 
-.analysis-path-strategy-inline-heading {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.analysis-path-strategy-inline-heading label {
+.analysis-path-strategy-inline > label {
   color: var(--text-secondary);
   font-size: 11px;
   font-weight: 700;
@@ -5275,7 +5267,10 @@ button.insurance-validation-count:disabled {
 
 .analysis-path-strategy-detail-link {
   display: inline-flex;
+  width: auto;
+  height: auto;
   align-items: center;
+  align-self: flex-start;
   gap: 6px;
   padding: 0;
 
@@ -5290,7 +5285,10 @@ button.insurance-validation-count:disabled {
 }
 
 .analysis-path-strategy-detail-link:hover {
+  background: none;
+  color: var(--primary-color);
   text-decoration: underline;
+  transform: none;
 }
 
 .analysis-path-strategy-detail-link i {
