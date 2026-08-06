@@ -397,3 +397,54 @@ export function getAverageGrossMonthlyIncome({
     toNonNegativeNumber(annualBonus) / 12
   );
 }
+
+/* ========================================
+   DISABILITY INCOME COVERAGE BASIS
+
+   Employed clients are assessed against average gross monthly
+   employment income. Self-employed clients have no employer-verified
+   salary, so the basis is monthly Net Trade Income instead, at a
+   lower coverage ratio reflecting income volatility.
+======================================== */
+
+const DISABILITY_INCOME_COVERAGE_RATIO = {
+  full_time_employed: 0.75,
+
+  self_employed: 0.65,
+};
+
+const DEFAULT_DISABILITY_INCOME_COVERAGE_RATIO = 0.75;
+
+export function getDisabilityIncomeCoverageLimit({
+  employmentStatus = "",
+
+  monthlyEmploymentIncome = 0,
+
+  annualBonus = 0,
+
+  annualNetTradeIncome = 0,
+}) {
+  const isSelfEmployed = employmentStatus === "self_employed";
+
+  const monthlyIncomeBasis = isSelfEmployed
+    ? toNonNegativeNumber(annualNetTradeIncome) / 12
+    : getAverageGrossMonthlyIncome({ monthlyEmploymentIncome, annualBonus });
+
+  const coverageRatio =
+    DISABILITY_INCOME_COVERAGE_RATIO[employmentStatus] ??
+    DEFAULT_DISABILITY_INCOME_COVERAGE_RATIO;
+
+  return {
+    isSelfEmployed,
+
+    incomeBasisLabel: isSelfEmployed
+      ? "monthly Net Trade Income"
+      : "average gross monthly employment income",
+
+    monthlyIncomeBasis,
+
+    coverageRatio,
+
+    disabilityIncomeLimit: monthlyIncomeBasis * coverageRatio,
+  };
+}

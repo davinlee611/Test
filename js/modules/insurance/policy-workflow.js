@@ -1,6 +1,6 @@
 "use strict";
 
-import { getAssets } from "../../state/client-plan.js";
+import { getAssets, getClientProfile } from "../../state/client-plan.js";
 
 import {
   getAllPolicies,
@@ -34,10 +34,12 @@ export function createPolicyWorkflow({
   function getPortfolioData() {
     const assets = getAssets();
 
+    const profile = getClientProfile();
+
     return {
       policies: getAllPolicies(),
 
-      validationContext: createIncomeValidationContext(assets),
+      validationContext: createIncomeValidationContext(assets, profile),
     };
   }
 
@@ -51,6 +53,8 @@ export function createPolicyWorkflow({
     benefits = getDraftBenefits(),
   } = {}) {
     const assets = getAssets();
+
+    const profile = getClientProfile();
 
     const editingPolicyId = getEditingPolicyId() || "";
 
@@ -68,7 +72,7 @@ export function createPolicyWorkflow({
 
         allPolicies: getAllPolicies(),
 
-        ...createIncomeValidationContext(assets),
+        ...createIncomeValidationContext(assets, profile),
       },
     });
   }
@@ -174,10 +178,14 @@ export function createPolicyWorkflow({
    PRIVATE HELPERS
 ======================================== */
 
-function createIncomeValidationContext(assets) {
+function createIncomeValidationContext(assets, profile) {
   return {
     monthlyEmploymentIncome: assets?.income?.monthlyEmployment || 0,
 
     annualBonus: assets?.income?.annualBonus || 0,
+
+    annualNetTradeIncome: assets?.income?.annualNetTradeIncome || 0,
+
+    employmentStatus: profile?.employmentStatus || "",
   };
 }
