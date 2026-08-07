@@ -114,6 +114,7 @@ export function createEmptyClientPlan() {
         subscriptionsLifestyle: 0,
         parentsDependantsSupport: 0,
         otherRecurringExpenses: 0,
+        emergencyFund: 0,
       },
 
       commitments: {
