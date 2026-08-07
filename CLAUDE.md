@@ -261,17 +261,30 @@ and Published/Calculated/Estimated conventions.
 
 ## Open items / natural next steps
 
-- **Client Report Protection section** still needs wiring to the new SBMI
-  Analysis numbers — `hasProtectionAnalysisContent()` in `client-report.js`
-  is still hardcoded `false`, so the report still shows the placeholder
-  "not yet completed" note even though Step 1/Step 2/SBMI Analysis now have
-  real content. Natural next step.
+- **Session paused here (end of 2026-08-07 session) — next task is a full
+  Client Report rework.** The user explicitly does not want the Protection
+  section incrementally wired into the current format ("just plucking the
+  data from other pages and showing the user just words and words"). They
+  want the whole report redesigned to be easily readable/digestible —
+  treat this as a presentation/UX redesign of the entire report, not a
+  content-addition task. Natural first step next session: mock up a new
+  report layout as an Artifact before touching `client-report.js`, per the
+  project's established practice for layout-sensitive changes (see the
+  Cost of Wants split and SBMI Analysis in this log). Only once a layout is
+  approved should `hasProtectionAnalysisContent()` (currently hardcoded
+  `false`) and the new SBMI Analysis numbers actually get wired in — as
+  part of that redesign, not before it.
+- Death/TPD coverage-gap analysis and disability-income suitability on SBMI
+  Analysis are not built — Critical Illness is the only coverage type
+  covered so far. No top-up recommendation logic exists on SBMI Analysis or
+  Cost of Wants' Your Next Steps (deliberate scope stop at "show the
+  number," not "tell them what to do about it").
 - The shortfall-guidance branch for Your Next Steps (what to suggest when the
   gap can't be closed even at full commitment) was designed but the user
   decided not to build it for now.
 - Everything in this log has only been verified statically in this sandbox;
   live-browser testing after any further UI change is still the user's job
   unless a working browser harness becomes available. The user did test the
-  Client Report live this session and reported back real layout bugs
-  (screenshots) — expect the same pattern for Protection Analysis once they
-  click through it.
+  Client Report live earlier this session and reported back real layout
+  bugs (screenshots) — expect the same pattern once the reworked report is
+  built and they click through it.

@@ -6,16 +6,16 @@ The product is deliberately being designed for younger clients — early-career 
 
 > **Show me the lifestyle I want, show me what I have today, and show me the choices that can help me close the gap.**
 
-The application currently covers client data collection, priorities and cashflow inputs, an insurance portfolio, a simplified **Cost of Wants** retirement target, an **Analyse Commitments & Savings Plan** workflow (with detailed cashflow and CPF projections on their own sidebar page), a first-pass **Protection Analysis** intake, and a printable **Client Report**. Protection Analysis's coverage-gap calculation engine is the next major product area.
+The application currently covers client data collection, priorities and cashflow inputs, an insurance portfolio, a simplified **Cost of Wants** retirement target, an **Analyse Commitments & Savings Plan** workflow (with detailed cashflow and CPF projections on their own sidebar page), a **Protection Analysis** intake with a **SBMI Analysis** Critical Illness coverage-gap engine and Medical Protection Check, and a printable **Client Report**. A full visual/UX rework of the Client Report is the next major product area — the current version is functional but reads as a plain data listing rather than an easily digestible client-facing document.
 
 > [!IMPORTANT]
 > This project is a planning and educational tool, not financial, tax, legal, insurance, investment, or CPF advice. CPF rules, insurer product terms, premiums, payout illustrations, contribution rates and public-policy thresholds change. Published values should be revalidated against the relevant official source before production use. Values explicitly labelled **Estimated / Projected** in this README are application assumptions, not values published or guaranteed by CPF Board, MOH, an insurer, or another authority.
 
 ## Status at this checkpoint
 
-Documentation checkpoint: **6 August 2026** (updated same day after the Client Report and Protection Analysis first pass shipped).
+Documentation checkpoint: **7 August 2026** (updated after the SBMI Analysis coverage-gap engine, Medical Protection Check, and the Contribution to Future Self → Savings rework shipped).
 
-The codebase has completed a full manual/static cleanup pass. The project currently contains roughly 26.2k lines across 107 JavaScript files, 9 CSS files and 3 HTML files. Verification at each change in this checkpoint means `node --check` per JS file, a Python HTMLParser tag-balance check, and CSS brace-balance counts — the sandbox this documentation was written in cannot run a headless browser, so nothing here has been confirmed in an actual rendered page; live-browser testing after any further UI change is still required before shipping.
+The codebase has completed a full manual/static cleanup pass. The project currently contains roughly 26.9k lines across 109 JavaScript files, 9 CSS files and 3 HTML files. Verification at each change in this checkpoint means `node --check` per JS file, a Python HTMLParser tag-balance check, and CSS brace-balance counts — the sandbox this documentation was written in cannot run a headless browser, so nothing here has been confirmed in an actual rendered page; live-browser testing after any further UI change is still required before shipping.
 
 Two intentional development conveniences remain:
 
@@ -34,6 +34,7 @@ flowchart TD
     D --> E["Analyse Commitments & Savings Plan"]
     E --> E2["Detailed Cashflow & CPF Flow"]
     E --> F["Protection Analysis"]
+    F --> F2["SBMI Analysis"]
     F --> G["Client Report"]
 ```
 
@@ -47,8 +48,9 @@ The responsibilities are intentionally separated:
 | Cost of Wants | What retirement lifestyle do they want? | Implemented; simplified for younger users |
 | Analyse Commitments & Savings Plan | What do they have now and what could their choices achieve? | Core engine implemented; UX/refinement ongoing |
 | Detailed Cashflow & CPF Flow | What does the month-by-month/year-by-year detail behind Analysis look like? | Implemented; own sidebar sub-page |
-| Protection Analysis | How much protection is enough? | Data-collection first pass implemented (SBMI); coverage-gap engine not yet built |
-| Client Report | What should the client take away from the session? | Implemented for the retirement plan; Protection section is a placeholder pending the engine above |
+| Protection Analysis | How much protection is enough? | Step 1/Step 2 data-collection implemented (SBMI) |
+| SBMI Analysis | Is the client's Critical Illness coverage enough, and does the portfolio back up their stated preferences? | CI coverage-gap engine + Medical Protection Check implemented; Death/TPD/disability-income gap analysis not yet built |
+| Client Report | What should the client take away from the session? | Functional but data-listing in style; a full readability/digestibility rework is the next major feature |
 
 ## Design philosophy
 
@@ -153,8 +155,10 @@ Test-main/
     │   ├── cost-of-wants-preview.js
     │   ├── cost-analysis.js       # Analysis: cashflow, CPF, Your Path
     │   ├── client-report.js       # Client Report generation/print
-    │   └── protection-analysis.js # SBMI Protection Analysis intake
+    │   ├── protection-analysis.js # SBMI Protection Analysis intake (Step 1/Step 2)
+    │   └── sbmi-analysis.js       # SBMI Analysis: CI coverage gap + Medical Protection Check
     ├── services/
+    │   └── protection-coverage-calculator.js # existing CI coverage, ward class, PA coverage
     ├── state/
     │   └── client-plan.js
     └── utils/
@@ -180,8 +184,8 @@ The top-level shape is conceptually:
       cpf: { oa, sa, ma, ra },
       properties: []
     },
-    expenses: { ... },
-    commitments: { insurancePremiums, contributionToFutureSelf },
+    expenses: { ... },              // includes "savings" — a general savings/emergency-fund line
+    commitments: { insurancePremiums },
     goals: [],
     liabilities: [],
     policies: []
@@ -191,8 +195,7 @@ The top-level shape is conceptually:
     waitTimeImportance,            // 1-5, 0 = unanswered
     activeExerciseInjuryProne,     // true/false, null = unanswered
     selectedExpenseKeys: [],
-    selectedLiabilityIds: [],
-    includeFutureSelfContribution
+    selectedLiabilityIds: []
   },
   summary: {},
   metadata: { createdAt, updatedAt }
@@ -227,11 +230,10 @@ This is the primary current-position input area. It contains:
 - employment or self-employed income
 - CPF OA / SA / MA / RA balances
 - properties
-- living expenses
+- living expenses, including a **Savings** line (renamed from an earlier "Emergency Fund" field) for general savings/emergency-fund/liquid-reserve money set aside each month — an ordinary expense category, so it reduces monthly surplus like every other expense
 - goals
 - liabilities
 - quick-entry insurance premium fallback
-- monthly **Contribution to Future Self** — money set aside for long-term savings/investment, recorded alongside the insurance premium in Commitments. This is deliberately **not** summed into Total Monthly Commitments or any cashflow/surplus figure; it exists so Protection Analysis (below) can ask whether that ongoing commitment should also be protected, without silently changing Analysis's cashflow math.
 
 #### Full-time employment
 
@@ -472,7 +474,7 @@ The month-by-month/year-by-year cashflow and CPF-flow projection tables, the inc
 
 ### Protection Analysis
 
-Branded **SBMI — Stop Buying More Insurance**, mirroring the FYBC treatment on Cost of Wants. This is a **first pass**: data-collection fields only, with no coverage-gap calculation or recommendation logic yet. The page reuses the same step-card/grid classes as Your Path so it reads as a natural continuation of Analysis, laid out as two steps side by side.
+Branded **SBMI — Stop Buying More Insurance**, mirroring the FYBC treatment on Cost of Wants. The page reuses the same step-card/grid classes as Your Path so it reads as a natural continuation of Analysis, laid out as two steps side by side. This is the **data-collection** page; the calculation/gap layer lives on the SBMI Analysis sub-page described below.
 
 **Step 1 — Medical Protection**
 - a 1–5 scale for how important "not having to wait for treatment" is to the client
@@ -480,11 +482,26 @@ Branded **SBMI — Stop Buying More Insurance**, mirroring the FYBC treatment on
 
 **Step 2 — Financial Obligations to Protect**
 Checkboxes generated live from whatever is already entered in Priorities & Situation:
-- every expense category with a non-zero monthly amount
+- every expense category with a non-zero monthly amount (including Savings)
 - every recorded liability
-- the Contribution to Future Self amount, if entered
 
-Selections are stored per item (`selectedExpenseKeys`, `selectedLiabilityIds`, `includeFutureSelfContribution`) and the checklists re-render automatically if the underlying Priorities & Situation data changes, so they never go stale. No total, gap, or recommendation is calculated from these selections yet — that is the next Protection Analysis milestone.
+Selections are stored per item (`selectedExpenseKeys`, `selectedLiabilityIds`) and the checklists re-render automatically if the underlying Priorities & Situation data changes, so they never go stale. A "Total Critical Illness Coverage Needed" figure sums the 5-year totals of only the checked items, recomputed live on every toggle.
+
+### SBMI Analysis
+
+A sidebar sub-page nested under Protection Analysis, mirroring the Cost of Wants / Analyse Commitments & Savings Plan split. This is the coverage-gap engine: it compares what Step 1/Step 2 say the client needs against what the Insurance Portfolio actually contains.
+
+**Coverage Needed** reuses the same selected-only totals and 5-year horizon as Step 2's own total — same number, not recalculated independently.
+
+**Existing Coverage** sums Critical Illness + Early Critical Illness benefits from the Insurance Portfolio (`js/services/protection-coverage-calculator.js`, `calculateExistingCriticalIllnessCoverage()`). Early CI accelerated from a Critical Illness benefit is a sub-limit of the same pool, not additional money, so it is folded into the CI benefit's entry as a note rather than summed again; additional/standalone Early CI is counted as its own entry. CI accelerated/additional from a Death benefit is left at face value, since that distinction affects the Death benefit afterward, not what is payable on a CI event.
+
+**Coverage Gap** = Needed − Existing, shown with a shortfall/fully-covered tag and a progress bar for the percentage of need already covered. No top-up recommendation logic exists yet — the same "show the number, no guidance branch" scope decision made for Cost of Wants' Your Next Steps.
+
+**Medical Protection Check** links Step 1's two qualitative signals to the Insurance Portfolio, as flags rather than a dollar comparison:
+- **Treatment Wait-Time Preference** — the 1–5 answer against the highest recorded Hospitalisation ward class (`getBestRecordedHospitalisationWardClass()`). Flags "Consider Private Ward" when importance is high (4–5) and the plan isn't Private; "Matches Preference" when it already is.
+- **Active Lifestyle / Injury Risk** — the Yes/No answer against whether a Personal Accident policy is recorded (`getPersonalAccidentCoverageSummary()`, summing Death + TPD benefits). Flags "Consider Personal Accident Cover" when injury-prone with none recorded, "Personal Accident Cover in Place" otherwise.
+
+Death sum assured is deliberately **not** shown as its own figure on this page — there is no "Death Coverage Needed" anywhere in the app to compare it against, so it would be an orphaned number rather than a gap. Death/TPD and disability-income coverage-gap analysis are not yet built; see the roadmap.
 
 ### Client Report
 
@@ -492,15 +509,17 @@ Reached via the **Generate Report** button on Analysis, or directly from the sid
 
 Sections, each its own bordered card and each starting on a fresh printed page:
 
-- **Priorities & Situation** — always shown: wealth priorities in ranked order, current monthly cashflow, Contribution to Future Self, CPF balances, withdrawable assets, properties, goals, liabilities.
+- **Priorities & Situation** — always shown: wealth priorities in ranked order, current monthly cashflow, CPF balances, withdrawable assets, properties, goals, liabilities.
 - **Insurance Portfolio** — only shown if at least one policy is recorded: per-policy insurer/type/life-assured/benefits, plus the portfolio's total effective monthly premium.
 - **Cost of Wants Analysis** — the retirement goal, the Capital Needed at FYBC breakdown, Your Next Steps resource/commitment selections, and the CPF assumptions (projected cohort FRS/BHS) behind them.
-- **Protection Analysis** — an explicit "not yet completed" note, since the coverage-gap engine doesn't exist. This section will start reflecting real content the moment that engine ships.
+- **Protection Analysis** — still an explicit "not yet completed" note. `hasProtectionAnalysisContent()` in `client-report.js` is hardcoded `false`, so this section has not been wired to the SBMI Analysis coverage-gap/Medical Protection Check content that now exists, even though the underlying data is available.
 - **Disclosure** — the same not-advice language used elsewhere in the app.
 
 All figures are pulled from the same calculators/services the rest of the app already uses (reused via small cache+getter pairs in `cost-analysis.js` — `getLatestCurrentCashflow()`, `getLatestYourPathProjectedPosition()`, `getLatestYourNextStepsResult()`) rather than recalculated independently, and all DOM content is built with `createElement`/`textContent`, never `innerHTML`, since report content includes free-text client and policy data.
 
 Printing uses the browser's native `window.print()` plus a dedicated `css/layout/print.css` stylesheet — no PDF library dependency. The print stylesheet also fixes a real layout bug: the app's sidebar-content grid reserves a fixed sidebar column width even once the sidebar element itself is hidden, so the print output collapses that grid to a single column rather than only using the middle content column.
+
+> **Planned rework.** The current report is a functional label/value listing per section — accurate, but it reads as plain data rather than something a client can quickly digest. The next pass is a full visual/UX rework of the report (not just wiring in the Protection section above) so it presents as an easily readable, client-facing document rather than a dump of every field the app collected. See the roadmap.
 
 ## Calculation and assumptions register
 
@@ -796,8 +815,9 @@ These are product decisions or known gaps, not silent TODOs:
 - protection claim events are not treated as ordinary projected inflows;
 - taxes, investment taxes/fees, healthcare claim probability and product-specific surrender charges are outside the current model;
 - the large `cost-analysis.js` should eventually be split after projection behaviour is covered by automated tests;
-- Protection Analysis collects Step 1/Step 2 inputs but does not yet calculate a coverage gap, total, or recommendation from them;
-- the Client Report's Protection Analysis section is a placeholder note for the same reason.
+- SBMI Analysis's coverage-gap engine covers Critical Illness only — Death/TPD coverage-gap analysis and disability-income suitability are not yet built, and there is no top-up recommendation logic;
+- the Client Report's Protection Analysis section is still a placeholder note — `hasProtectionAnalysisContent()` is hardcoded `false` even though SBMI Analysis now has real content to show;
+- the Client Report overall is a plain label/value listing rather than the easily digestible client-facing document it is intended to become — a full rework is planned, not yet started.
 
 ## Roadmap
 
@@ -830,8 +850,10 @@ These are product decisions or known gaps, not silent TODOs:
 - Capital Needed at FYBC reduction-attribution disclosure (returns vs. recorded-income split)
 - Detailed Cashflow & CPF Flow moved to its own Analysis sidebar sub-page
 - Client Report (renamed from Summary Report): Priorities & Situation, Insurance Portfolio, Cost of Wants Analysis, print-to-PDF
-- wealth-type ranking and Contribution to Future Self surfaced in the Client Report
-- Protection Analysis data-collection first pass (SBMI branding, Step 1/Step 2 fields)
+- wealth-type ranking surfaced in the Client Report
+- Protection Analysis data-collection (SBMI branding, Step 1/Step 2 fields)
+- SBMI Analysis: Critical Illness coverage-gap engine (Coverage Needed / Existing Coverage / Coverage Gap) and Medical Protection Check (ward-class and Personal Accident flags against Step 1 answers)
+- Savings expense field (renamed from Emergency Fund) so it reduces monthly surplus like every other expense; Contribution to Future Self removed after the user confirmed its role already has a home under Other Recurring Expenses, Withdrawable Assets, or an Investment Accumulation policy
 
 ### In progress / next refinement
 
@@ -842,13 +864,19 @@ These are product decisions or known gaps, not silent TODOs:
 
 ### Planned major features
 
-#### Protection Analysis coverage-gap engine
+#### Client Report rework
 
-Step 1/Step 2 data collection is implemented (see above); the calculation layer is not. The next major advice layer should answer:
+The current Client Report is functionally correct — every figure is reused from the same calculators the rest of the app already trusts — but it presents as a plain per-field label/value listing. The next major pass is a full visual/UX rework so the report reads as an easily digestible, client-facing document rather than a data dump: better information hierarchy, visual summaries instead of rows of labelled numbers where that makes sense, and a layout a young client would actually want to read (or show a parent), not just a printable record of every input. This supersedes the earlier plan to simply wire the Protection Analysis section into the existing format — the whole report's presentation is in scope now, not just that one section's content.
+
+#### Protection Analysis coverage-gap engine — remaining scope
+
+SBMI Analysis now covers Critical Illness coverage-gap analysis and a Medical Protection Check (see above). Still planned:
 
 > **How much protection should I buy so I do not need to keep guessing or repeatedly buying more insurance?**
 
-Planned protection work includes coverage-gap analysis for Death/TPD/CI/ECI, disability-income suitability, and an explainable recommendation layer based on the Step 2 selections, dependants/expenses, goals and existing portfolio benefits. Once this exists, the Client Report's Protection Analysis section should switch from its placeholder note to real content.
+- Death/TPD coverage-gap analysis (mirroring the CI Needed/Existing/Gap pattern, once a "Death Coverage Needed" concept exists to compare against)
+- disability-income suitability check
+- an explainable top-up recommendation layer, once the underlying gap figures are trusted — the current SBMI Analysis and Cost of Wants pages deliberately stop at "here is the number," not "here is what to do about it"
 
 #### Production persistence and access control
 
@@ -942,6 +970,15 @@ This project evolved iteratively rather than being designed fully upfront. The s
 - Added wealth-type ranking display and a Contribution to Future Self field/report row.
 - Started Protection Analysis: SBMI ("Stop Buying More Insurance") branding, and a two-step data-collection intake (medical-risk questions; a live checklist of expenses/liabilities/future-self contributions to protect). No coverage-gap calculation yet — fields only, by design, pending a follow-up session.
 
+### Phase 9 — SBMI Analysis, Medical Protection Check, Savings rework (7 August 2026)
+
+- Fixed Step 2 checklist math so the "5 years of expenses/liabilities" helper totals sum only checked/selected items, and made Future Self's calculated amount use actual compound future value instead of simple multiplication (later superseded — see below).
+- Built the SBMI Analysis coverage-gap engine: a new sidebar sub-page under Protection Analysis with Coverage Needed, Existing Coverage (new `protection-coverage-calculator.js`, correctly folding accelerated Early CI into its related CI benefit instead of double-counting), and a Coverage Gap card with a shortfall/fully-covered progress bar. Mocked up as an Artifact before building, per the project's usual practice for layout-sensitive changes.
+- Built the Medical Protection Check block on SBMI Analysis, linking Protection Analysis Step 1's two qualitative signals (treatment wait-time importance, active-lifestyle/injury-prone) to the Insurance Portfolio's recorded Hospitalisation ward class and Personal Accident coverage, as flags rather than a dollar comparison.
+- Caught a real bug: Contribution to Future Self was never included in `remainingSurplus`, so the app understated what clients were actually committing each month. Resolved by removing Contribution to Future Self entirely (its investing-for-the-future role already has a home under Other Recurring Expenses, Withdrawable Assets, or an Investment Accumulation policy) and renaming the existing Emergency Fund expense field to **Savings**, so a "money set aside each month" input reduces surplus automatically through the ordinary expense-total calculation instead of needing its own special-cased commitments handling.
+- Polished the "Continue After FYBC" toggle's alignment on the Income section.
+- Decided the Client Report needs a full presentation rework rather than incrementally wiring the new Protection Analysis/SBMI Analysis content into the existing label/value format — see Planned major features.
+
 ## Testing approach at this checkpoint
 
 The project has mainly been verified through seeded end-to-end scenarios and static code review. The development seed intentionally touches many policy and projection paths.
@@ -964,7 +1001,9 @@ Before production, add automated tests around at least:
 - self-employed MediSave bands and NTI/platform-earnings exclusion;
 - retirement-capital present-value calculation;
 - self-employed disability-income limit (65% of monthly NTI) vs. employed (75% of gross income);
-- Client Report figures matching the Analysis page they were generated from (no independent recalculation).
+- Client Report figures matching the Analysis page they were generated from (no independent recalculation);
+- accelerated Early CI correctly folding into its related Critical Illness benefit (not double-counted) vs. additional/standalone Early CI correctly counted as its own entry;
+- best-recorded-ward-class ranking across multiple Hospitalisation policies (B2 < B1 < A < Private).
 
 ## Local development
 
