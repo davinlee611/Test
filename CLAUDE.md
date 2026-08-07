@@ -205,19 +205,35 @@ and Published/Calculated/Estimated conventions.
     `EXPENSE_FIELDS` entry it's automatically selectable in Protection
     Analysis Step 2 and counted in SBMI Analysis's Coverage Needed too, same
     as every other expense category.
+15. Built the **Medical Protection Check** block on SBMI Analysis, linking
+    Protection Analysis Step 1's two qualitative signals to the Insurance
+    Portfolio. Mocked up as an Artifact first, then built as approved:
+    - **Treatment Wait-Time Preference** card: shows the 1–5 answer (with a
+      mini dot-scale readout) against the highest recorded Hospitalisation
+      ward class. Flags "Consider Private Ward" when importance is
+      high (≥4, `HIGH_WAIT_TIME_IMPORTANCE_THRESHOLD` in
+      `sbmi-analysis.js`) and the plan isn't Private; "Matches Preference"
+      when it already is; no flag shown below the threshold or before Step
+      1 is answered.
+    - **Active Lifestyle / Injury Risk** card: shows the Yes/No answer
+      against whether a Personal Accident policy is recorded. Flags
+      "Consider Personal Accident Cover" when injury-prone with none
+      recorded, "Personal Accident Cover in Place" (with policy count +
+      Death/TPD total) otherwise.
+    - New `js/services/protection-coverage-calculator.js` exports:
+      `getBestRecordedHospitalisationWardClass()` (ranks
+      b2_ward/b1_ward/a_ward/private across all Hospitalisation policies,
+      returns the highest) and `getPersonalAccidentCoverageSummary()` (sums
+      Death + TPD benefits across Personal Accident policies).
+    - Deliberately flags/badges, not a progress bar — there's no sum
+      assured to compare against for either question, unlike the CI cards
+      above it on the same page.
+    - Reuses the existing `renderSbmiAnalysis()`/`POLICIES_CHANGED` wiring;
+      no new event listeners needed since it renders as part of the same
+      function.
 
 ## Open items / natural next steps
 
-- **Medical Protection → SBMI linking (proposed, not built)**: the user
-  wants Step 1's two qualitative signals surfaced on SBMI Analysis —
-  "importance of not waiting for treatment" (high score) should flag
-  against the client's existing Hospitalisation policy's ward class
-  (`policy.hospitalisation.wardType`, not Private), and "active exercise /
-  injury-prone = Yes" should flag if no `policyType === "personal_accident"`
-  policy exists. Proposed as a third qualitative "flags" block on SBMI
-  Analysis, separate from the CI dollar-gap cards since there's no sum
-  assured to compare against — badges, not a progress bar. Not yet mocked
-  up or built; next actual step once picked back up.
 - **Client Report Protection section** still needs wiring to the new SBMI
   Analysis numbers — `hasProtectionAnalysisContent()` in `client-report.js`
   is still hardcoded `false`, so the report still shows the placeholder
