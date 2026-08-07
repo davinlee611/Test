@@ -186,9 +186,38 @@ and Published/Calculated/Estimated conventions.
       against, so it would be an orphaned number, not a gap. Per-policy
       Death context (e.g. "accelerated from $X Death") was discussed but not
       built in this pass.
+14. Resolved the "Contribution to Future Self" open question from the
+    previous session (see the now-removed reminder): it stays excluded from
+    every surplus/commitments calculation — the user confirmed the
+    investing-for-the-future money it represents already has a home under
+    Other Recurring Expenses, Withdrawable Assets, or an Investment
+    Accumulation policy, so counting it a second time here would be the
+    double-count risk originally flagged. Instead, added a genuinely new
+    **Emergency Fund** field — a distinct concept (a monthly cash buffer,
+    not investment) — as a plain `EXPENSE_FIELDS` entry
+    (`expenses/expense-config.js`), so it flows into
+    `calculateTotalMonthlyExpenses()` and therefore reduces
+    `remainingSurplus` in `cost-analysis.js` automatically, with zero
+    changes needed there. Confirmed via code read that `remainingSurplus`
+    only ever subtracted liability repayments + insurance premiums —
+    Contribution to Future Self was never part of that formula, which was a
+    real gap the user caught, not a false alarm. Because it's a normal
+    `EXPENSE_FIELDS` entry it's automatically selectable in Protection
+    Analysis Step 2 and counted in SBMI Analysis's Coverage Needed too, same
+    as every other expense category.
 
 ## Open items / natural next steps
 
+- **Medical Protection → SBMI linking (proposed, not built)**: the user
+  wants Step 1's two qualitative signals surfaced on SBMI Analysis —
+  "importance of not waiting for treatment" (high score) should flag
+  against the client's existing Hospitalisation policy's ward class
+  (`policy.hospitalisation.wardType`, not Private), and "active exercise /
+  injury-prone = Yes" should flag if no `policyType === "personal_accident"`
+  policy exists. Proposed as a third qualitative "flags" block on SBMI
+  Analysis, separate from the CI dollar-gap cards since there's no sum
+  assured to compare against — badges, not a progress bar. Not yet mocked
+  up or built; next actual step once picked back up.
 - **Client Report Protection section** still needs wiring to the new SBMI
   Analysis numbers — `hasProtectionAnalysisContent()` in `client-report.js`
   is still hardcoded `false`, so the report still shows the placeholder
@@ -197,13 +226,6 @@ and Published/Calculated/Estimated conventions.
 - The shortfall-guidance branch for Your Next Steps (what to suggest when the
   gap can't be closed even at full commitment) was designed but the user
   decided not to build it for now.
-- **Reminder for next session**: the user was asked whether "Contribution to
-  Future Self" should reduce disposable surplus in the cashflow/commitments
-  total (like Insurance Premiums does), or stay excluded because it may
-  already be funding the same FYBC capital target (double-counting risk if
-  included). User explicitly said to raise this again only after Protection
-  Analysis is complete — don't resurface it before then, but don't let it
-  drop either.
 - Everything in this log has only been verified statically in this sandbox;
   live-browser testing after any further UI change is still the user's job
   unless a working browser harness becomes available. The user did test the
