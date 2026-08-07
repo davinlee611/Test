@@ -260,15 +260,10 @@ function buildClientReportData() {
 
   const wealthTypes = priorities.selectedWealthTypes || [];
 
-  const contributionToFutureSelf =
-    Number(priorities.commitments?.contributionToFutureSelf) || 0;
-
   return {
     generatedAt: new Date(),
 
     wealthTypes,
-
-    contributionToFutureSelf,
 
     profile: {
       fullName: profile.fullName || "Client Report",
@@ -475,19 +470,6 @@ function buildPrioritiesSection(data) {
   }
 
   section.appendChild(incomeGroup);
-
-  if (data.contributionToFutureSelf > 0) {
-    const futureSelfGroup = createReportGroup("Contribution to Future Self");
-
-    futureSelfGroup.appendChild(
-      createReportRow(
-        "Monthly Contribution to Future Self",
-        formatCurrency(data.contributionToFutureSelf),
-      ),
-    );
-
-    section.appendChild(futureSelfGroup);
-  }
 
   if (data.expenses.breakdown.length > 0) {
     const expenseGroup = createReportGroup("Monthly Expense Breakdown");

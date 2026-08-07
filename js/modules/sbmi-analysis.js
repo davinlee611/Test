@@ -5,14 +5,11 @@ import { getProtection } from "../state/client-plan.js";
 import { formatCurrency } from "../utils/client-utils.js";
 
 import {
-  PROTECTION_HORIZON_YEARS,
   PROTECTION_HORIZON_MONTHS,
-  FUTURE_SELF_GROWTH_RATE_PERCENT,
   getSelectableExpenseItems,
   getSelectableLiabilities,
   getSelectedExpenseMonthlyTotal,
   getSelectedLiabilityMonthlyTotal,
-  getFutureSelfDisplayedAmount,
 } from "./protection-analysis.js";
 
 import {
@@ -53,14 +50,6 @@ const neededLiabilityCaption = document.getElementById(
 
 const neededLiabilityAmount = document.getElementById(
   "sbmiNeededLiabilityAmount",
-);
-
-const neededFutureSelfCaption = document.getElementById(
-  "sbmiNeededFutureSelfCaption",
-);
-
-const neededFutureSelfAmount = document.getElementById(
-  "sbmiNeededFutureSelfAmount",
 );
 
 const totalNeededValue = document.getElementById("sbmiTotalNeeded");
@@ -144,7 +133,6 @@ export function resetSbmiAnalysis() {
 function attachApplicationListeners() {
   on(EVENTS.EXPENSES_CHANGED, renderSbmiAnalysis);
   on(EVENTS.LIABILITIES_CHANGED, renderSbmiAnalysis);
-  on(EVENTS.COMMITMENTS_CHANGED, renderSbmiAnalysis);
   on(EVENTS.POLICIES_CHANGED, renderSbmiAnalysis);
 }
 
@@ -213,23 +201,7 @@ function renderCoverageNeeded() {
     neededLiabilityAmount.textContent = formatCurrency(liabilityTotal);
   }
 
-  const futureSelfIncluded = Boolean(protection.includeFutureSelfContribution);
-
-  const futureSelfAmount = futureSelfIncluded
-    ? getFutureSelfDisplayedAmount(protection)
-    : 0;
-
-  if (neededFutureSelfCaption) {
-    neededFutureSelfCaption.textContent = futureSelfIncluded
-      ? `Included at ${FUTURE_SELF_GROWTH_RATE_PERCENT}% p.a. over ${PROTECTION_HORIZON_YEARS} years`
-      : "Not included";
-  }
-
-  if (neededFutureSelfAmount) {
-    neededFutureSelfAmount.textContent = formatCurrency(futureSelfAmount);
-  }
-
-  const totalNeeded = expenseTotal + liabilityTotal + futureSelfAmount;
+  const totalNeeded = expenseTotal + liabilityTotal;
 
   if (totalNeededValue) {
     totalNeededValue.textContent = formatCurrency(totalNeeded);

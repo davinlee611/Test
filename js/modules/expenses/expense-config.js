@@ -36,9 +36,9 @@ export const EXPENSE_FIELDS = Object.freeze([
   }),
 
   Object.freeze({
-    key: "emergencyFund",
-    elementId: "emergencyFundExpense",
-    label: "Emergency Fund",
+    key: "savings",
+    elementId: "savingsExpense",
+    label: "Savings",
   }),
 ]);
 

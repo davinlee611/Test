@@ -4,21 +4,15 @@ import {
   createEmptyProtection,
   getExpenses,
   getLiabilities,
-  getPriorities,
   getProtection,
   updateProtection,
 } from "../state/client-plan.js";
 
-import {
-  formatCurrency,
-  getInputWholeNumber,
-} from "../utils/client-utils.js";
+import { formatCurrency } from "../utils/client-utils.js";
 
 import { EXPENSE_FIELDS } from "./expenses/expense-config.js";
 
 import { getLiabilityTypeLabel } from "./liabilities/liability-config.js";
-
-import { calculateMonthlyContributionFutureValue } from "./cost-analysis.js";
 
 import { on } from "../events/event-bus.js";
 
@@ -54,14 +48,6 @@ const emptyLiabilityMessage = document.getElementById(
   "protectionEmptyLiabilityMessage",
 );
 
-const futureSelfChecklist = document.getElementById(
-  "protectionFutureSelfChecklist",
-);
-
-const emptyFutureSelfMessage = document.getElementById(
-  "protectionEmptyFutureSelfMessage",
-);
-
 const coverageTotalValue = document.getElementById(
   "protectionCoverageTotalValue",
 );
@@ -77,15 +63,6 @@ const coverageTotalValue = document.getElementById(
 export const PROTECTION_HORIZON_YEARS = 5;
 
 export const PROTECTION_HORIZON_MONTHS = PROTECTION_HORIZON_YEARS * 12;
-
-/*
- * Growth assumption for the Future Self future-value calculation.
- * Matches the app's existing Pre-FYBC Growth Assumption default
- * (see cost-analysis.js), kept independent here rather than reading
- * the live Analysis/Next Steps input so this page doesn't silently
- * change if that unrelated input is edited.
- */
-export const FUTURE_SELF_GROWTH_RATE_PERCENT = 5;
 
 /* ========================================
    INITIALIZATION
@@ -146,11 +123,6 @@ function attachApplicationListeners() {
     renderLiabilityChecklist(getProtection());
     renderCoverageTotal(getProtection());
   });
-
-  on(EVENTS.COMMITMENTS_CHANGED, function () {
-    renderFutureSelfChecklist(getProtection());
-    renderCoverageTotal(getProtection());
-  });
 }
 
 /* ========================================
@@ -176,7 +148,6 @@ export function renderProtectionAnalysis() {
 
   renderExpenseChecklist(protection);
   renderLiabilityChecklist(protection);
-  renderFutureSelfChecklist(protection);
   renderCoverageTotal(protection);
 }
 
@@ -232,25 +203,6 @@ export function getSelectedLiabilityMonthlyTotal(protection) {
     }, 0);
 }
 
-export function getFutureSelfDisplayedAmount(protection) {
-  const monthlyAmount =
-    Number(getPriorities().commitments?.contributionToFutureSelf) || 0;
-
-  if (monthlyAmount <= 0) {
-    return 0;
-  }
-
-  const calculatedFutureValue = calculateMonthlyContributionFutureValue({
-    monthlyAmount,
-    months: PROTECTION_HORIZON_MONTHS,
-    annualRatePercent: FUTURE_SELF_GROWTH_RATE_PERCENT,
-  });
-
-  const customAmount = Number(protection.futureSelfProtectionAmount) || 0;
-
-  return customAmount > 0 ? customAmount : calculatedFutureValue;
-}
-
 function renderCoverageTotal(protection) {
   if (!coverageTotalValue) {
     return;
@@ -262,13 +214,7 @@ function renderCoverageTotal(protection) {
   const liabilityTotal =
     getSelectedLiabilityMonthlyTotal(protection) * PROTECTION_HORIZON_MONTHS;
 
-  const futureSelfTotal = protection.includeFutureSelfContribution
-    ? getFutureSelfDisplayedAmount(protection)
-    : 0;
-
-  coverageTotalValue.textContent = formatCurrency(
-    expenseTotal + liabilityTotal + futureSelfTotal,
-  );
+  coverageTotalValue.textContent = formatCurrency(expenseTotal + liabilityTotal);
 }
 
 /* ========================================
@@ -383,57 +329,6 @@ function renderLiabilityChecklist(protection) {
 }
 
 /* ========================================
-   STEP 2 — FUTURE SELF CHECKLIST
-======================================== */
-
-function renderFutureSelfChecklist(protection) {
-  if (!futureSelfChecklist) {
-    return;
-  }
-
-  futureSelfChecklist.innerHTML = "";
-
-  const monthlyAmount =
-    Number(getPriorities().commitments?.contributionToFutureSelf) || 0;
-
-  if (monthlyAmount <= 0) {
-    if (emptyFutureSelfMessage) {
-      futureSelfChecklist.appendChild(emptyFutureSelfMessage);
-    }
-
-    return;
-  }
-
-  const displayedAmount = getFutureSelfDisplayedAmount(protection);
-
-  futureSelfChecklist.appendChild(
-    createFutureSelfItem({
-      checked: Boolean(protection.includeFutureSelfContribution),
-
-      displayedAmount,
-
-      helperText:
-        `Calculated future value, or enter custom amount. ` +
-        `(Based on ${formatCurrency(monthlyAmount)}/mth for ` +
-        `${PROTECTION_HORIZON_YEARS} years at ` +
-        `${FUTURE_SELF_GROWTH_RATE_PERCENT}% p.a.)`,
-
-      onToggle(checked) {
-        updateProtection({ includeFutureSelfContribution: checked });
-
-        renderCoverageTotal(getProtection());
-      },
-
-      onAmountChange(value) {
-        updateProtection({ futureSelfProtectionAmount: value });
-
-        renderCoverageTotal(getProtection());
-      },
-    }),
-  );
-}
-
-/* ========================================
    STEP 2 — SHARED HELPERS
 ======================================== */
 
@@ -491,79 +386,4 @@ function createChecklistHelper(text) {
   helper.textContent = text;
 
   return helper;
-}
-
-function createFutureSelfItem({
-  checked,
-  displayedAmount,
-  helperText,
-  onToggle,
-  onAmountChange,
-}) {
-  const item = document.createElement("div");
-
-  item.className = "protection-checklist-item protection-checklist-item--editable";
-
-  const row = document.createElement("div");
-
-  row.className = "protection-checklist-item-row";
-
-  const labelWrap = document.createElement("label");
-
-  labelWrap.className = "protection-checklist-item-label-wrap";
-
-  const checkbox = document.createElement("input");
-
-  checkbox.type = "checkbox";
-
-  checkbox.checked = checked;
-
-  checkbox.addEventListener("change", function () {
-    onToggle(checkbox.checked);
-  });
-
-  const labelSpan = document.createElement("span");
-
-  labelSpan.className = "protection-checklist-item-label";
-
-  labelSpan.textContent = "Monthly Contribution to Future Self";
-
-  labelWrap.append(checkbox, labelSpan);
-
-  const currencyWrap = document.createElement("div");
-
-  currencyWrap.className = "currency-input";
-
-  const currencySymbol = document.createElement("span");
-
-  currencySymbol.textContent = "$";
-
-  const amountInput = document.createElement("input");
-
-  amountInput.type = "number";
-
-  amountInput.className = "form-control";
-
-  amountInput.min = "0";
-
-  amountInput.step = "1";
-
-  amountInput.inputMode = "numeric";
-
-  amountInput.value =
-    displayedAmount > 0 ? String(Math.round(displayedAmount)) : "";
-
-  amountInput.addEventListener("input", function () {
-    onAmountChange(getInputWholeNumber(amountInput));
-  });
-
-  currencyWrap.append(currencySymbol, amountInput);
-
-  row.append(labelWrap, currencyWrap);
-
-  const helper = createChecklistHelper(helperText);
-
-  item.append(row, helper);
-
-  return item;
 }

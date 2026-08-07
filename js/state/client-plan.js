@@ -37,13 +37,6 @@ export function createEmptyProtection() {
      */
     selectedExpenseKeys: [],
     selectedLiabilityIds: [],
-    includeFutureSelfContribution: false,
-
-    /*
-     * Editable override for the Future Self protection amount.
-     * 0 = not customised, use the calculated future value instead.
-     */
-    futureSelfProtectionAmount: 0,
   };
 }
 
@@ -114,12 +107,11 @@ export function createEmptyClientPlan() {
         subscriptionsLifestyle: 0,
         parentsDependantsSupport: 0,
         otherRecurringExpenses: 0,
-        emergencyFund: 0,
+        savings: 0,
       },
 
       commitments: {
         insurancePremiums: 0,
-        contributionToFutureSelf: 0,
       },
 
       goals: [],
