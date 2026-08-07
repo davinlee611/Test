@@ -231,6 +231,33 @@ and Published/Calculated/Estimated conventions.
     - Reuses the existing `renderSbmiAnalysis()`/`POLICIES_CHANGED` wiring;
       no new event listeners needed since it renders as part of the same
       function.
+16. Superseded item 14's decision: the user decided to **remove
+    Contribution to Future Self entirely** rather than keep it excluded
+    from surplus — its investing-for-the-future role already has a home
+    elsewhere (Other Recurring Expenses, Withdrawable Assets, or an
+    Investment Accumulation policy). Removed the Priorities & Situation
+    input, its Commitments state field (`COMMITMENT_FIELDS` is now just
+    `insurancePremiums`), its dedicated Step 2 checklist group and
+    future-value calculation in `protection-analysis.js` (along with the
+    now-orphaned `createFutureSelfItem()` /
+    `.protection-checklist-item--editable` styles it was the only user
+    of), its row in SBMI Analysis Coverage Needed, and its group in the
+    Client Report. `calculateMonthlyContributionFutureValue()` in
+    `cost-analysis.js` stays — it has its own unrelated caller there
+    (`projectedMonthlyCommitment`) and was only ever reused by Future Self,
+    not owned by it. Also renamed the **Emergency Fund** expense field to
+    **Savings** (key `emergencyFund` → `savings`, helper text broadened to
+    "emergency fund, general savings, or other liquid reserves") so it
+    now fills Future Self's old role in Protection Analysis Step 2 —
+    automatically, since both are plain `EXPENSE_FIELDS` entries and Step
+    2 already iterates that config generically.
+17. Polished the "Continue After FYBC" toggle (`.planning-switch`, Income
+    section) per user feedback that it looked misaligned: right-aligned it
+    within its row (`justify-self: end`) so it lines up with where other
+    rows' inputs sit instead of floating at the row's left edge, sized it
+    up slightly (42×24 → 44×26), and added a subtle border for definition
+    against the white row background. Only usage of `.planning-switch` in
+    the app, so safe to change freely.
 
 ## Open items / natural next steps
 
