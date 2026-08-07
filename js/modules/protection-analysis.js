@@ -18,6 +18,8 @@ import { EXPENSE_FIELDS } from "./expenses/expense-config.js";
 
 import { getLiabilityTypeLabel } from "./liabilities/liability-config.js";
 
+import { calculateMonthlyContributionFutureValue } from "./cost-analysis.js";
+
 import { on } from "../events/event-bus.js";
 
 import { EVENTS } from "../events/events.js";
@@ -71,6 +73,15 @@ const emptyFutureSelfMessage = document.getElementById(
 const PROTECTION_HORIZON_YEARS = 5;
 
 const PROTECTION_HORIZON_MONTHS = PROTECTION_HORIZON_YEARS * 12;
+
+/*
+ * Growth assumption for the Future Self future-value calculation.
+ * Matches the app's existing Pre-FYBC Growth Assumption default
+ * (see cost-analysis.js), kept independent here rather than reading
+ * the live Analysis/Next Steps input so this page doesn't silently
+ * change if that unrelated input is edited.
+ */
+const FUTURE_SELF_GROWTH_RATE_PERCENT = 5;
 
 /* ========================================
    INITIALIZATION
@@ -211,19 +222,25 @@ function renderExpenseChecklist(protection) {
 
         onToggle(checked) {
           toggleArraySelection("selectedExpenseKeys", item.key, checked);
+
+          renderExpenseChecklist(getProtection());
         },
       }),
     );
   });
 
-  const totalMonthlyExpenses = items.reduce(function (total, item) {
-    return total + item.amount;
-  }, 0);
+  const totalSelectedMonthlyExpenses = items
+    .filter(function (item) {
+      return selectedExpenseKeys.includes(item.key);
+    })
+    .reduce(function (total, item) {
+      return total + item.amount;
+    }, 0);
 
   expenseChecklist.appendChild(
     createChecklistHelper(
       `${PROTECTION_HORIZON_YEARS} years of expenses: ${formatCurrency(
-        totalMonthlyExpenses * PROTECTION_HORIZON_MONTHS,
+        totalSelectedMonthlyExpenses * PROTECTION_HORIZON_MONTHS,
       )}`,
     ),
   );
@@ -263,22 +280,25 @@ function renderLiabilityChecklist(protection) {
 
         onToggle(checked) {
           toggleArraySelection("selectedLiabilityIds", liability.id, checked);
+
+          renderLiabilityChecklist(getProtection());
         },
       }),
     );
   });
 
-  const totalMonthlyLiabilityRepayments = liabilities.reduce(function (
-    total,
-    liability,
-  ) {
-    return total + (Number(liability.monthlyRepayment) || 0);
-  }, 0);
+  const totalSelectedMonthlyLiabilityRepayments = liabilities
+    .filter(function (liability) {
+      return selectedLiabilityIds.includes(liability.id);
+    })
+    .reduce(function (total, liability) {
+      return total + (Number(liability.monthlyRepayment) || 0);
+    }, 0);
 
   liabilityChecklist.appendChild(
     createChecklistHelper(
       `${PROTECTION_HORIZON_YEARS} years of liabilities: ${formatCurrency(
-        totalMonthlyLiabilityRepayments * PROTECTION_HORIZON_MONTHS,
+        totalSelectedMonthlyLiabilityRepayments * PROTECTION_HORIZON_MONTHS,
       )}`,
     ),
   );
@@ -306,7 +326,11 @@ function renderFutureSelfChecklist(protection) {
     return;
   }
 
-  const calculatedFutureValue = monthlyAmount * PROTECTION_HORIZON_MONTHS;
+  const calculatedFutureValue = calculateMonthlyContributionFutureValue({
+    monthlyAmount,
+    months: PROTECTION_HORIZON_MONTHS,
+    annualRatePercent: FUTURE_SELF_GROWTH_RATE_PERCENT,
+  });
 
   const customAmount = Number(protection.futureSelfProtectionAmount) || 0;
 
@@ -321,7 +345,8 @@ function renderFutureSelfChecklist(protection) {
       helperText:
         `Calculated future value, or enter custom amount. ` +
         `(Based on ${formatCurrency(monthlyAmount)}/mth for ` +
-        `${PROTECTION_HORIZON_YEARS} years)`,
+        `${PROTECTION_HORIZON_YEARS} years at ` +
+        `${FUTURE_SELF_GROWTH_RATE_PERCENT}% p.a.)`,
 
       onToggle(checked) {
         updateProtection({ includeFutureSelfContribution: checked });

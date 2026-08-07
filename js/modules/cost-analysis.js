@@ -2813,7 +2813,7 @@ function calculateRequiredMonthlyContribution({
   return target / accumulationFactor;
 }
 
-function calculateMonthlyContributionFutureValue({
+export function calculateMonthlyContributionFutureValue({
   monthlyAmount,
   months,
   annualRatePercent,
