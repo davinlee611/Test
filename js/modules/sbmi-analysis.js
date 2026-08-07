@@ -15,11 +15,27 @@ import {
   getFutureSelfDisplayedAmount,
 } from "./protection-analysis.js";
 
-import { calculateExistingCriticalIllnessCoverage } from "../services/protection-coverage-calculator.js";
+import {
+  calculateExistingCriticalIllnessCoverage,
+  getBestRecordedHospitalisationWardClass,
+  getPersonalAccidentCoverageSummary,
+} from "../services/protection-coverage-calculator.js";
+
+import { HOSPITAL_CLASS_LABELS } from "../constants/insurance.js";
 
 import { on } from "../events/event-bus.js";
 
 import { EVENTS } from "../events/events.js";
+
+/* ========================================
+   MEDICAL PROTECTION CHECK
+
+   How high a Step 1 "importance of not waiting for treatment" answer
+   must be before it's treated as a preference for Private ward class.
+   A fixed threshold for now, not a calculated recommendation.
+======================================== */
+
+const HIGH_WAIT_TIME_IMPORTANCE_THRESHOLD = 4;
 
 /* ========================================
    ELEMENTS
@@ -64,6 +80,34 @@ const gapTag = document.getElementById("sbmiGapTag");
 const gapProgressFill = document.getElementById("sbmiGapProgressFill");
 
 const gapProgressCaption = document.getElementById("sbmiGapProgressCaption");
+
+const waitTimeSignalValue = document.getElementById("sbmiWaitTimeSignalValue");
+
+const waitTimeScaleDots = document.getElementById("sbmiWaitTimeScaleDots");
+
+const waitTimeRecordedValue = document.getElementById(
+  "sbmiWaitTimeRecordedValue",
+);
+
+const waitTimeFlag = document.getElementById("sbmiWaitTimeFlag");
+
+const waitTimeFlagIcon = document.getElementById("sbmiWaitTimeFlagIcon");
+
+const waitTimeFlagTitle = document.getElementById("sbmiWaitTimeFlagTitle");
+
+const waitTimeFlagDetail = document.getElementById("sbmiWaitTimeFlagDetail");
+
+const injurySignalValue = document.getElementById("sbmiInjurySignalValue");
+
+const injuryRecordedValue = document.getElementById("sbmiInjuryRecordedValue");
+
+const injuryFlag = document.getElementById("sbmiInjuryFlag");
+
+const injuryFlagIcon = document.getElementById("sbmiInjuryFlagIcon");
+
+const injuryFlagTitle = document.getElementById("sbmiInjuryFlagTitle");
+
+const injuryFlagDetail = document.getElementById("sbmiInjuryFlagDetail");
 
 /* ========================================
    INITIALIZATION
@@ -114,6 +158,8 @@ export function renderSbmiAnalysis() {
   const totalExisting = renderExistingCoverage();
 
   renderCoverageGap(totalNeeded, totalExisting);
+
+  renderMedicalProtectionCheck();
 }
 
 /* ========================================
@@ -306,5 +352,193 @@ function renderCoverageGap(totalNeeded, totalExisting) {
     gapProgressCaption.textContent = `${coveragePercent}% of ${formatCurrency(
       totalNeeded,
     )}`;
+  }
+}
+
+/* ========================================
+   MEDICAL PROTECTION CHECK
+======================================== */
+
+function renderMedicalProtectionCheck() {
+  renderWaitTimeCheck();
+
+  renderInjuryCheck();
+}
+
+function renderWaitTimeCheck() {
+  const protection = getProtection();
+
+  const importance = Number(protection.waitTimeImportance) || 0;
+
+  if (waitTimeScaleDots) {
+    Array.from(waitTimeScaleDots.children).forEach(function (dot, index) {
+      dot.classList.toggle("is-filled", index < importance);
+    });
+  }
+
+  if (waitTimeSignalValue) {
+    waitTimeSignalValue.textContent =
+      importance > 0
+        ? `${importance} / 5 — ${getImportanceLabel(importance)}`
+        : "Not yet answered";
+  }
+
+  const wardType = getBestRecordedHospitalisationWardClass();
+
+  if (waitTimeRecordedValue) {
+    waitTimeRecordedValue.textContent = wardType
+      ? `Hospitalisation — ${HOSPITAL_CLASS_LABELS[wardType] || wardType}`
+      : "No Hospitalisation policy recorded";
+  }
+
+  if (!waitTimeFlag) {
+    return;
+  }
+
+  const isHighImportance = importance >= HIGH_WAIT_TIME_IMPORTANCE_THRESHOLD;
+
+  if (!isHighImportance) {
+    waitTimeFlag.hidden = true;
+
+    return;
+  }
+
+  waitTimeFlag.hidden = false;
+
+  if (wardType === "private") {
+    setFlag({
+      flagElement: waitTimeFlag,
+      iconElement: waitTimeFlagIcon,
+      titleElement: waitTimeFlagTitle,
+      detailElement: waitTimeFlagDetail,
+      variant: "success",
+      icon: "✅",
+      title: "Matches Preference",
+      detail: "The recorded plan is already Private ward class.",
+    });
+
+    return;
+  }
+
+  setFlag({
+    flagElement: waitTimeFlag,
+    iconElement: waitTimeFlagIcon,
+    titleElement: waitTimeFlagTitle,
+    detailElement: waitTimeFlagDetail,
+    variant: "warning",
+    icon: "⚠️",
+    title: "Consider Private Ward",
+    detail: wardType
+      ? `High importance on avoiding treatment delays, but the recorded plan is ${
+          HOSPITAL_CLASS_LABELS[wardType] || wardType
+        } — not Private.`
+      : "High importance on avoiding treatment delays, but no Hospitalisation plan is recorded.",
+  });
+}
+
+function getImportanceLabel(importance) {
+  if (importance >= HIGH_WAIT_TIME_IMPORTANCE_THRESHOLD) {
+    return "High Importance";
+  }
+
+  if (importance === 3) {
+    return "Medium Importance";
+  }
+
+  return "Low Importance";
+}
+
+function renderInjuryCheck() {
+  const protection = getProtection();
+
+  const injuryProne = protection.activeExerciseInjuryProne;
+
+  if (injurySignalValue) {
+    injurySignalValue.textContent =
+      injuryProne === null
+        ? "Not yet answered"
+        : injuryProne
+          ? "Yes — Active & Injury-Prone"
+          : "No";
+  }
+
+  const accidentCoverage = getPersonalAccidentCoverageSummary();
+
+  if (injuryRecordedValue) {
+    injuryRecordedValue.textContent =
+      accidentCoverage.policyCount > 0
+        ? `${accidentCoverage.policyCount} Personal Accident ${
+            accidentCoverage.policyCount === 1 ? "policy" : "policies"
+          } · ${formatCurrency(accidentCoverage.totalAmount)} coverage`
+        : "No Personal Accident policy recorded";
+  }
+
+  if (!injuryFlag) {
+    return;
+  }
+
+  if (injuryProne !== true) {
+    injuryFlag.hidden = true;
+
+    return;
+  }
+
+  injuryFlag.hidden = false;
+
+  if (accidentCoverage.policyCount > 0) {
+    setFlag({
+      flagElement: injuryFlag,
+      iconElement: injuryFlagIcon,
+      titleElement: injuryFlagTitle,
+      detailElement: injuryFlagDetail,
+      variant: "success",
+      icon: "✅",
+      title: "Personal Accident Cover in Place",
+      detail: "No action needed — a Personal Accident policy is already recorded.",
+    });
+
+    return;
+  }
+
+  setFlag({
+    flagElement: injuryFlag,
+    iconElement: injuryFlagIcon,
+    titleElement: injuryFlagTitle,
+    detailElement: injuryFlagDetail,
+    variant: "warning",
+    icon: "⚠️",
+    title: "Consider Personal Accident Cover",
+    detail:
+      "Client is active and injury-prone, but no Personal Accident policy is recorded.",
+  });
+}
+
+function setFlag({
+  flagElement,
+  iconElement,
+  titleElement,
+  detailElement,
+  variant,
+  icon,
+  title,
+  detail,
+}) {
+  flagElement.classList.remove(
+    "sbmi-check-flag--warning",
+    "sbmi-check-flag--success",
+  );
+
+  flagElement.classList.add(`sbmi-check-flag--${variant}`);
+
+  if (iconElement) {
+    iconElement.textContent = icon;
+  }
+
+  if (titleElement) {
+    titleElement.textContent = title;
+  }
+
+  if (detailElement) {
+    detailElement.textContent = detail;
   }
 }

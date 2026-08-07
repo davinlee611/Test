@@ -86,3 +86,79 @@ export function calculateExistingCriticalIllnessCoverage() {
 
   return { entries, totalAmount };
 }
+
+/* ========================================
+   HOSPITALISATION WARD CLASS
+
+   Returns the highest recorded ward class across all Hospitalisation
+   policies, or null if none is recorded. Used to check whether the
+   client's stated importance of avoiding a treatment wait (Protection
+   Analysis Step 1) is backed up by a Private ward plan.
+======================================== */
+
+const WARD_CLASS_RANK = {
+  b2_ward: 0,
+  b1_ward: 1,
+  a_ward: 2,
+  private: 3,
+};
+
+export function getBestRecordedHospitalisationWardClass() {
+  let bestWardType = null;
+
+  let bestRank = -1;
+
+  getAllPolicies().forEach(function (policy) {
+    if (policy.policyType !== "hospitalisation") {
+      return;
+    }
+
+    const wardType = policy.hospitalisation?.wardType;
+
+    const rank = WARD_CLASS_RANK[wardType];
+
+    if (rank === undefined || rank <= bestRank) {
+      return;
+    }
+
+    bestRank = rank;
+    bestWardType = wardType;
+  });
+
+  return bestWardType;
+}
+
+/* ========================================
+   PERSONAL ACCIDENT COVERAGE
+
+   Sums Death + TPD benefit amounts across all Personal Accident
+   policies. Used to check whether the client's stated active-lifestyle
+   / injury-prone answer (Protection Analysis Step 1) is backed up by
+   accident cover.
+======================================== */
+
+export function getPersonalAccidentCoverageSummary() {
+  let policyCount = 0;
+
+  let totalAmount = 0;
+
+  getAllPolicies().forEach(function (policy) {
+    if (policy.policyType !== "personal_accident") {
+      return;
+    }
+
+    policyCount += 1;
+
+    const benefits = policy.benefits || [];
+
+    totalAmount += benefits.reduce(function (total, benefit) {
+      if (benefit.type !== "death" && benefit.type !== "tpd") {
+        return total;
+      }
+
+      return total + (Number(benefit.amount) || 0);
+    }, 0);
+  });
+
+  return { policyCount, totalAmount };
+}

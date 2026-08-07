@@ -6214,6 +6214,148 @@ button.insurance-validation-count:disabled {
   font-variant-numeric: tabular-nums;
 }
 
+/* ========================================
+   SBMI ANALYSIS — MEDICAL PROTECTION CHECK
+======================================== */
+
+.sbmi-check-section {
+  margin-top: 28px;
+}
+
+.sbmi-check-section .section-block-head h3 {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.sbmi-check-section .section-block-head p {
+  margin: 5px 0 0;
+  max-width: 62ch;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.sbmi-check-section .analysis-path-overview-grid {
+  margin-top: 16px;
+}
+
+.sbmi-check-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.sbmi-check-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-top: 1px;
+  border-radius: 9px;
+  background: var(--primary-soft);
+  color: var(--primary-color);
+  font-size: 14px;
+}
+
+.sbmi-check-signal {
+  margin-top: 16px;
+  padding: 14px;
+  background: var(--surface-muted);
+  border-radius: var(--radius-md);
+}
+
+.sbmi-check-signal-label,
+.sbmi-check-recorded-label {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.sbmi-check-signal-value {
+  margin-top: 4px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.sbmi-check-scale-dots {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.sbmi-check-scale-dots span {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border-color);
+}
+
+.sbmi-check-scale-dots span.is-filled {
+  background: var(--primary-color);
+}
+
+.sbmi-check-recorded {
+  display: block;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+.sbmi-check-recorded-value {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sbmi-check-flag {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 14px;
+  padding: 11px 13px;
+  border-radius: var(--radius-md);
+  font-size: 11.5px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.sbmi-check-flag[hidden] {
+  display: none;
+}
+
+.sbmi-check-flag--warning {
+  background: var(--warning-background);
+  color: var(--warning-color);
+}
+
+.sbmi-check-flag--success {
+  background: var(--success-background);
+  color: var(--success-color);
+}
+
+.sbmi-check-flag-icon {
+  flex-shrink: 0;
+}
+
+.sbmi-check-flag-title {
+  display: block;
+}
+
+.sbmi-check-flag-detail {
+  display: block;
+  margin-top: 2px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
 @media (max-width: 480px) {
   .protection-scale-options {
     grid-template-columns: repeat(5, minmax(0, 1fr));
