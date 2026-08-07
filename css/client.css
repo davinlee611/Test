@@ -5966,27 +5966,71 @@ button.insurance-validation-count:disabled {
 .protection-checklist-item--editable {
   flex-direction: column;
   align-items: stretch;
-  gap: 10px;
+  gap: 8px;
   cursor: default;
 }
 
 .protection-checklist-item-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.protection-checklist-item-label-wrap {
+  display: flex;
+  align-items: center;
   gap: 10px;
+  min-width: 0;
   cursor: pointer;
 }
 
-.protection-checklist-amount-field {
-  padding-left: 26px;
+.protection-checklist-item-row .currency-input {
+  flex: 0 0 auto;
+  width: 140px;
 }
 
-.protection-checklist-amount-field .currency-input {
-  max-width: 220px;
+.protection-coverage-divider {
+  height: 1px;
+  margin: 20px 0;
+  background: var(--border-color);
 }
 
-.protection-checklist-amount-field .protection-checklist-helper {
-  margin-top: 6px;
+.protection-coverage-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(91, 78, 246, 0.06);
+  border: 1px solid rgba(91, 78, 246, 0.2);
+  border-radius: var(--radius-md);
+}
+
+.protection-coverage-total > div {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.protection-coverage-total span {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.protection-coverage-total small {
+  color: var(--text-secondary);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.protection-coverage-total > strong {
+  flex: 0 0 auto;
+  color: var(--primary-color);
+  font-size: 22px;
+  font-weight: 800;
+  text-align: right;
 }
 
 @media (max-width: 480px) {

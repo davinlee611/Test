@@ -62,6 +62,10 @@ const emptyFutureSelfMessage = document.getElementById(
   "protectionEmptyFutureSelfMessage",
 );
 
+const coverageTotalValue = document.getElementById(
+  "protectionCoverageTotalValue",
+);
+
 /* ========================================
    PROTECTION HORIZON
 
@@ -135,14 +139,17 @@ function attachStepOneListeners() {
 function attachApplicationListeners() {
   on(EVENTS.EXPENSES_CHANGED, function () {
     renderExpenseChecklist(getProtection());
+    renderCoverageTotal(getProtection());
   });
 
   on(EVENTS.LIABILITIES_CHANGED, function () {
     renderLiabilityChecklist(getProtection());
+    renderCoverageTotal(getProtection());
   });
 
   on(EVENTS.COMMITMENTS_CHANGED, function () {
     renderFutureSelfChecklist(getProtection());
+    renderCoverageTotal(getProtection());
   });
 }
 
@@ -170,12 +177,84 @@ export function renderProtectionAnalysis() {
   renderExpenseChecklist(protection);
   renderLiabilityChecklist(protection);
   renderFutureSelfChecklist(protection);
+  renderCoverageTotal(protection);
 }
 
 function syncRadioGroup(inputs, value) {
   inputs.forEach(function (input) {
     input.checked = input.value === value;
   });
+}
+
+/* ========================================
+   STEP 2 — COVERAGE TOTAL
+======================================== */
+
+function getSelectedExpenseMonthlyTotal(protection) {
+  const expenses = getExpenses();
+
+  const selectedExpenseKeys = protection.selectedExpenseKeys || [];
+
+  return EXPENSE_FIELDS.reduce(function (total, field) {
+    if (!selectedExpenseKeys.includes(field.key)) {
+      return total;
+    }
+
+    return total + (Number(expenses?.[field.key]) || 0);
+  }, 0);
+}
+
+function getSelectedLiabilityMonthlyTotal(protection) {
+  const liabilities = getLiabilities() || [];
+
+  const selectedLiabilityIds = protection.selectedLiabilityIds || [];
+
+  return liabilities
+    .filter(function (liability) {
+      return selectedLiabilityIds.includes(liability.id);
+    })
+    .reduce(function (total, liability) {
+      return total + (Number(liability.monthlyRepayment) || 0);
+    }, 0);
+}
+
+function getFutureSelfDisplayedAmount(protection) {
+  const monthlyAmount =
+    Number(getPriorities().commitments?.contributionToFutureSelf) || 0;
+
+  if (monthlyAmount <= 0) {
+    return 0;
+  }
+
+  const calculatedFutureValue = calculateMonthlyContributionFutureValue({
+    monthlyAmount,
+    months: PROTECTION_HORIZON_MONTHS,
+    annualRatePercent: FUTURE_SELF_GROWTH_RATE_PERCENT,
+  });
+
+  const customAmount = Number(protection.futureSelfProtectionAmount) || 0;
+
+  return customAmount > 0 ? customAmount : calculatedFutureValue;
+}
+
+function renderCoverageTotal(protection) {
+  if (!coverageTotalValue) {
+    return;
+  }
+
+  const expenseTotal =
+    getSelectedExpenseMonthlyTotal(protection) * PROTECTION_HORIZON_MONTHS;
+
+  const liabilityTotal =
+    getSelectedLiabilityMonthlyTotal(protection) * PROTECTION_HORIZON_MONTHS;
+
+  const futureSelfTotal = protection.includeFutureSelfContribution
+    ? getFutureSelfDisplayedAmount(protection)
+    : 0;
+
+  coverageTotalValue.textContent = formatCurrency(
+    expenseTotal + liabilityTotal + futureSelfTotal,
+  );
 }
 
 /* ========================================
@@ -223,19 +302,16 @@ function renderExpenseChecklist(protection) {
         onToggle(checked) {
           toggleArraySelection("selectedExpenseKeys", item.key, checked);
 
-          renderExpenseChecklist(getProtection());
+          const nextProtection = getProtection();
+
+          renderExpenseChecklist(nextProtection);
+          renderCoverageTotal(nextProtection);
         },
       }),
     );
   });
 
-  const totalSelectedMonthlyExpenses = items
-    .filter(function (item) {
-      return selectedExpenseKeys.includes(item.key);
-    })
-    .reduce(function (total, item) {
-      return total + item.amount;
-    }, 0);
+  const totalSelectedMonthlyExpenses = getSelectedExpenseMonthlyTotal(protection);
 
   expenseChecklist.appendChild(
     createChecklistHelper(
@@ -281,19 +357,17 @@ function renderLiabilityChecklist(protection) {
         onToggle(checked) {
           toggleArraySelection("selectedLiabilityIds", liability.id, checked);
 
-          renderLiabilityChecklist(getProtection());
+          const nextProtection = getProtection();
+
+          renderLiabilityChecklist(nextProtection);
+          renderCoverageTotal(nextProtection);
         },
       }),
     );
   });
 
-  const totalSelectedMonthlyLiabilityRepayments = liabilities
-    .filter(function (liability) {
-      return selectedLiabilityIds.includes(liability.id);
-    })
-    .reduce(function (total, liability) {
-      return total + (Number(liability.monthlyRepayment) || 0);
-    }, 0);
+  const totalSelectedMonthlyLiabilityRepayments =
+    getSelectedLiabilityMonthlyTotal(protection);
 
   liabilityChecklist.appendChild(
     createChecklistHelper(
@@ -326,15 +400,7 @@ function renderFutureSelfChecklist(protection) {
     return;
   }
 
-  const calculatedFutureValue = calculateMonthlyContributionFutureValue({
-    monthlyAmount,
-    months: PROTECTION_HORIZON_MONTHS,
-    annualRatePercent: FUTURE_SELF_GROWTH_RATE_PERCENT,
-  });
-
-  const customAmount = Number(protection.futureSelfProtectionAmount) || 0;
-
-  const displayedAmount = customAmount > 0 ? customAmount : calculatedFutureValue;
+  const displayedAmount = getFutureSelfDisplayedAmount(protection);
 
   futureSelfChecklist.appendChild(
     createFutureSelfItem({
@@ -350,10 +416,14 @@ function renderFutureSelfChecklist(protection) {
 
       onToggle(checked) {
         updateProtection({ includeFutureSelfContribution: checked });
+
+        renderCoverageTotal(getProtection());
       },
 
       onAmountChange(value) {
         updateProtection({ futureSelfProtectionAmount: value });
+
+        renderCoverageTotal(getProtection());
       },
     }),
   );
@@ -430,9 +500,13 @@ function createFutureSelfItem({
 
   item.className = "protection-checklist-item protection-checklist-item--editable";
 
-  const row = document.createElement("label");
+  const row = document.createElement("div");
 
   row.className = "protection-checklist-item-row";
+
+  const labelWrap = document.createElement("label");
+
+  labelWrap.className = "protection-checklist-item-label-wrap";
 
   const checkbox = document.createElement("input");
 
@@ -450,11 +524,7 @@ function createFutureSelfItem({
 
   labelSpan.textContent = "Monthly Contribution to Future Self";
 
-  row.append(checkbox, labelSpan);
-
-  const amountField = document.createElement("div");
-
-  amountField.className = "protection-checklist-amount-field";
+  labelWrap.append(checkbox, labelSpan);
 
   const currencyWrap = document.createElement("div");
 
@@ -485,11 +555,11 @@ function createFutureSelfItem({
 
   currencyWrap.append(currencySymbol, amountInput);
 
+  row.append(labelWrap, currencyWrap);
+
   const helper = createChecklistHelper(helperText);
 
-  amountField.append(currencyWrap, helper);
-
-  item.append(row, amountField);
+  item.append(row, helper);
 
   return item;
 }
