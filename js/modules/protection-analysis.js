@@ -74,9 +74,9 @@ const coverageTotalValue = document.getElementById(
    not a calculated recommendation.
 ======================================== */
 
-const PROTECTION_HORIZON_YEARS = 5;
+export const PROTECTION_HORIZON_YEARS = 5;
 
-const PROTECTION_HORIZON_MONTHS = PROTECTION_HORIZON_YEARS * 12;
+export const PROTECTION_HORIZON_MONTHS = PROTECTION_HORIZON_YEARS * 12;
 
 /*
  * Growth assumption for the Future Self future-value calculation.
@@ -85,7 +85,7 @@ const PROTECTION_HORIZON_MONTHS = PROTECTION_HORIZON_YEARS * 12;
  * the live Analysis/Next Steps input so this page doesn't silently
  * change if that unrelated input is edited.
  */
-const FUTURE_SELF_GROWTH_RATE_PERCENT = 5;
+export const FUTURE_SELF_GROWTH_RATE_PERCENT = 5;
 
 /* ========================================
    INITIALIZATION
@@ -190,26 +190,40 @@ function syncRadioGroup(inputs, value) {
    STEP 2 — COVERAGE TOTAL
 ======================================== */
 
-function getSelectedExpenseMonthlyTotal(protection) {
+export function getSelectableExpenseItems() {
   const expenses = getExpenses();
 
+  return EXPENSE_FIELDS.map(function (field) {
+    return {
+      key: field.key,
+      label: field.label,
+      amount: Number(expenses?.[field.key]) || 0,
+    };
+  }).filter(function (item) {
+    return item.amount > 0;
+  });
+}
+
+export function getSelectableLiabilities() {
+  return getLiabilities() || [];
+}
+
+export function getSelectedExpenseMonthlyTotal(protection) {
   const selectedExpenseKeys = protection.selectedExpenseKeys || [];
 
-  return EXPENSE_FIELDS.reduce(function (total, field) {
-    if (!selectedExpenseKeys.includes(field.key)) {
+  return getSelectableExpenseItems().reduce(function (total, item) {
+    if (!selectedExpenseKeys.includes(item.key)) {
       return total;
     }
 
-    return total + (Number(expenses?.[field.key]) || 0);
+    return total + item.amount;
   }, 0);
 }
 
-function getSelectedLiabilityMonthlyTotal(protection) {
-  const liabilities = getLiabilities() || [];
-
+export function getSelectedLiabilityMonthlyTotal(protection) {
   const selectedLiabilityIds = protection.selectedLiabilityIds || [];
 
-  return liabilities
+  return getSelectableLiabilities()
     .filter(function (liability) {
       return selectedLiabilityIds.includes(liability.id);
     })
@@ -218,7 +232,7 @@ function getSelectedLiabilityMonthlyTotal(protection) {
     }, 0);
 }
 
-function getFutureSelfDisplayedAmount(protection) {
+export function getFutureSelfDisplayedAmount(protection) {
   const monthlyAmount =
     Number(getPriorities().commitments?.contributionToFutureSelf) || 0;
 
@@ -268,17 +282,7 @@ function renderExpenseChecklist(protection) {
 
   expenseChecklist.innerHTML = "";
 
-  const expenses = getExpenses();
-
-  const items = EXPENSE_FIELDS.map(function (field) {
-    return {
-      key: field.key,
-      label: field.label,
-      amount: Number(expenses?.[field.key]) || 0,
-    };
-  }).filter(function (item) {
-    return item.amount > 0;
-  });
+  const items = getSelectableExpenseItems();
 
   if (items.length === 0) {
     if (emptyExpenseMessage) {
@@ -333,7 +337,7 @@ function renderLiabilityChecklist(protection) {
 
   liabilityChecklist.innerHTML = "";
 
-  const liabilities = getLiabilities() || [];
+  const liabilities = getSelectableLiabilities();
 
   if (liabilities.length === 0) {
     if (emptyLiabilityMessage) {

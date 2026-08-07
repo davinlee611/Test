@@ -6033,6 +6033,187 @@ button.insurance-validation-count:disabled {
   text-align: right;
 }
 
+/* ========================================
+   SBMI ANALYSIS — COVERAGE NEEDED / EXISTING
+======================================== */
+
+.sbmi-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sbmi-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sbmi-summary-row:first-child {
+  padding-top: 0;
+}
+
+.sbmi-summary-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sbmi-summary-row > div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.sbmi-summary-row span {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sbmi-summary-row small {
+  color: var(--text-secondary);
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.sbmi-summary-row-note {
+  font-style: italic;
+}
+
+.sbmi-summary-row > strong {
+  flex-shrink: 0;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sbmi-summary-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--primary-soft);
+  border-radius: var(--radius-md);
+}
+
+.sbmi-summary-total span {
+  color: var(--text-primary);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.sbmi-summary-total strong {
+  color: var(--primary-color);
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.sbmi-existing-caveat {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-color);
+  color: var(--text-secondary);
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+
+/* ========================================
+   SBMI ANALYSIS — COVERAGE GAP
+======================================== */
+
+.sbmi-gap-panel {
+  margin-top: 18px;
+  padding: 20px 22px;
+  background: var(--primary-soft);
+  border: 1px solid rgba(91, 78, 245, 0.2);
+  border-radius: var(--radius-lg);
+}
+
+.sbmi-gap-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.sbmi-gap-label span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.sbmi-gap-label small {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.sbmi-gap-value-wrap {
+  text-align: right;
+}
+
+.sbmi-gap-value {
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.sbmi-gap-value--shortfall {
+  color: var(--warning-color);
+}
+
+.sbmi-gap-value--covered {
+  color: var(--success-color);
+}
+
+.sbmi-gap-tag {
+  display: inline-block;
+  margin-top: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.sbmi-gap-tag--shortfall {
+  background: var(--warning-background);
+  border: 1px solid rgba(157, 101, 0, 0.25);
+  color: var(--warning-color);
+}
+
+.sbmi-gap-tag--covered {
+  background: var(--success-background);
+  border: 1px solid rgba(21, 128, 61, 0.25);
+  color: var(--success-color);
+}
+
+.sbmi-gap-caption {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 10.5px;
+}
+
+.sbmi-gap-caption strong {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
 @media (max-width: 480px) {
   .protection-scale-options {
     grid-template-columns: repeat(5, minmax(0, 1fr));

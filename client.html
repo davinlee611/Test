@@ -150,6 +150,16 @@
             </button>
 
             <button
+              class="sidebar-item sidebar-item--subsection"
+              type="button"
+              data-section="sbmi-analysis"
+            >
+              <i class="fa-solid fa-scale-balanced"></i>
+
+              <span>SBMI Analysis</span>
+            </button>
+
+            <button
               class="sidebar-item"
               type="button"
               data-section="client-report"
@@ -4095,6 +4105,182 @@
                       <strong id="protectionCoverageTotalValue">$0</strong>
                     </div>
                   </article>
+                </div>
+              </div>
+            </section>
+          </section>
+
+          <!-- SBMI Analysis -->
+          <section class="workspace-section" data-content="sbmi-analysis">
+            <div class="section-header">
+              <div>
+                <h2>SBMI Analysis</h2>
+
+                <p>
+                  Compares the Critical Illness coverage the client needs
+                  against what they already hold on the Insurance Portfolio,
+                  and shows what is left to close.
+                </p>
+              </div>
+            </div>
+
+            <section
+              class="analysis-path-preview"
+              aria-labelledby="sbmiPathPreviewTitle"
+            >
+              <div class="analysis-path-preview-header">
+                <div>
+                  <div class="analysis-path-preview-title-row">
+                    <h3 id="sbmiPathPreviewTitle">Your Coverage Path</h3>
+
+                    <span class="analysis-path-preview-badge">
+                      At a Glance
+                    </span>
+                  </div>
+
+                  <p>
+                    Coverage Needed comes from the items selected in
+                    Protection Analysis Step 2. Existing Coverage comes from
+                    the Insurance Portfolio.
+                  </p>
+                </div>
+              </div>
+
+              <div class="analysis-path-overview-grid">
+                <!-- Coverage Needed -->
+                <div class="analysis-path-section-shell">
+                  <article class="analysis-path-card">
+                    <div class="analysis-path-card-heading">
+                      <span class="analysis-path-step">1</span>
+
+                      <div>
+                        <h4>Coverage Needed</h4>
+
+                        <p>
+                          5-year total of the obligations selected on
+                          Protection Analysis.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="sbmi-summary-list">
+                      <div class="sbmi-summary-row">
+                        <div>
+                          <span>Monthly Expenses (5 yrs)</span>
+
+                          <small id="sbmiNeededExpenseCaption">
+                            No items selected
+                          </small>
+                        </div>
+
+                        <strong id="sbmiNeededExpenseAmount">$0</strong>
+                      </div>
+
+                      <div class="sbmi-summary-row">
+                        <div>
+                          <span>Liabilities (5 yrs)</span>
+
+                          <small id="sbmiNeededLiabilityCaption">
+                            No items selected
+                          </small>
+                        </div>
+
+                        <strong id="sbmiNeededLiabilityAmount">$0</strong>
+                      </div>
+
+                      <div class="sbmi-summary-row">
+                        <div>
+                          <span>Future Self (Future Value)</span>
+
+                          <small id="sbmiNeededFutureSelfCaption">
+                            Not included
+                          </small>
+                        </div>
+
+                        <strong id="sbmiNeededFutureSelfAmount">$0</strong>
+                      </div>
+                    </div>
+
+                    <div class="sbmi-summary-total">
+                      <span>Total Coverage Needed</span>
+
+                      <strong id="sbmiTotalNeeded">$0</strong>
+                    </div>
+                  </article>
+                </div>
+
+                <!-- Existing Coverage -->
+                <div class="analysis-path-section-shell">
+                  <article class="analysis-path-card">
+                    <div class="analysis-path-card-heading">
+                      <span class="analysis-path-step">2</span>
+
+                      <div>
+                        <h4>Existing Coverage</h4>
+
+                        <p>
+                          Critical Illness benefits already recorded on the
+                          Insurance Portfolio.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="sbmi-summary-list" id="sbmiExistingList">
+                      <p
+                        id="sbmiExistingEmptyMessage"
+                        class="empty-state-message"
+                      >
+                        No Critical Illness coverage recorded on Insurance
+                        Portfolio.
+                      </p>
+                    </div>
+
+                    <div class="sbmi-summary-total">
+                      <span>Total Existing Coverage</span>
+
+                      <strong id="sbmiTotalExisting">$0</strong>
+                    </div>
+
+                    <p class="sbmi-existing-caveat">
+                      Early Critical Illness benefits accelerated from a
+                      Critical Illness benefit are shown as part of that
+                      benefit's amount, not added again.
+                    </p>
+                  </article>
+                </div>
+              </div>
+
+              <!-- Coverage Gap -->
+              <div class="sbmi-gap-panel">
+                <div class="sbmi-gap-top">
+                  <div class="sbmi-gap-label">
+                    <span>
+                      <span class="analysis-path-step">3</span>
+                      Coverage Gap
+                    </span>
+
+                    <small>
+                      Total Coverage Needed minus Total Existing Coverage
+                    </small>
+                  </div>
+
+                  <div class="sbmi-gap-value-wrap">
+                    <div class="sbmi-gap-value" id="sbmiGapValue">$0</div>
+
+                    <span class="sbmi-gap-tag" id="sbmiGapTag">
+                      Fully Covered
+                    </span>
+                  </div>
+                </div>
+
+                <div class="analysis-next-progress-track">
+                  <span id="sbmiGapProgressFill" style="width: 0%"></span>
+                </div>
+
+                <div class="sbmi-gap-caption">
+                  <span>Existing coverage in place</span>
+
+                  <strong id="sbmiGapProgressCaption">0% of $0</strong>
                 </div>
               </div>
             </section>

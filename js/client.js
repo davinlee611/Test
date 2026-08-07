@@ -57,6 +57,12 @@ import {
   resetProtectionAnalysis,
 } from "./modules/protection-analysis.js";
 
+import {
+  initializeSbmiAnalysis,
+  renderSbmiAnalysis,
+  resetSbmiAnalysis,
+} from "./modules/sbmi-analysis.js";
+
 import { on } from "./events/event-bus.js";
 
 import { EVENTS } from "./events/events.js";
@@ -114,6 +120,7 @@ initializeCostOfWantsPreview();
 initializeCostAnalysis();
 initializeClientReport();
 initializeProtectionAnalysis();
+initializeSbmiAnalysis();
 initializePage();
 
 on(EVENTS.SECTION_CHANGED, function ({ section }) {
@@ -131,6 +138,10 @@ on(EVENTS.SECTION_CHANGED, function ({ section }) {
 
   if (section === "protection") {
     renderProtectionAnalysis();
+  }
+
+  if (section === "sbmi-analysis") {
+    renderSbmiAnalysis();
   }
 });
 
@@ -238,6 +249,11 @@ function clearFinancialPlan() {
    * Reset Protection Analysis.
    */
   resetProtectionAnalysis();
+
+  /*
+   * Reset SBMI Analysis.
+   */
+  resetSbmiAnalysis();
 
   /*
    * Clear any previously generated client report.
