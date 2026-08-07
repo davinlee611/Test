@@ -135,20 +135,43 @@ and Published/Calculated/Estimated conventions.
     and re-rendering on `EXPENSES_CHANGED`/`LIABILITIES_CHANGED`/
     `COMMITMENTS_CHANGED`). New `protection` state bucket in `client-plan.js`.
     New module: `js/modules/protection-analysis.js`.
+11. Fixed Step 2 checklist math per user correction: the "5 years of
+    expenses/liabilities" helper totals now sum only checked/selected items
+    (previously summed all non-zero items regardless of selection); each
+    checklist re-renders itself on its own toggle. Future Self's calculated
+    amount now uses actual compound future value via a newly-exported
+    `calculateMonthlyContributionFutureValue()` (from `cost-analysis.js`,
+    reused rather than duplicated) at an independent 5% p.a. assumption,
+    instead of simple monthly × 60 multiplication; helper text discloses the
+    rate.
+12. Restructured the Future Self checklist item to a horizontal row
+    (checkbox+label left, amount input right) instead of stacked, so the
+    card reads shorter. Added a "Total Critical Illness Coverage Needed"
+    row below a divider at the bottom of Step 2 — sums the 5-year totals of
+    only the checked expenses/liabilities plus the Future Self future value
+    (only when its checkbox is checked), recomputed live on every toggle via
+    `renderCoverageTotal()` in `protection-analysis.js`.
 
 ## Open items / natural next steps
 
 - **Protection Analysis coverage-gap engine** is the big remaining piece —
-  Step 1/Step 2 collect data but nothing calculates a gap, total, or
-  recommendation from it yet. The Client Report's Protection section stays a
-  placeholder note until this exists (single gate:
-  `hasProtectionAnalysisContent()` in `client-report.js`, hardcoded `false`).
+  Step 1/Step 2 collect data and Step 2 now totals a "Total Critical Illness
+  Coverage Needed" figure, but nothing yet compares that total against
+  existing insurance coverage to produce a gap or recommendation. The
+  Client Report's Protection section stays a placeholder note until this
+  exists (single gate: `hasProtectionAnalysisContent()` in
+  `client-report.js`, hardcoded `false`). **Current focus — finish this
+  before picking up anything else.**
 - The shortfall-guidance branch for Your Next Steps (what to suggest when the
   gap can't be closed even at full commitment) was designed but the user
   decided not to build it for now.
-- Confirm the "Contribution to Future Self" interpretation (new field) is
-  actually what the user meant — flagged to them, not yet explicitly
-  confirmed as of this checkpoint.
+- **Reminder for next session**: the user was asked whether "Contribution to
+  Future Self" should reduce disposable surplus in the cashflow/commitments
+  total (like Insurance Premiums does), or stay excluded because it may
+  already be funding the same FYBC capital target (double-counting risk if
+  included). User explicitly said to raise this again only after Protection
+  Analysis is complete — don't resurface it before then, but don't let it
+  drop either.
 - Everything in this log has only been verified statically in this sandbox;
   live-browser testing after any further UI change is still the user's job
   unless a working browser harness becomes available. The user did test the
