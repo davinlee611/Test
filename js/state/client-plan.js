@@ -38,6 +38,12 @@ export function createEmptyProtection() {
     selectedExpenseKeys: [],
     selectedLiabilityIds: [],
     includeFutureSelfContribution: false,
+
+    /*
+     * Editable override for the Future Self protection amount.
+     * 0 = not customised, use the calculated future value instead.
+     */
+    futureSelfProtectionAmount: 0,
   };
 }
 

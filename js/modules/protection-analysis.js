@@ -9,7 +9,10 @@ import {
   updateProtection,
 } from "../state/client-plan.js";
 
-import { formatCurrency } from "../utils/client-utils.js";
+import {
+  formatCurrency,
+  getInputWholeNumber,
+} from "../utils/client-utils.js";
 
 import { EXPENSE_FIELDS } from "./expenses/expense-config.js";
 
@@ -56,6 +59,18 @@ const futureSelfChecklist = document.getElementById(
 const emptyFutureSelfMessage = document.getElementById(
   "protectionEmptyFutureSelfMessage",
 );
+
+/* ========================================
+   PROTECTION HORIZON
+
+   How many years of an ongoing obligation the Step 2 helper text
+   assumes should be covered. A fixed planning assumption for now,
+   not a calculated recommendation.
+======================================== */
+
+const PROTECTION_HORIZON_YEARS = 5;
+
+const PROTECTION_HORIZON_MONTHS = PROTECTION_HORIZON_YEARS * 12;
 
 /* ========================================
    INITIALIZATION
@@ -200,6 +215,18 @@ function renderExpenseChecklist(protection) {
       }),
     );
   });
+
+  const totalMonthlyExpenses = items.reduce(function (total, item) {
+    return total + item.amount;
+  }, 0);
+
+  expenseChecklist.appendChild(
+    createChecklistHelper(
+      `${PROTECTION_HORIZON_YEARS} years of expenses: ${formatCurrency(
+        totalMonthlyExpenses * PROTECTION_HORIZON_MONTHS,
+      )}`,
+    ),
+  );
 }
 
 /* ========================================
@@ -240,6 +267,21 @@ function renderLiabilityChecklist(protection) {
       }),
     );
   });
+
+  const totalMonthlyLiabilityRepayments = liabilities.reduce(function (
+    total,
+    liability,
+  ) {
+    return total + (Number(liability.monthlyRepayment) || 0);
+  }, 0);
+
+  liabilityChecklist.appendChild(
+    createChecklistHelper(
+      `${PROTECTION_HORIZON_YEARS} years of liabilities: ${formatCurrency(
+        totalMonthlyLiabilityRepayments * PROTECTION_HORIZON_MONTHS,
+      )}`,
+    ),
+  );
 }
 
 /* ========================================
@@ -253,10 +295,10 @@ function renderFutureSelfChecklist(protection) {
 
   futureSelfChecklist.innerHTML = "";
 
-  const amount =
+  const monthlyAmount =
     Number(getPriorities().commitments?.contributionToFutureSelf) || 0;
 
-  if (amount <= 0) {
+  if (monthlyAmount <= 0) {
     if (emptyFutureSelfMessage) {
       futureSelfChecklist.appendChild(emptyFutureSelfMessage);
     }
@@ -264,16 +306,29 @@ function renderFutureSelfChecklist(protection) {
     return;
   }
 
+  const calculatedFutureValue = monthlyAmount * PROTECTION_HORIZON_MONTHS;
+
+  const customAmount = Number(protection.futureSelfProtectionAmount) || 0;
+
+  const displayedAmount = customAmount > 0 ? customAmount : calculatedFutureValue;
+
   futureSelfChecklist.appendChild(
-    createChecklistItem({
+    createFutureSelfItem({
       checked: Boolean(protection.includeFutureSelfContribution),
 
-      label: "Monthly Contribution to Future Self",
+      displayedAmount,
 
-      amountText: `${formatCurrency(amount)}/mth`,
+      helperText:
+        `Calculated future value, or enter custom amount. ` +
+        `(Based on ${formatCurrency(monthlyAmount)}/mth for ` +
+        `${PROTECTION_HORIZON_YEARS} years)`,
 
       onToggle(checked) {
         updateProtection({ includeFutureSelfContribution: checked });
+      },
+
+      onAmountChange(value) {
+        updateProtection({ futureSelfProtectionAmount: value });
       },
     }),
   );
@@ -325,6 +380,91 @@ function createChecklistItem({ checked, label, amountText, onToggle }) {
   amountSpan.textContent = amountText;
 
   item.append(input, labelSpan, amountSpan);
+
+  return item;
+}
+
+function createChecklistHelper(text) {
+  const helper = document.createElement("small");
+
+  helper.className = "protection-checklist-helper";
+
+  helper.textContent = text;
+
+  return helper;
+}
+
+function createFutureSelfItem({
+  checked,
+  displayedAmount,
+  helperText,
+  onToggle,
+  onAmountChange,
+}) {
+  const item = document.createElement("div");
+
+  item.className = "protection-checklist-item protection-checklist-item--editable";
+
+  const row = document.createElement("label");
+
+  row.className = "protection-checklist-item-row";
+
+  const checkbox = document.createElement("input");
+
+  checkbox.type = "checkbox";
+
+  checkbox.checked = checked;
+
+  checkbox.addEventListener("change", function () {
+    onToggle(checkbox.checked);
+  });
+
+  const labelSpan = document.createElement("span");
+
+  labelSpan.className = "protection-checklist-item-label";
+
+  labelSpan.textContent = "Monthly Contribution to Future Self";
+
+  row.append(checkbox, labelSpan);
+
+  const amountField = document.createElement("div");
+
+  amountField.className = "protection-checklist-amount-field";
+
+  const currencyWrap = document.createElement("div");
+
+  currencyWrap.className = "currency-input";
+
+  const currencySymbol = document.createElement("span");
+
+  currencySymbol.textContent = "$";
+
+  const amountInput = document.createElement("input");
+
+  amountInput.type = "number";
+
+  amountInput.className = "form-control";
+
+  amountInput.min = "0";
+
+  amountInput.step = "1";
+
+  amountInput.inputMode = "numeric";
+
+  amountInput.value =
+    displayedAmount > 0 ? String(Math.round(displayedAmount)) : "";
+
+  amountInput.addEventListener("input", function () {
+    onAmountChange(getInputWholeNumber(amountInput));
+  });
+
+  currencyWrap.append(currencySymbol, amountInput);
+
+  const helper = createChecklistHelper(helperText);
+
+  amountField.append(currencyWrap, helper);
+
+  item.append(row, amountField);
 
   return item;
 }
