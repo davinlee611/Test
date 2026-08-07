@@ -151,17 +151,49 @@ and Published/Calculated/Estimated conventions.
     only the checked expenses/liabilities plus the Future Self future value
     (only when its checkbox is checked), recomputed live on every toggle via
     `renderCoverageTotal()` in `protection-analysis.js`.
+13. Built the **SBMI Analysis** coverage-gap subsection — a new sidebar
+    sub-page under Protection Analysis (`data-section="sbmi-analysis"`),
+    mirroring the Cost of Wants / Analyse Commitments split. Mocked up as an
+    Artifact first per usual practice, discussed with the user whether to
+    combine or separate CI/ECI sum-assured amounts and whether to show Death
+    coverage, then built to the agreed design:
+    - **Coverage Needed** card reuses `protection-analysis.js`'s own
+      selected-only totals and Future Self future value (now exported:
+      `PROTECTION_HORIZON_YEARS`/`_MONTHS`, `FUTURE_SELF_GROWTH_RATE_PERCENT`,
+      `getSelectableExpenseItems`, `getSelectableLiabilities`,
+      `getSelectedExpenseMonthlyTotal`, `getSelectedLiabilityMonthlyTotal`,
+      `getFutureSelfDisplayedAmount`) instead of recalculating — same number
+      as the Step 2 "Total Critical Illness Coverage Needed" card.
+    - **Existing Coverage** card is new: `js/services/protection-coverage-
+      calculator.js`'s `calculateExistingCriticalIllnessCoverage()` sums
+      Critical Illness + Early Critical Illness benefits across the saved
+      Insurance Portfolio (`getAllPolicies()`). Accelerated Early CI is
+      folded into its related CI benefit's entry as a note rather than
+      summed again (it's a sub-limit of the same pool, not extra money);
+      additional/standalone Early CI is counted as its own entry. CI
+      accelerated/additional from a Death benefit is left at face value —
+      that distinction affects the Death benefit afterward, not what's
+      payable on a CI event, so it's out of scope for this comparison.
+    - **Coverage Gap** = Needed − Existing, with a shortfall/fully-covered
+      tag and a progress bar (reuses `.analysis-next-progress-track`). No
+      top-up recommendation logic yet — same "just show the number, no
+      guidance branch" scope decision as Cost of Wants' Your Next Steps.
+    - Re-renders on `EXPENSES_CHANGED`/`LIABILITIES_CHANGED`/
+      `COMMITMENTS_CHANGED`/`POLICIES_CHANGED` and on section entry; wired
+      into Clear Plan via `resetSbmiAnalysis()`.
+    - Deliberately does **not** show Death sum assured as its own figure —
+      there's no "Death Coverage Needed" anywhere in the app to compare it
+      against, so it would be an orphaned number, not a gap. Per-policy
+      Death context (e.g. "accelerated from $X Death") was discussed but not
+      built in this pass.
 
 ## Open items / natural next steps
 
-- **Protection Analysis coverage-gap engine** is the big remaining piece —
-  Step 1/Step 2 collect data and Step 2 now totals a "Total Critical Illness
-  Coverage Needed" figure, but nothing yet compares that total against
-  existing insurance coverage to produce a gap or recommendation. The
-  Client Report's Protection section stays a placeholder note until this
-  exists (single gate: `hasProtectionAnalysisContent()` in
-  `client-report.js`, hardcoded `false`). **Current focus — finish this
-  before picking up anything else.**
+- **Client Report Protection section** still needs wiring to the new SBMI
+  Analysis numbers — `hasProtectionAnalysisContent()` in `client-report.js`
+  is still hardcoded `false`, so the report still shows the placeholder
+  "not yet completed" note even though Step 1/Step 2/SBMI Analysis now have
+  real content. Natural next step.
 - The shortfall-guidance branch for Your Next Steps (what to suggest when the
   gap can't be closed even at full commitment) was designed but the user
   decided not to build it for now.
