@@ -31,6 +31,10 @@
   --border-strong: #cbd5e1;
   --border-muted: #e2e8f0;
 
+  /* Shell wrapper (pale bordered container used to group cards) */
+  --shell-border-color: #dbe3ee;
+  --shell-background: #f7f9fc;
+
   /* Status colours */
   --success-color: #15803d;
   --success-background: #f0fdf4;
