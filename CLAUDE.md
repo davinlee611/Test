@@ -504,6 +504,65 @@ and Published/Calculated/Estimated conventions.
     - No behavior, public export, or DOM id/selector changed anywhere in
       this refactor — same reasoning, same output, same wiring, just moved
       and reorganized into files matching the rest of the app.
+27. User reported the SBMI Analysis "Generate Report" button didn't pull
+    Cost of Wants Analysis data even when Cost of Wants had actually been
+    completed, and asked for the Generate Report flow to also gate on
+    Cost of Wants completeness the same way it already gated on Protection
+    Analysis completeness. Root-caused: `buildClientReportData()`'s
+    `position`/`nextSteps` fields come from `cost-analysis.js`'s
+    `getLatestYourPathProjectedPosition()`/`getLatestYourNextStepsResult()`
+    — a **cache** only refreshed when `cost-analysis`'s own `render()`
+    runs (on app boot, on its own inputs changing, or on visiting the
+    Analysis/cost-analysis section). Generating the report from SBMI
+    Analysis without ever visiting Analysis in that session left the
+    cache at its boot-time (pre-Cost-of-Wants) value — a real staleness
+    bug, not a validation gap. Fixed in
+    `client-report-controller.js`'s `generateAndShowReport()` by calling
+    `initializeCostAnalysis()` (imported from `../cost-analysis.js`)
+    immediately before `buildClientReportData()`; that function is
+    idempotent — already-initialized just triggers `controller.render()`
+    — so this forces a fresh cache with zero risk of double-binding
+    event listeners. Fixes both Generate Report buttons since they share
+    one `handleGenerateReportClick` handler.
+    - Added the requested parallel gate: `hasCostOfWantsContent()`
+      (`client-report-data-builder.js`, mirroring
+      `hasProtectionAnalysisContent()`) checks
+      `getGrossRetirementGoalSummary().isValid` — true once the adviser
+      has entered valid Cost of Wants inputs, independent of whether the
+      Analysis page has ever rendered, so no staleness risk there.
+      `handleGenerateReportClick()` now evaluates both gates and only
+      skips the confirmation modal when neither is missing.
+    - The confirmation modal's title/message (`#reportConfirmTitle`/
+      `#reportConfirmMessage`, added to `client-report-elements.js`) are
+      now set dynamically per case — both missing, Cost of Wants only,
+      or Protection only (existing copy, unchanged) — via
+      `setReportConfirmCopy()` in the controller, instead of the
+      previously hardcoded Protection-only text.
+    - **Live click-through performed** (the item-26 open item below):
+      served the app via `python -m http.server`, drove it with a
+      Playwright script (global npm install, since no local
+      `node_modules`) against Chromium at `/opt/pw-browsers/chromium`,
+      bypassing the real Supabase auth gate by blocking the CDN
+      `supabase-js` script and stubbing `window.supabase.createClient()`
+      to resolve a fake user — `initializePage()`'s own try/catch is the
+      only thing gated on that, module initialization and rendering
+      already happen before it runs. Confirmed via screenshots and DOM
+      reads: (1) fresh load, both gates missing → modal reads "Cost of
+      Wants Analysis and Protection Analysis not completed"; (2) filled
+      Cost of Wants only, generated straight from SBMI Analysis without
+      visiting Analysis → modal correctly narrows to "Protection
+      Analysis not completed" only, and the resulting report's Cost of
+      Wants Analysis section shows real numbers instead of the "not
+      completed" placeholder — confirming the staleness fix; (3) every
+      number in that section (Capital Needed at FYBC $2,170,078,
+      Lifestyle Capital $2,661,307, Recorded Income Offset -$491,229,
+      Remaining Gap $1,634,591, etc.) matched the live Analysis page
+      exactly when cross-checked by reading both DOMs — also strong
+      confirmation the item-26 `cost-analysis.js` module split preserved
+      the projection engine's output exactly; (4) filled a minimal
+      Protection Analysis Step 1 answer, regenerated → no modal, full
+      report with real Protection Analysis content. No unexpected
+      console errors (only the intentionally-blocked CDN request).
 
 ## Open items / natural next steps
 
@@ -524,14 +583,16 @@ and Published/Calculated/Estimated conventions.
   preview in this sandbox. Expect a fix-up round once the user has
   actually printed/exported it, same pattern as every other UI change
   this session.
-- **The item-26 module-split refactor (`cost-analysis.js` above all — the
-  ~800-line projection engine especially) needs a live click-through
-  before it's trusted**, ideally exercising every input on Analysis/
-  Protection Analysis/SBMI Analysis/Client Report and comparing numbers
-  against a pre-refactor run: the Node import-graph-evaluation check
-  described in item 26 is strong for "does every file load and does
-  `render()` run without throwing," but it ran against a default/empty
-  plan and cannot catch a value silently computed wrong (only a thrown
-  error or a diffed string/name), the way the `setCurrentCashflowState()`
-  omission happened to be catchable by inspection but wouldn't have been
-  caught by the automated passes alone.
+- The item-26/27 log entries above cover one real live-browser
+  click-through (via a Playwright driver against a locally-served
+  instance, auth-bypassed) exercising Cost of Wants → Analysis →
+  Protection Analysis → SBMI Analysis → Client Report with realistic
+  demo data, and cross-checking every number in the report's Cost of
+  Wants Analysis section against the live Analysis page — all matched
+  exactly, which is strong evidence the `cost-analysis.js` projection
+  engine split preserved behavior. That said, it was one scenario with
+  one set of inputs (FYBC 55, mortality 85, Average lifestyle, one
+  retirement strategy), not exhaustive coverage of every input
+  combination (different retirement strategies, self-employed income,
+  edge-case ages, goal exclusions, etc.) — still worth a broader
+  click-through, and still no automated regression suite.

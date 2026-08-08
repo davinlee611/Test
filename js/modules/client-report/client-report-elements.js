@@ -21,6 +21,10 @@ export function getClientReportElements() {
 
     reportConfirmModal: document.getElementById("reportConfirmModal"),
 
+    reportConfirmTitle: document.getElementById("reportConfirmTitle"),
+
+    reportConfirmMessage: document.getElementById("reportConfirmMessage"),
+
     continueReportConfirmButton: document.getElementById(
       "continueReportConfirmButton",
     ),

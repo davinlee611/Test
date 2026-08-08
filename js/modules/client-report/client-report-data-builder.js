@@ -57,6 +57,19 @@ import {
 } from "./client-report-config.js";
 
 /* ========================================
+   COST OF WANTS ANALYSIS GATE
+
+   Mirrors hasProtectionAnalysisContent() below: "complete enough to
+   report on" means the adviser has actually entered the Cost of Wants
+   inputs needed to produce a retirement goal, not just that the app
+   can compute a ($0) target for a client who never opened the page.
+======================================== */
+
+export function hasCostOfWantsContent() {
+  return getGrossRetirementGoalSummary().isValid;
+}
+
+/* ========================================
    PROTECTION ANALYSIS GATE
 
    "Complete enough to report on" means the adviser has actually gone
