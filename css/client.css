@@ -4468,6 +4468,10 @@ button.insurance-validation-count:disabled {
     color 0.2s ease;
 }
 
+.analysis-next-steps-percentage-options label:hover span {
+  border-color: var(--primary-color);
+}
+
 .analysis-next-steps-percentage-options input:checked + span {
   border-color: var(--primary-color);
   background: rgb(87 77 255 / 8%);

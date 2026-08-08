@@ -16,6 +16,8 @@ import { getNonNegativeNumber, setText } from "./cost-analysis-format-utils.js";
 
 import { setAnalysisSectionExpanded } from "./cost-analysis-collapse.js";
 
+import { openSection } from "../sidebar.js";
+
 /* ========================================
    RETIREMENT STRATEGY CONSTANTS
 ======================================== */
@@ -56,6 +58,15 @@ export function applySelectedRetirementStrategy(strategy) {
 }
 
 export function handleStrategyDetailLinkClick() {
+  /*
+   * The CPF Flow retirement-strategy detail this link expands and
+   * scrolls to lives on the separate "Detailed Cashflow & CPF Flow"
+   * sub-page, not on this simplified Analysis page — navigate there
+   * first or the expand/scroll below silently targets elements on a
+   * currently-hidden section.
+   */
+  openSection("cost-analysis-detail");
+
   const collapseButton = document.querySelector(
     '[data-analysis-collapse-target="analysisCpfProjectionContent"]',
   );
