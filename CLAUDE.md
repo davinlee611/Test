@@ -276,22 +276,57 @@ and Published/Calculated/Estimated conventions.
     `.analysis-path-details-notice` pattern and `openSection()` wiring
     already used by Analysis's "View Detailed Cashflow & CPF Flow" button
     (`sidebar.js`), navigating to `sbmi-analysis`.
+20. Built the **Client Report redesign** — the session-9 pause point's
+    planned task. User confirmed the SBMI Analysis card language was
+    exactly the look they wanted for the whole report, including print.
+    Two mockup rounds (first the full report, then a refinement pass) before
+    touching code, per established practice. Final approved changes:
+    Priorities & Situation / Insurance Portfolio / Cost of Wants Analysis /
+    Protection Analysis all now render as bordered shell cards with summary
+    rows building to a highlighted total, instead of the old flat
+    label/value listing. Implementation:
+    - New reusable pure calculators so the report and the live SBMI
+      Analysis page share one source of truth instead of recalculating:
+      `getCoverageNeededBreakdown()` (`protection-analysis.js`),
+      `calculateCoverageGap()` (`protection-coverage-calculator.js`), and
+      `getWaitTimeCheckResult()`/`getInjuryCheckResult()` (`sbmi-analysis.js`
+      — these were previously inline DOM-mutating logic in that file's own
+      render functions; extracting them as exported pure functions was
+      necessary before the report could reuse the exact same flag/threshold
+      logic without duplicating it).
+    - `hasProtectionAnalysisContent()` is no longer hardcoded `false` — it
+      now checks whether Protection Analysis Step 1/Step 2 actually has
+      answers/selections (`waitTimeImportance > 0` OR
+      `activeExerciseInjuryProne !== null` OR any Step 2 selection). When
+      true, the Protection Analysis report section shows real Coverage
+      Needed/Existing/Gap cards and Medical Protection Check flags (each
+      flag card independently gated on that specific Step 1 question being
+      answered), matching SBMI Analysis exactly.
+    - Per explicit instruction, sections/cards with nothing recorded no
+      longer render at all — no "$0" placeholder cards. Current Monthly
+      Cashflow, CPF Balances and Withdrawable Assets gained gates joining
+      the pre-existing goals/liabilities/properties/wealth-priorities
+      gates; if a whole section ends up with zero cards, the section itself
+      is skipped (checked via `grid.children.length === 0`).
+    - Per explicit instruction, Insurance Portfolio benefit lists use
+      abbreviated labels scoped to the report only (`BENEFIT_LABELS_SHORT`
+      in `client-report.js`: Death → "Death / TI", TPD stays "TPD" instead
+      of the full "Total and Permanent Disability", Critical Illness → CI,
+      Early Critical Illness → ECI) so a policy with several benefits
+      doesn't overflow its card border. The shared `BENEFIT_LABELS` used
+      elsewhere (e.g. the Add Benefit dropdown) is untouched — full wording
+      still helps there, this was a report-card-width problem specifically.
+    - `print.css`: added `print-color-adjust: exact` scoped to `.client-report`
+      and its descendants, since browsers silently strip background colors
+      by default when printing — without this, every shell card, highlighted
+      total, gap panel and warning/success flag would print as plain white.
+      Added `break-inside: avoid` per card/panel (not per section, since a
+      section can now legitimately span more than one printed page with
+      several cards in it) so a card doesn't get sliced across a page
+      boundary.
 
 ## Open items / natural next steps
 
-- **Session paused here (end of 2026-08-07 session) — next task is a full
-  Client Report rework.** The user explicitly does not want the Protection
-  section incrementally wired into the current format ("just plucking the
-  data from other pages and showing the user just words and words"). They
-  want the whole report redesigned to be easily readable/digestible —
-  treat this as a presentation/UX redesign of the entire report, not a
-  content-addition task. Natural first step next session: mock up a new
-  report layout as an Artifact before touching `client-report.js`, per the
-  project's established practice for layout-sensitive changes (see the
-  Cost of Wants split and SBMI Analysis in this log). Only once a layout is
-  approved should `hasProtectionAnalysisContent()` (currently hardcoded
-  `false`) and the new SBMI Analysis numbers actually get wired in — as
-  part of that redesign, not before it.
 - Death/TPD coverage-gap analysis and disability-income suitability on SBMI
   Analysis are not built — Critical Illness is the only coverage type
   covered so far. No top-up recommendation logic exists on SBMI Analysis or
@@ -302,7 +337,10 @@ and Published/Calculated/Estimated conventions.
   decided not to build it for now.
 - Everything in this log has only been verified statically in this sandbox;
   live-browser testing after any further UI change is still the user's job
-  unless a working browser harness becomes available. The user did test the
-  Client Report live earlier this session and reported back real layout
-  bugs (screenshots) — expect the same pattern once the reworked report is
-  built and they click through it.
+  unless a working browser harness becomes available. **The redesigned
+  Client Report specifically needs a live print test** — the
+  `print-color-adjust` fix in `print.css` was written from documented
+  browser print-default behavior, not confirmed against an actual print
+  preview in this sandbox. Expect a fix-up round once the user has
+  actually printed/exported it, same pattern as every other UI change
+  this session.
