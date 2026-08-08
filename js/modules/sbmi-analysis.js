@@ -4,15 +4,10 @@ import { getProtection } from "../state/client-plan.js";
 
 import { formatCurrency } from "../utils/client-utils.js";
 
-import {
-  PROTECTION_HORIZON_MONTHS,
-  getSelectableExpenseItems,
-  getSelectableLiabilities,
-  getSelectedExpenseMonthlyTotal,
-  getSelectedLiabilityMonthlyTotal,
-} from "./protection-analysis.js";
+import { getCoverageNeededBreakdown } from "./protection-analysis.js";
 
 import {
+  calculateCoverageGap,
   calculateExistingCriticalIllnessCoverage,
   getBestRecordedHospitalisationWardClass,
   getPersonalAccidentCoverageSummary,
@@ -155,59 +150,35 @@ export function renderSbmiAnalysis() {
 ======================================== */
 
 function renderCoverageNeeded() {
-  const protection = getProtection();
-
-  const expenseItems = getSelectableExpenseItems();
-
-  const selectedExpenseKeys = protection.selectedExpenseKeys || [];
-
-  const selectedExpenseCount = expenseItems.filter(function (item) {
-    return selectedExpenseKeys.includes(item.key);
-  }).length;
-
-  const expenseTotal =
-    getSelectedExpenseMonthlyTotal(protection) * PROTECTION_HORIZON_MONTHS;
+  const breakdown = getCoverageNeededBreakdown(getProtection());
 
   if (neededExpenseCaption) {
     neededExpenseCaption.textContent =
-      expenseItems.length === 0
+      breakdown.expenseItemCount === 0
         ? "No expenses recorded"
-        : `${selectedExpenseCount} of ${expenseItems.length} expense categories selected`;
+        : `${breakdown.selectedExpenseCount} of ${breakdown.expenseItemCount} expense categories selected`;
   }
 
   if (neededExpenseAmount) {
-    neededExpenseAmount.textContent = formatCurrency(expenseTotal);
+    neededExpenseAmount.textContent = formatCurrency(breakdown.expenseTotal);
   }
-
-  const liabilities = getSelectableLiabilities();
-
-  const selectedLiabilityIds = protection.selectedLiabilityIds || [];
-
-  const selectedLiabilityCount = liabilities.filter(function (liability) {
-    return selectedLiabilityIds.includes(liability.id);
-  }).length;
-
-  const liabilityTotal =
-    getSelectedLiabilityMonthlyTotal(protection) * PROTECTION_HORIZON_MONTHS;
 
   if (neededLiabilityCaption) {
     neededLiabilityCaption.textContent =
-      liabilities.length === 0
+      breakdown.liabilityCount === 0
         ? "No liabilities recorded"
-        : `${selectedLiabilityCount} of ${liabilities.length} liabilities selected`;
+        : `${breakdown.selectedLiabilityCount} of ${breakdown.liabilityCount} liabilities selected`;
   }
 
   if (neededLiabilityAmount) {
-    neededLiabilityAmount.textContent = formatCurrency(liabilityTotal);
+    neededLiabilityAmount.textContent = formatCurrency(breakdown.liabilityTotal);
   }
-
-  const totalNeeded = expenseTotal + liabilityTotal;
 
   if (totalNeededValue) {
-    totalNeededValue.textContent = formatCurrency(totalNeeded);
+    totalNeededValue.textContent = formatCurrency(breakdown.totalNeeded);
   }
 
-  return totalNeeded;
+  return breakdown.totalNeeded;
 }
 
 /* ========================================
@@ -293,12 +264,13 @@ function createExistingCoverageRow(entry) {
 ======================================== */
 
 function renderCoverageGap(totalNeeded, totalExisting) {
-  const gap = totalNeeded - totalExisting;
-
-  const isCovered = gap <= 0;
+  const { gap, isCovered, coveragePercent } = calculateCoverageGap(
+    totalNeeded,
+    totalExisting,
+  );
 
   if (gapValue) {
-    gapValue.textContent = formatCurrency(Math.abs(gap));
+    gapValue.textContent = formatCurrency(gap);
 
     gapValue.classList.toggle("sbmi-gap-value--shortfall", !isCovered);
     gapValue.classList.toggle("sbmi-gap-value--covered", isCovered);
@@ -310,11 +282,6 @@ function renderCoverageGap(totalNeeded, totalExisting) {
     gapTag.classList.toggle("sbmi-gap-tag--shortfall", !isCovered);
     gapTag.classList.toggle("sbmi-gap-tag--covered", isCovered);
   }
-
-  const coveragePercent =
-    totalNeeded > 0
-      ? Math.min(100, Math.round((totalExisting / totalNeeded) * 100))
-      : 100;
 
   if (gapProgressFill) {
     gapProgressFill.style.width = `${coveragePercent}%`;
@@ -337,75 +304,49 @@ function renderMedicalProtectionCheck() {
   renderInjuryCheck();
 }
 
-function renderWaitTimeCheck() {
+/*
+ * Pure result for the Treatment Wait-Time Preference check, shared by
+ * this page's own rendering and the Client Report.
+ */
+export function getWaitTimeCheckResult() {
   const protection = getProtection();
 
   const importance = Number(protection.waitTimeImportance) || 0;
 
-  if (waitTimeScaleDots) {
-    Array.from(waitTimeScaleDots.children).forEach(function (dot, index) {
-      dot.classList.toggle("is-filled", index < importance);
-    });
-  }
-
-  if (waitTimeSignalValue) {
-    waitTimeSignalValue.textContent =
-      importance > 0
-        ? `${importance} / 5 — ${getImportanceLabel(importance)}`
-        : "Not yet answered";
-  }
-
   const wardType = getBestRecordedHospitalisationWardClass();
-
-  if (waitTimeRecordedValue) {
-    waitTimeRecordedValue.textContent = wardType
-      ? `Hospitalisation — ${HOSPITAL_CLASS_LABELS[wardType] || wardType}`
-      : "No Hospitalisation policy recorded";
-  }
-
-  if (!waitTimeFlag) {
-    return;
-  }
 
   const isHighImportance = importance >= HIGH_WAIT_TIME_IMPORTANCE_THRESHOLD;
 
-  if (!isHighImportance) {
-    waitTimeFlag.hidden = true;
+  let flag = null;
 
-    return;
+  if (isHighImportance) {
+    flag =
+      wardType === "private"
+        ? {
+            variant: "success",
+            icon: "✅",
+            title: "Matches Preference",
+            detail: "The recorded plan is already Private ward class.",
+          }
+        : {
+            variant: "warning",
+            icon: "⚠️",
+            title: "Consider Private Ward",
+            detail: wardType
+              ? `High importance on avoiding treatment delays, but the recorded plan is ${
+                  HOSPITAL_CLASS_LABELS[wardType] || wardType
+                } — not Private.`
+              : "High importance on avoiding treatment delays, but no Hospitalisation plan is recorded.",
+          };
   }
 
-  waitTimeFlag.hidden = false;
-
-  if (wardType === "private") {
-    setFlag({
-      flagElement: waitTimeFlag,
-      iconElement: waitTimeFlagIcon,
-      titleElement: waitTimeFlagTitle,
-      detailElement: waitTimeFlagDetail,
-      variant: "success",
-      icon: "✅",
-      title: "Matches Preference",
-      detail: "The recorded plan is already Private ward class.",
-    });
-
-    return;
-  }
-
-  setFlag({
-    flagElement: waitTimeFlag,
-    iconElement: waitTimeFlagIcon,
-    titleElement: waitTimeFlagTitle,
-    detailElement: waitTimeFlagDetail,
-    variant: "warning",
-    icon: "⚠️",
-    title: "Consider Private Ward",
-    detail: wardType
-      ? `High importance on avoiding treatment delays, but the recorded plan is ${
-          HOSPITAL_CLASS_LABELS[wardType] || wardType
-        } — not Private.`
-      : "High importance on avoiding treatment delays, but no Hospitalisation plan is recorded.",
-  });
+  return {
+    importance,
+    importanceLabel: importance > 0 ? getImportanceLabel(importance) : null,
+    wardType,
+    wardLabel: wardType ? HOSPITAL_CLASS_LABELS[wardType] || wardType : null,
+    flag,
+  };
 }
 
 function getImportanceLabel(importance) {
@@ -420,28 +361,102 @@ function getImportanceLabel(importance) {
   return "Low Importance";
 }
 
-function renderInjuryCheck() {
+/*
+ * Pure result for the Active Lifestyle / Injury Risk check, shared by
+ * this page's own rendering and the Client Report.
+ */
+export function getInjuryCheckResult() {
   const protection = getProtection();
 
   const injuryProne = protection.activeExerciseInjuryProne;
 
+  const accidentCoverage = getPersonalAccidentCoverageSummary();
+
+  let flag = null;
+
+  if (injuryProne === true) {
+    flag =
+      accidentCoverage.policyCount > 0
+        ? {
+            variant: "success",
+            icon: "✅",
+            title: "Personal Accident Cover in Place",
+            detail:
+              "No action needed — a Personal Accident policy is already recorded.",
+          }
+        : {
+            variant: "warning",
+            icon: "⚠️",
+            title: "Consider Personal Accident Cover",
+            detail:
+              "Client is active and injury-prone, but no Personal Accident policy is recorded.",
+          };
+  }
+
+  return { injuryProne, accidentCoverage, flag };
+}
+
+function renderWaitTimeCheck() {
+  const result = getWaitTimeCheckResult();
+
+  if (waitTimeScaleDots) {
+    Array.from(waitTimeScaleDots.children).forEach(function (dot, index) {
+      dot.classList.toggle("is-filled", index < result.importance);
+    });
+  }
+
+  if (waitTimeSignalValue) {
+    waitTimeSignalValue.textContent =
+      result.importance > 0
+        ? `${result.importance} / 5 — ${result.importanceLabel}`
+        : "Not yet answered";
+  }
+
+  if (waitTimeRecordedValue) {
+    waitTimeRecordedValue.textContent = result.wardLabel
+      ? `Hospitalisation — ${result.wardLabel}`
+      : "No Hospitalisation policy recorded";
+  }
+
+  if (!waitTimeFlag) {
+    return;
+  }
+
+  if (!result.flag) {
+    waitTimeFlag.hidden = true;
+
+    return;
+  }
+
+  waitTimeFlag.hidden = false;
+
+  setFlag({
+    flagElement: waitTimeFlag,
+    iconElement: waitTimeFlagIcon,
+    titleElement: waitTimeFlagTitle,
+    detailElement: waitTimeFlagDetail,
+    ...result.flag,
+  });
+}
+
+function renderInjuryCheck() {
+  const result = getInjuryCheckResult();
+
   if (injurySignalValue) {
     injurySignalValue.textContent =
-      injuryProne === null
+      result.injuryProne === null
         ? "Not yet answered"
-        : injuryProne
+        : result.injuryProne
           ? "Yes — Active & Injury-Prone"
           : "No";
   }
 
-  const accidentCoverage = getPersonalAccidentCoverageSummary();
-
   if (injuryRecordedValue) {
     injuryRecordedValue.textContent =
-      accidentCoverage.policyCount > 0
-        ? `${accidentCoverage.policyCount} Personal Accident ${
-            accidentCoverage.policyCount === 1 ? "policy" : "policies"
-          } · ${formatCurrency(accidentCoverage.totalAmount)} coverage`
+      result.accidentCoverage.policyCount > 0
+        ? `${result.accidentCoverage.policyCount} Personal Accident ${
+            result.accidentCoverage.policyCount === 1 ? "policy" : "policies"
+          } · ${formatCurrency(result.accidentCoverage.totalAmount)} coverage`
         : "No Personal Accident policy recorded";
   }
 
@@ -449,7 +464,7 @@ function renderInjuryCheck() {
     return;
   }
 
-  if (injuryProne !== true) {
+  if (!result.flag) {
     injuryFlag.hidden = true;
 
     return;
@@ -457,31 +472,12 @@ function renderInjuryCheck() {
 
   injuryFlag.hidden = false;
 
-  if (accidentCoverage.policyCount > 0) {
-    setFlag({
-      flagElement: injuryFlag,
-      iconElement: injuryFlagIcon,
-      titleElement: injuryFlagTitle,
-      detailElement: injuryFlagDetail,
-      variant: "success",
-      icon: "✅",
-      title: "Personal Accident Cover in Place",
-      detail: "No action needed — a Personal Accident policy is already recorded.",
-    });
-
-    return;
-  }
-
   setFlag({
     flagElement: injuryFlag,
     iconElement: injuryFlagIcon,
     titleElement: injuryFlagTitle,
     detailElement: injuryFlagDetail,
-    variant: "warning",
-    icon: "⚠️",
-    title: "Consider Personal Accident Cover",
-    detail:
-      "Client is active and injury-prone, but no Personal Accident policy is recorded.",
+    ...result.flag,
   });
 }
 

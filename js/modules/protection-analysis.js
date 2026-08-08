@@ -203,18 +203,55 @@ export function getSelectedLiabilityMonthlyTotal(protection) {
     }, 0);
 }
 
+/*
+ * Pure breakdown of the "Coverage Needed" figure, shared by this page's
+ * own coverage total, SBMI Analysis, and the Client Report so all three
+ * show the same number without recalculating it independently.
+ */
+export function getCoverageNeededBreakdown(protection) {
+  const expenseItems = getSelectableExpenseItems();
+
+  const selectedExpenseKeys = protection.selectedExpenseKeys || [];
+
+  const selectedExpenseCount = expenseItems.filter(function (item) {
+    return selectedExpenseKeys.includes(item.key);
+  }).length;
+
+  const expenseTotal =
+    getSelectedExpenseMonthlyTotal(protection) * PROTECTION_HORIZON_MONTHS;
+
+  const liabilities = getSelectableLiabilities();
+
+  const selectedLiabilityIds = protection.selectedLiabilityIds || [];
+
+  const selectedLiabilityCount = liabilities.filter(function (liability) {
+    return selectedLiabilityIds.includes(liability.id);
+  }).length;
+
+  const liabilityTotal =
+    getSelectedLiabilityMonthlyTotal(protection) * PROTECTION_HORIZON_MONTHS;
+
+  return {
+    expenseItemCount: expenseItems.length,
+    selectedExpenseCount,
+    expenseTotal,
+
+    liabilityCount: liabilities.length,
+    selectedLiabilityCount,
+    liabilityTotal,
+
+    totalNeeded: expenseTotal + liabilityTotal,
+  };
+}
+
 function renderCoverageTotal(protection) {
   if (!coverageTotalValue) {
     return;
   }
 
-  const expenseTotal =
-    getSelectedExpenseMonthlyTotal(protection) * PROTECTION_HORIZON_MONTHS;
-
-  const liabilityTotal =
-    getSelectedLiabilityMonthlyTotal(protection) * PROTECTION_HORIZON_MONTHS;
-
-  coverageTotalValue.textContent = formatCurrency(expenseTotal + liabilityTotal);
+  coverageTotalValue.textContent = formatCurrency(
+    getCoverageNeededBreakdown(protection).totalNeeded,
+  );
 }
 
 /* ========================================

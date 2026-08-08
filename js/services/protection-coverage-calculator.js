@@ -162,3 +162,27 @@ export function getPersonalAccidentCoverageSummary() {
 
   return { policyCount, totalAmount };
 }
+
+/* ========================================
+   COVERAGE GAP
+
+   Pure Needed-vs-Existing comparison, shared by SBMI Analysis and the
+   Client Report so both show the same gap/coverage figures.
+======================================== */
+
+export function calculateCoverageGap(totalNeeded, totalExisting) {
+  const gap = totalNeeded - totalExisting;
+
+  const isCovered = gap <= 0;
+
+  const coveragePercent =
+    totalNeeded > 0
+      ? Math.min(100, Math.round((totalExisting / totalNeeded) * 100))
+      : 100;
+
+  return {
+    gap: Math.abs(gap),
+    isCovered,
+    coveragePercent,
+  };
+}

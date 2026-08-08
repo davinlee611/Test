@@ -59,13 +59,25 @@
     border-radius: 0;
   }
 
-  .report-section {
-    break-inside: avoid;
-    border-color: #d0d5dd;
-    background: transparent;
+  /*
+   * Browsers strip background colors/borders by default when printing.
+   * The report's card shells, highlighted totals, gap panels and
+   * warning/success flags all rely on background color to read
+   * correctly, so force it back on for everything inside the report.
+   */
+  .client-report,
+  .client-report * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .report-section:not(:first-of-type) {
     break-before: page;
+  }
+
+  .report-card-shell,
+  .report-gap-panel,
+  .report-plain-card {
+    break-inside: avoid;
   }
 }

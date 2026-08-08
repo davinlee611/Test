@@ -8,6 +8,7 @@ import {
   getLiabilities,
   getPriorities,
   getProperties,
+  getProtection,
 } from "../state/client-plan.js";
 
 import { getClientAge } from "./client-profile.js";
@@ -43,6 +44,15 @@ import {
   getLatestYourPathProjectedPosition,
   getLatestYourNextStepsResult,
 } from "./cost-analysis.js";
+
+import { getCoverageNeededBreakdown } from "./protection-analysis.js";
+
+import {
+  calculateCoverageGap,
+  calculateExistingCriticalIllnessCoverage,
+} from "../services/protection-coverage-calculator.js";
+
+import { getWaitTimeCheckResult, getInjuryCheckResult } from "./sbmi-analysis.js";
 
 import { POLICY_TYPE_LABELS, BENEFIT_LABELS } from "../constants/insurance.js";
 
@@ -106,6 +116,21 @@ const WEALTH_TYPE_LABELS = {
 
 const RANK_LABELS = ["1st Priority", "2nd Priority", "3rd Priority", "4th Priority"];
 
+/*
+ * Abbreviated versions of a subset of BENEFIT_LABELS, used only in the
+ * Insurance Portfolio report cards so a policy with several benefits
+ * doesn't overflow the card border. Everywhere else in the app keeps
+ * the full BENEFIT_LABELS text (e.g. the Add Benefit dropdown), since
+ * that's a different context where the full wording helps a user
+ * unfamiliar with the product pick the right benefit.
+ */
+const BENEFIT_LABELS_SHORT = {
+  death: "Death / TI",
+  tpd: "TPD",
+  critical_illness: "CI",
+  early_critical_illness: "ECI",
+};
+
 /* ========================================
    INITIALIZATION
 ======================================== */
@@ -155,14 +180,20 @@ export function resetClientReport() {
 /* ========================================
    PROTECTION ANALYSIS GATE
 
-   Protection Analysis has not been built yet — there is no
-   coverage-gap state anywhere in client-plan.js to check. This
-   always returns false until that feature exists; update this one
-   function (and nothing else) once it does.
+   "Complete enough to report on" means the adviser has actually gone
+   through Protection Analysis, not just that the app can compute a
+   ($0) gap for a client who never opened the page.
 ======================================== */
 
 function hasProtectionAnalysisContent() {
-  return false;
+  const protection = getProtection();
+
+  return (
+    Number(protection.waitTimeImportance) > 0 ||
+    protection.activeExerciseInjuryProne !== null ||
+    (protection.selectedExpenseKeys || []).length > 0 ||
+    (protection.selectedLiabilityIds || []).length > 0
+  );
 }
 
 /* ========================================
@@ -260,6 +291,17 @@ function buildClientReportData() {
 
   const wealthTypes = priorities.selectedWealthTypes || [];
 
+  const protection = getProtection();
+
+  const coverageNeeded = getCoverageNeededBreakdown(protection);
+
+  const existingCoverage = calculateExistingCriticalIllnessCoverage();
+
+  const coverageGap = calculateCoverageGap(
+    coverageNeeded.totalNeeded,
+    existingCoverage.totalAmount,
+  );
+
   return {
     generatedAt: new Date(),
 
@@ -319,6 +361,14 @@ function buildClientReportData() {
     hasRetirementPlan: Boolean(goal?.isValid && position?.isValid),
 
     hasProtectionAnalysis: hasProtectionAnalysisContent(),
+
+    protectionAnalysis: {
+      coverageNeeded,
+      existingCoverage,
+      coverageGap,
+      waitTimeCheck: getWaitTimeCheckResult(),
+      injuryCheck: getInjuryCheckResult(),
+    },
   };
 }
 
@@ -347,7 +397,11 @@ function renderClientReport(data) {
 
   clientReportBody.appendChild(buildReportHeader(data));
 
-  clientReportBody.appendChild(buildPrioritiesSection(data));
+  const prioritiesSection = buildPrioritiesSection(data);
+
+  if (prioritiesSection) {
+    clientReportBody.appendChild(prioritiesSection);
+  }
 
   if (Array.isArray(data.policies) && data.policies.length > 0) {
     clientReportBody.appendChild(buildInsuranceSection(data));
@@ -373,9 +427,11 @@ function renderClientReport(data) {
 ======================================== */
 
 function buildReportHeader(data) {
-  const header = el("div", "report-header");
+  const header = el("div", "report-head");
 
-  header.appendChild(el("h2", null, data.profile.fullName));
+  const identity = el("div");
+
+  identity.appendChild(el("h1", null, data.profile.fullName));
 
   const metaParts = [];
 
@@ -403,15 +459,29 @@ function buildReportHeader(data) {
     );
   }
 
-  header.appendChild(el("p", "report-header-meta", metaParts.join(" · ")));
+  identity.appendChild(el("p", "report-head-meta", metaParts.join(" · ")));
 
-  header.appendChild(
+  header.appendChild(identity);
+
+  const meta = el("div");
+
+  const brand = el("div", "report-head-brand");
+
+  brand.appendChild(el("i", "fa-solid fa-file-lines"));
+
+  brand.appendChild(document.createTextNode("Client Report"));
+
+  meta.appendChild(brand);
+
+  meta.appendChild(
     el(
-      "p",
-      "report-header-timestamp",
+      "div",
+      "report-head-timestamp",
       `Generated ${formatReportTimestamp(data.generatedAt)}`,
     ),
   );
+
+  header.appendChild(meta);
 
   return header;
 }
@@ -421,138 +491,223 @@ function buildReportHeader(data) {
 ======================================== */
 
 function buildPrioritiesSection(data) {
-  const section = createReportSection(
-    "Priorities & Situation",
-    "fa-solid fa-bullseye",
-  );
+  const grid = el("div", "report-card-grid");
 
   if (data.wealthTypes.length > 0) {
-    const wealthGroup = createReportGroup("Wealth Priorities");
+    const { shell, card } = createReportCard({
+      title: "Wealth Priorities",
+      description: "Ranked by the client, most important first.",
+    });
+
+    const list = el("div", "report-summary-list");
 
     data.wealthTypes.forEach(function (wealthType, index) {
-      wealthGroup.appendChild(
-        createReportRow(
+      list.appendChild(
+        createSummaryRow(
           RANK_LABELS[index] || `${index + 1}th Priority`,
           WEALTH_TYPE_LABELS[wealthType] || wealthType,
         ),
       );
     });
 
-    section.appendChild(wealthGroup);
+    card.appendChild(list);
+
+    grid.appendChild(shell);
   }
 
   const cashflow = data.currentCashflow;
 
-  const incomeGroup = createReportGroup("Current Monthly Cashflow");
-
   if (cashflow) {
-    incomeGroup.appendChild(
-      createReportRow("Total Monthly Income", formatCurrency(cashflow.totalMonthlyIncome)),
-    );
+    const { shell, card } = createReportCard({
+      title: "Current Monthly Cashflow",
+      description: "Today's snapshot — inflow vs. outflow.",
+    });
 
-    incomeGroup.appendChild(
-      createReportRow("Monthly Expenses", formatCurrency(cashflow.monthlyExpenses)),
-    );
+    const list = el("div", "report-summary-list");
 
-    incomeGroup.appendChild(
-      createReportRow("Monthly Commitments", formatCurrency(cashflow.monthlyCommitments)),
-    );
-
-    incomeGroup.appendChild(
-      createReportRow(
-        "Remaining Monthly Surplus",
-        formatCurrency(cashflow.remainingSurplus),
-        cashflow.remainingSurplus < 0 ? "report-value--negative" : "",
+    list.appendChild(
+      createSummaryRow(
+        "Total Monthly Income",
+        formatCurrency(cashflow.totalMonthlyIncome),
       ),
     );
-  } else {
-    incomeGroup.appendChild(createReportNote("Not yet entered."));
-  }
 
-  section.appendChild(incomeGroup);
+    list.appendChild(
+      createSummaryRow(
+        "Monthly Expenses",
+        formatCurrency(cashflow.monthlyExpenses),
+      ),
+    );
+
+    list.appendChild(
+      createSummaryRow(
+        "Monthly Commitments",
+        formatCurrency(cashflow.monthlyCommitments),
+      ),
+    );
+
+    card.appendChild(list);
+
+    card.appendChild(
+      createSummaryTotal(
+        "Remaining Monthly Surplus",
+        formatCurrency(cashflow.remainingSurplus),
+        { negative: cashflow.remainingSurplus < 0 },
+      ),
+    );
+
+    grid.appendChild(shell);
+  }
 
   if (data.expenses.breakdown.length > 0) {
-    const expenseGroup = createReportGroup("Monthly Expense Breakdown");
+    const { shell, card } = createReportCard({
+      title: "Monthly Expense Breakdown",
+      description: "Only categories with a recorded amount.",
+    });
+
+    const list = el("div", "report-summary-list");
 
     data.expenses.breakdown.forEach(function (item) {
-      expenseGroup.appendChild(
-        createReportRow(item.label, formatCurrency(item.amount)),
-      );
+      list.appendChild(createSummaryRow(item.label, formatCurrency(item.amount)));
     });
 
-    section.appendChild(expenseGroup);
+    card.appendChild(list);
+
+    grid.appendChild(shell);
   }
 
-  const cpfGroup = createReportGroup("CPF Balances");
-
-  cpfGroup.appendChild(createReportRow("Ordinary Account (OA)", formatCurrency(data.cpf.oa)));
-
-  cpfGroup.appendChild(
-    createReportRow("Special / Retirement Account (SA / RA)", formatCurrency(data.cpf.sa + data.cpf.ra)),
-  );
-
-  cpfGroup.appendChild(createReportRow("MediSave Account (MA)", formatCurrency(data.cpf.ma)));
-
-  cpfGroup.appendChild(createReportRow("Total CPF", formatCurrency(data.cpf.total)));
-
-  section.appendChild(cpfGroup);
-
-  const assetsGroup = createReportGroup("Withdrawable Assets");
-
-  assetsGroup.appendChild(
-    createReportRow("Liquid / Withdrawable Assets", formatCurrency(data.liquidAssetsTotal)),
-  );
-
-  section.appendChild(assetsGroup);
-
-  if (data.properties.length > 0) {
-    const propertiesGroup = createReportGroup("Properties");
-
-    data.properties.forEach(function (property) {
-      propertiesGroup.appendChild(
-        createReportRow(
-          `${property.type || "Property"} (${getNonNegativeNumber(
-            property.ownershipPercentage,
-          )}% owned)`,
-          formatCurrency(property.marketValue),
-        ),
-      );
+  if (data.cpf.total > 0) {
+    const { shell, card } = createReportCard({
+      title: "CPF Balances",
+      description: "Ordinary, Special/Retirement and MediSave accounts.",
     });
 
-    section.appendChild(propertiesGroup);
+    const list = el("div", "report-summary-list");
+
+    list.appendChild(
+      createSummaryRow("Ordinary Account (OA)", formatCurrency(data.cpf.oa)),
+    );
+
+    list.appendChild(
+      createSummaryRow(
+        "Special / Retirement Account (SA / RA)",
+        formatCurrency(data.cpf.sa + data.cpf.ra),
+      ),
+    );
+
+    list.appendChild(
+      createSummaryRow("MediSave Account (MA)", formatCurrency(data.cpf.ma)),
+    );
+
+    card.appendChild(list);
+
+    card.appendChild(
+      createSummaryTotal("Total CPF", formatCurrency(data.cpf.total)),
+    );
+
+    grid.appendChild(shell);
+  }
+
+  if (data.liquidAssetsTotal > 0) {
+    const { shell, card } = createReportCard({
+      title: "Withdrawable Assets",
+      description: "Cash, fixed deposits, T-bills and other liquid holdings.",
+    });
+
+    card.appendChild(
+      createSummaryTotal(
+        "Liquid / Withdrawable Assets",
+        formatCurrency(data.liquidAssetsTotal),
+      ),
+    );
+
+    grid.appendChild(shell);
   }
 
   if (data.goals.length > 0) {
-    const goalsGroup = createReportGroup("Goals");
+    const { shell, card } = createReportCard({
+      title: "Goals",
+      description: "Big-ticket outflows recorded separately from expenses.",
+    });
+
+    const list = el("div", "report-summary-list");
 
     data.goals.forEach(function (goal) {
-      goalsGroup.appendChild(
-        createReportRow(
-          `${goal.name || getGoalTypeLabel(goal.type)} — ${formatGoalDate(goal.targetDate)}`,
+      list.appendChild(
+        createSummaryRow(
+          goal.name || getGoalTypeLabel(goal.type),
           formatCurrency(goal.targetAmount),
+          { caption: `Target: ${formatGoalDate(goal.targetDate)}` },
         ),
       );
     });
 
-    section.appendChild(goalsGroup);
+    card.appendChild(list);
+
+    grid.appendChild(shell);
   }
 
   if (data.liabilities.length > 0) {
-    const liabilitiesGroup = createReportGroup("Liabilities");
+    const { shell, card } = createReportCard({
+      title: "Liabilities",
+      description: "Recorded loans and their repayment schedule.",
+    });
+
+    const list = el("div", "report-summary-list");
 
     data.liabilities.forEach(function (liability) {
-      liabilitiesGroup.appendChild(
-        createReportRow(
-          `${liability.name || getLiabilityTypeLabel(liability.type)} — ${formatCurrency(
-            liability.monthlyRepayment,
-          )}/mth`,
+      list.appendChild(
+        createSummaryRow(
+          liability.name || getLiabilityTypeLabel(liability.type),
           formatCurrency(liability.outstandingBalance),
+          {
+            caption: `${formatCurrency(liability.monthlyRepayment)}/mth repayment`,
+          },
         ),
       );
     });
 
-    section.appendChild(liabilitiesGroup);
+    card.appendChild(list);
+
+    grid.appendChild(shell);
   }
+
+  if (data.properties.length > 0) {
+    const { shell, card } = createReportCard({
+      title: "Properties",
+      description: "Recorded property holdings and ownership share.",
+    });
+
+    const list = el("div", "report-summary-list");
+
+    data.properties.forEach(function (property) {
+      list.appendChild(
+        createSummaryRow(
+          property.type || "Property",
+          formatCurrency(property.marketValue),
+          {
+            caption: `${getNonNegativeNumber(property.ownershipPercentage)}% owned`,
+          },
+        ),
+      );
+    });
+
+    card.appendChild(list);
+
+    grid.appendChild(shell);
+  }
+
+  if (grid.children.length === 0) {
+    return null;
+  }
+
+  const section = createReportSectionShell(
+    "Priorities & Situation",
+    "fa-solid fa-bullseye",
+    "What the client owns, earns, spends, owes and wants.",
+  );
+
+  section.appendChild(grid);
 
   return section;
 }
@@ -562,63 +717,51 @@ function buildPrioritiesSection(data) {
 ======================================== */
 
 function buildInsuranceSection(data) {
-  const section = createReportSection(
+  const section = createReportSectionShell(
     "Insurance Portfolio",
     "fa-solid fa-shield-heart",
+    "Every policy currently recorded for this client.",
   );
 
+  const grid = el("div", "report-card-grid");
+
   data.policies.forEach(function (policy) {
-    const policyGroup = createReportGroup(
-      policy.policyName || POLICY_TYPE_LABELS[policy.policyType] || "Policy",
-    );
+    const { shell, card } = createReportCard({
+      title: policy.policyName || POLICY_TYPE_LABELS[policy.policyType] || "Policy",
+      description: [policy.insurer, POLICY_TYPE_LABELS[policy.policyType] || "Other"]
+        .filter(Boolean)
+        .join(" · "),
+    });
 
-    if (policy.insurer) {
-      policyGroup.appendChild(createReportRow("Insurer", policy.insurer));
-    }
-
-    policyGroup.appendChild(
-      createReportRow(
-        "Type",
-        POLICY_TYPE_LABELS[policy.policyType] || "Other",
-      ),
-    );
+    const list = el("div", "report-summary-list");
 
     if (policy.lifeAssured) {
-      policyGroup.appendChild(
-        createReportRow("Life Assured", policy.lifeAssured),
-      );
+      list.appendChild(createSummaryRow("Life Assured", policy.lifeAssured));
     }
 
     const benefitLabels = (policy.benefits || [])
       .map(function (benefit) {
-        return BENEFIT_LABELS[benefit.type];
+        return BENEFIT_LABELS_SHORT[benefit.type] || BENEFIT_LABELS[benefit.type];
       })
       .filter(Boolean);
 
     if (benefitLabels.length > 0) {
-      policyGroup.appendChild(
-        createReportRow(
-          "Benefits",
-          benefitLabels.join(", "),
-          null,
-          true,
-        ),
-      );
+      list.appendChild(createSummaryRow("Benefits", benefitLabels.join(", ")));
     }
 
-    section.appendChild(policyGroup);
+    card.appendChild(list);
+
+    grid.appendChild(shell);
   });
 
-  const totalGroup = createReportGroup("Portfolio Total");
+  section.appendChild(grid);
 
-  totalGroup.appendChild(
-    createReportRow(
-      "Effective Monthly Premium",
+  section.appendChild(
+    createSummaryTotal(
+      "Portfolio Total · Effective Monthly Premium",
       formatCurrency(data.totalMonthlyPremium),
     ),
   );
-
-  section.appendChild(totalGroup);
 
   return section;
 }
@@ -628,14 +771,15 @@ function buildInsuranceSection(data) {
 ======================================== */
 
 function buildCostOfWantsAnalysisSection(data) {
-  const section = createReportSection(
+  const section = createReportSectionShell(
     "Cost of Wants Analysis",
     "fa-solid fa-chart-line",
+    "The retirement goal, the funding plan behind it, and what it would take to close any remaining gap.",
   );
 
   if (!data.hasRetirementPlan) {
     section.appendChild(
-      createReportNote(
+      createReportPlainNote(
         "Complete Cost of Wants and the Analysis projection to include a retirement plan in this report.",
       ),
     );
@@ -645,134 +789,137 @@ function buildCostOfWantsAnalysisSection(data) {
 
   const { goal, position, nextSteps } = data;
 
-  const goalGroup = createReportGroup("Your Goal");
+  const grid = el("div", "report-card-grid");
 
-  goalGroup.appendChild(
-    createReportRow("Desired FYBC Age", String(goal.desiredFybcAge)),
+  const goalCard = createReportCard({
+    badgeNumber: 1,
+    title: "Your Goal",
+    description: "The lifestyle and timeline selected on Cost of Wants.",
+  });
+
+  const goalList = el("div", "report-summary-list");
+
+  goalList.appendChild(createSummaryRow("Desired FYBC Age", String(goal.desiredFybcAge)));
+
+  goalList.appendChild(
+    createSummaryRow("Planned Mortality Age", String(goal.plannedMortalityAge)),
   );
 
-  goalGroup.appendChild(
-    createReportRow("Planned Mortality Age", String(goal.plannedMortalityAge)),
-  );
-
-  goalGroup.appendChild(
-    createReportRow(
-      "Monthly Lifestyle in Today's Dollars",
+  goalList.appendChild(
+    createSummaryRow(
+      "Monthly Lifestyle Today",
       formatCurrency(goal.monthlyIncomeToday),
     ),
   );
 
-  goalGroup.appendChild(
-    createReportRow(
+  goalList.appendChild(
+    createSummaryRow(
       `Monthly Lifestyle Needed at FYBC Age ${goal.desiredFybcAge}`,
       formatCurrency(goal.monthlyIncomeAtFybc),
     ),
   );
 
-  goalGroup.appendChild(
-    createReportRow(
-      "Estimated Lifetime Retirement Spending (Undiscounted)",
+  goalList.appendChild(
+    createSummaryRow(
+      "Estimated Lifetime Retirement Spending",
       formatCurrency(goal.grossCapitalRequired),
+      { caption: "Undiscounted" },
     ),
   );
 
-  section.appendChild(goalGroup);
+  goalCard.card.appendChild(goalList);
 
-  const positionGroup = createReportGroup("Capital Needed at FYBC");
+  grid.appendChild(goalCard.shell);
 
-  positionGroup.appendChild(
-    createReportRow(
+  const positionCard = createReportCard({
+    badgeNumber: 2,
+    title: "Capital Needed at FYBC",
+    description: "After post-FYBC returns and recorded recurring income.",
+  });
+
+  const positionList = el("div", "report-summary-list");
+
+  positionList.appendChild(
+    createSummaryRow(
       "Lifestyle Capital Before Recorded Income",
       formatCurrency(position.grossLifestyleCapitalAtFybc),
     ),
   );
 
-  positionGroup.appendChild(
-    createReportRow(
+  positionList.appendChild(
+    createSummaryRow(
       "Value of Recorded Retirement Income",
       `-${formatCurrency(position.recordedIncomeCapitalOffset)}`,
     ),
   );
 
-  positionGroup.appendChild(
-    createReportRow(
-      "Capital Needed at FYBC",
-      formatCurrency(position.capitalNeededAtFybc),
-      "report-value--primary",
-    ),
-  );
-
-  positionGroup.appendChild(
-    createReportRow(
+  positionList.appendChild(
+    createSummaryRow(
       "Recorded Monthly Income at FYBC",
       `${formatCurrency(position.recordedIncomeAtFybc?.total)}/mth`,
     ),
   );
 
-  positionGroup.appendChild(
-    createReportRow(
+  positionList.appendChild(
+    createSummaryRow(
       `Projected CPF LIFE Income (from Age ${position.cpfLifeStartAge})`,
       `${formatCurrency(position.projectedCpfLifeIncome)}/mth`,
     ),
   );
 
-  section.appendChild(positionGroup);
+  positionCard.card.appendChild(positionList);
+
+  positionCard.card.appendChild(
+    createSummaryTotal("Capital Needed at FYBC", formatCurrency(position.capitalNeededAtFybc)),
+  );
+
+  grid.appendChild(positionCard.shell);
+
+  section.appendChild(grid);
 
   if (nextSteps?.isValid) {
-    const nextStepsGroup = createReportGroup("Your Next Steps");
+    const remainingGap = Number(nextSteps.remainingGap) || 0;
 
-    nextStepsGroup.appendChild(
-      createReportRow(
-        "Resources Selected Toward This Goal",
-        formatCurrency(nextSteps.selectedResources),
-      ),
+    const isFunded = remainingGap <= 0;
+
+    const coveragePercent = Math.min(
+      100,
+      Math.max(0, Math.round(getNonNegativeNumber(nextSteps.fundingProgress))),
     );
 
-    nextStepsGroup.appendChild(
-      createReportRow(
-        "Chosen Monthly Commitment",
-        `${formatCurrency(nextSteps.chosenMonthly)}/mth`,
-      ),
+    section.appendChild(
+      createGapPanel({
+        badgeNumber: 3,
+        title: "Your Next Steps",
+        caption: "What the client chose to commit toward this goal",
+        valueText: formatCurrency(Math.abs(remainingGap)),
+        tagText: isFunded ? "Goal Fully Funded" : "Remaining Gap",
+        isCovered: isFunded,
+        rows: [
+          ["Resources Selected Toward This Goal", formatCurrency(nextSteps.selectedResources)],
+          ["Chosen Monthly Commitment", `${formatCurrency(nextSteps.chosenMonthly)}/mth`],
+          [
+            "Projected Value of Monthly Commitment",
+            formatCurrency(nextSteps.projectedMonthlyCommitment),
+          ],
+          ["Estimated Capital at FYBC", formatCurrency(nextSteps.projectedFunding)],
+        ],
+        coveragePercent,
+        progressLabel: "Estimated Goal Coverage",
+        progressCaption: `${coveragePercent}% of ${formatCurrency(position.capitalNeededAtFybc)}`,
+      }),
     );
-
-    nextStepsGroup.appendChild(
-      createReportRow(
-        "Projected Value of Monthly Commitment",
-        formatCurrency(nextSteps.projectedMonthlyCommitment),
-      ),
-    );
-
-    nextStepsGroup.appendChild(
-      createReportRow(
-        "Estimated Capital at FYBC",
-        formatCurrency(nextSteps.projectedFunding),
-        "report-value--primary",
-      ),
-    );
-
-    nextStepsGroup.appendChild(
-      createReportRow(
-        "Estimated Goal Coverage",
-        `${Math.round(getNonNegativeNumber(nextSteps.fundingProgress))}%`,
-      ),
-    );
-
-    nextStepsGroup.appendChild(
-      createReportRow(
-        "Remaining Gap",
-        formatCurrency(nextSteps.remainingGap),
-        nextSteps.remainingGap > 0 ? "report-value--negative" : "",
-      ),
-    );
-
-    section.appendChild(nextStepsGroup);
   }
 
-  const cpfGroup = createReportGroup("CPF Assumptions");
+  const cpfCard = el("div", "report-plain-card");
+
+  cpfCard.appendChild(el("h4", null, "CPF Assumptions"));
+
+  const cpfList = el("div", "report-summary-list");
 
   if (data.cpfAssumptions.frs.isValid) {
-    cpfGroup.appendChild(
-      createReportRow(
+    cpfList.appendChild(
+      createSummaryRow(
         `Projected Cohort FRS (turning 55 in ${data.cpfAssumptions.frs.yearTurning55})`,
         formatCurrency(data.cpfAssumptions.frs.amount),
       ),
@@ -780,21 +927,23 @@ function buildCostOfWantsAnalysisSection(data) {
   }
 
   if (data.cpfAssumptions.bhs.isValid) {
-    cpfGroup.appendChild(
-      createReportRow(
+    cpfList.appendChild(
+      createSummaryRow(
         `Projected Cohort BHS at Age 65 (${data.cpfAssumptions.bhs.yearTurning65})`,
         formatCurrency(data.cpfAssumptions.bhs.amount),
       ),
     );
   }
 
-  cpfGroup.appendChild(
-    createReportNote(
+  cpfCard.appendChild(cpfList);
+
+  cpfCard.appendChild(
+    createReportPlainNote(
       "Figures beyond the latest published CPF year are this application's projection assumptions, not official future values.",
     ),
   );
 
-  section.appendChild(cpfGroup);
+  section.appendChild(cpfCard);
 
   return section;
 }
@@ -804,19 +953,174 @@ function buildCostOfWantsAnalysisSection(data) {
 ======================================== */
 
 function buildProtectionSection(data) {
-  const section = createReportSection(
+  const section = createReportSectionShell(
     "Protection Analysis",
     "fa-solid fa-shield-halved",
+    "SBMI — how much Critical Illness coverage is needed, what's already in place, and whether the portfolio backs up the client's stated preferences.",
   );
 
   if (!data.hasProtectionAnalysis) {
     section.appendChild(
-      createReportNote(
+      createReportPlainNote(
         "Protection Analysis has not been completed for this client. Coverage gaps are not yet assessed in this report.",
       ),
     );
 
     return section;
+  }
+
+  const { coverageNeeded, existingCoverage, coverageGap, waitTimeCheck, injuryCheck } =
+    data.protectionAnalysis;
+
+  const grid = el("div", "report-card-grid");
+
+  const neededCard = createReportCard({
+    badgeNumber: 1,
+    title: "Coverage Needed",
+    description: "5-year total of the obligations selected on Protection Analysis.",
+  });
+
+  const neededList = el("div", "report-summary-list");
+
+  neededList.appendChild(
+    createSummaryRow(
+      "Monthly Expenses (5 yrs)",
+      formatCurrency(coverageNeeded.expenseTotal),
+      {
+        caption:
+          coverageNeeded.expenseItemCount === 0
+            ? "No expenses recorded"
+            : `${coverageNeeded.selectedExpenseCount} of ${coverageNeeded.expenseItemCount} expense categories selected`,
+      },
+    ),
+  );
+
+  neededList.appendChild(
+    createSummaryRow(
+      "Liabilities (5 yrs)",
+      formatCurrency(coverageNeeded.liabilityTotal),
+      {
+        caption:
+          coverageNeeded.liabilityCount === 0
+            ? "No liabilities recorded"
+            : `${coverageNeeded.selectedLiabilityCount} of ${coverageNeeded.liabilityCount} liabilities selected`,
+      },
+    ),
+  );
+
+  neededCard.card.appendChild(neededList);
+
+  neededCard.card.appendChild(
+    createSummaryTotal("Total Coverage Needed", formatCurrency(coverageNeeded.totalNeeded)),
+  );
+
+  grid.appendChild(neededCard.shell);
+
+  const existingCard = createReportCard({
+    badgeNumber: 2,
+    title: "Existing Coverage",
+    description: "Critical Illness benefits recorded on the Insurance Portfolio.",
+  });
+
+  const existingList = el("div", "report-summary-list");
+
+  if (existingCoverage.entries.length === 0) {
+    existingList.appendChild(
+      createReportPlainNote("No Critical Illness coverage recorded on Insurance Portfolio."),
+    );
+  } else {
+    existingCoverage.entries.forEach(function (entry) {
+      const captionParts = [
+        entry.benefitType === "early_critical_illness"
+          ? "Early Critical Illness"
+          : "Critical Illness",
+      ];
+
+      if (entry.payoutTypeLabel) {
+        captionParts.push(entry.payoutTypeLabel);
+      }
+
+      existingList.appendChild(
+        createSummaryRow(entry.policyName, formatCurrency(entry.amount), {
+          caption: captionParts.join(" · "),
+          note: entry.note,
+        }),
+      );
+    });
+  }
+
+  existingCard.card.appendChild(existingList);
+
+  existingCard.card.appendChild(
+    createSummaryTotal(
+      "Total Existing Coverage",
+      formatCurrency(existingCoverage.totalAmount),
+    ),
+  );
+
+  grid.appendChild(existingCard.shell);
+
+  section.appendChild(grid);
+
+  section.appendChild(
+    createGapPanel({
+      badgeNumber: 3,
+      title: "Coverage Gap",
+      caption: "Total Coverage Needed minus Total Existing Coverage",
+      valueText: formatCurrency(coverageGap.gap),
+      tagText: coverageGap.isCovered ? "Fully Covered" : "Shortfall",
+      isCovered: coverageGap.isCovered,
+      coveragePercent: coverageGap.coveragePercent,
+      progressLabel: "Existing coverage in place",
+      progressCaption: `${coverageGap.coveragePercent}% of ${formatCurrency(
+        coverageNeeded.totalNeeded,
+      )}`,
+    }),
+  );
+
+  const checkGrid = el("div", "report-card-grid");
+
+  if (waitTimeCheck.importance > 0) {
+    checkGrid.appendChild(
+      createCheckCard({
+        icon: "fa-regular fa-clock",
+        title: "Treatment Wait-Time Preference",
+        signalLabel: "Client's Answer",
+        signalValue: `${waitTimeCheck.importance} / 5 — ${waitTimeCheck.importanceLabel}`,
+        recordedLabel: "Currently Recorded",
+        recordedValue: waitTimeCheck.wardLabel
+          ? `Hospitalisation — ${waitTimeCheck.wardLabel}`
+          : "No Hospitalisation policy recorded",
+        flag: waitTimeCheck.flag,
+      }),
+    );
+  }
+
+  if (injuryCheck.injuryProne !== null) {
+    checkGrid.appendChild(
+      createCheckCard({
+        icon: "fa-solid fa-person-running",
+        title: "Active Lifestyle / Injury Risk",
+        signalLabel: "Client's Answer",
+        signalValue: injuryCheck.injuryProne ? "Yes — Active & Injury-Prone" : "No",
+        recordedLabel: "Currently Recorded",
+        recordedValue:
+          injuryCheck.accidentCoverage.policyCount > 0
+            ? `${injuryCheck.accidentCoverage.policyCount} Personal Accident ${
+                injuryCheck.accidentCoverage.policyCount === 1 ? "policy" : "policies"
+              } · ${formatCurrency(injuryCheck.accidentCoverage.totalAmount)} coverage`
+            : "No Personal Accident policy recorded",
+        flag: injuryCheck.flag,
+      }),
+    );
+  }
+
+  if (checkGrid.children.length > 0) {
+    section.appendChild(
+      el("h3", "report-subsection-title", "Medical Protection Check"),
+    );
+
+    section.appendChild(checkGrid);
   }
 
   return section;
@@ -827,10 +1131,10 @@ function buildProtectionSection(data) {
 ======================================== */
 
 function buildDisclosureSection() {
-  const section = createReportSection("Important", "fa-solid fa-circle-info");
+  const section = createReportSectionShell("Important", "fa-solid fa-circle-info");
 
   section.appendChild(
-    createReportNote(
+    createReportPlainNote(
       "This report is a planning and educational tool, not financial, tax, legal, insurance, investment, or CPF advice. CPF rules, insurer product terms, premiums, payout illustrations, contribution rates and public-policy thresholds change. Values described as Estimated or Projected are application assumptions, not values published or guaranteed by CPF Board, MOH, an insurer, or another authority.",
     ),
   );
@@ -839,7 +1143,7 @@ function buildDisclosureSection() {
 }
 
 /* ========================================
-   DOM HELPERS
+   DOM HELPERS — PRIMITIVES
 ======================================== */
 
 function el(tag, className, text) {
@@ -856,49 +1160,265 @@ function el(tag, className, text) {
   return node;
 }
 
-function createReportSection(title, iconClass) {
+function createReportSectionShell(title, iconClass, description) {
   const section = el("section", "report-section");
 
-  const heading = el("h3", "report-section-title");
+  const heading = el("h2", "report-section-title");
 
   if (iconClass) {
+    const iconWrap = el("span", "report-section-icon");
+
     const icon = document.createElement("i");
 
     icon.className = iconClass;
 
     icon.setAttribute("aria-hidden", "true");
 
-    heading.appendChild(icon);
+    iconWrap.appendChild(icon);
+
+    heading.appendChild(iconWrap);
   }
 
   heading.appendChild(document.createTextNode(title));
 
   section.appendChild(heading);
 
+  if (description) {
+    section.appendChild(el("p", "report-section-sub", description));
+  }
+
   return section;
 }
 
-function createReportGroup(title) {
-  const group = el("div", "report-group");
-
-  group.appendChild(el("h4", "report-group-title", title));
-
-  return group;
+function createReportPlainNote(text) {
+  return el("p", "report-note", text);
 }
 
-function createReportRow(label, value, valueClassName, wrap) {
-  const row = el("div", wrap ? "report-row report-row--wrap" : "report-row");
+/* ========================================
+   DOM HELPERS — CARDS
+======================================== */
 
-  row.appendChild(el("span", null, label));
+function createReportCard({ icon, badgeNumber, title, description }) {
+  const shell = el("div", "report-card-shell");
 
-  row.appendChild(el("strong", valueClassName || null, value));
+  const card = el("div", "report-card");
+
+  const heading = el("div", "report-card-heading");
+
+  if (icon) {
+    const iconWrap = el("span", "report-card-icon");
+
+    const iconEl = document.createElement("i");
+
+    iconEl.className = icon;
+
+    iconEl.setAttribute("aria-hidden", "true");
+
+    iconWrap.appendChild(iconEl);
+
+    heading.appendChild(iconWrap);
+  } else if (badgeNumber !== undefined && badgeNumber !== null) {
+    heading.appendChild(el("span", "report-card-badge", String(badgeNumber)));
+  }
+
+  const headingText = el("div");
+
+  headingText.appendChild(el("h4", null, title));
+
+  if (description) {
+    headingText.appendChild(el("p", null, description));
+  }
+
+  heading.appendChild(headingText);
+
+  card.appendChild(heading);
+
+  shell.appendChild(card);
+
+  return { shell, card };
+}
+
+function createSummaryRow(label, value, { caption, note } = {}) {
+  const row = el("div", "report-summary-row");
+
+  const labelWrap = el("div");
+
+  labelWrap.appendChild(el("span", null, label));
+
+  if (caption) {
+    labelWrap.appendChild(el("small", null, caption));
+  }
+
+  if (note) {
+    labelWrap.appendChild(el("small", "report-summary-row-note", note));
+  }
+
+  row.appendChild(labelWrap);
+
+  row.appendChild(el("strong", null, value));
 
   return row;
 }
 
-function createReportNote(text) {
-  return el("p", "report-note", text);
+function createSummaryTotal(label, value, { negative } = {}) {
+  const total = el(
+    "div",
+    negative ? "report-summary-total report-summary-total--negative" : "report-summary-total",
+  );
+
+  total.appendChild(el("span", null, label));
+
+  total.appendChild(el("strong", null, value));
+
+  return total;
 }
+
+/* ========================================
+   DOM HELPERS — GAP / NEXT STEPS PANEL
+======================================== */
+
+function createGapPanel({
+  badgeNumber,
+  title,
+  caption,
+  valueText,
+  tagText,
+  isCovered,
+  rows,
+  coveragePercent,
+  progressLabel,
+  progressCaption,
+}) {
+  const panel = el("div", "report-gap-panel");
+
+  const top = el("div", "report-gap-top");
+
+  const labelWrap = el("div", "report-gap-label");
+
+  const labelLine = el("span");
+
+  if (badgeNumber !== undefined && badgeNumber !== null) {
+    labelLine.appendChild(el("span", "report-card-badge", String(badgeNumber)));
+  }
+
+  labelLine.appendChild(document.createTextNode(title));
+
+  labelWrap.appendChild(labelLine);
+
+  if (caption) {
+    labelWrap.appendChild(el("small", null, caption));
+  }
+
+  top.appendChild(labelWrap);
+
+  const valueWrap = el("div", "report-gap-value-wrap");
+
+  valueWrap.appendChild(
+    el(
+      "div",
+      isCovered ? "report-gap-value report-gap-value--covered" : "report-gap-value report-gap-value--shortfall",
+      valueText,
+    ),
+  );
+
+  valueWrap.appendChild(
+    el(
+      "span",
+      isCovered ? "report-gap-tag report-gap-tag--covered" : "report-gap-tag report-gap-tag--shortfall",
+      tagText,
+    ),
+  );
+
+  top.appendChild(valueWrap);
+
+  panel.appendChild(top);
+
+  if (Array.isArray(rows) && rows.length > 0) {
+    const list = el("div", "report-summary-list");
+
+    rows.forEach(function ([label, value]) {
+      list.appendChild(createSummaryRow(label, value));
+    });
+
+    panel.appendChild(list);
+  }
+
+  if (coveragePercent !== undefined && coveragePercent !== null) {
+    const track = el("div", "report-progress-track");
+
+    const fill = el("span", "report-progress-fill");
+
+    fill.style.width = `${coveragePercent}%`;
+
+    track.appendChild(fill);
+
+    panel.appendChild(track);
+
+    const captionRow = el("div", "report-progress-caption");
+
+    captionRow.appendChild(el("span", null, progressLabel || ""));
+
+    captionRow.appendChild(el("strong", null, progressCaption || ""));
+
+    panel.appendChild(captionRow);
+  }
+
+  return panel;
+}
+
+/* ========================================
+   DOM HELPERS — MEDICAL PROTECTION CHECK
+======================================== */
+
+function createCheckCard({
+  icon,
+  title,
+  signalLabel,
+  signalValue,
+  recordedLabel,
+  recordedValue,
+  flag,
+}) {
+  const { shell, card } = createReportCard({ icon, title });
+
+  const signal = el("div", "report-check-signal");
+
+  signal.appendChild(el("span", "report-check-label", signalLabel));
+
+  signal.appendChild(el("div", "report-check-value", signalValue));
+
+  card.appendChild(signal);
+
+  const recorded = el("div", "report-check-recorded");
+
+  recorded.appendChild(el("span", "report-check-label", recordedLabel));
+
+  recorded.appendChild(el("span", "report-check-recorded-value", recordedValue));
+
+  card.appendChild(recorded);
+
+  if (flag) {
+    const flagEl = el("div", `report-check-flag report-check-flag--${flag.variant}`);
+
+    flagEl.appendChild(el("span", null, flag.icon));
+
+    const textWrap = el("span");
+
+    textWrap.appendChild(el("span", "report-check-flag-title", flag.title));
+
+    textWrap.appendChild(el("span", "report-check-flag-detail", flag.detail));
+
+    flagEl.appendChild(textWrap);
+
+    card.appendChild(flagEl);
+  }
+
+  return shell;
+}
+
+/* ========================================
+   MISC HELPERS
+======================================== */
 
 function setHidden(element, hidden) {
   if (element) {
