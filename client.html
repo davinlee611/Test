@@ -4080,6 +4080,28 @@
                   </article>
                 </div>
               </div>
+
+              <!-- Continue to SBMI Analysis -->
+              <button
+                type="button"
+                class="analysis-path-details-notice"
+                id="protectionContinueToAnalysisButton"
+              >
+                <div>
+                  <strong>Ready to see the coverage gap?</strong>
+
+                  <p>
+                    Compare what's needed against what's already in the
+                    Insurance Portfolio, and check the Medical Protection
+                    flags.
+                  </p>
+                </div>
+
+                <span>
+                  Continue to Analysis
+                  <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </span>
+              </button>
             </section>
           </section>
 
@@ -4264,105 +4286,109 @@
 
               <div class="analysis-path-overview-grid">
                 <!-- Wait-time preference -->
-                <article class="analysis-path-card sbmi-check-card">
-                  <div class="analysis-path-card-heading">
-                    <span class="sbmi-check-icon">
-                      <i class="fa-regular fa-clock" aria-hidden="true"></i>
-                    </span>
+                <div class="analysis-path-section-shell">
+                  <article class="analysis-path-card sbmi-check-card">
+                    <div class="analysis-path-card-heading">
+                      <span class="sbmi-check-icon">
+                        <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                      </span>
 
-                    <div>
-                      <h4>Treatment Wait-Time Preference</h4>
+                      <div>
+                        <h4>Treatment Wait-Time Preference</h4>
 
-                      <p>
-                        How important avoiding a wait for treatment is to
-                        the client.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="sbmi-check-signal">
-                    <span class="sbmi-check-signal-label">
-                      Client's Answer
-                    </span>
-
-                    <div class="sbmi-check-signal-value" id="sbmiWaitTimeSignalValue">
-                      Not yet answered
+                        <p>
+                          How important avoiding a wait for treatment is to
+                          the client.
+                        </p>
+                      </div>
                     </div>
 
-                    <div class="sbmi-check-scale-dots" id="sbmiWaitTimeScaleDots">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                      <span></span>
+                    <div class="sbmi-check-signal">
+                      <span class="sbmi-check-signal-label">
+                        Client's Answer
+                      </span>
+
+                      <div class="sbmi-check-signal-value" id="sbmiWaitTimeSignalValue">
+                        Not yet answered
+                      </div>
+
+                      <div class="sbmi-check-scale-dots" id="sbmiWaitTimeScaleDots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
                     </div>
-                  </div>
 
-                  <div class="sbmi-check-recorded">
-                    <span class="sbmi-check-recorded-label">
-                      Currently Recorded
-                    </span>
+                    <div class="sbmi-check-recorded">
+                      <span class="sbmi-check-recorded-label">
+                        Currently Recorded
+                      </span>
 
-                    <span class="sbmi-check-recorded-value" id="sbmiWaitTimeRecordedValue">
-                      No Hospitalisation policy recorded
-                    </span>
-                  </div>
+                      <span class="sbmi-check-recorded-value" id="sbmiWaitTimeRecordedValue">
+                        No Hospitalisation policy recorded
+                      </span>
+                    </div>
 
-                  <div class="sbmi-check-flag" id="sbmiWaitTimeFlag" hidden>
-                    <span class="sbmi-check-flag-icon" id="sbmiWaitTimeFlagIcon"></span>
+                    <div class="sbmi-check-flag" id="sbmiWaitTimeFlag" hidden>
+                      <span class="sbmi-check-flag-icon" id="sbmiWaitTimeFlagIcon"></span>
 
-                    <span>
-                      <span class="sbmi-check-flag-title" id="sbmiWaitTimeFlagTitle"></span>
+                      <span>
+                        <span class="sbmi-check-flag-title" id="sbmiWaitTimeFlagTitle"></span>
 
-                      <span class="sbmi-check-flag-detail" id="sbmiWaitTimeFlagDetail"></span>
-                    </span>
-                  </div>
-                </article>
+                        <span class="sbmi-check-flag-detail" id="sbmiWaitTimeFlagDetail"></span>
+                      </span>
+                    </div>
+                  </article>
+                </div>
 
                 <!-- Injury risk -->
-                <article class="analysis-path-card sbmi-check-card">
-                  <div class="analysis-path-card-heading">
-                    <span class="sbmi-check-icon">
-                      <i class="fa-solid fa-person-running" aria-hidden="true"></i>
-                    </span>
+                <div class="analysis-path-section-shell">
+                  <article class="analysis-path-card sbmi-check-card">
+                    <div class="analysis-path-card-heading">
+                      <span class="sbmi-check-icon">
+                        <i class="fa-solid fa-person-running" aria-hidden="true"></i>
+                      </span>
 
-                    <div>
-                      <h4>Active Lifestyle / Injury Risk</h4>
+                      <div>
+                        <h4>Active Lifestyle / Injury Risk</h4>
 
-                      <p>Whether the client is active and prone to injury.</p>
+                        <p>Whether the client is active and prone to injury.</p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div class="sbmi-check-signal">
-                    <span class="sbmi-check-signal-label">
-                      Client's Answer
-                    </span>
+                    <div class="sbmi-check-signal">
+                      <span class="sbmi-check-signal-label">
+                        Client's Answer
+                      </span>
 
-                    <div class="sbmi-check-signal-value" id="sbmiInjurySignalValue">
-                      Not yet answered
+                      <div class="sbmi-check-signal-value" id="sbmiInjurySignalValue">
+                        Not yet answered
+                      </div>
                     </div>
-                  </div>
 
-                  <div class="sbmi-check-recorded">
-                    <span class="sbmi-check-recorded-label">
-                      Currently Recorded
-                    </span>
+                    <div class="sbmi-check-recorded">
+                      <span class="sbmi-check-recorded-label">
+                        Currently Recorded
+                      </span>
 
-                    <span class="sbmi-check-recorded-value" id="sbmiInjuryRecordedValue">
-                      No Personal Accident policy recorded
-                    </span>
-                  </div>
+                      <span class="sbmi-check-recorded-value" id="sbmiInjuryRecordedValue">
+                        No Personal Accident policy recorded
+                      </span>
+                    </div>
 
-                  <div class="sbmi-check-flag" id="sbmiInjuryFlag" hidden>
-                    <span class="sbmi-check-flag-icon" id="sbmiInjuryFlagIcon"></span>
+                    <div class="sbmi-check-flag" id="sbmiInjuryFlag" hidden>
+                      <span class="sbmi-check-flag-icon" id="sbmiInjuryFlagIcon"></span>
 
-                    <span>
-                      <span class="sbmi-check-flag-title" id="sbmiInjuryFlagTitle"></span>
+                      <span>
+                        <span class="sbmi-check-flag-title" id="sbmiInjuryFlagTitle"></span>
 
-                      <span class="sbmi-check-flag-detail" id="sbmiInjuryFlagDetail"></span>
-                    </span>
-                  </div>
-                </article>
+                        <span class="sbmi-check-flag-detail" id="sbmiInjuryFlagDetail"></span>
+                      </span>
+                    </div>
+                  </article>
+                </div>
               </div>
             </section>
           </section>

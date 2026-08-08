@@ -41,6 +41,10 @@ const analysisViewDetailedButton = document.getElementById(
   "analysisViewDetailedButton",
 );
 
+const protectionContinueToAnalysisButton = document.getElementById(
+  "protectionContinueToAnalysisButton",
+);
+
 const analysisDetailBackButton = document.getElementById(
   "analysisDetailBackButton",
 );
@@ -200,6 +204,12 @@ function attachSectionNavigationListeners() {
   if (analysisViewDetailedButton) {
     analysisViewDetailedButton.addEventListener("click", function () {
       openSection("cost-analysis-detail");
+    });
+  }
+
+  if (protectionContinueToAnalysisButton) {
+    protectionContinueToAnalysisButton.addEventListener("click", function () {
+      openSection("sbmi-analysis");
     });
   }
 
