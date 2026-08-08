@@ -64,9 +64,10 @@ import { openSection } from "./sidebar.js";
    ELEMENTS
 ======================================== */
 
-const generateReportButton = document.getElementById(
-  "analysisGenerateReportButton",
-);
+const generateReportButtons = [
+  document.getElementById("analysisGenerateReportButton"),
+  document.getElementById("sbmiGenerateReportButton"),
+].filter(Boolean);
 
 const printClientReportButton = document.getElementById(
   "printClientReportButton",
@@ -142,7 +143,9 @@ export function initializeClientReport() {
     return;
   }
 
-  generateReportButton?.addEventListener("click", handleGenerateReportClick);
+  generateReportButtons.forEach(function (button) {
+    button.addEventListener("click", handleGenerateReportClick);
+  });
 
   continueReportConfirmButton?.addEventListener("click", function () {
     closeReportConfirmModal();
@@ -1295,7 +1298,7 @@ function createGapPanel({
 
   const labelWrap = el("div", "report-gap-label");
 
-  const labelLine = el("span");
+  const labelLine = el("span", "report-gap-title-row");
 
   if (badgeNumber !== undefined && badgeNumber !== null) {
     labelLine.appendChild(el("span", "report-card-badge", String(badgeNumber)));

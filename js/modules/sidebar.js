@@ -45,6 +45,14 @@ const protectionContinueToAnalysisButton = document.getElementById(
   "protectionContinueToAnalysisButton",
 );
 
+const sbmiAnalysisBackButton = document.getElementById(
+  "sbmiAnalysisBackButton",
+);
+
+const sbmiAnalysisNextButton = document.getElementById(
+  "sbmiAnalysisNextButton",
+);
+
 const analysisDetailBackButton = document.getElementById(
   "analysisDetailBackButton",
 );
@@ -216,6 +224,18 @@ function attachSectionNavigationListeners() {
   if (analysisDetailBackButton) {
     analysisDetailBackButton.addEventListener("click", function () {
       openSection("cost-analysis");
+    });
+  }
+
+  if (sbmiAnalysisBackButton) {
+    sbmiAnalysisBackButton.addEventListener("click", function () {
+      openSection("protection");
+    });
+  }
+
+  if (sbmiAnalysisNextButton) {
+    sbmiAnalysisNextButton.addEventListener("click", function () {
+      openSection("client-report");
     });
   }
 }

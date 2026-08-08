@@ -5948,7 +5948,7 @@ button.insurance-validation-count:disabled {
   flex-wrap: wrap;
 }
 
-.report-gap-label span {
+.report-gap-title-row {
   display: flex;
   align-items: center;
   gap: 8px;
