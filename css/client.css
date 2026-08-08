@@ -641,7 +641,7 @@
   grid-column: 1 / -1;
   margin: -12px 0 0;
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
   line-height: 1.5;
 }
@@ -2354,7 +2354,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-assumption-helper {
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
   line-height: 1.4;
 }
@@ -2531,7 +2531,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-cpf-assumption-item small {
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
 }
 
@@ -2578,7 +2578,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-cpf-life-result-grid span {
   margin-bottom: 4px;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .analysis-cpf-life-result-grid strong {
@@ -2633,7 +2633,7 @@ button.insurance-validation-count:disabled {
   margin-top: 3px;
 
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -2707,13 +2707,13 @@ button.insurance-validation-count:disabled {
   background: var(--primary-soft);
   border-radius: 999px;
 
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
   line-height: 1.2;
 }
 
 .analysis-fybc-marker i {
-  font-size: 8px;
+  font-size: 9px;
 }
 
 .analysis-cpf-outflow-cell {
@@ -2739,7 +2739,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-cpf-outflow-item span {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -2773,7 +2773,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-cpf-net-flow-item span {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -2953,7 +2953,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-goal-filter-details small {
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .analysis-goal-filter-empty {
@@ -3111,7 +3111,7 @@ button.insurance-validation-count:disabled {
   display: block;
   max-width: 260px;
   overflow: hidden;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1.35;
   text-overflow: ellipsis;
@@ -3121,7 +3121,7 @@ button.insurance-validation-count:disabled {
   display: block;
   margin-top: 6px;
   color: var(--primary-color);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -3230,7 +3230,7 @@ button.insurance-validation-count:disabled {
   border-radius: var(--radius-md);
 
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
 
@@ -3252,7 +3252,7 @@ button.insurance-validation-count:disabled {
 }
 
 .analysis-section-collapse-button i {
-  font-size: 10px;
+  font-size: 11px;
   transition: transform 0.2s ease;
 }
 
@@ -3414,7 +3414,7 @@ button.insurance-validation-count:disabled {
 
 .cost-preview-result-row small {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.45;
 }
 
@@ -3479,7 +3479,7 @@ button.insurance-validation-count:disabled {
 
 .cost-preview-scope-note p {
   margin: 0;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.55;
 }
 
@@ -3490,7 +3490,7 @@ button.insurance-validation-count:disabled {
   background: #fff1f2;
   border: 1px solid #fecdd3;
   border-radius: var(--radius-md);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -3506,7 +3506,7 @@ button.insurance-validation-count:disabled {
   margin: 0;
   padding-left: 20px;
   color: var(--text-primary);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -3593,7 +3593,7 @@ button.insurance-validation-count:disabled {
 
 .cost-preview-form-row small {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.45;
 }
 
@@ -3690,7 +3690,7 @@ button.insurance-validation-count:disabled {
 
 .cost-preview-lifestyle-option > span {
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -3707,7 +3707,7 @@ button.insurance-validation-count:disabled {
 
 .cost-preview-lifestyle-option > small {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .cost-preview-custom-income {
@@ -3732,7 +3732,7 @@ button.insurance-validation-count:disabled {
 
 .cost-preview-custom-income > small {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .cost-preview-currency-input {
@@ -3767,7 +3767,7 @@ button.insurance-validation-count:disabled {
 
 .cost-preview-selected-income > span {
   color: var(--text-primary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -3785,7 +3785,7 @@ button.insurance-validation-count:disabled {
   background: #fff1f2;
   border: 1px solid #fecdd3;
   border-radius: var(--radius-md);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -3874,7 +3874,7 @@ button.insurance-validation-count:disabled {
   background: var(--primary-soft);
   border: 1px solid rgb(93 63 211 / 20%);
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -3950,7 +3950,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-retirement-strategy-copy small {
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
 }
 
@@ -3984,7 +3984,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-retirement-strategy-summary span {
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -3996,7 +3996,7 @@ button.insurance-validation-count:disabled {
 .analysis-retirement-strategy-note {
   margin: 12px 0 0;
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -4071,7 +4071,7 @@ button.insurance-validation-count:disabled {
   border-radius: 999px;
   background: rgb(87 77 255 / 8%);
   color: var(--primary-color);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -4166,7 +4166,7 @@ button.insurance-validation-count:disabled {
   display: block;
   margin-top: 5px;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.4;
 }
 
@@ -4192,7 +4192,7 @@ button.insurance-validation-count:disabled {
   border-radius: 9px;
   background: var(--background-secondary);
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.45;
 }
@@ -4264,7 +4264,7 @@ button.insurance-validation-count:disabled {
 .analysis-path-details-notice p {
   margin: 4px 0 0;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.45;
 }
 
@@ -4274,12 +4274,12 @@ button.insurance-validation-count:disabled {
   gap: 6px;
   flex: 0 0 auto;
   color: var(--primary-color);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .analysis-path-details-notice > span i {
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .analysis-generate-report-cta {
@@ -4304,7 +4304,7 @@ button.insurance-validation-count:disabled {
 .analysis-generate-report-cta p {
   margin: 4px 0 0;
   color: rgba(255, 255, 255, 0.82);
-  font-size: 10.5px;
+  font-size: 11.5px;
   line-height: 1.5;
 }
 
@@ -4365,14 +4365,14 @@ button.insurance-validation-count:disabled {
   max-width: 760px;
   margin: 6px 0 0;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.5;
 }
 
 .analysis-next-steps-eyebrow {
   display: block;
   color: var(--primary-color);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -4407,7 +4407,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-next-steps-summary-item > span {
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
 }
 
@@ -4418,7 +4418,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-next-steps-summary-item > small {
   color: var(--text-secondary);
-  font-size: 8px;
+  font-size: 9px;
   line-height: 1.4;
 }
 
@@ -4444,14 +4444,14 @@ button.insurance-validation-count:disabled {
 .analysis-next-steps-field-heading strong {
   display: block;
   color: var(--text-primary);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .analysis-next-steps-field-heading small {
   display: block;
   margin-top: 4px;
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .analysis-next-steps-percentage-options {
@@ -4480,7 +4480,7 @@ button.insurance-validation-count:disabled {
   border-radius: 9px;
   background: #ffffff;
   color: var(--text-primary);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   transition:
     border-color 0.2s ease,
@@ -4516,7 +4516,7 @@ button.insurance-validation-count:disabled {
 .analysis-next-steps-flexibility span,
 .analysis-next-steps-flexibility small {
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .analysis-next-steps-flexibility strong {
@@ -4617,14 +4617,14 @@ button.insurance-validation-count:disabled {
 .analysis-next-resource-main strong {
   display: block;
   color: var(--text-primary);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .analysis-next-resource-main small {
   display: block;
   margin-top: 4px;
   color: var(--text-secondary);
-  font-size: 8px;
+  font-size: 9px;
   line-height: 1.4;
 }
 
@@ -4635,7 +4635,7 @@ button.insurance-validation-count:disabled {
 .analysis-next-resource-value span {
   display: block;
   color: var(--text-secondary);
-  font-size: 8px;
+  font-size: 9px;
 }
 
 .analysis-next-resource-value strong {
@@ -4724,7 +4724,7 @@ button.insurance-validation-count:disabled {
 .analysis-next-plan-total span,
 .analysis-next-plan-gap span {
   color: var(--text-primary);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -4745,7 +4745,7 @@ button.insurance-validation-count:disabled {
   display: block;
   margin-top: 4px;
   color: var(--text-secondary);
-  font-size: 8px;
+  font-size: 9px;
 }
 
 .analysis-next-plan-gap strong {
@@ -4772,7 +4772,7 @@ button.insurance-validation-count:disabled {
 .analysis-next-progress-heading span,
 .analysis-next-progress-heading strong {
   color: var(--text-primary);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -4801,7 +4801,7 @@ button.insurance-validation-count:disabled {
 .analysis-next-progress p {
   margin: 9px 0 0;
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.45;
 }
 
@@ -4865,7 +4865,7 @@ button.insurance-validation-count:disabled {
   border: 1px solid #f0d899;
   border-radius: 8px;
 
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.45;
 }
 
@@ -4887,7 +4887,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-next-resource-projected span {
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .analysis-next-resource-projected strong {
@@ -4905,7 +4905,7 @@ button.insurance-validation-count:disabled {
   display: block;
   margin-bottom: 7px;
   color: var(--text-primary);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   line-height: 1.4;
 }
@@ -4927,7 +4927,7 @@ button.insurance-validation-count:disabled {
 .analysis-next-resource-allocation .percentage-input > span {
   flex: 0 0 auto;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .analysis-next-resource-allocation .currency-input input,
@@ -4946,7 +4946,7 @@ button.insurance-validation-count:disabled {
   display: block;
   margin-top: 6px;
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.45;
 }
 
@@ -4971,7 +4971,7 @@ button.insurance-validation-count:disabled {
   position: static;
   flex: 0 0 auto;
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   transform: none;
 }
 
@@ -4985,7 +4985,7 @@ button.insurance-validation-count:disabled {
   background: transparent;
   color: var(--text-primary);
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .analysis-next-money-input > input:disabled {
@@ -5020,14 +5020,14 @@ button.insurance-validation-count:disabled {
   background: transparent;
   color: var(--text-primary);
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .analysis-next-rate-input > span {
   position: static;
   flex: 0 0 auto;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   transform: none;
 }
 
@@ -5124,7 +5124,7 @@ button.insurance-validation-count:disabled {
 .analysis-path-goal-explanation p {
   margin: 0;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.55;
 }
 
@@ -5167,7 +5167,7 @@ button.insurance-validation-count:disabled {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -5177,7 +5177,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-path-methodology-chevron {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   transition: transform 0.2s ease;
 }
 
@@ -5198,7 +5198,7 @@ button.insurance-validation-count:disabled {
 .analysis-path-goal-methodology-content > p {
   margin: 0 0 14px;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.55;
 }
 
@@ -5230,12 +5230,12 @@ button.insurance-validation-count:disabled {
 
 .analysis-path-methodology-flow > i {
   color: var(--primary-color);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .analysis-path-methodology-step span {
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.4;
 }
 
@@ -5260,7 +5260,7 @@ button.insurance-validation-count:disabled {
 .analysis-path-lifetime-spending span {
   display: block;
   color: var(--text-primary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -5268,7 +5268,7 @@ button.insurance-validation-count:disabled {
   display: block;
   margin-top: 5px;
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .analysis-path-lifetime-spending > strong {
@@ -5290,13 +5290,13 @@ button.insurance-validation-count:disabled {
 .analysis-path-methodology-notice i {
   margin-top: 2px;
   color: var(--primary-color);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .analysis-path-methodology-notice p {
   margin: 0;
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.5;
 }
 
@@ -5345,7 +5345,7 @@ button.insurance-validation-count:disabled {
 .analysis-path-starting-position-note {
   margin: 12px 2px 0;
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.5;
 }
 
@@ -5360,7 +5360,7 @@ button.insurance-validation-count:disabled {
   border-radius: 10px;
   background: #fff8e7;
   color: #916810;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -5383,7 +5383,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-path-strategy-inline > label {
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -5403,7 +5403,7 @@ button.insurance-validation-count:disabled {
   border: none;
 
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -5416,7 +5416,7 @@ button.insurance-validation-count:disabled {
 }
 
 .analysis-path-strategy-detail-link i {
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .analysis-path-strategy-inline select {
@@ -5436,7 +5436,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-path-strategy-inline small {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.45;
 }
 
@@ -5466,7 +5466,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-path-projected-item > span {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -5485,7 +5485,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-path-projected-item > small {
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.45;
 }
 
@@ -5522,13 +5522,13 @@ button.insurance-validation-count:disabled {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .analysis-path-capital-methodology-chevron {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   transition: transform 0.2s ease;
 }
 
@@ -5549,7 +5549,7 @@ button.insurance-validation-count:disabled {
 .analysis-path-capital-methodology-content > p {
   margin: 0 0 14px;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.5;
 }
 
@@ -5599,7 +5599,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-path-capital-methodology-grid span {
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 10px;
   line-height: 1.4;
 }
 
@@ -5610,7 +5610,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-path-capital-methodology-grid small {
   color: var(--primary-color);
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 700;
 }
 
@@ -5645,7 +5645,7 @@ button.insurance-validation-count:disabled {
 
 .analysis-path-capital-formula span {
   color: var(--text-secondary);
-  font-size: 8px;
+  font-size: 9px;
   line-height: 1.35;
 }
 
@@ -5725,7 +5725,7 @@ button.insurance-validation-count:disabled {
   align-items: center;
   gap: 8px;
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -5734,7 +5734,7 @@ button.insurance-validation-count:disabled {
 .report-head-timestamp {
   margin-top: 4px;
   color: var(--text-secondary);
-  font-size: 10.5px;
+  font-size: 11.5px;
   text-align: right;
 }
 
@@ -5834,7 +5834,7 @@ button.insurance-validation-count:disabled {
   border-radius: 999px;
   background: var(--primary-soft);
   color: var(--primary-color);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -5848,7 +5848,7 @@ button.insurance-validation-count:disabled {
 .report-card-heading p {
   margin: 3px 0 0;
   color: var(--text-secondary);
-  font-size: 11.5px;
+  font-size: 12.5px;
   line-height: 1.5;
 }
 
@@ -5892,7 +5892,7 @@ button.insurance-validation-count:disabled {
 
 .report-summary-row small {
   color: var(--text-secondary);
-  font-size: 10.5px;
+  font-size: 11.5px;
 }
 
 .report-summary-row-note {
@@ -5920,7 +5920,7 @@ button.insurance-validation-count:disabled {
 
 .report-summary-total span {
   color: var(--text-primary);
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-weight: 700;
 }
 
@@ -5970,7 +5970,7 @@ button.insurance-validation-count:disabled {
   display: block;
   margin-top: 4px;
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .report-gap-value-wrap {
@@ -5997,7 +5997,7 @@ button.insurance-validation-count:disabled {
   margin-top: 3px;
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -6039,7 +6039,7 @@ button.insurance-validation-count:disabled {
   justify-content: space-between;
   margin-top: 8px;
   color: var(--text-secondary);
-  font-size: 10.5px;
+  font-size: 11.5px;
 }
 
 .report-progress-caption strong {
@@ -6059,7 +6059,7 @@ button.insurance-validation-count:disabled {
 .report-check-label {
   display: block;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -6093,7 +6093,7 @@ button.insurance-validation-count:disabled {
   margin-top: 12px;
   padding: 10px 12px;
   border-radius: var(--radius-md);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   font-weight: 600;
 }
@@ -6139,7 +6139,7 @@ button.insurance-validation-count:disabled {
 .report-note {
   margin: 12px 0 0;
   color: var(--text-secondary);
-  font-size: 11.5px;
+  font-size: 12.5px;
   line-height: 1.6;
 }
 
@@ -6234,7 +6234,7 @@ button.insurance-validation-count:disabled {
   justify-content: space-between;
   margin-top: 6px;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .protection-checklist-group {
@@ -6248,7 +6248,7 @@ button.insurance-validation-count:disabled {
 .protection-checklist-group h5 {
   margin: 0 0 8px;
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
@@ -6297,7 +6297,7 @@ button.insurance-validation-count:disabled {
   display: block;
   margin-top: 4px;
   color: var(--text-secondary);
-  font-size: 10.5px;
+  font-size: 11.5px;
   line-height: 1.5;
 }
 
@@ -6332,7 +6332,7 @@ button.insurance-validation-count:disabled {
 
 .protection-coverage-total small {
   color: var(--text-secondary);
-  font-size: 10.5px;
+  font-size: 11.5px;
   line-height: 1.5;
 }
 
@@ -6386,7 +6386,7 @@ button.insurance-validation-count:disabled {
 
 .sbmi-summary-row small {
   color: var(--text-secondary);
-  font-size: 10.5px;
+  font-size: 11.5px;
   line-height: 1.45;
 }
 
@@ -6414,7 +6414,7 @@ button.insurance-validation-count:disabled {
 
 .sbmi-summary-total span {
   color: var(--text-primary);
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-weight: 700;
 }
 
@@ -6430,7 +6430,7 @@ button.insurance-validation-count:disabled {
   padding-top: 12px;
   border-top: 1px dashed var(--border-color);
   color: var(--text-secondary);
-  font-size: 10.5px;
+  font-size: 11.5px;
   line-height: 1.55;
 }
 
@@ -6467,7 +6467,7 @@ button.insurance-validation-count:disabled {
   display: block;
   margin-top: 4px;
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .sbmi-gap-value-wrap {
@@ -6494,7 +6494,7 @@ button.insurance-validation-count:disabled {
   margin-top: 3px;
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -6517,7 +6517,7 @@ button.insurance-validation-count:disabled {
   justify-content: space-between;
   margin-top: 8px;
   color: var(--text-secondary);
-  font-size: 10.5px;
+  font-size: 11.5px;
 }
 
 .sbmi-gap-caption strong {
@@ -6581,7 +6581,7 @@ button.insurance-validation-count:disabled {
 .sbmi-check-recorded-label {
   display: block;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -6633,7 +6633,7 @@ button.insurance-validation-count:disabled {
   margin-top: 14px;
   padding: 11px 13px;
   border-radius: var(--radius-md);
-  font-size: 11.5px;
+  font-size: 12.5px;
   line-height: 1.5;
   font-weight: 600;
 }
@@ -6675,6 +6675,6 @@ button.insurance-validation-count:disabled {
 
   .protection-scale-options span {
     min-height: 36px;
-    font-size: 11px;
+    font-size: 12px;
   }
 }
