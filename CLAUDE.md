@@ -377,6 +377,22 @@ and Published/Calculated/Estimated conventions.
       self-contained (their own border/background/padding), so nesting
       them in the shell just works the same way it already does for
       `.analysis-path-card`.
+24. User caught that item 23's shell wrapper on "What happens next?"
+    (Cost of Wants) was redundant — that card already has its own grey
+    `background: var(--surface-muted)`, so adding the pale shell border
+    around it doubled up rather than adding definition. Removed it there,
+    kept it on "Your Retirement Target", and added it instead to the
+    "FYBC" and "Ideal Monthly Passive Income" input cards so the shell
+    treatment lands on the cards that actually needed it.
+25. User raised (and I agreed) that helper/descriptive text throughout the
+    app reads too small — `css/client.css` had 108 `font-size` declarations
+    under 12px (down to 8px) for card descriptions, captions, small labels
+    etc., well below the design system's own `--font-size-xs: 12px`
+    baseline. Bumped every one of them up by ~1px (8→9, 9→10, 10→11,
+    10.5→11.5, 11→12, 11.5→12.5) via a single atomic regex pass (matched
+    against the original file content, not a naive sed chain, so no
+    double-bumping). Left 12px and above untouched — those already meet
+    the intended minimum.
 
 ## Open items / natural next steps
 
