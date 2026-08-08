@@ -1889,117 +1889,121 @@
               </section>
 
               <aside class="cost-preview-target-column">
-                <article class="cost-preview-card cost-preview-target-card">
-                  <header class="cost-preview-card-header">
-                    <div>
-                      <h3>Your Retirement Target</h3>
+                <div class="analysis-path-section-shell">
+                  <article class="cost-preview-card cost-preview-target-card">
+                    <header class="cost-preview-card-header">
+                      <div>
+                        <h3>Your Retirement Target</h3>
+
+                        <p>
+                          The complete lifestyle target before applying CPF or
+                          existing assets.
+                        </p>
+                      </div>
+                    </header>
+
+                    <div class="cost-preview-divider"></div>
+
+                    <p
+                      id="costOfWantsPreviewEmptyMessage"
+                      class="cost-preview-empty-message"
+                      hidden
+                    >
+                      Complete the FYBC and lifestyle inputs to generate this
+                      retirement target.
+                    </p>
+
+                    <div class="cost-preview-result-list">
+                      <div class="cost-preview-result-row">
+                        <span>Time Remaining to FYBC</span>
+
+                        <strong id="costOfWantsPreviewYearsRemaining"> — </strong>
+                      </div>
+
+                      <div class="cost-preview-result-row">
+                        <div>
+                          <span id="costOfWantsPreviewIncomeAtFybcLabel">
+                            Income Needed at FYBC Age
+                          </span>
+
+                          <small id="costOfWantsPreviewIncomeAtFybcBasis">
+                            Complete the inputs above
+                          </small>
+                        </div>
+
+                        <strong id="costOfWantsPreviewIncomeAtFybc"> — </strong>
+                      </div>
+
+                      <div class="cost-preview-result-row">
+                        <div>
+                          <span>Income Needed at Age 65</span>
+
+                          <small>
+                            Before applying CPF LIFE or policy income
+                          </small>
+                        </div>
+
+                        <strong id="costOfWantsPreviewIncomeAt65"> — </strong>
+                      </div>
+
+                      <div
+                        class="cost-preview-result-row cost-preview-result-row--total"
+                      >
+                        <div>
+                          <span>Estimated Lifetime Retirement Spending</span>
+
+                          <small>
+                            Full target before CPF, assets and recurring
+                            retirement income
+                          </small>
+                        </div>
+
+                        <strong id="costOfWantsPreviewGrossCapital"> — </strong>
+                      </div>
+                    </div>
+
+                    <div class="cost-preview-scope-note">
+                      <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
 
                       <p>
-                        The complete lifestyle target before applying CPF or
-                        existing assets.
+                        CPF LIFE strategies, eligible OA, projected assets,
+                        retirement-policy income and required top-ups will be
+                        applied on the Analysis page.
                       </p>
                     </div>
-                  </header>
+                  </article>
+                </div>
 
-                  <div class="cost-preview-divider"></div>
+                <div class="analysis-path-section-shell">
+                  <article class="cost-preview-next-card">
+                    <div>
+                      <h3>What happens next?</h3>
 
-                  <p
-                    id="costOfWantsPreviewEmptyMessage"
-                    class="cost-preview-empty-message"
-                    hidden
-                  >
-                    Complete the FYBC and lifestyle inputs to generate this
-                    retirement target.
-                  </p>
-
-                  <div class="cost-preview-result-list">
-                    <div class="cost-preview-result-row">
-                      <span>Time Remaining to FYBC</span>
-
-                      <strong id="costOfWantsPreviewYearsRemaining"> — </strong>
+                      <p>
+                        Analysis compares this target against what the client is
+                        projected to have.
+                      </p>
                     </div>
 
-                    <div class="cost-preview-result-row">
-                      <div>
-                        <span id="costOfWantsPreviewIncomeAtFybcLabel">
-                          Income Needed at FYBC Age
-                        </span>
+                    <ul>
+                      <li>Projected withdrawable assets and eligible OA</li>
 
-                        <small id="costOfWantsPreviewIncomeAtFybcBasis">
-                          Complete the inputs above
-                        </small>
-                      </div>
+                      <li>Current Path, BRS, FRS, ERS or No Top-up</li>
 
-                      <strong id="costOfWantsPreviewIncomeAtFybc"> — </strong>
-                    </div>
+                      <li>Affordable CPF LIFE income and remaining gap</li>
+                    </ul>
 
-                    <div class="cost-preview-result-row">
-                      <div>
-                        <span>Income Needed at Age 65</span>
-
-                        <small>
-                          Before applying CPF LIFE or policy income
-                        </small>
-                      </div>
-
-                      <strong id="costOfWantsPreviewIncomeAt65"> — </strong>
-                    </div>
-
-                    <div
-                      class="cost-preview-result-row cost-preview-result-row--total"
+                    <button
+                      id="costOfWantsPreviewAnalysisButton"
+                      class="next-button"
+                      type="button"
                     >
-                      <div>
-                        <span>Estimated Lifetime Retirement Spending</span>
+                      Continue to Analysis
 
-                        <small>
-                          Full target before CPF, assets and recurring
-                          retirement income
-                        </small>
-                      </div>
-
-                      <strong id="costOfWantsPreviewGrossCapital"> — </strong>
-                    </div>
-                  </div>
-
-                  <div class="cost-preview-scope-note">
-                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-
-                    <p>
-                      CPF LIFE strategies, eligible OA, projected assets,
-                      retirement-policy income and required top-ups will be
-                      applied on the Analysis page.
-                    </p>
-                  </div>
-                </article>
-
-                <article class="cost-preview-next-card">
-                  <div>
-                    <h3>What happens next?</h3>
-
-                    <p>
-                      Analysis compares this target against what the client is
-                      projected to have.
-                    </p>
-                  </div>
-
-                  <ul>
-                    <li>Projected withdrawable assets and eligible OA</li>
-
-                    <li>Current Path, BRS, FRS, ERS or No Top-up</li>
-
-                    <li>Affordable CPF LIFE income and remaining gap</li>
-                  </ul>
-
-                  <button
-                    id="costOfWantsPreviewAnalysisButton"
-                    class="next-button"
-                    type="button"
-                  >
-                    Continue to Analysis
-
-                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                  </button>
-                </article>
+                      <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                  </article>
+                </div>
               </aside>
             </div>
           </section>

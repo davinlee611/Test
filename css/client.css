@@ -3514,6 +3514,15 @@ button.insurance-validation-count:disabled {
   justify-self: end;
 }
 
+/*
+ * On Protection Analysis, .cost-preview-next-card sits directly below
+ * the Step 1/2 card grid rather than in a gapped grid column like on
+ * Cost of Wants, so it needs its own top spacing there.
+ */
+.analysis-path-preview > .cost-preview-next-card {
+  margin-top: 18px;
+}
+
 /* ========================================
    COST OF WANTS PREVIEW RESPONSIVE
 ======================================== */
