@@ -3423,8 +3423,8 @@ button.insurance-validation-count:disabled {
   padding: 18px 16px;
   align-items: center;
   overflow: visible;
-  background: rgba(91, 78, 246, 0.06);
-  border: 1px solid rgba(91, 78, 246, 0.2);
+  background: rgba(91, 78, 245, 0.06);
+  border: 1px solid rgba(91, 78, 245, 0.2);
   border-radius: var(--radius-md);
 }
 
@@ -3658,18 +3658,18 @@ button.insurance-validation-count:disabled {
 }
 
 .cost-preview-lifestyle-option:hover {
-  border-color: rgba(91, 78, 246, 0.45);
+  border-color: rgba(91, 78, 245, 0.45);
   transform: translateY(-1px);
 }
 
 .cost-preview-lifestyle-option.selected,
 .cost-preview-lifestyle-option[aria-checked="true"] {
   color: var(--primary-color);
-  background: rgba(91, 78, 246, 0.07);
+  background: rgba(91, 78, 245, 0.07);
   border-color: var(--primary-color);
   box-shadow:
     0 0 0 2px
-    rgba(91, 78, 246, 0.08);
+    rgba(91, 78, 245, 0.08);
 }
 
 .cost-preview-lifestyle-option > span {
@@ -6293,8 +6293,8 @@ button.insurance-validation-count:disabled {
   justify-content: space-between;
   gap: 16px;
   padding: 16px;
-  background: rgba(91, 78, 246, 0.06);
-  border: 1px solid rgba(91, 78, 246, 0.2);
+  background: rgba(91, 78, 245, 0.06);
+  border: 1px solid rgba(91, 78, 245, 0.2);
   border-radius: var(--radius-md);
 }
 
