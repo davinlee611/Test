@@ -394,6 +394,117 @@ and Published/Calculated/Estimated conventions.
     double-bumping). Left 12px and above untouched — those already meet
     the intended minimum.
 
+**2026-08-08 session:**
+
+26. User asked for `cost-analysis.js`, `protection-analysis.js`,
+    `sbmi-analysis.js` and `client-report.js` — all four built up as single
+    flat files across the sessions above — to be refactored into the same
+    elements/event-binder/controller(+workflow)/calculator/renderer split
+    already used by `liabilities/`, `insurance/`, `assets-income/`, `goals/`.
+    Also asked to check whether code added this session duplicated logic
+    already sitting elsewhere; confirmed via grep it did not (single
+    canonical `formatCurrency`/`getWholeNumber` in `client-utils.js`, and no
+    pre-existing coverage-gap/ward-class calculators before this session's
+    `protection-coverage-calculator.js`).
+    - Housekeeping first: the session's designated branch
+      (`claude/financial-app-review-srxg87`) had a single merged PR behind
+      it while all real work had continued on `main` per the earlier
+      session's explicit instruction; confirmed the branch's one unmerged
+      commit was fully superseded by an equivalent commit already on `main`
+      (identical marker-string counts in both), then reset the branch to
+      `main` and force-pushed, per the "PR already merged → restart branch
+      from default branch" playbook.
+    - `protection-analysis.js` (426 lines) → `protection-analysis/`:
+      `-elements.js`, `-event-binder.js` (DOM + `EXPENSES_CHANGED`/
+      `LIABILITIES_CHANGED` bus listeners), `-workflow.js` (state get/set,
+      no CRUD list so this is the singleton-page shape from
+      `assets-income-workflow.js`, not the list-CRUD shape from
+      `liability-workflow.js`), `-calculator.js` (pure —
+      `getCoverageNeededBreakdown()` and friends), `-renderer.js` (checklist
+      DOM building). Flat file re-exports the calculator's public surface
+      so `sbmi-analysis.js`/`client-report.js` importing
+      `getCoverageNeededBreakdown` from `./protection-analysis.js` keep
+      working unchanged.
+    - `sbmi-analysis.js` (512 lines) → `sbmi-analysis/`: `-elements.js`,
+      `-event-binder.js` (`EXPENSES_CHANGED`/`LIABILITIES_CHANGED`/
+      `POLICIES_CHANGED`), `-check-calculator.js` (pure —
+      `getWaitTimeCheckResult()`/`getInjuryCheckResult()`, re-exported from
+      the flat file since `client-report.js` imports them from
+      `./sbmi-analysis.js`), `-renderer.js`, `-controller.js`.
+    - `client-report.js` (1450 lines) → `client-report/`: `-elements.js`,
+      `-event-binder.js`, `-config.js` (label maps), `-data-builder.js`
+      (`buildClientReportData()`/`hasProtectionAnalysisContent()`),
+      `-dom-helpers.js` (the `el()`/card/gap-panel/check-card primitives),
+      `-sections.js` (the six `build*Section()` functions, using the DOM
+      helpers), `-renderer.js` (`renderClientReport()` orchestration +
+      empty-state reset), `-controller.js` (generate-report flow,
+      confirmation modal, print).
+    - `cost-analysis.js` (5734 lines, by far the largest and riskiest —
+      the project's own docs call this "critical financial logic," and
+      this sandbox still has no browser test harness) → `cost-analysis/`,
+      split by sub-domain rather than just calc-vs-render:
+      `cost-analysis-elements.js` (every DOM ref, unchanged names, as one
+      returned object — deliberately chosen over threading `elements`
+      through ~150 individually-renamed call sites, to minimize transcription
+      risk on a file this size), `cost-analysis-state.js` (the 6 previously
+      module-level `let`s — `expenseInflationWasOverridden`,
+      `includeProjectedOa`, `latestCurrentCashflow`,
+      `latestYourPathProjectedPosition`, `latestYourNextStepsResult`,
+      `selectedRetirementStrategy` — exposed as getter/setter pairs, since
+      ES modules only let the declaring module reassign a `let`; the 7th,
+      `excludedProjectionGoalIds`, is a `Set` and stays a plain exported
+      `const` since its mutations are method calls, not reassignment),
+      `cost-analysis-config.js`, `cost-analysis-format-utils.js`,
+      `cost-analysis-date-utils.js`, `cost-analysis-collapse.js`,
+      `retirement-strategy.js`, `goal-filter.js`, `goal-date-utils.js`,
+      `commitments-calculator.js`, `current-cashflow-calculator.js` /
+      `-renderer.js`, `cpf-flow-renderer.js`, `your-path-calculator.js` /
+      `-renderer.js`, `projection-calculator.js` (the ~800-line month-by-month
+      engine plus its period/aggregation helpers), `projection-renderer.js`
+      (the two projection tables + Net Movement breakdown modal),
+      `cost-analysis-event-binder.js`, `cost-analysis-controller.js` (the
+      `renderCostAnalysis()` orchestrator, now `render()`, plus every
+      individual DOM-event handler). Flat `cost-analysis.js` re-exports
+      `calculateMonthlyContributionFutureValue` (still public API even
+      though its only caller today is internal) and the three
+      `getLatestX()` report accessors `client-report.js` depends on.
+    - Verification, given no browser harness: `node --check` on all 27 new
+      files plus the 4 rewritten flat entry files; a byte-level diff
+      (Python, whitespace-normalized) of every `getElementById`/
+      `querySelector(All)` string and every top-level function name between
+      each original file (read from git HEAD) and its replacement set —
+      zero missing, zero unexpected extras, only expected renames
+      (`renderCostAnalysis` → `render` inside the controller); and, as the
+      strongest check available without a browser, loading the *entire*
+      `client.js` import graph in Node with a hand-built minimal DOM stub
+      (`document`/`window`/`Node` with just enough surface —
+      `getElementById`, `querySelectorAll`, `classList`, `children`, etc. —
+      to not throw) so every module's top-level code AND every
+      `initializeX()` call actually executed, not just parsed: this ran the
+      full `render()` pipeline for all four refactored pages (retirement
+      strategy selection, the projection engine, Your Path, Your Next
+      Steps, SBMI coverage-gap, the Client Report generator) against a
+      default empty plan with zero thrown errors, before hitting an
+      unrelated, expected stub gap (no real Supabase client) inside
+      `initializePage()`'s own try/catch. This is not a substitute for a
+      live browser/print test — no CSS layout, no real user interaction,
+      no Supabase-backed data — but it is a materially stronger signal than
+      `node --check` alone, since it validates the entire cross-file
+      import/export graph and executes every render path once.
+    - One real bug caught during this process, not by the automated checks
+      above but by re-reading the controller against the original line-by-
+      line: the extracted `render()` computed `currentCashflow` but never
+      called `setCurrentCashflowState()`, which would have made
+      `getLatestCurrentCashflow()` (and therefore the Client Report's
+      Current Monthly Cashflow card) silently keep returning `null`/stale
+      data forever. Fixed before verification; logged here as a reminder
+      that the diff/graph checks above catch missing-export and dead-
+      reference classes of bug, not "computed a value and forgot to store
+      it" classes — those still need a manual pass.
+    - No behavior, public export, or DOM id/selector changed anywhere in
+      this refactor — same reasoning, same output, same wiring, just moved
+      and reorganized into files matching the rest of the app.
+
 ## Open items / natural next steps
 
 - Death/TPD coverage-gap analysis and disability-income suitability on SBMI
@@ -413,3 +524,14 @@ and Published/Calculated/Estimated conventions.
   preview in this sandbox. Expect a fix-up round once the user has
   actually printed/exported it, same pattern as every other UI change
   this session.
+- **The item-26 module-split refactor (`cost-analysis.js` above all — the
+  ~800-line projection engine especially) needs a live click-through
+  before it's trusted**, ideally exercising every input on Analysis/
+  Protection Analysis/SBMI Analysis/Client Report and comparing numbers
+  against a pre-refactor run: the Node import-graph-evaluation check
+  described in item 26 is strong for "does every file load and does
+  `render()` run without throwing," but it ran against a default/empty
+  plan and cannot catch a value silently computed wrong (only a thrown
+  error or a diffed string/name), the way the `setCurrentCashflowState()`
+  omission happened to be catchable by inspection but wouldn't have been
+  caught by the automated passes alone.

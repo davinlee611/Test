@@ -153,10 +153,14 @@ Test-main/
     │   ├── properties/
     │   ├── cost-of-wants/
     │   ├── cost-of-wants-preview.js
-    │   ├── cost-analysis.js       # Analysis: cashflow, CPF, Your Path
-    │   ├── client-report.js       # Client Report generation/print
-    │   ├── protection-analysis.js # SBMI Protection Analysis intake (Step 1/Step 2)
-    │   └── sbmi-analysis.js       # SBMI Analysis: CI coverage gap + Medical Protection Check
+    │   ├── cost-analysis.js       # thin entry: init/reset + report accessors
+    │   ├── cost-analysis/         # Analysis: cashflow, CPF, Your Path, projection engine
+    │   ├── client-report.js       # thin entry: init/reset
+    │   ├── client-report/         # Client Report data aggregation, card sections, print
+    │   ├── protection-analysis.js # thin entry: init/reset + shared pure calculators
+    │   ├── protection-analysis/   # SBMI Protection Analysis intake (Step 1/Step 2)
+    │   ├── sbmi-analysis.js       # thin entry: init/reset + shared pure calculators
+    │   └── sbmi-analysis/         # SBMI Analysis: CI coverage gap + Medical Protection Check
     ├── services/
     │   └── protection-coverage-calculator.js # existing CI coverage, ward class, PA coverage
     ├── state/
@@ -165,7 +169,7 @@ Test-main/
         └── dev-seed.js
 ```
 
-`cost-analysis.js` is still the largest concentration of projection logic and is the clearest candidate for a future extraction/refactor once behaviour is locked by automated tests.
+`cost-analysis.js`, `protection-analysis.js`, `sbmi-analysis.js` and `client-report.js` follow the same flat-entry-point + subfolder split as `liabilities/`, `insurance/` and `assets-income/`: a thin `<feature>.js` holds only module state and `initialize<Feature>()`/`reset<Feature>()`, wiring into a `<feature>/` subfolder split into `-elements.js` (DOM refs), `-event-binder.js` (DOM + event-bus listeners), `-controller.js` (render orchestration and handlers), pure `-calculator.js` files, and `-renderer.js` files. `cost-analysis/` additionally has `cost-analysis-state.js` (centralised mutable state exposed as getter/setter pairs, since only the declaring module can reassign an imported `let`) and `retirement-strategy.js`/`projection-calculator.js`/`your-path-calculator.js` etc. per sub-domain, since the page spans retirement-strategy selection, Your Path, an ~800-line month-by-month projection engine, and CPF-flow/projection-table rendering.
 
 ## Shared state and events
 
@@ -812,7 +816,6 @@ These are product decisions or known gaps, not silent TODOs:
 - future insurer premium repricing is not modelled;
 - protection claim events are not treated as ordinary projected inflows;
 - taxes, investment taxes/fees, healthcare claim probability and product-specific surrender charges are outside the current model;
-- the large `cost-analysis.js` should eventually be split after projection behaviour is covered by automated tests;
 - SBMI Analysis's coverage-gap engine covers Critical Illness only — Death/TPD coverage-gap analysis and disability-income suitability are not yet built, and there is no top-up recommendation logic;
 - the redesigned Client Report's print output has not been confirmed against an actual print preview in this development sandbox — the `print-color-adjust`/`break-inside` fixes are written from documented browser print-default behavior, pending a live test.
 
@@ -852,12 +855,13 @@ These are product decisions or known gaps, not silent TODOs:
 - SBMI Analysis: Critical Illness coverage-gap engine (Coverage Needed / Existing Coverage / Coverage Gap) and Medical Protection Check (ward-class and Personal Accident flags against Step 1 answers)
 - Savings expense field (renamed from Emergency Fund) so it reduces monthly surplus like every other expense; Contribution to Future Self removed after the user confirmed its role already has a home under Other Recurring Expenses, Withdrawable Assets, or an Investment Accumulation policy
 - Client Report redesign: the flat label/value listing became the same bordered-shell-card language as SBMI Analysis, empty sections/cards no longer render, Insurance Portfolio benefits use report-scoped abbreviations, and the Protection Analysis section now shows real Coverage Needed/Existing/Gap and Medical Protection Check content once Protection Analysis has actually been used
+- `cost-analysis.js`, `protection-analysis.js`, `sbmi-analysis.js` and `client-report.js` split into the flat-entry-point + `<feature>/` subfolder pattern used elsewhere (`liabilities/`, `insurance/`, `assets-income/`) — public exports and behaviour unchanged, verified via `node --check` on every file, a full ES-module import-graph resolution/evaluation pass, and byte-level ID/selector/function-inventory diffs against the pre-refactor files
 
 ### In progress / next refinement
 
 - finish the young-user-facing **Your Next Steps** recommendations so the output answers “what can I realistically do next?” without assuming all surplus/assets are committed — a shortfall-guidance branch for when the gap can't be closed even at full commitment was designed but deferred;
 - continue polishing the four-section Analysis story and helper modals;
-- add automated regression fixtures before further extracting `cost-analysis.js`;
+- add automated regression fixtures (no browser test harness in this development sandbox yet, so the module split above was verified statically, not via live UI testing — that's still the user's job);
 - replace projected public-policy constants whenever official 2027+ values are published.
 
 ### Planned major features
