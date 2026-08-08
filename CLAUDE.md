@@ -324,6 +324,30 @@ and Published/Calculated/Estimated conventions.
       section can now legitimately span more than one printed page with
       several cards in it) so a card doesn't get sliced across a page
       boundary.
+21. Fixed a real CSS bug the user caught live ("step 3 is misaligned" on
+    the Client Report's Cost of Wants Analysis section): `.report-gap-label
+    span` (specificity 0,1,1) was a bare descendant-`span` selector, so it
+    matched not just its intended target (the label wrapper) but also the
+    nested `.report-card-badge` span (specificity 0,1,0) one level down —
+    and won, overriding the badge's circular `display:grid`/size/color
+    with the label row's `display:flex`/text styling. Same badge markup is
+    used for the SBMI step number on Coverage Gap too, so this was a
+    latent bug there as well, just not yet reported. Fixed by giving the
+    label wrapper its own class (`.report-gap-title-row`) instead of a
+    bare element-type selector — general lesson: avoid `.parent span`-style
+    selectors when a `span` might itself contain another styled `span`.
+    Also: updated the "Ready to generate the client report?" helper text
+    on Analysis (still said "Priorities & Situation and Insurance
+    Portfolio" only, stale since Cost of Wants Analysis and Protection
+    Analysis were added to the report); added a Back/Next button row to
+    the bottom of SBMI Analysis (`sbmiAnalysisBackButton` → `protection`,
+    `sbmiAnalysisNextButton` → `client-report`, both plain `openSection()`
+    like `analysisDetailBackButton` since profile-completion gating is
+    irrelevant this deep in the flow); and added a second "Generate
+    Report" CTA on SBMI Analysis (`sbmiGenerateReportButton`) wired to the
+    same `handleGenerateReportClick` handler as the original one on
+    Analysis, via a `generateReportButtons` array instead of a single
+    element reference.
 
 ## Open items / natural next steps
 
