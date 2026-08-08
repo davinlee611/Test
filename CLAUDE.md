@@ -258,6 +258,24 @@ and Published/Calculated/Estimated conventions.
     up slightly (42×24 → 44×26), and added a subtle border for definition
     against the white row background. Only usage of `.planning-switch` in
     the app, so safe to change freely.
+18. User asked (in an exploratory question, not a build request) whether the
+    new Savings expense field should support a custom protection-horizon
+    duration since it also covers "emergency fund." Recommended against it
+    (breaks the uniform 5-year-horizon-for-every-expense pattern, re-opens
+    per-item override complexity just removed with Future Self) and the
+    user agreed not to build it — logged here so it isn't re-litigated
+    without a reason to revisit.
+19. Fixed a real visual inconsistency on SBMI Analysis: the two Medical
+    Protection Check cards (Treatment Wait-Time Preference, Active
+    Lifestyle / Injury Risk) were plain `.analysis-path-card` elements
+    without the `.analysis-path-section-shell` wrapper that Coverage
+    Needed/Existing Coverage already use, so they read as a different
+    visual weight despite sharing a card class. Wrapped both in the same
+    shell div. Also added a "Continue to Analysis" CTA at the bottom of
+    the Protection Analysis (Step 1/Step 2) page, reusing the
+    `.analysis-path-details-notice` pattern and `openSection()` wiring
+    already used by Analysis's "View Detailed Cashflow & CPF Flow" button
+    (`sidebar.js`), navigating to `sbmi-analysis`.
 
 ## Open items / natural next steps
 
