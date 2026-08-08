@@ -348,6 +348,15 @@ and Published/Calculated/Estimated conventions.
     same `handleGenerateReportClick` handler as the original one on
     Analysis, via a `generateReportButtons` array instead of a single
     element reference.
+22. Restyled Protection Analysis's "Continue to Analysis" CTA per user
+    request to match Cost of Wants' "What happens next?" card exactly,
+    rather than the full-width `.analysis-path-details-notice` row it
+    had been using (shared with Analysis's "View Detailed Cashflow"
+    button — left that one alone, only this CTA changed). Reused
+    `.cost-preview-next-card`/`.next-button` directly rather than writing
+    new CSS: heading + short description + a bullet list of what SBMI
+    Analysis shows next + a content-sized, right-aligned button instead
+    of a whole-row clickable notice.
 
 ## Open items / natural next steps
 
