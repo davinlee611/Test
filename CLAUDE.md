@@ -357,6 +357,26 @@ and Published/Calculated/Estimated conventions.
     new CSS: heading + short description + a bullet list of what SBMI
     Analysis shows next + a content-sized, right-aligned button instead
     of a whole-row clickable notice.
+23. Two follow-up polish items on the "What happens next?" pattern just
+    reused across pages:
+    - Protection Analysis's copy sat flush against the Step 1/2 card grid
+      above it — on Cost of Wants the same card gets its top spacing for
+      free from `.cost-preview-target-column`'s grid `gap`, but Protection
+      Analysis places it as a plain sibling with no such parent gap. Fixed
+      with a scoped `.analysis-path-preview > .cost-preview-next-card
+      { margin-top: 18px; }` rule rather than touching `.cost-preview-next-card`
+      itself, which would have shifted its position within the Cost of
+      Wants grid too.
+    - Wrapped Cost of Wants' "Your Retirement Target" and "What happens
+      next?" cards in `.analysis-path-section-shell`, matching the pale
+      bordered-shell treatment already used everywhere else (Your
+      Goal/Starting Position, Coverage Needed/Existing Coverage, Medical
+      Protection Check) — those two cards were the last ones on the app
+      still using a plain single border. No new CSS needed since
+      `.cost-preview-card`/`.cost-preview-next-card` are already
+      self-contained (their own border/background/padding), so nesting
+      them in the shell just works the same way it already does for
+      `.analysis-path-card`.
 
 ## Open items / natural next steps
 
